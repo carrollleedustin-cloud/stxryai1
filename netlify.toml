@@ -1,6 +1,5 @@
 [build]
-  base = "stxryai"
-  command = "npm run build"
+  command = "cd stxryai && npm run build"
   publish = "stxryai/out"
 
 [build.environment]
