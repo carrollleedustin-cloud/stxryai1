@@ -2,11 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import StoryCard from './StoryCard';
 import { storyService } from '@/services/storyService';
 import { useAuth } from '@/contexts/AuthContext';
+import { StoryGridSkeleton } from '@/components/ui/Skeleton';
+import { staggerContainer, slideUp } from '@/lib/animations/variants';
+import { toast } from '@/lib/utils/toast';
+import ThemeToggle from '@/components/common/ThemeToggle';
 
 interface FilterOptions {
   genres: string[];
@@ -110,7 +115,7 @@ export default function StoryLibraryInteractive() {
 
   const handleStoryClick = (storyId: string, isPremium: boolean) => {
     if (isPremium && profile?.subscription_tier === 'free') {
-      alert('This is a premium story. Please upgrade your subscription to access it.');
+      toast.warning('Premium Content', 'Please upgrade your subscription to access this story.');
       return;
     }
     router.push(`/story-reader?storyId=${storyId}`);
@@ -119,16 +124,27 @@ export default function StoryLibraryInteractive() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Story Library</h1>
-            <button
-              onClick={() => router.push('/user-dashboard')}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            <motion.h1
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-3xl font-bold text-foreground"
             >
-              Back to Dashboard
-            </button>
+              Story Library
+            </motion.h1>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => router.push('/user-dashboard')}
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Back to Dashboard
+              </motion.button>
+            </div>
           </div>
         </div>
       </header>
@@ -158,23 +174,31 @@ export default function StoryLibraryInteractive() {
             )}
 
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-              </div>
+              <StoryGridSkeleton count={6} />
             ) : stories.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-gray-500 text-lg">No stories found matching your criteria.</p>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-20"
+              >
+                <p className="text-muted-foreground text-lg">No stories found matching your criteria.</p>
+              </motion.div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+              >
                 {stories.map((story) => (
-                  <StoryCard
-                    key={story.id}
-                    story={story}
-                    onClick={() => handleStoryClick(story.id, story.is_premium)}
-                  />
+                  <motion.div key={story.id} variants={slideUp}>
+                    <StoryCard
+                      story={story}
+                      onClick={() => handleStoryClick(story.id, story.is_premium)}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>

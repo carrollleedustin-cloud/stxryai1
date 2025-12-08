@@ -3,7 +3,10 @@ import { Inter } from "next/font/google";
 
 import "@/styles/index.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import AdSenseScript from "@/components/AdSenseScript";
+import ToastProvider from "@/components/ui/Toast";
+import CommandPalette from "@/components/ui/CommandPalette";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,11 +24,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <AdSenseScript />
         <AuthProvider>
-          {children}
+          <ThemeProvider>
+            <ToastProvider />
+            <CommandPalette />
+            {children}
+          </ThemeProvider>
         </AuthProvider>
 
         <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fstxryai2284back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.10" />
