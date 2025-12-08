@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client';
+import { getSupabaseClient } from '@/lib/supabase/client';
 
 export interface EngagementMetrics {
   id?: string;
@@ -59,13 +59,20 @@ export interface PacingAdjustment {
 }
 
 class NarrativeAIService {
-  private supabase = createClient();
+  private getSupabase() {
+    const client = getSupabaseClient();
+    if (!client) {
+      throw new Error('Supabase client is not configured');
+    }
+    return client;
+  }
 
   // ==================== ENGAGEMENT METRICS ====================
 
   async trackEngagement(metrics: Omit<EngagementMetrics, 'id' | 'created_at' | 'updated_at'>): Promise<EngagementMetrics | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('user_engagement_metrics')
         .upsert({
           user_id: metrics.user_id,
@@ -85,7 +92,7 @@ class NarrativeAIService {
       }
 
       return data as EngagementMetrics;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to track engagement:', error);
       return null;
     }
@@ -93,7 +100,8 @@ class NarrativeAIService {
 
   async getEngagementMetrics(userId: string, storyId: string): Promise<EngagementMetrics[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('user_engagement_metrics')
         .select('*')
         .eq('user_id', userId)
@@ -106,7 +114,7 @@ class NarrativeAIService {
       }
 
       return (data || []) as EngagementMetrics[];
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch engagement metrics:', error);
       return [];
     }
@@ -118,7 +126,8 @@ class NarrativeAIService {
     engagementLevel: string;
   } | null> {
     try {
-      let query = this.supabase
+      const supabase = this.getSupabase();
+      let query = supabase
         .from('user_engagement_metrics')
         .select('recommended_pacing, pacing_adjustment_factor, engagement_level')
         .eq('user_id', userId)
@@ -145,7 +154,7 @@ class NarrativeAIService {
         adjustmentFactor: data.pacing_adjustment_factor || 1.0,
         engagementLevel: data.engagement_level || 'medium'
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to get current pacing:', error);
       return null;
     }
@@ -155,7 +164,8 @@ class NarrativeAIService {
 
   async createNPC(npc: Omit<StoryNPC, 'id'>): Promise<StoryNPC | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('story_npcs')
         .insert({
           story_id: npc.story_id,
@@ -176,7 +186,7 @@ class NarrativeAIService {
       }
 
       return data as StoryNPC;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create NPC:', error);
       return null;
     }
@@ -184,7 +194,8 @@ class NarrativeAIService {
 
   async getStoryNPCs(storyId: string): Promise<StoryNPC[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('story_npcs')
         .select('*')
         .eq('story_id', storyId)
@@ -196,7 +207,7 @@ class NarrativeAIService {
       }
 
       return (data || []) as StoryNPC[];
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch NPCs:', error);
       return [];
     }
@@ -204,7 +215,8 @@ class NarrativeAIService {
 
   async getNPCById(npcId: string): Promise<StoryNPC | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('story_npcs')
         .select('*')
         .eq('id', npcId)
@@ -216,7 +228,7 @@ class NarrativeAIService {
       }
 
       return data as StoryNPC;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch NPC:', error);
       return null;
     }
@@ -226,7 +238,8 @@ class NarrativeAIService {
 
   async recordNPCMemory(memory: Omit<NPCMemory, 'id' | 'created_at'>): Promise<NPCMemory | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('npc_user_memories')
         .insert({
           npc_id: memory.npc_id,
@@ -248,7 +261,7 @@ class NarrativeAIService {
       }
 
       return data as NPCMemory;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to record NPC memory:', error);
       return null;
     }
@@ -256,7 +269,8 @@ class NarrativeAIService {
 
   async getNPCMemories(npcId: string, userId: string): Promise<NPCMemory[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('npc_user_memories')
         .select('*')
         .eq('npc_id', npcId)
@@ -269,7 +283,7 @@ class NarrativeAIService {
       }
 
       return (data || []) as NPCMemory[];
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch NPC memories:', error);
       return [];
     }
@@ -281,7 +295,8 @@ class NarrativeAIService {
     revealedTraits: string[];
   } | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('npc_user_memories')
         .select('relationship_type, cumulative_relationship_score, revealed_traits')
         .eq('npc_id', npcId)
@@ -299,7 +314,7 @@ class NarrativeAIService {
       }
 
       // Aggregate all revealed traits
-      const { data: allMemories } = await this.supabase
+      const { data: allMemories } = await supabase
         .from('npc_user_memories')
         .select('revealed_traits')
         .eq('npc_id', npcId)
@@ -317,7 +332,7 @@ class NarrativeAIService {
         cumulativeScore: data.cumulative_relationship_score || 0,
         revealedTraits: Array.from(allTraits)
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to get NPC relationship status:', error);
       return null;
     }
@@ -327,7 +342,8 @@ class NarrativeAIService {
 
   async createPacingAdjustment(adjustment: Omit<PacingAdjustment, 'id' | 'applied_at'>): Promise<PacingAdjustment | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('narrative_pacing_adjustments')
         .insert({
           user_id: adjustment.user_id,
@@ -348,7 +364,7 @@ class NarrativeAIService {
       }
 
       return data as PacingAdjustment;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create pacing adjustment:', error);
       return null;
     }
@@ -356,7 +372,8 @@ class NarrativeAIService {
 
   async getPacingAdjustments(userId: string, storyId: string): Promise<PacingAdjustment[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = this.getSupabase();
+      const { data, error } = await supabase
         .from('narrative_pacing_adjustments')
         .select('*')
         .eq('user_id', userId)
@@ -369,7 +386,7 @@ class NarrativeAIService {
       }
 
       return (data || []) as PacingAdjustment[];
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch pacing adjustments:', error);
       return [];
     }

@@ -35,6 +35,9 @@ export default function StoryReaderInteractive() {
     timeOnScene: 0
   });
 
+  // Calculate current chapter (moved up to avoid reference before declaration)
+  const currentChapter = chapters[currentChapterIndex];
+
   useEffect(() => {
     if (storyId && user) {
       loadStoryData();
@@ -231,18 +234,18 @@ export default function StoryReaderInteractive() {
     );
   }
 
-  const currentChapter = chapters[currentChapterIndex];
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Story Content */}
       <div className="lg:col-span-2 space-y-6">
         <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-xl shadow-2xl">
           <ReadingControls
-            storyTitle={story.title}
-            currentChapter={currentChapterIndex + 1}
-            totalChapters={chapters.length}
-            onBack={() => router.push('/user-dashboard')}
+            currentTheme="midnight"
+            currentFontSize={16}
+            onThemeChange={() => {}}
+            onFontSizeChange={() => {}}
+            onBookmark={() => {}}
+            isBookmarked={false}
           />
 
           {error && (
@@ -285,8 +288,16 @@ export default function StoryReaderInteractive() {
             />
           </>
         )}
-        <BranchVisualization />
-        <FloatingChatPanel />
+        <BranchVisualization
+          storyNodes={[]}
+          currentNodeId=""
+          isPremium={profile?.subscription_tier === 'premium'}
+        />
+        <FloatingChatPanel
+          storyId={currentStory?.id || ''}
+          currentScene={currentChapter?.id || ''}
+          isPremium={profile?.subscription_tier === 'premium'}
+        />
       </div>
     </div>
   );

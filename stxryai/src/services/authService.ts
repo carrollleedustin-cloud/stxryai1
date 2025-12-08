@@ -1,4 +1,4 @@
-import { getSupabaseClient, getIsSupabaseConfigured } from '@/lib/supabase';
+import { getSupabaseClient, getIsSupabaseConfigured } from '@/lib/supabase/client';
 
 // Helper to check if Supabase is available
 const ensureSupabaseConfigured = () => {
@@ -91,7 +91,7 @@ export const authService = {
     }
   },
 
-  onAuthStateChange(callback: (session: any) => void) {
+  onAuthStateChange(callback: (session: unknown) => void) {
     // Check if Supabase is configured before attempting to access client
     if (!getIsSupabaseConfigured()) {
       // Return consistent structure matching Supabase's return format
@@ -99,35 +99,35 @@ export const authService = {
         data: {
           subscription: {
             unsubscribe: () => {
-              console.log('Supabase not configured - skipping unsubscribe');
+              console.info('Supabase not configured - skipping unsubscribe');
             },
           },
         },
       };
     }
-    
+
     try {
       const supabase = getSupabaseClient();
-      
+
       // Additional null check after getting client
       if (!supabase) {
         return {
           data: {
             subscription: {
               unsubscribe: () => {
-                console.log('Supabase client unavailable - skipping unsubscribe');
+                console.info('Supabase client unavailable - skipping unsubscribe');
               },
             },
           },
         };
       }
-      
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+
+      const { data } = supabase.auth.onAuthStateChange((_event: unknown, session: unknown) => {
         callback(session);
       });
-      
+
       // Ensure consistent return structure
-      return { 
+      return {
         data: {
           subscription: data?.subscription || {
             unsubscribe: () => {}
@@ -141,7 +141,7 @@ export const authService = {
         data: {
           subscription: {
             unsubscribe: () => {
-              console.log('Error occurred - skipping unsubscribe');
+              console.info('Error occurred - skipping unsubscribe');
             },
           },
         },

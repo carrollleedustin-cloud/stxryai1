@@ -292,14 +292,7 @@ export default function UserDashboardPage() {
   };
 
   return (
-    <DashboardInteractive
-      mockUser={mockUser}
-      mockRecommendations={mockRecommendations}
-      mockStats={mockStats}
-      mockActivities={mockActivities}
-      mockCurrentStories={mockCurrentStories}
-      mockCollections={mockCollections}
-      mockChoiceData={mockChoiceData} />);
+    <DashboardInteractive />);
 
 
 }

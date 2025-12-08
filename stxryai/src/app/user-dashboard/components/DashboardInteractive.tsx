@@ -111,19 +111,30 @@ export default function DashboardInteractive() {
         {/* Daily Choice Limit */}
         {profile && (
           <DailyChoiceLimitWidget
-            dailyLimit={profile.daily_choice_limit}
+            isPremium={profile.subscription_tier === 'premium'}
             choicesUsed={profile.daily_choices_used}
-            subscriptionTier={profile.subscription_tier}
+            choicesLimit={profile.daily_choice_limit}
+            resetTime={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()}
           />
         )}
 
         {/* Reading Stats */}
         {profile && (
           <ReadingStatsPanel
-            totalReadingTime={profile.total_reading_time}
-            storiesCompleted={profile.stories_completed}
-            choicesMade={profile.choices_made}
-            badgesEarned={badges.length}
+            stats={{
+              storiesCompleted: profile.stories_completed,
+              choicesMade: profile.choices_made,
+              readingStreak: 0,
+              totalReadingTime: profile.total_reading_time,
+              achievements: badges.map((badge: any) => ({
+                id: badge.id,
+                name: badge.badge_name,
+                icon: badge.badge_icon,
+                progress: 100,
+                total: 100,
+                unlocked: true
+              }))
+            }}
           />
         )}
 

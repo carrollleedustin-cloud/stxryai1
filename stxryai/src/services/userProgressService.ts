@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 export const userProgressService = {
   async getUserProgress(userId: string, storyId: string) {
@@ -73,13 +73,10 @@ export const userProgressService = {
 
     if (error) throw error;
 
-    // Update user stats
-    await supabase
-      .from('user_profiles')
-      .update({
-        stories_completed: supabase.sql`stories_completed + 1`,
-      })
-      .eq('id', userId);
+    // Update user stats using RPC function for atomic increment
+    await supabase.rpc('increment_stories_completed', {
+      user_id: userId,
+    });
 
     return data;
   },

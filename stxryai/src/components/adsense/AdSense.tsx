@@ -10,7 +10,7 @@ const AdSense: React.FC<AdSenseProps> = ({
   adLayout, 
   adStyle = {}
 }) => {
-  const adRef = useRef<HTMLInsElement>(null);
+  const adRef = useRef<HTMLModElement>(null);
   const [isAdInitialized, setIsAdInitialized] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);

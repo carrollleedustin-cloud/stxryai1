@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 export interface PlatformMetrics {
   activeUsers: number;
@@ -27,6 +27,17 @@ export interface UserReport {
   createdAt: string;
 }
 
+interface Story {
+  id: string;
+  status: string;
+  play_count?: number;
+}
+
+interface Profile {
+  id: string;
+  subscription_tier: string;
+}
+
 // Fetch platform-wide metrics
 export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
   try {
@@ -43,9 +54,9 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
     if (storyError) throw storyError;
 
     const activeUsers = profiles?.length || 0;
-    const totalStories = stories?.filter(s => s.status === 'published').length || 0;
-    const avgEngagement = stories?.reduce((acc, s) => acc + (s.play_count || 0), 0) / (totalStories || 1);
-    const premiumUsers = profiles?.filter(p => p.subscription_tier !== 'free').length || 0;
+    const totalStories = stories?.filter((s: Story) => s.status === 'published').length || 0;
+    const avgEngagement = stories?.reduce((acc: number, s: Story) => acc + (s.play_count || 0), 0) / (totalStories || 1);
+    const premiumUsers = profiles?.filter((p: Profile) => p.subscription_tier !== 'free').length || 0;
 
     return {
       activeUsers,

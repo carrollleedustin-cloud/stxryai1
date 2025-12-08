@@ -3,31 +3,52 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
-export default function LoginForm() {
+interface LoginFormProps {
+  onSubmit?: (data: { email: string; password: string; rememberMe: boolean }) => void;
+  isLoading?: boolean;
+  error?: string;
+}
+
+export default function LoginForm({ onSubmit, isLoading: externalLoading, error: externalError }: LoginFormProps = {}) {
   const router = useRouter();
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Use external props if provided, otherwise use internal state
+  const isLoadingState = externalLoading !== undefined ? externalLoading : loading;
+  const errorState = externalError || error;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // If external onSubmit is provided, use that
+    if (onSubmit) {
+      onSubmit({ email, password, rememberMe });
+      return;
+    }
+
+    // Otherwise use internal auth logic
     setLoading(true);
 
     try {
       await signIn(email, password);
       router.push('/user-dashboard');
-    } catch (err: any) {
-      if (err?.message?.includes('Failed to fetch') || 
-          err?.message?.includes('AuthRetryableFetchError')) {
+    } catch (err: unknown) {
+      const error = err as Error;
+      if (error?.message?.includes('Failed to fetch') ||
+          error?.message?.includes('AuthRetryableFetchError')) {
         setError('Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.');
-      } else if (err?.message?.includes('Invalid login credentials')) {
+      } else if (error?.message?.includes('Invalid login credentials')) {
         setError('Invalid email or password. Please try again.');
       } else {
-        setError(err?.message || 'Failed to sign in. Please try again.');
+        setError(error?.message || 'Failed to sign in. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -36,9 +57,9 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
+      {errorState && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600">{errorState}</p>
         </div>
       )}
 
@@ -76,21 +97,23 @@ export default function LoginForm() {
         <label className="flex items-center">
           <input
             type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
             className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
           />
           <span className="ml-2 text-sm text-gray-600">Remember me</span>
         </label>
-        <a href="#" className="text-sm text-purple-600 hover:text-purple-700">
+        <Link href="/forgot-password" className="text-sm text-purple-600 hover:text-purple-700">
           Forgot password?
-        </a>
+        </Link>
       </div>
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={isLoadingState}
         className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:bg-purple-300 disabled:cursor-not-allowed"
       >
-        {loading ? 'Signing in...' : 'Sign In'}
+        {isLoadingState ? 'Signing in...' : 'Sign In'}
       </button>
     </form>
   );

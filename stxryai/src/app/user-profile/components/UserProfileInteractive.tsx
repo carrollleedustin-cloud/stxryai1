@@ -91,15 +91,7 @@ const UserProfileInteractive = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <Header
-        user={{
-          name: initialUser.name,
-          avatar: initialUser.avatar,
-          isPremium: initialUser.isPremium,
-        }}
-        notificationCount={3}
-        onLogout={handleLogout}
-      />
+      <Header />
 
       <main className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-6">

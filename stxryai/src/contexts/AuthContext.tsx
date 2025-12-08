@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let authSubscription: { unsubscribe: () => void } | null = null;
     
     try {
-      const authListenerResult = authService.onAuthStateChange(async (session) => {
+      const authListenerResult = authService.onAuthStateChange(async (session: any) => {
         if (session?.user) {
           setUser(session.user as User);
           await loadUserProfile(session.user.id);

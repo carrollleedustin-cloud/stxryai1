@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 interface UserStats {
   stories_completed: number;
@@ -25,6 +25,14 @@ interface LeaderboardEntry {
   avatar_url?: string;
   score: number;
   rank: number;
+}
+
+interface LeaderboardData {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url?: string;
+  stories_completed: number;
 }
 
 export const socialService = {
@@ -101,7 +109,7 @@ export const socialService = {
       if (error) throw error;
 
       // Add rank to entries
-      return (data || []).map((entry, index) => ({
+      return (data || []).map((entry: LeaderboardData, index: number) => ({
         user_id: entry.id,
         username: entry.username,
         display_name: entry.display_name,

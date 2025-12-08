@@ -45,11 +45,11 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
     }
 
     const mockSuggestions: SearchSuggestion[] = [
-      { id: '1', title: 'The Midnight Chronicles', type: 'story' },
-      { id: '2', title: 'Echoes of Tomorrow', type: 'story' },
-      { id: '3', title: 'Sarah Mitchell', type: 'author' },
-      { id: '4', title: 'Horror', type: 'genre' },
-      { id: '5', title: 'Sci-Fi', type: 'genre' },
+      { id: '1', title: 'The Midnight Chronicles', type: 'story' as const },
+      { id: '2', title: 'Echoes of Tomorrow', type: 'story' as const },
+      { id: '3', title: 'Sarah Mitchell', type: 'author' as const },
+      { id: '4', title: 'Horror', type: 'genre' as const },
+      { id: '5', title: 'Sci-Fi', type: 'genre' as const },
     ].filter((s) => s.title.toLowerCase().includes(query.toLowerCase()));
 
     setSuggestions(mockSuggestions);
@@ -71,7 +71,7 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
     setShowSuggestions(false);
   };
 
-  const getTypeIcon = (type: SearchSuggestion['type']) => {
+  const getTypeIcon = (type: 'story' | 'author' | 'genre'): string => {
     switch (type) {
       case 'story':
         return 'BookOpenIcon';
@@ -84,7 +84,7 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
     }
   };
 
-  const getTypeColor = (type: SearchSuggestion['type']) => {
+  const getTypeColor = (type: 'story' | 'author' | 'genre'): string => {
     switch (type) {
       case 'story':
         return 'text-primary';

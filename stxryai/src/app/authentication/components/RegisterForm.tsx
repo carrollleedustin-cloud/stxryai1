@@ -4,7 +4,20 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function RegisterForm() {
+interface RegisterFormProps {
+  onSubmit?: (data: {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    acceptTerms: boolean;
+    isAdult: boolean;
+  }) => void;
+  isLoading?: boolean;
+  error?: string;
+}
+
+export default function RegisterForm({ onSubmit, isLoading: externalLoading, error: externalError }: RegisterFormProps = {}) {
   const router = useRouter();
   const { signUp } = useAuth();
   const [formData, setFormData] = useState({
@@ -13,12 +26,19 @@ export default function RegisterForm() {
     email: '',
     password: '',
     confirmPassword: '',
+    acceptTerms: false,
+    isAdult: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Use external props if provided, otherwise use internal state
+  const isLoadingState = externalLoading !== undefined ? externalLoading : loading;
+  const errorState = externalError || error;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,19 +55,27 @@ export default function RegisterForm() {
       return;
     }
 
+    // If external onSubmit is provided, use that
+    if (onSubmit) {
+      onSubmit(formData);
+      return;
+    }
+
+    // Otherwise use internal auth logic
     setLoading(true);
 
     try {
       await signUp(formData.email, formData.password, formData.username, formData.displayName);
       router.push('/user-dashboard');
-    } catch (err: any) {
-      if (err?.message?.includes('Failed to fetch') || 
-          err?.message?.includes('AuthRetryableFetchError')) {
+    } catch (err: unknown) {
+      const error = err as Error;
+      if (error?.message?.includes('Failed to fetch') ||
+          error?.message?.includes('AuthRetryableFetchError')) {
         setError('Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.');
-      } else if (err?.message?.includes('already registered')) {
+      } else if (error?.message?.includes('already registered')) {
         setError('This email is already registered. Please sign in instead.');
       } else {
-        setError(err?.message || 'Failed to create account. Please try again.');
+        setError(error?.message || 'Failed to create account. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -56,9 +84,9 @@ export default function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
+      {errorState && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-red-600">{errorState}</p>
         </div>
       )}
 
@@ -142,12 +170,37 @@ export default function RegisterForm() {
         />
       </div>
 
+      <div className="space-y-2">
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="acceptTerms"
+            checked={formData.acceptTerms}
+            onChange={handleChange}
+            required
+            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+          />
+          <span className="ml-2 text-sm text-gray-600">I accept the Terms and Conditions</span>
+        </label>
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            name="isAdult"
+            checked={formData.isAdult}
+            onChange={handleChange}
+            required
+            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+          />
+          <span className="ml-2 text-sm text-gray-600">I am 18 years or older</span>
+        </label>
+      </div>
+
       <button
         type="submit"
-        disabled={loading}
+        disabled={isLoadingState}
         className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors disabled:bg-purple-300 disabled:cursor-not-allowed"
       >
-        {loading ? 'Creating Account...' : 'Create Account'}
+        {isLoadingState ? 'Creating Account...' : 'Create Account'}
       </button>
     </form>
   );

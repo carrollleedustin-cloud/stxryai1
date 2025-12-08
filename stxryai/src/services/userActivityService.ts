@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 
 interface UserActivity {
   id: string;
@@ -34,6 +34,10 @@ interface Friendship {
   created_at: string;
 }
 
+interface FriendshipData {
+  friend_id: string;
+}
+
 export const userActivityService = {
   // Get user's personal activity feed
   async getUserActivities(userId: string, limit: number = 20): Promise<ActivityWithProfile[]> {
@@ -62,8 +66,8 @@ export const userActivityService = {
 
       if (friendError) throw friendError;
 
-      const friendIds = friendships?.map(f => f.friend_id) || [];
-      
+      const friendIds = friendships?.map((f: FriendshipData) => f.friend_id) || [];
+
       // Include user's own activities
       friendIds.push(userId);
 
