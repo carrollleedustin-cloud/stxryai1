@@ -1,12 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   productionBrowserSourceMaps: true,
-  distDir: process.env.DIST_DIR || '.next',  typescript: {
+  distDir: process.env.DIST_DIR || '.next',
+  typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  output: 'export',
   images: {
     remotePatterns: [
       {
@@ -22,15 +24,6 @@ const nextConfig = {
         hostname: 'images.pixabay.com',
       },
     ],
-  },
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/landing-page',
-        permanent: false,
-      },
-    ];
   },
   webpack(config) {
     config.module.rules.push({
