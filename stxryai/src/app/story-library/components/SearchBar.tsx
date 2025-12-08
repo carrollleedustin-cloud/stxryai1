@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
+import { staggerContainer, slideUp } from '@/lib/animations/variants';
 
 interface SearchSuggestion {
   id: string;
@@ -99,12 +101,25 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
 
   return (
     <div ref={searchRef} className="relative w-full">
-      <div className="relative">
-        <Icon
-          name="MagnifyingGlassIcon"
-          size={20}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-        />
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative"
+      >
+        <motion.div
+          animate={{
+            scale: showSuggestions && query ? 1.05 : 1
+          }}
+          transition={{ duration: 0.2 }}
+          className="absolute left-4 top-1/2 -translate-y-1/2"
+        >
+          <Icon
+            name="MagnifyingGlassIcon"
+            size={20}
+            className="text-muted-foreground"
+          />
+        </motion.div>
+
         <input
           type="text"
           value={query}
@@ -114,57 +129,96 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
           }}
           onFocus={() => setShowSuggestions(true)}
           placeholder="Search stories, authors, or genres..."
-          className="w-full pl-12 pr-12 py-3 bg-muted/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-smooth"
+          className="w-full pl-12 pr-12 py-3 bg-muted/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
         />
-        {query && (
-          <button
-            onClick={() => {
-              setQuery('');
-              onSearch('');
-              setSuggestions([]);
-            }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-smooth"
-          >
-            <Icon name="XMarkIcon" size={16} className="text-muted-foreground" />
-          </button>
-        )}
-      </div>
 
-      {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-elevation-2 z-[100] overflow-hidden">
-          <div className="py-2">
-            {suggestions.map((suggestion) => (
-              <button
-                key={suggestion.id}
-                onClick={() => handleSearch(suggestion.title)}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-muted/50 transition-smooth text-left"
-              >
-                <Icon
-                  name={getTypeIcon(suggestion.type)}
-                  size={18}
-                  className={getTypeColor(suggestion.type)}
-                />
-                <div className="flex-1">
-                  <span className="text-sm font-medium text-foreground">
-                    {suggestion.title}
-                  </span>
-                  <span className="ml-2 text-xs text-muted-foreground capitalize">
-                    {suggestion.type}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-          {isPremium && (
-            <div className="border-t border-border px-4 py-2 bg-muted/30">
-              <button className="flex items-center space-x-2 text-xs font-medium text-primary hover:text-secondary transition-smooth">
-                <Icon name="BookmarkIcon" size={14} />
-                <span>Save this search</span>
-              </button>
-            </div>
+        <AnimatePresence>
+          {query && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                setQuery('');
+                onSearch('');
+                setSuggestions([]);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors"
+            >
+              <Icon name="XMarkIcon" size={16} className="text-muted-foreground" />
+            </motion.button>
           )}
-        </div>
-      )}
+        </AnimatePresence>
+      </motion.div>
+
+      <AnimatePresence>
+        {showSuggestions && suggestions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-2xl z-[100] overflow-hidden"
+          >
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+              className="py-2"
+            >
+              {suggestions.map((suggestion, index) => (
+                <motion.button
+                  key={suggestion.id}
+                  variants={slideUp}
+                  whileHover={{ backgroundColor: 'hsl(var(--color-muted) / 0.5)', x: 4 }}
+                  onClick={() => handleSearch(suggestion.title)}
+                  className="w-full flex items-center space-x-3 px-4 py-3 transition-colors text-left"
+                >
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Icon
+                      name={getTypeIcon(suggestion.type)}
+                      size={18}
+                      className={getTypeColor(suggestion.type)}
+                    />
+                  </motion.div>
+                  <div className="flex-1">
+                    <span className="text-sm font-medium text-foreground">
+                      {suggestion.title}
+                    </span>
+                    <span className="ml-2 text-xs text-muted-foreground capitalize">
+                      {suggestion.type}
+                    </span>
+                  </div>
+                  <Icon name="ArrowRightIcon" size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </motion.button>
+              ))}
+            </motion.div>
+
+            {isPremium && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="border-t border-border px-4 py-2 bg-muted/30"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center space-x-2 text-xs font-medium text-primary hover:text-secondary transition-colors"
+                >
+                  <Icon name="BookmarkIcon" size={14} />
+                  <span>Save this search</span>
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
