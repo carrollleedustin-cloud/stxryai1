@@ -49,10 +49,44 @@ export const authService = {
   async signIn({ email, password }: { email: string; password: string }) {
     ensureSupabaseConfigured();
     const supabase = getSupabase();
-    
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
+  async signInWithGoogle() {
+    ensureSupabaseConfigured();
+    const supabase = getSupabase();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
+  async signInWithDiscord() {
+    ensureSupabaseConfigured();
+    const supabase = getSupabase();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
 
     if (error) throw error;
