@@ -75,7 +75,7 @@ Complete setup guide for deploying Stxryai with authentication and AI features.
 4. Go to **OAuth2** tab
 5. Copy **Client ID** and **Client Secret**
 6. Add Redirects:
-   - `https://your-project.supabase.co/auth/v1/callback`
+   - ``
    - `http://localhost:3000/auth/callback` (for local dev)
 7. Save Changes
 
@@ -344,7 +344,7 @@ See `src/lib/ai/` for implementation details.
 Edit `src/lib/ai/config.ts` to set your preferred provider:
 
 ```typescript
-export const AI_CONFIG = {
+export const AI_CONhttps://your-project.supabase.co/auth/v1/callbackFIG = {
   provider: 'anthropic', // or 'openai'
   model: 'claude-3-5-sonnet-20241022', // or 'gpt-4'
   maxTokens: 4000,
