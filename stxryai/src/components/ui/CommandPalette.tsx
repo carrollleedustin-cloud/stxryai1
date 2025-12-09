@@ -10,8 +10,14 @@ import Icon from '@/components/ui/AppIcon';
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+
+  // Client-side only mounting
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Keyboard shortcut handler
   useEffect(() => {
@@ -49,6 +55,11 @@ export default function CommandPalette() {
     setTheme(nextTheme);
     setOpen(false);
   }, [theme, setTheme]);
+
+  // Don't render until mounted on client
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <AnimatePresence>

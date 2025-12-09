@@ -3,6 +3,10 @@ const nextConfig = {
   productionBrowserSourceMaps: true,
   distDir: process.env.DIST_DIR || '.next',
   output: 'export',
+  eslint: {
+    // Run linting separately, skip during build to avoid deprecated option errors
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {

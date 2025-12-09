@@ -65,11 +65,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme: setThemeState
   };
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
+  // Always provide context, even during SSR
   return (
     <ThemeContext.Provider value={value}>
       {children}
