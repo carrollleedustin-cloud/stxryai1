@@ -12,6 +12,9 @@ import { StoryGridSkeleton } from '@/components/ui/Skeleton';
 import { staggerContainer, slideUp } from '@/lib/animations/variants';
 import { toast } from '@/lib/utils/toast';
 import ThemeToggle from '@/components/common/ThemeToggle';
+import NotificationBell from '@/components/ui/NotificationBell';
+import UserMenu from '@/components/ui/UserMenu';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 
 interface FilterOptions {
   genres: string[];
@@ -134,16 +137,10 @@ export default function StoryLibraryInteractive() {
             >
               Story Library
             </motion.h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/user-dashboard')}
-                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Back to Dashboard
-              </motion.button>
+              <NotificationBell />
+              <UserMenu />
             </div>
           </div>
         </div>
@@ -203,6 +200,7 @@ export default function StoryLibraryInteractive() {
           </div>
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 }

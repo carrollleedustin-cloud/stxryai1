@@ -13,6 +13,9 @@ import DailyChoiceLimitWidget from './DailyChoiceLimitWidget';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import { DashboardWidgetSkeleton } from '@/components/ui/Skeleton';
 import { staggerContainer, slideUp } from '@/lib/animations/variants';
+import NotificationBell from '@/components/ui/NotificationBell';
+import UserMenu from '@/components/ui/UserMenu';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 
 export default function DashboardInteractive() {
   const router = useRouter();
@@ -101,7 +104,6 @@ export default function DashboardInteractive() {
               </p>
             </motion.div>
             <div className="flex items-center gap-3">
-              <ThemeToggle />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -110,14 +112,9 @@ export default function DashboardInteractive() {
               >
                 Browse Stories
               </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSignOut}
-                className="px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/90 transition-colors"
-              >
-                Sign Out
-              </motion.button>
+              <ThemeToggle />
+              <NotificationBell />
+              <UserMenu />
             </div>
           </div>
         </div>
@@ -198,6 +195,7 @@ export default function DashboardInteractive() {
           </div>
         )}
       </div>
+      <ScrollToTop />
     </div>
   );
 }
