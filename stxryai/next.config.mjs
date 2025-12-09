@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+
+function name(originName) {
+  const match = originName.match(/([^/]+)\.entry\.js$/);
+  return match ? match[1] : originName;
+}
+
 const nextConfig = {
   productionBrowserSourceMaps: false, // Disable for production performance
   distDir: process.env.DIST_DIR || '.next',
