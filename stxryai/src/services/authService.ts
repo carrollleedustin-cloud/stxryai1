@@ -30,19 +30,54 @@ export const authService = {
   }) {
     ensureSupabaseConfigured();
     const supabase = getSupabase();
-    
+
+    // Validate inputs
+    if (!email || !password || !username || !displayName) {
+      throw new Error('All fields are required');
+    }
+
+    if (password.length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+
+    // Check if username already exists
+    const { data: existingUsername } = await supabase
+      .from('user_profiles')
+      .select('username')
+      .eq('username', username.toLowerCase())
+      .single();
+
+    if (existingUsername) {
+      throw new Error('Username already taken. Please choose another.');
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          username,
+          username: username.toLowerCase(),
           display_name: displayName,
         },
       },
     });
 
-    if (error) throw error;
+    if (error) {
+      // Provide more specific error messages
+      if (error.message.includes('User already registered')) {
+        throw new Error('This email is already registered. Please sign in instead.');
+      }
+      if (error.message.includes('invalid email')) {
+        throw new Error('Please provide a valid email address.');
+      }
+      throw error;
+    }
+
+    // Wait a moment for the trigger to create the profile
+    if (data.user) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
     return data;
   },
 
@@ -187,15 +222,15 @@ export const authService = {
     if (!getIsSupabaseConfigured()) {
       return null;
     }
-    
+
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('user_id', userId)
+        .eq('id', userId)
         .single();
-      
+
       if (error) throw error;
       return data;
     } catch (error) {

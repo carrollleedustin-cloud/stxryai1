@@ -105,7 +105,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     if (authUser) {
       setUser(authUser as User);
-      await loadUserProfile(authUser.id);
+
+      // Try to load profile with retries (trigger might take a moment)
+      let profileLoaded = false;
+      let retries = 3;
+
+      while (!profileLoaded && retries > 0) {
+        const profile = await authService.getUserProfile(authUser.id);
+        if (profile) {
+          setProfile(profile);
+          profileLoaded = true;
+        } else {
+          retries--;
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+      }
+
+      if (!profileLoaded) {
+        console.warn('Profile not loaded immediately after signup');
+      }
     }
   }
 

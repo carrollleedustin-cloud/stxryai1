@@ -46,6 +46,32 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
     e.preventDefault();
     setError('');
 
+    // Validate all fields
+    if (!formData.username.trim()) {
+      setError('Username is required');
+      return;
+    }
+
+    if (formData.username.length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
+      setError('Username can only contain letters, numbers, and underscores');
+      return;
+    }
+
+    if (!formData.displayName.trim()) {
+      setError('Display name is required');
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -53,6 +79,16 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
 
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setError('You must accept the Terms and Conditions');
+      return;
+    }
+
+    if (!formData.isAdult) {
+      setError('You must be 18 years or older to create an account');
       return;
     }
 
@@ -66,15 +102,16 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
     setLoading(true);
 
     try {
-      await signUp(formData.email, formData.password, formData.username, formData.displayName);
+      await signUp(formData.email.trim(), formData.password, formData.username.trim(), formData.displayName.trim());
       router.push('/user-dashboard');
     } catch (err: unknown) {
       const error = err as Error;
       if (error?.message?.includes('Failed to fetch') ||
           error?.message?.includes('AuthRetryableFetchError')) {
         setError('Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.');
-      } else if (error?.message?.includes('already registered')) {
-        setError('This email is already registered. Please sign in instead.');
+      } else if (error?.message?.includes('already registered') ||
+                 error?.message?.includes('already taken')) {
+        setError(error.message);
       } else {
         setError(error?.message || 'Failed to create account. Please try again.');
       }
