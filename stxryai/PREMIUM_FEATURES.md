@@ -4,16 +4,19 @@
 
 ### Free Tier - $0/month
 **Perfect for casual readers**
-- 5 story choices per day
+- ⚡ **20 Energy** (refills slowly)
+- 🔄 **1 energy per 3 hours** regeneration
 - Access to public stories
 - Basic community features
 - Reading statistics
 - Story bookmarks
 - Mobile app access
+- Ad-supported experience
 
-### Premium - $5/month ⭐ Most Popular
-**Save 50% - was $9.99**
-- ✅ **Unlimited story choices**
+### Premium - $7.14/month ⭐ Most Popular
+**Save 45% - was $12.99**
+- ⚡ **100 Energy** (refills 2x faster)
+- 🔄 **1 energy per 90 minutes** (2x faster than free)
 - ✅ **Ad-free experience**
 - ✅ **Exclusive premium stories**
 - ✅ **Custom choice writing**
@@ -26,6 +29,8 @@
 
 ### Creator Pro - $15/month
 **Save 40% - was $24.99**
+- ⚡ **Unlimited Energy** (no limits!)
+- 💎 **0 cost per story choice**
 - ✅ **Everything in Premium**
 - ✅ **AI writing assistant**
 - ✅ **Advanced story creation tools**
