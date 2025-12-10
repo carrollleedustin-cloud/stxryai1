@@ -23,44 +23,51 @@ const PricingSection = () => {
         "Access to public stories",
         "Basic community features",
         "Reading statistics",
-        "Story bookmarks"
+        "Story bookmarks",
+        "Mobile app access"
       ],
       ctaText: "Start Free",
       ctaLink: "/authentication"
     },
     {
       name: "Premium",
-      price: "$9.99",
-      originalPrice: "$14.99",
+      price: "$5",
+      originalPrice: "$9.99",
       description: "Unlimited access for dedicated story enthusiasts",
       features: [
         "Unlimited story choices",
         "Exclusive premium stories",
-        "Custom choice writing",
-        "AI story branch visualization",
-        "Priority story generation",
         "Ad-free experience",
-        "Advanced analytics",
-        "Early access to new features"
+        "Custom choice writing",
+        "AI story suggestions",
+        "Reading mode customization",
+        "Download stories offline",
+        "Priority support",
+        "Advanced reading analytics",
+        "Story collections & playlists"
       ],
       isPopular: true,
       ctaText: "Start Premium Trial",
       ctaLink: "/authentication"
     },
     {
-      name: "Creator",
-      price: "$19.99",
-      originalPrice: "$29.99",
-      description: "For authors and collaborative storytellers",
+      name: "Creator Pro",
+      price: "$15",
+      originalPrice: "$24.99",
+      description: "For authors and professional storytellers",
       features: [
         "Everything in Premium",
         "AI writing assistant",
-        "Story creation tools",
-        "Co-authoring features",
+        "Advanced story creation tools",
+        "Unlimited story publishing",
+        "Co-authoring & collaboration",
         "Creator analytics dashboard",
-        "Version control system",
-        "Custom story themes",
-        "Revenue sharing program"
+        "Version control & branching",
+        "Custom story themes & styling",
+        "Monetization tools",
+        "API access for integrations",
+        "White-label options",
+        "Priority AI generation"
       ],
       ctaText: "Become a Creator",
       ctaLink: "/authentication"
