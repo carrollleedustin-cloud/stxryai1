@@ -146,7 +146,7 @@ export default function VideoLogo({
             className="absolute bottom-8 right-8 px-6 py-3 bg-background/50 backdrop-blur-sm border border-border rounded-lg text-foreground hover:bg-background/80 transition-colors"
           >
             Skip Intro →
-          </button>
+          </motion.button>
         )}
 
         {/* Progress Bar */}
