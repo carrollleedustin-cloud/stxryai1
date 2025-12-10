@@ -19,7 +19,8 @@ const PricingSection = () => {
       price: "$0",
       description: "Perfect for casual readers exploring interactive fiction",
       features: [
-        "5 story choices per day",
+        "20 Energy (refills slowly)",
+        "1 energy per 3 hours",
         "Access to public stories",
         "Basic community features",
         "Reading statistics",
@@ -31,11 +32,11 @@ const PricingSection = () => {
     },
     {
       name: "Premium",
-      price: "$5",
-      originalPrice: "$9.99",
+      price: "$7.14",
+      originalPrice: "$12.99",
       description: "Unlimited access for dedicated story enthusiasts",
       features: [
-        "Unlimited story choices",
+        "100 Energy (refills 2x faster)",
         "Exclusive premium stories",
         "Ad-free experience",
         "Custom choice writing",
@@ -56,6 +57,7 @@ const PricingSection = () => {
       originalPrice: "$24.99",
       description: "For authors and professional storytellers",
       features: [
+        "Unlimited Energy (no limits!)",
         "Everything in Premium",
         "AI writing assistant",
         "Advanced story creation tools",
@@ -66,8 +68,7 @@ const PricingSection = () => {
         "Custom story themes & styling",
         "Monetization tools",
         "API access for integrations",
-        "White-label options",
-        "Priority AI generation"
+        "White-label options"
       ],
       ctaText: "Become a Creator",
       ctaLink: "/authentication"
