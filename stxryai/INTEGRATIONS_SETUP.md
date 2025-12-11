@@ -284,8 +284,8 @@ NODE_ENV=development
 
 ### Production Environment
 
-1. **Vercel:**
-   - Go to Project Settings → Environment Variables
+1. **Netlify:**
+   - Go to Site Settings → Environment Variables
    - Add all variables from `.env.example`
    - Use production keys (not test keys)
 
@@ -310,29 +310,86 @@ NODE_ENV=development
 - [ ] OAuth providers configured (optional)
 - [ ] Analytics properties created
 
-### Deploy to Vercel
+### Deploy to Netlify
 
-1. **Connect Repository:**
+1. **Install Netlify CLI (Optional):**
    ```bash
-   vercel --prod
+   npm install -g netlify-cli
+   netlify login
    ```
 
-2. **Set Environment Variables:**
-   - Go to Vercel Dashboard
-   - Project Settings → Environment Variables
-   - Add all production variables
+2. **Connect Repository:**
+   - Go to [Netlify Dashboard](https://app.netlify.com)
+   - Click "Add new site" → "Import an existing project"
+   - Connect your GitHub repository
+   - Or deploy via CLI:
+     ```bash
+     netlify init
+     netlify deploy --prod
+     ```
 
-3. **Configure Domains:**
-   - Add custom domain in Vercel
-   - Update DNS records
-   - Enable HTTPS
+3. **Configure Build Settings:**
+   - **Build command:** `npm run build`
+   - **Publish directory:** `.next`
+   - **Framework:** Next.js (auto-detected)
 
-4. **Post-Deployment:**
+4. **Set Environment Variables:**
+   - Go to Site Settings → Environment Variables
+   - Click "Add a variable" for each variable in `.env.example`
+   - Add all production variables (not test keys!)
+   - Variables are encrypted and secure
+
+5. **Enable Next.js Runtime:**
+   - Netlify automatically detects Next.js
+   - Essential Next.js runtime is enabled by default
+   - For advanced features, install `@netlify/plugin-nextjs`:
+     ```bash
+     npm install -D @netlify/plugin-nextjs
+     ```
+   - Create `netlify.toml`:
+     ```toml
+     [[plugins]]
+       package = "@netlify/plugin-nextjs"
+     ```
+
+6. **Configure Domains:**
+   - Go to Domain Settings
+   - Add custom domain (e.g., stxryai.com)
+   - Update DNS records at your domain provider:
+     - Add A record pointing to Netlify's load balancer
+     - Or add CNAME record pointing to your-site.netlify.app
+   - HTTPS is enabled automatically (free SSL via Let's Encrypt)
+
+7. **Set Up Redirects (for Next.js rewrites):**
+   Create `public/_redirects` file:
+   ```
+   # API routes
+   /api/*  /.netlify/functions/:splat  200
+
+   # Next.js rewrites
+   /*    /index.html   200
+   ```
+
+8. **Configure Functions (for API routes):**
+   - Netlify automatically converts Next.js API routes to serverless functions
+   - No additional configuration needed
+   - Functions are deployed to `/.netlify/functions/`
+
+9. **Post-Deployment:**
    - Test authentication flow
    - Test payment flow (use test mode first)
    - Verify email sending
    - Check analytics tracking
    - Test file uploads
+   - Verify webhook endpoints work:
+     - Stripe webhook: `https://yourdomain.com/api/webhooks/stripe`
+   - Check all API routes are functioning
+
+10. **Deploy Previews (Optional):**
+    - Enable Deploy Previews for pull requests
+    - Go to Site Settings → Build & Deploy → Deploy Previews
+    - Choose "Any pull request against your production branch"
+    - Each PR gets a unique preview URL
 
 ### Database Migrations
 
