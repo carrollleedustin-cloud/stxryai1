@@ -1,5 +1,5 @@
 import { render, RenderOptions } from '@testing-library/react';
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 // Mock data generators for testing
 

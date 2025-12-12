@@ -235,14 +235,9 @@ export function AnimatedStatCounter({
     <motion.span
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      transition={{ duration, ease: 'easeOut' }}
     >
-      <motion.span
-        initial={{ textContent: '0' }}
-        animate={{ textContent: value.toString() }}
-        transition={{ duration, ease: 'easeOut' }}
-      >
-        {prefix}{value}{suffix}
-      </motion.span>
+      {prefix}{value}{suffix}
     </motion.span>
   );
 }

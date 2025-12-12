@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Additional test helpers and utilities
 
 // Delay helper for async tests

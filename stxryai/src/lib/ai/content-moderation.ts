@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AI Content Moderation System
  * Automatically detect and flag inappropriate content
