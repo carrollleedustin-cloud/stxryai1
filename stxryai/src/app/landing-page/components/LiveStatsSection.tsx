@@ -75,8 +75,8 @@ export default function LiveStatsSection() {
             key={i}
             className="absolute w-1 h-1 bg-purple-500 rounded-full"
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : Math.random() * 1200,
+              y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : Math.random() * 800,
             }}
             animate={{
               y: [null, Math.random() * -200],
