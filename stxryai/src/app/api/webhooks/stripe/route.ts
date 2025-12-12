@@ -54,9 +54,10 @@ export async function POST(req: NextRequest) {
           subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
         };
 
+        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
-          .update(updateData as any)
+          .update(updateData)
           .eq('id', user.id);
 
         break;
@@ -86,11 +87,11 @@ export async function POST(req: NextRequest) {
           subscription_end_date: null,
         };
 
+        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
-          .update(downgradeData as any)
+          .update(downgradeData)
           .eq('id', user.id);
-
         break;
       }
 
@@ -105,11 +106,11 @@ export async function POST(req: NextRequest) {
         }
 
         // Update user with Stripe customer ID
+        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
-          .update({ stripe_customer_id: customerId } as any)
+          .update({ stripe_customer_id: customerId })
           .eq('id', userId);
-
         break;
       }
 
