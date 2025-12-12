@@ -12,7 +12,6 @@ interface RegisterFormProps {
     password: string;
     confirmPassword: string;
     acceptTerms: boolean;
-    isAdult: boolean;
   }) => void;
   isLoading?: boolean;
   error?: string;
@@ -28,7 +27,6 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
     password: '',
     confirmPassword: '',
     acceptTerms: false,
-    isAdult: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -87,10 +85,7 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
       return;
     }
 
-    if (!formData.isAdult) {
-      setError('You must be 18 years or older to create an account');
-      return;
-    }
+    // Age verification removed - platform now supports all ages with appropriate content filtering
 
     // If external onSubmit is provided, use that
     if (onSubmit) {
@@ -232,7 +227,7 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <label className="flex items-center">
           <input
             type="checkbox"
@@ -244,17 +239,13 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
           />
           <span className="ml-2 text-sm text-gray-600">I accept the Terms and Conditions</span>
         </label>
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            name="isAdult"
-            checked={formData.isAdult}
-            onChange={handleChange}
-            required
-            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-          />
-          <span className="ml-2 text-sm text-gray-600">I am 18 years or older</span>
-        </label>
+
+        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-xs text-blue-800">
+            <strong>Family-Friendly Platform:</strong> StxryAI welcomes readers of all ages!
+            We offer content from children's stories to adult fiction. Age-appropriate content filtering is available in your account settings.
+          </p>
+        </div>
       </div>
 
       <button

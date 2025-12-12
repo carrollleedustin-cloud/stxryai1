@@ -61,7 +61,6 @@ const AuthenticationInteractive = () => {
     password: string;
     confirmPassword: string;
     acceptTerms: boolean;
-    isAdult: boolean;
   }) => {
     setIsLoading(true);
     setError('');

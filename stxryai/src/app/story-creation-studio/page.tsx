@@ -5,8 +5,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/common/Header';
 import { createStoryDraft, addChapter, addChoicesToChapter, getStoryForEditing, publishStory, getUserDrafts, type StoryMetadata, type StoryNode, type ChoiceNode } from '@/services/storyCreationService';
+import EnhancedAIAssistant from '@/components/ai/EnhancedAIAssistant';
+import StoryIdeaGenerator from '@/components/ai/StoryIdeaGenerator';
 
-type EditorMode = 'metadata' | 'chapters' | 'choices' | 'preview';
+type EditorMode = 'metadata' | 'chapters' | 'choices' | 'preview' | 'ai-tools';
 
 export default function StoryCreationStudioPage() {
   const { user, loading: authLoading } = useAuth();
@@ -257,10 +259,11 @@ export default function StoryCreationStudioPage() {
         )}
 
         {/* Mode Tabs */}
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-gray-200 overflow-x-auto">
           <nav className="flex space-x-8">
             {[
               { id: 'metadata', label: 'Story Details', icon: '📝' },
+              { id: 'ai-tools', label: 'AI Tools', icon: '✨' },
               { id: 'chapters', label: 'Chapters', icon: '📚' },
               { id: 'choices', label: 'Choices', icon: '🔀' },
               { id: 'preview', label: 'Preview & Publish', icon: '👁️' }
@@ -268,7 +271,7 @@ export default function StoryCreationStudioPage() {
               <button
                 key={tab.id}
                 onClick={() => setMode(tab.id as EditorMode)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center space-x-2 whitespace-nowrap ${
                   mode === tab.id
                     ? 'border-blue-600 text-blue-600' :'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
@@ -414,6 +417,55 @@ export default function StoryCreationStudioPage() {
           </div>
         )}
 
+        {/* AI Tools Mode */}
+        {mode === 'ai-tools' && (
+          <div className="space-y-8">
+            {/* Story Idea Generator */}
+            <div className="bg-white rounded-lg shadow p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Story Idea Generator</h2>
+                <p className="text-gray-600">Need inspiration? Let AI generate complete story concepts for you</p>
+              </div>
+              <StoryIdeaGenerator />
+            </div>
+
+            {/* AI Writing Assistant */}
+            <div className="bg-white rounded-lg shadow p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">AI Writing Assistant</h2>
+                <p className="text-gray-600">Get AI-powered suggestions to improve, continue, rewrite, or expand your story</p>
+              </div>
+              <EnhancedAIAssistant
+                initialText={chapterContent.content}
+                onTextChange={(text) => setChapterContent({ ...chapterContent, content: text })}
+              />
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onClick={() => setMode('metadata')}
+                  className="p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-left"
+                >
+                  <div className="text-2xl mb-2">📝</div>
+                  <div className="font-medium text-gray-900">Create New Story</div>
+                  <div className="text-sm text-gray-600">Start with story details</div>
+                </button>
+                <button
+                  onClick={() => setMode('chapters')}
+                  className="p-4 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-left"
+                >
+                  <div className="text-2xl mb-2">📚</div>
+                  <div className="font-medium text-gray-900">Write Chapters</div>
+                  <div className="text-sm text-gray-600">Add content to your story</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Chapters Mode */}
         {mode === 'chapters' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -464,14 +516,17 @@ export default function StoryCreationStudioPage() {
                 </div>
               </div>
 
-              {/* AI Assistant Placeholder */}
+              {/* AI Assistant Link */}
               <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
                 <h3 className="font-medium text-gray-900 mb-2 flex items-center">
-                  <span className="mr-2">🤖</span> AI Writing Assistant
+                  <span className="mr-2">✨</span> AI Writing Assistant
                 </h3>
-                <p className="text-sm text-gray-600 mb-3">Get AI-powered suggestions for your story</p>
-                <button className="text-sm bg-white px-4 py-2 rounded border border-purple-300 hover:bg-purple-50 transition-colors">
-                  Generate Suggestions
+                <p className="text-sm text-gray-600 mb-3">Get AI-powered suggestions to improve, continue, rewrite, or expand your story</p>
+                <button
+                  onClick={() => setMode('ai-tools')}
+                  className="text-sm bg-white px-4 py-2 rounded border border-purple-300 hover:bg-purple-50 hover:shadow-md transition-all font-medium"
+                >
+                  Open AI Tools →
                 </button>
               </div>
             </div>
