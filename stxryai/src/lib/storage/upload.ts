@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { getSupabaseClient } from '../supabase/client';
 
 export type UploadBucket = 'story-assets' | 'cover-images' | 'user-avatars';

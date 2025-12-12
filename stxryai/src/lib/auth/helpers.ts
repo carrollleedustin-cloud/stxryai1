@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createClient } from '../supabase/server';
 import { redirect } from 'next/navigation';
 

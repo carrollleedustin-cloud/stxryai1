@@ -18,7 +18,11 @@
       "Bash(git config:*)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
