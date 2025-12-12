@@ -8,7 +8,6 @@ function name(originName) {
 const nextConfig = {
   productionBrowserSourceMaps: false, // Disable for production performance
   distDir: process.env.DIST_DIR || '.next',
-  output: 'export',
 
   // Performance Optimizations
   compress: true,
