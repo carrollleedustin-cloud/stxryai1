@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
           .update({
             tier,
             stripe_subscription_id: subscription.id,
-            subscription_status: subscription.status,
+            subscription_status: String(subscription.status),
             subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
           })
           .eq('id', user.id);
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
         await supabase
           .from('users')
           .update({
-            tier: 'free',
+            tier: 'free' as const,
             stripe_subscription_id: null,
             subscription_status: 'canceled',
             subscription_end_date: null,
