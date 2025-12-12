@@ -209,7 +209,7 @@ function SuggestionsMode({
 
       {suggestions.length > 0 && (
         <div className="space-y-3">
-          {suggestions.map((suggestion, idx) => (
+          {suggestions.map((suggestion: any, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
