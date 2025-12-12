@@ -47,14 +47,16 @@ export async function POST(req: NextRequest) {
         }
 
         // Update user subscription
+        const updateData = {
+          tier,
+          stripe_subscription_id: subscription.id,
+          subscription_status: String(subscription.status),
+          subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+        };
+
         await supabase
           .from('users')
-          .update({
-            tier,
-            stripe_subscription_id: subscription.id,
-            subscription_status: String(subscription.status),
-            subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
-          })
+          .update(updateData as any)
           .eq('id', user.id);
 
         break;
@@ -77,14 +79,16 @@ export async function POST(req: NextRequest) {
         }
 
         // Downgrade to free tier
+        const downgradeData = {
+          tier: 'free' as const,
+          stripe_subscription_id: null,
+          subscription_status: 'canceled',
+          subscription_end_date: null,
+        };
+
         await supabase
           .from('users')
-          .update({
-            tier: 'free' as const,
-            stripe_subscription_id: null,
-            subscription_status: 'canceled',
-            subscription_end_date: null,
-          })
+          .update(downgradeData as any)
           .eq('id', user.id);
 
         break;
@@ -103,9 +107,7 @@ export async function POST(req: NextRequest) {
         // Update user with Stripe customer ID
         await supabase
           .from('users')
-          .update({
-            stripe_customer_id: customerId,
-          })
+          .update({ stripe_customer_id: customerId } as any)
           .eq('id', userId);
 
         break;
