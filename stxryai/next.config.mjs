@@ -1,4 +1,9 @@
 /** @type {import('next').NextConfig} */
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function name(originName) {
   const match = originName.match(/([^/]+)\.entry\.js$/);
@@ -53,6 +58,12 @@ const nextConfig = {
 
   // Webpack Optimizations
   webpack(config, { isServer }) {
+    // Ensure @ alias resolves correctly
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, 'src'),
+    };
+
     // Custom loader
     config.module.rules.push({
       test: /\.(jsx|tsx)$/,
