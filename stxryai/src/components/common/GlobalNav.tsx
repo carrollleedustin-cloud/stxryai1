@@ -12,8 +12,8 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
-import NotificationBell from './NotificationBell';
-import UserMenu from './UserMenu';
+import NotificationBell from '@/components/ui/NotificationBell';
+import UserMenu from '@/components/ui/UserMenu';
 
 export default function GlobalNav() {
   const [isScrolled, setIsScrolled] = useState(false);

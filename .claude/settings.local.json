@@ -12,7 +12,13 @@
       "Bash(cat:*)",
       "Bash(echo:*)",
       "Bash(npx tsc:*)",
-      "Bash(./node_modules/.bin/tsc:*)"
+      "Bash(./node_modules/.bin/tsc:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(git config:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git ls-tree:*)"
     ],
     "deny": [],
     "ask": []
