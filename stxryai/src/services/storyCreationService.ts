@@ -39,11 +39,11 @@ export const createStoryDraft = async (metadata: StoryMetadata, authorId: string
         description: metadata.description,
         genre: metadata.genre,
         difficulty: metadata.difficulty,
-        cover_image_url: metadata.coverImageUrl,
+        cover_image: metadata.coverImageUrl,
         is_premium: metadata.isPremium,
         estimated_duration: metadata.estimatedDuration,
-        author_id: authorId,
-        status: 'draft'
+        user_id: authorId,
+        is_published: false
       })
       .select()
       .single();
@@ -60,7 +60,7 @@ export const createStoryDraft = async (metadata: StoryMetadata, authorId: string
 export const addChapter = async (storyId: string, chapter: Omit<StoryNode, 'id' | 'choices'>) => {
   try {
     const { data, error } = await supabase
-      .from('story_chapters')
+      .from('chapters')
       .insert({
         story_id: storyId,
         title: chapter.title,
@@ -91,14 +91,13 @@ export const addChoicesToChapter = async (chapterId: string, choices: Omit<Choic
   try {
     const choicesData = choices.map(choice => ({
       chapter_id: chapterId,
-      choice_text: choice.choiceText,
-      consequence_text: choice.consequenceText,
-      choice_order: choice.choiceOrder,
+      text: choice.choiceText,
+      position: choice.choiceOrder,
       next_chapter_id: choice.nextChapterId
     }));
 
     const { data, error } = await supabase
-      .from('story_choices')
+      .from('choices')
       .insert(choicesData)
       .select();
 
@@ -122,10 +121,10 @@ export const getStoryForEditing = async (storyId: string) => {
     if (storyError) throw storyError;
 
     const { data: chapters, error: chaptersError } = await supabase
-      .from('story_chapters')
+      .from('chapters')
       .select(`
         *,
-        story_choices (*)
+        choices (*)
       `)
       .eq('story_id', storyId)
       .order('chapter_number', { ascending: true });
@@ -143,7 +142,7 @@ export const getStoryForEditing = async (storyId: string) => {
 export const updateChapter = async (chapterId: string, updates: Partial<StoryNode>) => {
   try {
     const { data, error } = await supabase
-      .from('story_chapters')
+      .from('chapters')
       .update({
         title: updates.title,
         content: updates.content
@@ -186,8 +185,9 @@ export const publishStory = async (storyId: string) => {
   try {
     const { data, error } = await supabase
       .from('stories')
-      .update({ 
-        status: 'published',
+      .update({
+        is_published: true,
+        published_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       .eq('id', storyId)
@@ -207,7 +207,7 @@ export const deleteChapter = async (chapterId: string) => {
   try {
     // First delete all choices associated with this chapter
     const { error: choicesError } = await supabase
-      .from('story_choices')
+      .from('choices')
       .delete()
       .eq('chapter_id', chapterId);
 
@@ -215,7 +215,7 @@ export const deleteChapter = async (chapterId: string) => {
 
     // Then delete the chapter
     const { error } = await supabase
-      .from('story_chapters')
+      .from('chapters')
       .delete()
       .eq('id', chapterId);
 
@@ -233,8 +233,8 @@ export const getUserDrafts = async (authorId: string) => {
     const { data, error } = await supabase
       .from('stories')
       .select('*')
-      .eq('author_id', authorId)
-      .eq('status', 'draft')
+      .eq('user_id', authorId)
+      .eq('is_published', false)
       .order('updated_at', { ascending: false });
 
     if (error) throw error;

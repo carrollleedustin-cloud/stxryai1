@@ -22,7 +22,16 @@
       "Bash(node:*)",
       "Bash(grep:*)",
       "Bash(git checkout:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(if [ -f .env.local ])",
+      "Bash(then cat .env.local)",
+      "Bash(else echo \"File does not exist\")",
+      "Bash(fi)",
+      "Bash(npm run populate-db:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(NEXT_PUBLIC_SUPABASE_URL=https://lxtjkhphwihroktujzzi.supabase.co SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDkwNTk2MywiZXhwIjoyMDgwNDgxOTYzfQ.LZEKQq72rYYHDYz2s2B8QOtmomzbHu-muubCwv2Estw npx ts-node:*)",
+      "Bash(git restore:*)",
+      "Bash(npx next dev:*)"
     ],
     "deny": [],
     "ask": []

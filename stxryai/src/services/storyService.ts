@@ -12,7 +12,7 @@ export const storyService = {
     let query = supabase
       .from('stories')
       .select('*')
-      .eq('status', 'published')
+      .eq('is_published', true)
       .order('created_at', { ascending: false });
 
     if (filters?.genre && filters.genre !== 'all') {
@@ -49,7 +49,7 @@ export const storyService = {
 
   async getStoryChapters(storyId: string) {
     const { data, error } = await supabase
-      .from('story_chapters')
+      .from('chapters')
       .select('*')
       .eq('story_id', storyId)
       .order('chapter_number', { ascending: true });
@@ -60,10 +60,10 @@ export const storyService = {
 
   async getChapterChoices(chapterId: string) {
     const { data, error } = await supabase
-      .from('story_choices')
+      .from('choices')
       .select('*')
       .eq('chapter_id', chapterId)
-      .order('choice_order', { ascending: true });
+      .order('position', { ascending: true });
 
     if (error) throw error;
     return data;

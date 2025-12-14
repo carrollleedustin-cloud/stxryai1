@@ -41,7 +41,7 @@ export const socialService = {
     try {
       // Get user profile stats
       const { data: profile, error: profileError } = await supabase
-        .from('user_profiles')
+        .from('users')
         .select('stories_completed, total_reading_time, choices_made')
         .eq('id', userId)
         .single();
@@ -81,7 +81,7 @@ export const socialService = {
   async searchUsers(searchTerm: string, currentUserId: string, limit: number = 20) {
     try {
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('users')
         .select('id, username, display_name, avatar_url, subscription_tier')
         .or(`username.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`)
         .neq('id', currentUserId)
@@ -99,7 +99,7 @@ export const socialService = {
   async getReadingLeaderboard(timeframe: 'weekly' | 'monthly' | 'all-time' = 'all-time', limit: number = 10): Promise<LeaderboardEntry[]> {
     try {
       let query = supabase
-        .from('user_profiles')
+        .from('users')
         .select('id, username, display_name, avatar_url, stories_completed')
         .order('stories_completed', { ascending: false })
         .limit(limit);

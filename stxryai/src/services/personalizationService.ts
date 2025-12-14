@@ -300,7 +300,7 @@ export async function getReceivedFeedback(userId: string) {
   try {
     const { data, error } = await supabase
       .from('reader_feedback')
-      .select('*, giver:user_profiles!giver_user_id(username, display_name, avatar_url)')
+      .select('*, giver:users!giver_user_id(username, display_name, avatar_url)')
       .eq('receiver_user_id', userId)
       .order('created_at', { ascending: false });
 

@@ -42,7 +42,7 @@ export const authService = {
 
     // Check if username already exists
     const { data: existingUsername } = await supabase
-      .from('user_profiles')
+      .from('users')
       .select('username')
       .eq('username', username.toLowerCase())
       .single();
@@ -226,7 +226,7 @@ export const authService = {
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('users')
         .select('*')
         .eq('id', userId)
         .single();
@@ -237,6 +237,30 @@ export const authService = {
       console.error('Error loading user profile:', error);
       return null;
     }
+  },
+
+  async updateUserProfile(userId: string, updates: { display_name?: string; username?: string; bio?: string }) {
+    ensureSupabaseConfigured();
+    const supabase = getSupabase();
+
+    if (!userId || !updates) {
+      throw new Error('User ID and updates are required');
+    }
+
+    const { data, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      if (error.message.includes('duplicate key value violates unique constraint "users_username_key"')) {
+        throw new Error('Username already taken. Please choose another.');
+      }
+      throw error;
+    }
+    return data;
   },
 
   async resetPassword(email: string) {

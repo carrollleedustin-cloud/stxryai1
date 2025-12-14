@@ -1,9 +1,9 @@
-// @ts-nocheck
 import { createClient } from '../supabase/server';
 import { redirect } from 'next/navigation';
+import { UserProfile, Achievement, UserAchievement, Notification } from '@/types/database';
 
 // Get current user from server
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<UserProfile | null> {
   const supabase = createClient();
 
   const {
@@ -18,15 +18,17 @@ export async function getCurrentUser() {
   // Get user profile
   const { data: profile } = await supabase
     .from('users')
-    .select('*')
+    .select(
+      'id, email, username, display_name, avatar_url, bio, tier, xp, level, energy, max_energy, stripe_customer_id, stripe_subscription_id, subscription_status, subscription_end_date, created_at, updated_at'
+    )
     .eq('id', user.id)
     .single();
 
-  return profile;
+  return profile as UserProfile | null;
 }
 
 // Require authentication (redirect if not authenticated)
-export async function requireAuth() {
+export async function requireAuth(): Promise<UserProfile> {
   const user = await getCurrentUser();
 
   if (!user) {
@@ -37,7 +39,7 @@ export async function requireAuth() {
 }
 
 // Check if user has specific tier
-export async function requireTier(tier: 'premium' | 'creator_pro') {
+export async function requireTier(tier: 'premium' | 'creator_pro'): Promise<UserProfile> {
   const user = await requireAuth();
 
   if (user.tier === 'free') {
@@ -52,7 +54,7 @@ export async function requireTier(tier: 'premium' | 'creator_pro') {
 }
 
 // Check if user is story owner
-export async function requireStoryOwnership(storyId: string) {
+export async function requireStoryOwnership(storyId: string): Promise<UserProfile> {
   const user = await requireAuth();
   const supabase = createClient();
 
@@ -70,7 +72,7 @@ export async function requireStoryOwnership(storyId: string) {
 }
 
 // Check energy for reading
-export async function checkEnergy() {
+export async function checkEnergy(): Promise<boolean> {
   const user = await requireAuth();
 
   if (user.tier === 'premium' || user.tier === 'creator_pro') {
@@ -81,7 +83,7 @@ export async function checkEnergy() {
 }
 
 // Consume energy
-export async function consumeEnergy(amount = 1) {
+export async function consumeEnergy(amount = 1): Promise<boolean> {
   const user = await requireAuth();
 
   if (user.tier === 'premium' || user.tier === 'creator_pro') {
@@ -103,7 +105,7 @@ export async function consumeEnergy(amount = 1) {
 }
 
 // Grant XP and level up
-export async function grantXP(userId: string, xpAmount: number) {
+export async function grantXP(userId: string, xpAmount: number): Promise<boolean> {
   const supabase = createClient();
 
   const { data: user } = await supabase
@@ -142,7 +144,7 @@ export async function checkAchievements(userId: string, type: string, value: num
 
   if (!achievements) return;
 
-  for (const achievement of achievements) {
+  for (const achievement of achievements as Achievement[]) {
     if (value >= achievement.requirement_value) {
       // Check if already unlocked
       const { data: userAchievement } = await supabase
@@ -161,7 +163,7 @@ export async function checkAchievements(userId: string, type: string, value: num
             achievement_id: achievement.id,
             progress: achievement.requirement_value,
             unlocked_at: new Date().toISOString(),
-          });
+          } as UserAchievement);
 
         // Grant XP reward
         await grantXP(userId, achievement.xp_reward);
@@ -173,7 +175,7 @@ export async function checkAchievements(userId: string, type: string, value: num
           title: 'Achievement Unlocked!',
           message: `You unlocked: ${achievement.title}`,
           link: '/achievements',
-        });
+        } as Omit<Notification, 'id' | 'created_at' | 'read'>);
       }
     }
   }

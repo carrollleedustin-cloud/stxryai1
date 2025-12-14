@@ -42,7 +42,7 @@ interface Profile {
 export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
   try {
     const { data: profiles, error: profileError } = await supabase
-      .from('user_profiles')
+      .from('users')
       .select('id, subscription_tier');
     
     if (profileError) throw profileError;
@@ -54,7 +54,7 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
     if (storyError) throw storyError;
 
     const activeUsers = profiles?.length || 0;
-    const totalStories = stories?.filter((s: Story) => s.status === 'published').length || 0;
+    const totalStories = stories?.filter((s: Story) => s.is_published === true).length || 0;
     const avgEngagement = stories?.reduce((acc: number, s: Story) => acc + (s.play_count || 0), 0) / (totalStories || 1);
     const premiumUsers = profiles?.filter((p: Profile) => p.subscription_tier !== 'free').length || 0;
 
@@ -74,7 +74,7 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
 export const getUserAnalytics = async (limit: number = 10) => {
   try {
     const { data, error } = await supabase
-      .from('user_profiles')
+      .from('users')
       .select('id, username, display_name, subscription_tier, stories_completed, total_reading_time, created_at')
       .order('stories_completed', { ascending: false })
       .limit(limit);
@@ -92,7 +92,7 @@ export const getStoryAnalytics = async (limit: number = 10) => {
   try {
     const { data, error } = await supabase
       .from('stories')
-      .select('id, title, author_id, play_count, completion_count, rating, status, created_at')
+      .select('id, title, user_id, play_count, completion_count, rating, status, created_at')
       .eq('status', 'published')
       .order('play_count', { ascending: false })
       .limit(limit);
@@ -127,7 +127,7 @@ export const updateStoryStatus = async (storyId: string, status: 'draft' | 'publ
 export const updateUserSubscription = async (userId: string, tier: 'free' | 'premium' | 'vip') => {
   try {
     const { data, error } = await supabase
-      .from('user_profiles')
+      .from('users')
       .update({ subscription_tier: tier, updated_at: new Date().toISOString() })
       .eq('id', userId)
       .select()
@@ -151,7 +151,7 @@ export const getRecentActivities = async (limit: number = 20) => {
         activity_type,
         activity_data,
         created_at,
-        user_profiles (username, display_name)
+        users (username, display_name)
       `)
       .order('created_at', { ascending: false })
       .limit(limit);

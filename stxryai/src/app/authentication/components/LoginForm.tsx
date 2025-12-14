@@ -20,6 +20,7 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Use external props if provided, otherwise use internal state
   const isLoadingState = externalLoading !== undefined ? externalLoading : loading;
@@ -47,7 +48,9 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
           error?.message?.includes('AuthRetryableFetchError')) {
         setError('Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.');
       } else if (error?.message?.includes('Invalid login credentials')) {
-        setError('Invalid email or password. Please try again.');
+        setError('Invalid email or password. If you just created your account, please check your email for a confirmation link.');
+      } else if (error?.message?.includes('Email not confirmed')) {
+        setError('Please check your email and click the confirmation link before signing in.');
       } else {
         setError(error?.message || 'Failed to sign in. Please try again.');
       }
@@ -83,13 +86,13 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {errorState && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{errorState}</p>
+        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+          <p className="text-sm text-red-400">{errorState}</p>
         </div>
       )}
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
           Email Address
         </label>
         <input
@@ -98,24 +101,33 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full px-4 py-3 text-white bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           placeholder="you@example.com"
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
           Password
         </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          placeholder="••••••••"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-3 text-white bg-white/5 border border-white/20 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-10"
+            placeholder="••••••••"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+          >
+            {showPassword ? '👁️' : '👁️‍🗨️'}
+          </button>
+        </div>
       </div>
 
       <div className="flex items-center justify-between">
@@ -124,9 +136,9 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
             type="checkbox"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+            className="w-4 h-4 text-purple-600 border-white/20 rounded focus:ring-purple-500"
           />
-          <span className="ml-2 text-sm text-gray-600">Remember me</span>
+          <span className="ml-2 text-sm text-slate-300">Remember me</span>
         </label>
         <Link href="/forgot-password" className="text-sm text-purple-600 hover:text-purple-700">
           Forgot password?
@@ -144,10 +156,10 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
       {/* Divider */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300"></div>
+          <div className="w-full border-t border-white/20"></div>
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <span className="px-2 bg-white/5 text-slate-400">Or continue with</span>
         </div>
       </div>
 
@@ -157,7 +169,7 @@ export default function LoginForm({ onSubmit, isLoading: externalLoading, error:
           type="button"
           onClick={handleGoogleSignIn}
           disabled={isLoadingState}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 bg-white/5 border border-white/20 text-slate-200 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

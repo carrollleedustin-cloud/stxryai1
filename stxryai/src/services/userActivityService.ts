@@ -9,7 +9,7 @@ interface UserActivity {
 }
 
 interface ActivityWithProfile extends UserActivity {
-  user_profiles?: {
+  users?: {
     username: string;
     display_name: string;
     avatar_url?: string;
@@ -43,7 +43,7 @@ export const userActivityService = {
   async getUserActivities(userId: string, limit: number = 20): Promise<ActivityWithProfile[]> {
     try {
       const { data, error } = await supabase
-        .from('user_activities').select(`*,user_profiles!user_id (username,display_name,avatar_url)`).eq('user_id', userId).order('created_at', { ascending: false })
+        .from('user_activities').select(`*,users!user_id (username,display_name,avatar_url)`).eq('user_id', userId).order('created_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -73,7 +73,7 @@ export const userActivityService = {
 
       // Get activities from friends and user
       const { data, error } = await supabase
-        .from('user_activities').select(`*,user_profiles!user_id (username,display_name,avatar_url)`).in('user_id', friendIds).order('created_at', { ascending: false })
+        .from('user_activities').select(`*,users!user_id (username,display_name,avatar_url)`).in('user_id', friendIds).order('created_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -215,7 +215,7 @@ export const userActivityService = {
   async getReadingLists(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('user_reading_lists').select(`*,items:reading_list_items (id,story:story_id (id,title,cover_image_url,genre,rating,author:author_id (username,display_name)))`).eq('user_id', userId).order('created_at', { ascending: false });
+        .from('user_reading_lists').select(`*,items:reading_list_items (id,story:story_id (id,title,cover_image_url,genre,rating,author:user_id (username,display_name)))`).eq('user_id', userId).order('created_at', { ascending: false });
 
       if (error) throw error;
       return data || [];
