@@ -1,5 +1,12 @@
-// @ts-nocheck
 import { getSupabaseClient } from '../supabase/client';
+
+const getSupabase = () => {
+  const supabase = getSupabaseClient();
+  if (!supabase) {
+    throw new Error('Supabase client is not available');
+  }
+  return supabase;
+};
 
 export type UploadBucket = 'story-assets' | 'cover-images' | 'user-avatars';
 
@@ -25,7 +32,7 @@ export async function uploadFile({
   upsert = false,
 }: UploadOptions): Promise<UploadResult> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     // Generate unique filename if path not provided
     const fileName = path || `${Date.now()}-${file.name}`;
@@ -100,7 +107,7 @@ export async function uploadImage({
 // Delete file from storage
 export async function deleteFile(bucket: UploadBucket, path: string): Promise<boolean> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     const { error } = await supabase.storage.from(bucket).remove([path]);
 
@@ -123,7 +130,7 @@ export async function getSignedUrl(
   expiresIn = 3600
 ): Promise<string | null> {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -144,7 +151,7 @@ export async function getSignedUrl(
 // List files in a bucket path
 export async function listFiles(bucket: UploadBucket, path?: string) {
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getSupabase();
 
     const { data, error } = await supabase.storage.from(bucket).list(path);
 
@@ -162,7 +169,7 @@ export async function listFiles(bucket: UploadBucket, path?: string) {
 
 // Get public URL
 export function getPublicUrl(bucket: UploadBucket, path: string): string {
-  const supabase = getSupabaseClient();
+  const supabase = getSupabase();
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
 }

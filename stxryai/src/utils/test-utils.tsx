@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { render, RenderOptions } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 
@@ -260,19 +259,19 @@ export const mockSupabaseClient = () => ({
 // Animation mock (for framer-motion)
 export const mockAnimations = () => {
   // Disable animations in tests
-  jest.mock('framer-motion', () => ({
-    ...jest.requireActual('framer-motion'),
-    motion: new Proxy(
-      {},
-      {
+  jest.mock('framer-motion', () => {
+    const originalModule = jest.requireActual('framer-motion');
+    return {
+      ...originalModule,
+      motion: new Proxy({}, {
         get: (_, prop) => {
           return React.forwardRef((props: any, ref) =>
             React.createElement(prop as string, { ...props, ref })
           );
         },
-      }
-    ),
-  }));
+      }),
+    };
+  });
 };
 
 // Custom matchers

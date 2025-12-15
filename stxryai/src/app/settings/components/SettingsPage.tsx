@@ -9,12 +9,15 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import GlobalNav from '@/components/common/GlobalNav';
+import { authService } from '@/services/authService';
+import { UserProfile } from '@/types/database';
+import { toast } from 'sonner';
 
 type SettingsTab = 'account' | 'preferences' | 'subscription' | 'privacy' | 'notifications';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
 
   const tabs = [
     { id: 'account', label: 'Account', icon: '👤' },
@@ -23,6 +26,14 @@ export default function SettingsPage() {
     { id: 'privacy', label: 'Privacy & Security', icon: '🔒' },
     { id: 'notifications', label: 'Notifications', icon: '🔔' },
   ];
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-pink-50/30 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-pink-50/30 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20">
@@ -67,7 +78,7 @@ export default function SettingsPage() {
               transition={{ duration: 0.3 }}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
             >
-              {activeTab === 'account' && <AccountSettings user={user} profile={profile} />}
+              {activeTab === 'account' && <AccountSettings user={user} profile={profile} refreshProfile={refreshProfile} />}
               {activeTab === 'preferences' && <PreferencesSettings />}
               {activeTab === 'subscription' && <SubscriptionSettings profile={profile} />}
               {activeTab === 'privacy' && <PrivacySettings />}
@@ -80,18 +91,35 @@ export default function SettingsPage() {
   );
 }
 
-function AccountSettings({ user, profile }: { user: any; profile: any }) {
+function AccountSettings({ user, profile, refreshProfile }: { user: any; profile: UserProfile; refreshProfile: () => Promise<void> }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: profile?.display_name || '',
+    display_name: profile?.display_name || '',
     username: profile?.username || '',
     bio: profile?.bio || '',
-    email: user?.email || '',
   });
 
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (!user) return;
+    setIsLoading(true);
+    toast.loading('Saving changes...');
+
+    try {
+      await authService.updateUserProfile(user.id, {
+        display_name: formData.display_name,
+        username: formData.username,
+        bio: formData.bio,
+      });
+      await refreshProfile();
+      toast.success('Profile updated successfully!');
+      setIsEditing(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update profile.');
+    } finally {
+      setIsLoading(false);
+      toast.dismiss();
+    }
   };
 
   return (
@@ -106,7 +134,7 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
       {/* Profile Picture */}
       <div className="flex items-center space-x-4">
         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white text-2xl font-bold">
-          {formData.displayName?.charAt(0)?.toUpperCase() || '?'}
+          {formData.display_name?.charAt(0)?.toUpperCase() || '?'}
         </div>
         <div>
           <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
@@ -126,9 +154,9 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
           </label>
           <input
             type="text"
-            value={formData.displayName}
-            onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-            disabled={!isEditing}
+            value={formData.display_name}
+            onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+            disabled={!isEditing || isLoading}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
           />
         </div>
@@ -141,7 +169,7 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
             type="text"
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-            disabled={!isEditing}
+            disabled={!isEditing || isLoading}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
           />
         </div>
@@ -152,7 +180,7 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
           </label>
           <input
             type="email"
-            value={formData.email}
+            value={user?.email || ''}
             disabled
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
           />
@@ -168,7 +196,7 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
           <textarea
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            disabled={!isEditing}
+            disabled={!isEditing || isLoading}
             rows={4}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800"
             placeholder="Tell us about yourself..."
@@ -182,12 +210,14 @@ function AccountSettings({ user, profile }: { user: any; profile: any }) {
           <>
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              disabled={isLoading}
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
             >
-              Save Changes
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </button>
             <button
               onClick={() => setIsEditing(false)}
+              disabled={isLoading}
               className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
               Cancel

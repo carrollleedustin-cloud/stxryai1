@@ -1,4 +1,3 @@
-// @ts-nocheck
 // Additional test helpers and utilities
 
 // Delay helper for async tests
@@ -96,6 +95,7 @@ export const mockDate = (dateString: string) => {
 
   global.Date = class extends originalDate {
     constructor(...args: any[]) {
+      super(...args);
       if (args.length === 0) {
         return mockDate;
       }
@@ -187,6 +187,8 @@ export const createTouchEvent = (type: string, touches: Array<{ x: number; y: nu
   return new TouchEvent(type, {
     bubbles: true,
     cancelable: true,
+    changedTouches: touchList as any,
+    targetTouches: touchList as any,
     touches: touchList as any,
   });
 };
@@ -205,8 +207,8 @@ export const getComponentState = (component: any) => {
 
 // Snapshot serializer for removing dynamic values
 export const createSnapshotSerializer = () => ({
-  test: (val: any) => val && typeof val === 'object',
-  serialize: (val: any) => {
+  test: (val: any): val is object => val && typeof val === 'object',
+  serialize: (val: any): string => {
     const cleaned = { ...val };
 
     // Remove dynamic fields
@@ -366,7 +368,7 @@ export const mockIndexedDB = () => {
 // WebSocket mock
 export class MockWebSocket {
   private listeners: Map<string, Function[]> = new Map();
-  readyState = WebSocket.OPEN;
+  readyState = 1; // WebSocket.OPEN
 
   addEventListener(event: string, callback: Function) {
     if (!this.listeners.has(event)) {
@@ -390,7 +392,7 @@ export class MockWebSocket {
   }
 
   close() {
-    this.readyState = WebSocket.CLOSED;
+    this.readyState = 3; // WebSocket.CLOSED;
   }
 
   simulateMessage(data: any) {
