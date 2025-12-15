@@ -1,11 +1,23 @@
-'use client';
-
-import { useEffect, useState, useCallback } from 'react';
-import { Command } from 'cmdk';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Icon from '@/components/ui/AppIcon';
+import { storyService } from '@/services/storyService';
+import { userService } from '@/services/userService';
+import { Story, UserProfile } from '@/types/database';
+
+// Custom hook for debouncing
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+  return debouncedValue;
+}
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -13,39 +25,63 @@ export default function CommandPalette() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { profile } = useAuth();
+  
+  const [storyResults, setStoryResults] = useState<Story[]>([]);
+  const [userResults, setUserResults] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  // Client-side only mounting
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const debouncedSearch = useDebounce(search, 300);
 
-  // Keyboard shortcut handler
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
-
-      // Close on escape
       if (e.key === 'Escape') {
         setOpen(false);
       }
     };
-
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
   }, []);
 
-  // Close on route change
   useEffect(() => {
-    setOpen(false);
-  }, [router]);
+    if (!open) {
+      setSearch('');
+      setStoryResults([]);
+      setUserResults([]);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (debouncedSearch.length < 2) {
+        setStoryResults([]);
+        setUserResults([]);
+        return;
+      }
+
+      setLoading(true);
+      const [stories, users] = await Promise.all([
+        storyService.getFilteredStories({ searchQuery: debouncedSearch, pageSize: 5 }),
+        userService.searchUsers(debouncedSearch, 5),
+      ]);
+      setStoryResults(stories);
+      setUserResults(users as UserProfile[]);
+      setLoading(false);
+    }
+    fetchData();
+  }, [debouncedSearch]);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navigate = useCallback((path: string) => {
     router.push(path);
     setOpen(false);
-    setSearch('');
   }, [router]);
 
   const toggleTheme = useCallback(() => {
@@ -53,19 +89,16 @@ export default function CommandPalette() {
     const currentIndex = themes.indexOf(theme);
     const nextTheme = themes[(currentIndex + 1) % themes.length];
     setTheme(nextTheme);
-    setOpen(false);
   }, [theme, setTheme]);
 
-  // Don't render until mounted on client
-  if (!mounted) {
-    return null;
-  }
+  if (!mounted) return null;
+
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'moderator';
 
   return (
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -73,8 +106,6 @@ export default function CommandPalette() {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={() => setOpen(false)}
           />
-
-          {/* Command Palette */}
           <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] px-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -87,17 +118,12 @@ export default function CommandPalette() {
                 className="bg-card rounded-xl shadow-2xl border border-border overflow-hidden"
                 label="Command Menu"
               >
-                {/* Search Input */}
                 <div className="flex items-center border-b border-border px-4">
-                  <Icon
-                    name="MagnifyingGlassIcon"
-                    size={20}
-                    className="text-muted-foreground"
-                  />
+                  <Icon name="MagnifyingGlassIcon" size={20} className="text-muted-foreground" />
                   <Command.Input
                     value={search}
                     onValueChange={setSearch}
-                    placeholder="Search stories, navigate, or run commands..."
+                    placeholder="Search stories, users, or commands..."
                     className="w-full py-4 px-3 bg-transparent border-0 focus:outline-none text-foreground placeholder:text-muted-foreground"
                   />
                   <kbd className="hidden sm:inline-block px-2 py-1 text-xs text-muted-foreground bg-muted rounded">
@@ -109,112 +135,90 @@ export default function CommandPalette() {
                   <Command.Empty className="py-6 text-center text-muted-foreground">
                     No results found.
                   </Command.Empty>
+                  
+                  {loading && <div className="py-6 text-center text-muted-foreground">Searching...</div>}
 
-                  {/* Navigation Group */}
-                  <Command.Group
-                    heading="Navigation"
-                    className="text-xs font-semibold text-muted-foreground px-2 py-2"
-                  >
-                    <CommandItem
-                      icon="HomeIcon"
-                      onSelect={() => navigate('/landing-page')}
-                      shortcut="⌘H"
+                  {!loading && storyResults.length > 0 && (
+                    <Command.Group
+                      heading="Stories"
+                      className="text-xs font-semibold text-muted-foreground px-2 py-2"
                     >
-                      Home
-                    </CommandItem>
-                    <CommandItem
-                      icon="BookOpenIcon"
-                      onSelect={() => navigate('/story-library')}
-                      shortcut="⌘L"
-                    >
-                      Story Library
-                    </CommandItem>
-                    <CommandItem
-                      icon="UserCircleIcon"
-                      onSelect={() => navigate('/user-dashboard')}
-                      shortcut="⌘D"
-                    >
-                      Dashboard
-                    </CommandItem>
-                    <CommandItem
-                      icon="Cog6ToothIcon"
-                      onSelect={() => navigate('/user-profile')}
-                      shortcut="⌘,"
-                    >
-                      Settings
-                    </CommandItem>
-                  </Command.Group>
+                      {storyResults.map(story => (
+                        <CommandItem
+                          key={story.id}
+                          icon="BookOpenIcon"
+                          onSelect={() => navigate(`/story-reader?storyId=${story.id}`)}
+                        >
+                          {story.title}
+                        </CommandItem>
+                      ))}
+                    </Command.Group>
+                  )}
 
-                  {/* Actions Group */}
-                  <Command.Group
-                    heading="Actions"
-                    className="text-xs font-semibold text-muted-foreground px-2 py-2"
-                  >
-                    <CommandItem
-                      icon="PencilSquareIcon"
-                      onSelect={() => navigate('/story-creation-studio')}
-                      shortcut="⌘N"
+                  {!loading && userResults.length > 0 && (
+                    <Command.Group
+                      heading="Users"
+                      className="text-xs font-semibold text-muted-foreground px-2 py-2"
                     >
-                      Create New Story
-                    </CommandItem>
-                    <CommandItem
-                      icon="MagnifyingGlassIcon"
-                      onSelect={() => navigate('/story-library')}
-                      shortcut="⌘F"
-                    >
-                      Search Stories
-                    </CommandItem>
-                  </Command.Group>
+                      {userResults.map(user => (
+                        <CommandItem
+                          key={user.id}
+                          icon="UserCircleIcon"
+                          onSelect={() => navigate(`/user-profile/${user.id}`)}
+                        >
+                          {user.display_name} <span className="text-muted-foreground">@{user.username}</span>
+                        </CommandItem>
+                      ))}
+                    </Command.Group>
+                  )}
 
-                  {/* Appearance Group */}
-                  <Command.Group
-                    heading="Appearance"
-                    className="text-xs font-semibold text-muted-foreground px-2 py-2"
-                  >
-                    <CommandItem
-                      icon={theme === 'dark' ? 'MoonIcon' : theme === 'light' ? 'SunIcon' : 'ComputerDesktopIcon'}
-                      onSelect={toggleTheme}
-                      shortcut="⌘T"
-                    >
-                      Toggle Theme ({theme})
-                    </CommandItem>
-                  </Command.Group>
-
-                  {/* Help Group */}
-                  <Command.Group
-                    heading="Help & Support"
-                    className="text-xs font-semibold text-muted-foreground px-2 py-2"
-                  >
-                    <CommandItem
-                      icon="QuestionMarkCircleIcon"
-                      onSelect={() => navigate('/help')}
-                    >
-                      Help Center
-                    </CommandItem>
-                    <CommandItem
-                      icon="KeyIcon"
-                      onSelect={() => {}}
-                    >
-                      Keyboard Shortcuts
-                    </CommandItem>
-                  </Command.Group>
+                  {!debouncedSearch && (
+                    <>
+                      {isAdmin && (
+                        <Command.Group
+                          heading="Admin"
+                          className="text-xs font-semibold text-muted-foreground px-2 py-2"
+                        >
+                          <CommandItem icon="ShieldCheckIcon" onSelect={() => navigate('/admin')}>Admin Dashboard</CommandItem>
+                          <CommandItem icon="FlagIcon" onSelect={() => navigate('/admin/reports')}>View Reports</CommandItem>
+                        </Command.Group>
+                      )}
+                      <Command.Group
+                        heading="Navigation"
+                        className="text-xs font-semibold text-muted-foreground px-2 py-2"
+                      >
+                        <CommandItem icon="HomeIcon" onSelect={() => navigate('/')}>Home</CommandItem>
+                        <CommandItem icon="BookOpenIcon" onSelect={() => navigate('/story-library')}>Story Library</CommandItem>
+                        <CommandItem icon="UserCircleIcon" onSelect={() => navigate('/user-dashboard')}>Dashboard</CommandItem>
+                        <CommandItem icon="Cog6ToothIcon" onSelect={() => navigate('/settings')}>Settings</CommandItem>
+                      </Command.Group>
+                      <Command.Group
+                        heading="Actions"
+                        className="text-xs font-semibold text-muted-foreground px-2 py-2"
+                      >
+                        <CommandItem icon="PencilSquareIcon" onSelect={() => navigate('/story-creation-studio')}>Create New Story</CommandItem>
+                      </Command.Group>
+                      <Command.Group
+                        heading="Appearance"
+                        className="text-xs font-semibold text-muted-foreground px-2 py-2"
+                      >
+                        <CommandItem
+                          icon={theme === 'dark' ? 'MoonIcon' : theme === 'light' ? 'SunIcon' : 'ComputerDesktopIcon'}
+                          onSelect={toggleTheme}
+                        >
+                          Toggle Theme ({theme})
+                        </CommandItem>
+                      </Command.Group>
+                      <Command.Group
+                        heading="Help & Support"
+                        className="text-xs font-semibold text-muted-foreground px-2 py-2"
+                      >
+                        <CommandItem icon="QuestionMarkCircleIcon" onSelect={() => navigate('/help')}>Help Center</CommandItem>
+                        <CommandItem icon="KeyIcon" onSelect={() => {}}>Keyboard Shortcuts</CommandItem>
+                      </Command.Group>
+                    </>
+                  )}
                 </Command.List>
-
-                {/* Footer */}
-                <div className="border-t border-border px-4 py-2 text-xs text-muted-foreground flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded">↑↓</kbd>
-                    <span>Navigate</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded">↵</kbd>
-                    <span>Select</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <kbd className="px-2 py-1 bg-muted rounded">ESC</kbd>
-                    <span>Close</span>
-                  </div>
-                </div>
               </Command>
             </motion.div>
           </div>

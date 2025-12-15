@@ -77,8 +77,8 @@ service_role key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3M...
    - Production: `https://your-domain.com` (we'll update this later)
 3. **Scroll to:** "Redirect URLs" → Add these:
    ```
-   http://localhost:3000/auth/callback
-   https://your-domain.com/auth/callback
+   http://localhost:3000/authentication/callback
+   https://your-domain.com/authentication/callback
    ```
 4. **Click:** Save
 
@@ -378,7 +378,7 @@ NODE_ENV = production
 
 1. **Go back to:** Supabase Dashboard → Authentication → Settings
 2. **Update Site URL:** `https://your-site-name.netlify.app`
-3. **Add Redirect URL:** `https://your-site-name.netlify.app/auth/callback`
+3. **Add Redirect URL:** `https://your-site-name.netlify.app/authentication/callback`
 4. **Click:** Save
 
 ### Step 6.6: Test Production Site
@@ -446,7 +446,7 @@ NODE_ENV = production
 
 4. **Supabase:** Authentication → Settings
 5. **Update Site URL:** `https://stxryai.com`
-6. **Update Redirect URLs:** `https://stxryai.com/auth/callback`
+6. **Update Redirect URLs:** `https://stxryai.com/authentication/callback`
 
 ---
 

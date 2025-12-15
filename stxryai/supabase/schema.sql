@@ -6,6 +6,7 @@ CREATE TYPE tier AS ENUM ('free', 'premium', 'creator_pro');
 CREATE TYPE difficulty AS ENUM ('easy', 'medium', 'hard');
 CREATE TYPE rarity AS ENUM ('common', 'rare', 'epic', 'legendary', 'mythic');
 CREATE TYPE notification_type AS ENUM ('comment', 'like', 'follow', 'achievement', 'story');
+CREATE TYPE user_role AS ENUM ('user', 'moderator', 'admin');
 
 -- Users table
 CREATE TABLE users (
@@ -16,6 +17,7 @@ CREATE TABLE users (
   avatar_url TEXT,
   bio TEXT,
   tier tier DEFAULT 'free' NOT NULL,
+  role user_role DEFAULT 'user' NOT NULL,
   xp INTEGER DEFAULT 0 NOT NULL,
   level INTEGER DEFAULT 1 NOT NULL,
   energy INTEGER DEFAULT 50 NOT NULL,
@@ -90,6 +92,15 @@ CREATE TABLE user_progress (
   UNIQUE(user_id, story_id)
 );
 
+CREATE TABLE bookmarks (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  story_id UUID NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
+  chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  UNIQUE(user_id, story_id, chapter_id)
+);
+
 -- Collections table
 CREATE TABLE collections (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -139,6 +150,14 @@ CREATE TABLE comments (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
+CREATE TABLE comment_likes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  comment_id UUID NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  UNIQUE(user_id, comment_id)
+);
+
 -- Achievements table
 CREATE TABLE achievements (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -186,7 +205,36 @@ CREATE TABLE follows (
   CHECK (follower_id != following_id)
 );
 
+-- Content reporting and moderation tables
+CREATE TYPE content_type AS ENUM ('story', 'comment', 'user', 'chapter');
+CREATE TYPE report_status AS ENUM ('pending', 'addressed', 'dismissed');
+CREATE TYPE moderation_action_type AS ENUM ('delete_story', 'delete_comment', 'ban_user', 'warn_user');
+
+CREATE TABLE reported_content (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  reporter_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content_id UUID NOT NULL,
+  content_type content_type NOT NULL,
+  reason TEXT NOT NULL,
+  status report_status DEFAULT 'pending' NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE moderation_actions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  moderator_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  report_id UUID REFERENCES reported_content(id) ON DELETE SET NULL,
+  action_type moderation_action_type NOT NULL,
+  target_user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  target_content_id UUID,
+  reason TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
 -- Create indexes for better query performance
+CREATE INDEX idx_reported_content_status ON reported_content(status);
+CREATE INDEX idx_moderation_actions_moderator_id ON moderation_actions(moderator_id);
 CREATE INDEX idx_stories_user_id ON stories(user_id);
 CREATE INDEX idx_stories_published ON stories(is_published);
 CREATE INDEX idx_stories_genre ON stories(genre);
@@ -194,6 +242,7 @@ CREATE INDEX idx_stories_rating ON stories(rating DESC);
 CREATE INDEX idx_chapters_story_id ON chapters(story_id);
 CREATE INDEX idx_user_progress_user_id ON user_progress(user_id);
 CREATE INDEX idx_user_progress_story_id ON user_progress(story_id);
+CREATE INDEX idx_bookmarks_user_id ON bookmarks(user_id);
 CREATE INDEX idx_collections_user_id ON collections(user_id);
 CREATE INDEX idx_ratings_story_id ON ratings(story_id);
 CREATE INDEX idx_comments_story_id ON comments(story_id);
@@ -208,14 +257,18 @@ ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chapters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE choices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_progress ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bookmarks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE collection_stories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ratings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comment_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE follows ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reported_content ENABLE ROW LEVEL SECURITY;
+ALTER TABLE moderation_actions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for users
 CREATE POLICY "Users can view all profiles" ON users FOR SELECT USING (TRUE);
@@ -245,6 +298,9 @@ CREATE POLICY "Users can view own progress" ON user_progress FOR SELECT USING (a
 CREATE POLICY "Users can create own progress" ON user_progress FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own progress" ON user_progress FOR UPDATE USING (auth.uid() = user_id);
 
+-- RLS Policies for bookmarks
+CREATE POLICY "Users can manage own bookmarks" ON bookmarks FOR ALL USING (auth.uid() = user_id);
+
 -- RLS Policies for collections
 CREATE POLICY "Anyone can view public collections" ON collections FOR SELECT USING (is_public = TRUE);
 CREATE POLICY "Users can view own collections" ON collections FOR SELECT USING (auth.uid() = user_id);
@@ -264,6 +320,8 @@ CREATE POLICY "Users can create comments" ON comments FOR INSERT WITH CHECK (aut
 CREATE POLICY "Users can update own comments" ON comments FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own comments" ON comments FOR DELETE USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can manage own likes" ON comment_likes FOR ALL USING (auth.uid() = user_id);
+
 -- RLS Policies for notifications
 CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid() = user_id);
@@ -272,6 +330,27 @@ CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE U
 CREATE POLICY "Anyone can view follows" ON follows FOR SELECT USING (TRUE);
 CREATE POLICY "Users can create follows" ON follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
 CREATE POLICY "Users can delete own follows" ON follows FOR DELETE USING (auth.uid() = follower_id);
+
+-- Function to check for moderator role
+CREATE OR REPLACE FUNCTION is_moderator(user_id UUID)
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM users WHERE id = user_id AND (role = 'moderator' OR role = 'admin')
+  );
+$$ LANGUAGE sql SECURITY DEFINER;
+
+-- RLS Policies for moderation
+CREATE POLICY "Authenticated users can report content" ON reported_content FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Users can see their own reports" ON reported_content FOR SELECT USING (reporter_id = auth.uid());
+CREATE POLICY "Moderators can see all reports" ON reported_content FOR SELECT USING (is_moderator(auth.uid()));
+CREATE POLICY "Moderators can update reports" ON reported_content FOR UPDATE USING (is_moderator(auth.uid()));
+
+CREATE POLICY "Moderators can view all actions" ON moderation_actions FOR SELECT USING (is_moderator(auth.uid()));
+CREATE POLICY "Moderators can create actions" ON moderation_actions FOR INSERT WITH CHECK (is_moderator(auth.uid()));
+
+-- Moderator policies for stories and comments
+CREATE POLICY "Moderators can manage all stories" ON stories FOR ALL USING (is_moderator(auth.uid()));
+CREATE POLICY "Moderators can manage all comments" ON comments FOR ALL USING (is_moderator(auth.uid()));
 
 -- Functions for automatic timestamp updates
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -299,6 +378,9 @@ CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_user_achievements_updated_at BEFORE UPDATE ON user_achievements
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_reported_content_updated_at BEFORE UPDATE ON reported_content
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 
 -- Function to create user profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -342,3 +424,29 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_story_stats_trigger
   AFTER INSERT OR UPDATE OR DELETE ON chapters
   FOR EACH ROW EXECUTE FUNCTION update_story_stats();
+
+CREATE OR REPLACE FUNCTION increment_comment_like(comment_id_input UUID)
+RETURNS void AS $$
+DECLARE
+  current_likes INTEGER;
+BEGIN
+  -- Check if the user has already liked the comment
+  IF EXISTS(SELECT 1 FROM comment_likes WHERE comment_id = comment_id_input AND user_id = auth.uid()) THEN
+    -- User has already liked, so we should unlike
+    UPDATE comments
+    SET like_count = like_count - 1
+    WHERE id = comment_id_input;
+
+    DELETE FROM comment_likes
+    WHERE comment_id = comment_id_input AND user_id = auth.uid();
+  ELSE
+    -- User has not liked yet, so we should like
+    UPDATE comments
+    SET like_count = like_count + 1
+    WHERE id = comment_id_input;
+
+    INSERT INTO comment_likes (comment_id, user_id)
+    VALUES (comment_id_input, auth.uid());
+  END IF;
+END;
+$$ LANGUAGE plpgsql;

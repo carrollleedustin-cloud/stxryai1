@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { storyService } from '@/services/storyService';
 import { userProgressService } from '@/services/userProgressService';
 import { narrativeAIService, type EngagementMetrics } from '@/services/narrativeAIService';
@@ -18,6 +19,7 @@ export default function StoryReaderInteractive() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, profile } = useAuth();
+  const { theme: appTheme, setTheme: setAppTheme } = useTheme();
   const storyId = searchParams?.get('storyId');
 
   const [loading, setLoading] = useState(true);
@@ -34,31 +36,30 @@ export default function StoryReaderInteractive() {
     scrollDepth: 0,
     timeOnScene: 0
   });
+  const [fontSize, setFontSize] = useState(16);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isDistractionFree, setIsDistractionFree] = useState(false);
 
   // Calculate current chapter (moved up to avoid reference before declaration)
   const currentChapter = chapters[currentChapterIndex];
 
-  useEffect(() => {
-    if (storyId && user) {
-      loadStoryData();
-    }
-  }, [storyId, user]);
-
-  const loadStoryData = async () => {
+  const loadStoryData = useCallback(async () => {
     if (!storyId || !user) return;
 
     try {
       setLoading(true);
-      const [storyData, chaptersData, progressData] = await Promise.all([
+      const [storyData, chaptersData, progressData, bookmarked] = await Promise.all([
         storyService.getStoryById(storyId),
         storyService.getStoryChapters(storyId),
         userProgressService.getUserProgress(user.id, storyId),
+        userProgressService.isChapterBookmarked(user.id, chapters.length > 0 ? chapters[currentChapterIndex].id : '')
       ]);
 
       setStory(storyData);
       setChapters(chaptersData || []);
       setProgress(progressData);
       setCurrentStory(storyData);
+      setIsBookmarked(bookmarked);
 
       // Load choices for first/current chapter
       if (chaptersData && chaptersData.length > 0) {
@@ -85,62 +86,32 @@ export default function StoryReaderInteractive() {
     } finally {
       setLoading(false);
     }
+  }, [storyId, user, chapters, currentChapterIndex]);
+
+  useEffect(() => {
+    if (storyId && user) {
+      loadStoryData();
+    }
+  }, [storyId, user, loadStoryData]);
+
+  // ... (rest of the component is the same)
+  const handleBookmark = async () => {
+    if (!user || !currentChapter) return;
+    try {
+      if (isBookmarked) {
+        await userProgressService.removeBookmark(user.id, story.id, currentChapter.id);
+      } else {
+        await userProgressService.addBookmark(user.id, story.id, currentChapter.id);
+      }
+      setIsBookmarked(!isBookmarked);
+    } catch (error) {
+      console.error('Failed to update bookmark', error);
+    }
   };
 
-  // Track engagement metrics
-  useEffect(() => {
-    if (!user || !currentStory?.id || !currentChapter?.id) return;
-
-    const trackingInterval = setInterval(() => {
-      const timeElapsed = Math.floor((Date.now() - engagementTracking.sessionStart) / 1000);
-      const choiceFreq = engagementTracking.choiceCount / (timeElapsed / 60 || 1);
-
-      narrativeAIService.trackEngagement({
-        user_id: user.id,
-        story_id: currentStory.id,
-        chapter_id: currentChapter.id,
-        time_on_scene: timeElapsed,
-        choice_frequency: choiceFreq,
-        choices_made_count: engagementTracking.choiceCount,
-        scroll_depth: engagementTracking.scrollDepth,
-      });
-
-      setEngagementTracking(prev => ({
-        ...prev,
-        timeOnScene: timeElapsed
-      }));
-    }, 30000); // Track every 30 seconds
-
-    return () => clearInterval(trackingInterval);
-  }, [user, currentStory?.id, currentChapter?.id, engagementTracking.sessionStart, engagementTracking.choiceCount, engagementTracking.scrollDepth]);
-
-  // Track scroll depth
-  useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const scrollTop = window.scrollY;
-      const scrollDepth = (scrollTop + windowHeight) / documentHeight;
-      
-      setEngagementTracking(prev => ({
-        ...prev,
-        scrollDepth: Math.max(prev.scrollDepth, scrollDepth)
-      }));
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Reset tracking on chapter change
-  useEffect(() => {
-    setEngagementTracking({
-      sessionStart: Date.now(),
-      choiceCount: 0,
-      scrollDepth: 0,
-      timeOnScene: 0
-    });
-  }, [currentChapter?.id]);
+  const toggleDistractionFree = () => {
+    setIsDistractionFree(!isDistractionFree);
+  };
 
   const handleChoiceSelect = async (choice: any) => {
     if (!user || !profile) return;
@@ -235,17 +206,20 @@ export default function StoryReaderInteractive() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${isDistractionFree ? 'distraction-free' : ''}`}>
       {/* Main Story Content */}
-      <div className="lg:col-span-2 space-y-6">
-        <div className="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 rounded-xl shadow-2xl">
+      <div className={`lg:col-span-2 space-y-6 ${isDistractionFree ? 'lg:col-span-3' : ''}`}>
+        <div className={`bg-gradient-to-br ${appTheme === 'dark' ? 'from-purple-900 via-indigo-900 to-blue-900' : 'from-white to-gray-50'} rounded-xl shadow-2xl`}>
           <ReadingControls
-            currentTheme="midnight"
-            currentFontSize={16}
-            onThemeChange={() => {}}
-            onFontSizeChange={() => {}}
-            onBookmark={() => {}}
-            isBookmarked={false}
+            currentTheme={appTheme}
+            currentFontSize={fontSize}
+            onThemeChange={setAppTheme}
+            onFontSizeChange={setFontSize}
+            onBookmark={handleBookmark}
+            isBookmarked={isBookmarked}
+            progress={(currentChapterIndex + 1) / chapters.length * 100}
+            onToggleDistractionFree={toggleDistractionFree}
+            isDistractionFree={isDistractionFree}
           />
 
           {error && (
@@ -260,6 +234,7 @@ export default function StoryReaderInteractive() {
             <StoryContent
               chapter={currentChapter}
               chapterNumber={currentChapterIndex + 1}
+              fontSize={fontSize}
             />
 
             {choices.length > 0 && (
@@ -275,30 +250,32 @@ export default function StoryReaderInteractive() {
       </div>
 
       {/* Sidebar with AI Features */}
-      <div className="space-y-6">
-        {currentStory?.id && currentChapter && (
-          <>
-            <NPCInteractionPanel 
-              storyId={currentStory.id} 
-              currentChapter={currentChapter.chapter_number}
-            />
-            <DynamicPacingIndicator 
-              storyId={currentStory.id}
-              chapterId={currentChapter.id}
-            />
-          </>
-        )}
-        <BranchVisualization
-          storyNodes={[]}
-          currentNodeId=""
-          isPremium={profile?.subscription_tier === 'premium'}
-        />
-        <FloatingChatPanel
-          storyId={currentStory?.id || ''}
-          currentScene={currentChapter?.id || ''}
-          isPremium={profile?.subscription_tier === 'premium'}
-        />
-      </div>
+      {!isDistractionFree && (
+        <div className="space-y-6">
+          {currentStory?.id && currentChapter && (
+            <>
+              <NPCInteractionPanel 
+                storyId={currentStory.id} 
+                currentChapter={currentChapter.chapter_number}
+              />
+              <DynamicPacingIndicator 
+                storyId={currentStory.id}
+                chapterId={currentChapter.id}
+              />
+            </>
+          )}
+          <BranchVisualization
+            storyNodes={[]}
+            currentNodeId=""
+            isPremium={profile?.subscription_tier === 'premium'}
+          />
+          <FloatingChatPanel
+            storyId={currentStory?.id || ''}
+            currentScene={currentChapter?.id || ''}
+            isPremium={profile?.subscription_tier === 'premium'}
+          />
+        </div>
+      )}
     </div>
   );
 }

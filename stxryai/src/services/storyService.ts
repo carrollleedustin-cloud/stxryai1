@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { Story } from '@/types/database';
 
 export interface StoryFilters {
   genre?: string;
@@ -7,7 +8,20 @@ export interface StoryFilters {
   searchQuery?: string;
 }
 
+export interface FilterOptions {
+  genres?: string[];
+  minRating?: number;
+  sortBy?: 'relevance' | 'popular' | 'newest' | 'rating';
+  searchQuery?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+
 export const storyService = {
+  /**
+   * @deprecated Use getFilteredStories for more advanced filtering
+   */
   async getStories(filters?: StoryFilters) {
     let query = supabase
       .from('stories')
@@ -33,7 +47,59 @@ export const storyService = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return data as Story[];
+  },
+
+  async getFilteredStories(filters: FilterOptions = {}): Promise<Story[]> {
+    let query = supabase
+      .from('stories')
+      .select('*, author:users!user_id(display_name, avatar_url)')
+      .eq('is_published', true);
+
+    // Search
+    if (filters.searchQuery) {
+      query = query.textSearch('title', filters.searchQuery, { type: 'websearch' });
+    }
+
+    // Filters
+    if (filters.genres && filters.genres.length > 0) {
+      query = query.in('genre', filters.genres);
+    }
+    if (filters.minRating && filters.minRating > 0) {
+      query = query.gte('rating', filters.minRating);
+    }
+
+    // Sorting
+    if (filters.sortBy) {
+      switch (filters.sortBy) {
+        case 'popular':
+          query = query.order('view_count', { ascending: false });
+          break;
+        case 'newest':
+          query = query.order('published_at', { ascending: false, nullsFirst: false });
+          break;
+
+        case 'rating':
+          query = query.order('rating', { ascending: false });
+          break;
+        default: // relevance
+          // default order is fine for now
+          break;
+      }
+    } else {
+        query = query.order('published_at', { ascending: false, nullsFirst: false });
+    }
+
+    // Pagination
+    if (filters.page && filters.pageSize) {
+        const from = (filters.page - 1) * filters.pageSize;
+        const to = from + filters.pageSize - 1;
+        query = query.range(from, to);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data as Story[];
   },
 
   async getStoryById(storyId: string) {
@@ -44,7 +110,7 @@ export const storyService = {
       .single();
 
     if (error) throw error;
-    return data;
+    return data as Story;
   },
 
   async getStoryChapters(storyId: string) {
@@ -64,6 +130,47 @@ export const storyService = {
       .select('*')
       .eq('chapter_id', chapterId)
       .order('position', { ascending: true });
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getStoryComments(storyId: string, page = 1, pageSize = 10) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    const { data, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        user:users!user_id (
+          id,
+          display_name,
+          avatar_url
+        )
+      `)
+      .eq('story_id', storyId)
+      .is('parent_id', null)
+      .order('created_at', { ascending: false })
+      .range(from, to);
+
+    if (error) throw error;
+    return data;
+  },
+
+  async getCommentReplies(commentId: string) {
+    const { data, error } = await supabase
+      .from('comments')
+      .select(`
+        *,
+        user:users!user_id (
+          id,
+          display_name,
+          avatar_url
+        )
+      `)
+      .eq('parent_id', commentId)
+      .order('created_at', { ascending: true });
 
     if (error) throw error;
     return data;

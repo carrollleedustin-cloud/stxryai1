@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * AI Content Moderation System
  * Automatically detect and flag inappropriate content
@@ -25,6 +24,16 @@ interface ContentToModerate {
   context?: string;
   authorId?: string;
   contentType: 'story' | 'comment' | 'profile' | 'message';
+}
+
+interface OpenAIModerationResponse {
+  id: string;
+  model: string;
+  results: {
+    flagged: boolean;
+    categories: Record<string, boolean>;
+    category_scores: Record<string, number>;
+  }[];
 }
 
 export class ContentModerationService {
@@ -61,7 +70,7 @@ export class ContentModerationService {
   async moderateContent(content: ContentToModerate): Promise<ModerationResult> {
     try {
       if (!this.apiKey) {
-        return this.getMockModerationResult(content);
+        return this.getMockModerationResult();
       }
 
       // Call OpenAI Moderation API
@@ -78,14 +87,14 @@ export class ContentModerationService {
 
       if (!response.ok) {
         console.error('Moderation API error:', response.statusText);
-        return this.getMockModerationResult(content);
+        return this.getMockModerationResult();
       }
 
-      const data = await response.json();
-      return this.parseModerationResponse(data, content);
+      const data = await response.json() as OpenAIModerationResponse;
+      return this.parseModerationResponse(data);
     } catch (error) {
       console.error('Content moderation failed:', error);
-      return this.getMockModerationResult(content);
+      return this.getMockModerationResult();
     }
   }
 
@@ -221,7 +230,7 @@ export class ContentModerationService {
    * Private helper methods
    */
 
-  private parseModerationResponse(data: any, content: ContentToModerate): ModerationResult {
+  private parseModerationResponse(data: OpenAIModerationResponse): ModerationResult {
     const result = data.results[0];
     const categories: ModerationCategory[] = [];
 
@@ -238,7 +247,7 @@ export class ContentModerationService {
     }
 
     // Determine severity
-    const maxScore = Math.max(...Object.values(result.category_scores));
+    const maxScore = Math.max(...Object.values(result.category_scores).map(v => Number(v)));
     let severity: ModerationResult['severity'] = 'low';
     if (maxScore >= this.SEVERITY_THRESHOLDS.critical) severity = 'critical';
     else if (maxScore >= this.SEVERITY_THRESHOLDS.high) severity = 'high';
@@ -259,7 +268,7 @@ export class ContentModerationService {
     };
   }
 
-  private getMockModerationResult(content: ContentToModerate): ModerationResult {
+  private getMockModerationResult(): ModerationResult {
     // Mock safe result for development
     return {
       flagged: false,
@@ -305,7 +314,7 @@ export class ContentModerationService {
     }
 
     // Check if any word appears more than 30% of the time
-    const maxCount = Math.max(...wordCounts.values());
+    const maxCount = Math.max(...Array.from(wordCounts.values()));
     return maxCount / words.length > 0.3;
   }
 

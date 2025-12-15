@@ -1,169 +1,131 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import AppImage from '@/components/ui/AppImage';
-import Icon from '@/components/ui/AppIcon';
-import { cardHover } from '@/lib/animations/variants';
+import { Story } from '@/types/database';
+import { Badge } from '@/components/ui/badge';
+import {
+  Flame,
+  Book,
+  Heart,
+  Brain,
+  Swords,
+  Ghost,
+  Rocket,
+  Landmark
+} from 'lucide-react';
 
 interface StoryCardProps {
-  story: any;
+  story: Story;
   onClick: () => void;
 }
 
-export default function StoryCard({ story, onClick }: StoryCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
+const genreIcons = {
+  Fantasy: <Swords size={14} />,
+  'Sci-Fi': <Rocket size={14} />,
+  Mystery: <Ghost size={14} />,
+  Romance: <Heart size={14} />,
+  Thriller: <Book size={14} />,
+  Adventure: <Flame size={14} />,
+  Horror: <Ghost size={14} />,
+  Historical: <Landmark size={14} />,
+};
 
+export default function StoryCard({ story, onClick }: StoryCardProps) {
   return (
     <motion.div
-      variants={cardHover}
-      initial="rest"
-      whileHover="hover"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      className="bg-card rounded-xl shadow-lg overflow-hidden cursor-pointer relative group"
       onClick={onClick}
+      className="bg-card rounded-2xl shadow-lg overflow-hidden cursor-pointer group relative flex flex-col h-full"
+      whileHover="hover"
     >
-      {/* Image Container with Overlay */}
       <div className="relative h-48 overflow-hidden">
         <motion.div
-          animate={{ scale: isHovered ? 1.1 : 1 }}
-          transition={{ duration: 0.4 }}
+          className="absolute inset-0"
+          variants={{
+            rest: { scale: 1 },
+            hover: { scale: 1.15, rotate: 2 },
+          }}
+          transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
         >
           <AppImage
-            src={story.cover_image_url}
-            alt={`Cover image for ${story.title}`}
-            className="w-full h-48 object-cover"
+            src={story.cover_image || '/assets/images/placeholder.png'}
+            alt={`Cover for ${story.title}`}
+            className="w-full h-full object-cover"
           />
         </motion.div>
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
 
-        {/* Gradient Overlay on Hover */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
-        />
-
-        {/* Premium Badge */}
         {story.is_premium && (
-          <motion.div
-            initial={{ x: -100 }}
-            animate={{ x: 0 }}
-            transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
-            className="absolute top-2 left-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1"
-          >
-            <Icon name="SparklesIcon" size={12} />
-            Premium
-          </motion.div>
+            <Badge variant="premium" className="absolute top-3 left-3">
+                <Zap size={14} className="mr-1" />
+                Premium
+            </Badge>
         )}
 
-        {/* Quick Actions (Show on Hover) */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 10 }}
-          className="absolute top-2 right-2 flex gap-2"
+          className="absolute bottom-0 left-0 right-0 p-4 text-white"
+          variants={{
+            rest: { y: 20, opacity: 0 },
+            hover: { y: 0, opacity: 1 },
+          }}
+          transition={{ duration: 0.3 }}
         >
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Add to wishlist functionality
-            }}
-            aria-label="Add to wishlist"
-          >
-            <Icon name="HeartIcon" size={16} className="text-red-500" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="p-2 bg-white/90 dark:bg-gray-800/90 rounded-full shadow-lg"
-            onClick={(e) => {
-              e.stopPropagation();
-              // Share functionality
-            }}
-            aria-label="Share story"
-          >
-            <Icon name="ShareIcon" size={16} className="text-blue-500" />
-          </motion.button>
+          <h3 className="text-lg font-bold line-clamp-1">{story.title}</h3>
+          <div className="flex items-center gap-2 mt-1">
+            <AppImage src={story.author.avatar_url} alt={story.author.display_name} className="w-6 h-6 rounded-full" />
+            <span className="text-xs">{story.author.display_name}</span>
+          </div>
         </motion.div>
+        
+        <motion.div 
+            className="absolute inset-0 flex items-center justify-center bg-black/60"
+            variants={{
+                rest: { opacity: 0 },
+                hover: { opacity: 1 },
+            }}
+            transition={{ duration: 0.3 }}
+        >
+            <button className="px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold">
+                Read Story
+            </button>
+        </motion.div>
+
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        <motion.h3
-          animate={{ color: isHovered ? 'hsl(var(--color-primary))' : undefined }}
-          transition={{ duration: 0.2 }}
-          className="text-lg font-bold text-foreground mb-2 line-clamp-1"
-        >
-          {story.title}
-        </motion.h3>
-
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+      <div className="p-4 flex flex-col flex-grow">
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2 flex-grow">
           {story.description}
         </p>
 
-        {/* Tags */}
-        <div className="flex gap-2 mb-3 flex-wrap">
-          {story.genre && (
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full"
-            >
-              {story.genre}
-            </motion.span>
-          )}
-          {story.difficulty && (
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full"
-            >
-              {story.difficulty}
-            </motion.span>
-          )}
+        <div className="flex gap-2 mb-4 flex-wrap">
+          <Badge variant="outline" className="flex items-center gap-1">
+            {genreIcons[story.genre as keyof typeof genreIcons] || <Book size={14} />}
+            {story.genre}
+          </Badge>
+          <Badge variant="secondary">{story.difficulty}</Badge>
+          {story.tags?.map(tag => (
+            <Badge key={tag} variant="secondary">{tag}</Badge>
+          ))}
         </div>
 
-        {/* Stats Footer */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-3">
+        <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-3 mt-auto">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
-              ⭐ {story.rating?.toFixed(1) || '0.0'} ({story.review_count || 0})
+            <span className="flex items-center gap-1" title="Rating">
+              <Star size={14} className="text-yellow-400"/> {story.rating?.toFixed(1) || 'N/A'}
             </span>
-            <span className="flex items-center gap-1">
-              👥 {story.play_count?.toLocaleString() || 0}
+            <span className="flex items-center gap-1" title="Views">
+              <Users size={14} /> {story.view_count?.toLocaleString() || 0}
             </span>
+             {story.estimated_duration && (
+                <span className="flex items-center gap-1" title="Estimated time to read">
+                    <Clock size={14} /> {story.estimated_duration} min
+                </span>
+            )}
           </div>
-          {story.estimated_duration && (
-            <span>⏱️ {story.estimated_duration} min</span>
-          )}
         </div>
-
-        {/* Progress Bar (if user has progress) */}
-        {story.progress !== undefined && story.progress > 0 && (
-          <div className="mt-3">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-              <span>Progress</span>
-              <span>{story.progress}%</span>
-            </div>
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${story.progress}%` }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className="h-full bg-primary"
-              />
-            </div>
-          </div>
-        )}
       </div>
-
-      {/* Shimmer Effect on Hover */}
-      <motion.div
-        animate={{ x: isHovered ? ['0%', '200%'] : '0%' }}
-        transition={{ duration: 1, ease: "easeInOut" }}
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"
-      />
     </motion.div>
   );
 }

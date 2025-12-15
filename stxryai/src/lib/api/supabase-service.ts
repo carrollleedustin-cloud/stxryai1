@@ -1,14 +1,12 @@
-// @ts-nocheck
 /**
  * Supabase Service Wrapper
  * Provides consistent error handling, retry logic, and caching for Supabase operations
  */
 
 import { getSupabaseClient, getIsSupabaseConfigured } from '@/lib/supabase/client';
-import { createClient } from '@/lib/supabase/server';
 import { withErrorHandling, withRetry, APIResponse } from './error-handler';
 import { apiCache } from './cache';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, PostgrestError, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 interface QueryOptions {
   cache?: boolean;
@@ -44,7 +42,7 @@ class SupabaseService {
    * Query with automatic error handling and retry
    */
   async query<T>(
-    queryFn: (client: SupabaseClient) => Promise<{ data: T | null; error: any }>,
+    queryFn: (client: SupabaseClient) => Promise<{ data: T | null; error: PostgrestError | null }>,
     operation: string,
     options: QueryOptions = {}
   ): Promise<APIResponse<T>> {
@@ -87,7 +85,7 @@ class SupabaseService {
    * Query with caching support
    */
   async cachedQuery<T>(
-    queryFn: (client: SupabaseClient) => Promise<{ data: T | null; error: any }>,
+    queryFn: (client: SupabaseClient) => Promise<{ data: T | null; error: PostgrestError | null }>,
     cacheKey: string,
     operation: string,
     options: QueryOptions = {}
@@ -122,7 +120,7 @@ class SupabaseService {
    * Mutation with automatic error handling
    */
   async mutate<T>(
-    mutateFn: (client: SupabaseClient) => Promise<{ data: T | null; error: any }>,
+    mutateFn: (client: SupabaseClient) => Promise<{ data: T | null; error: PostgrestError | null }>,
     operation: string,
     cacheInvalidation?: string[]
   ): Promise<APIResponse<T>> {
@@ -142,7 +140,7 @@ class SupabaseService {
    * Batch operations with transaction support
    */
   async batch<T>(
-    operations: Array<(client: SupabaseClient) => Promise<any>>,
+    operations: Array<(client: SupabaseClient) => Promise<{ data: any; error: PostgrestError | null }>>,
     operationName: string
   ): Promise<APIResponse<T[]>> {
     return withErrorHandling(
@@ -172,9 +170,9 @@ class SupabaseService {
   /**
    * Subscribe to realtime changes with error handling
    */
-  subscribe<T>(
+  subscribe<T extends Record<string, any>>(
     table: string,
-    callback: (payload: T) => void,
+    callback: (payload: RealtimePostgresChangesPayload<T>) => void,
     options: {
       event?: 'INSERT' | 'UPDATE' | 'DELETE' | '*';
       filter?: string;
@@ -197,7 +195,7 @@ class SupabaseService {
           },
           (payload) => {
             try {
-              callback(payload as T);
+              callback(payload as RealtimePostgresChangesPayload<T>);
             } catch (error) {
               console.error(`Subscription callback error for ${table}:`, error);
               options.onError?.(error as Error);

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import CharacterRelationshipGraph from '@/components/personalization/CharacterRelationshipGraph';
 import { getUserThemes, getActiveTheme, createTheme, setActiveTheme, deleteTheme, getAchievementTiers, getDiscoveryPreferences, getReceivedFeedback, UserUITheme, CharacterRelationship, AchievementTier, DiscoveryPreferences } from '@/services/personalizationService';
 
 export default function PersonalizationStudio() {
@@ -153,7 +154,8 @@ export default function PersonalizationStudio() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-purple-600 text-white' :'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <span>{tab.icon}</span>

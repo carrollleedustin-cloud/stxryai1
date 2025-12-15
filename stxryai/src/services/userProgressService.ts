@@ -1,4 +1,18 @@
 import { supabase } from '@/lib/supabase/client';
+import { Story } from '@/types/database';
+
+export interface UserReadingProgress {
+    id: string;
+    user_id: string;
+    story_id: string;
+    current_chapter_id: string;
+    last_choice_id?: string;
+    progress_percentage: number;
+    reading_time?: number;
+    last_read_at: string;
+    is_completed: boolean;
+    stories: Story;
+}
 
 export const userProgressService = {
   async getUserProgress(userId: string, storyId: string) {
@@ -105,7 +119,106 @@ export const userProgressService = {
       .select()
       .single();
 
-    if (error && error.code !== '23505') throw error;
-    return data;
-  },
-};
+        if (error && error.code !== '23505') throw error;
+
+        return data;
+
+      },
+
+    
+
+      async addBookmark(userId: string, storyId: string, chapterId: string) {
+
+        const { data, error } = await supabase
+
+          .from('bookmarks')
+
+          .insert({
+
+            user_id: userId,
+
+            story_id: storyId,
+
+            chapter_id: chapterId,
+
+          });
+
+    
+
+        if (error) throw error;
+
+        return data;
+
+      },
+
+    
+
+      async removeBookmark(userId: string, storyId: string, chapterId: string) {
+
+        const { error } = await supabase
+
+          .from('bookmarks')
+
+          .delete()
+
+          .eq('user_id', userId)
+
+          .eq('story_id', storyId)
+
+          .eq('chapter_id', chapterId);
+
+    
+
+        if (error) throw error;
+
+      },
+
+    
+
+      async getBookmarks(userId: string) {
+
+        const { data, error } = await supabase
+
+          .from('bookmarks')
+
+          .select('*, stories(*), chapters(*)')
+
+          .eq('user_id', userId)
+
+          .order('created_at', { ascending: false });
+
+    
+
+        if (error) throw error;
+
+        return data;
+
+      },
+
+    
+
+      async isChapterBookmarked(userId: string, chapterId: string) {
+
+        const { data, error } = await supabase
+
+          .from('bookmarks')
+
+          .select('id')
+
+          .eq('user_id', userId)
+
+          .eq('chapter_id', chapterId)
+
+          .single();
+
+        
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        return !!data;
+
+      },
+
+    };
+
+    

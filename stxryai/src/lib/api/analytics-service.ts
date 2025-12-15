@@ -8,13 +8,20 @@ import { BatchProcessor } from './error-handler';
 
 interface AnalyticsEvent {
   name: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
   timestamp?: number;
 }
 
 interface UserIdentity {
   userId: string;
-  traits?: Record<string, any>;
+  traits?: Record<string, unknown>;
+}
+
+declare global {
+  interface Window {
+    dataLayer: unknown[];
+    gtag: (...args: unknown[]) => void;
+  }
 }
 
 class AnalyticsService {
@@ -89,14 +96,13 @@ class AnalyticsService {
         script.async = true;
         document.head.appendChild(script);
 
-        (window as any).dataLayer = (window as any).dataLayer || [];
-        const gtag = (...args: any[]) => {
-          (window as any).dataLayer.push(args);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function() {
+          window.dataLayer.push(arguments);
         };
-        (window as any).gtag = gtag;
 
-        gtag('js', new Date());
-        gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
+        window.gtag('js', new Date());
+        window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID, {
           send_page_view: false, // Manual pageview tracking
         });
       } catch (error) {
@@ -110,7 +116,7 @@ class AnalyticsService {
   /**
    * Track event (batched)
    */
-  track(eventName: string, properties?: Record<string, any>): void {
+  track(eventName: string, properties?: Record<string, unknown>): void {
     const event: AnalyticsEvent = {
       name: eventName,
       properties,
@@ -139,8 +145,8 @@ class AnalyticsService {
     }
 
     // Google Analytics
-    if ((window as any).gtag) {
-      (window as any).gtag('event', 'page_view', {
+    if (window.gtag) {
+      window.gtag('event', 'page_view', {
         page_path: pageUrl,
       });
     }
@@ -149,7 +155,7 @@ class AnalyticsService {
   /**
    * Identify user
    */
-  identify(userId: string, traits?: Record<string, any>): void {
+  identify(userId: string, traits?: Record<string, unknown>): void {
     if (typeof window === 'undefined') return;
 
     // PostHog
@@ -158,8 +164,8 @@ class AnalyticsService {
     }
 
     // Google Analytics
-    if ((window as any).gtag) {
-      (window as any).gtag('set', 'user_properties', {
+    if (window.gtag) {
+      window.gtag('set', 'user_properties', {
         user_id: userId,
         ...traits,
       });
@@ -213,9 +219,9 @@ class AnalyticsService {
       }
 
       // Send to Google Analytics
-      if ((window as any).gtag) {
+      if (window.gtag) {
         events.forEach(event => {
-          (window as any).gtag('event', event.name, event.properties);
+          window.gtag('event', event.name, event.properties);
         });
       }
     } catch (error) {
@@ -238,7 +244,7 @@ class AnalyticsService {
       initialized: this.isInitialized,
       queueSize: this.queue.length,
       posthogActive: !!posthog && typeof window !== 'undefined',
-      googleAnalyticsActive: !!(window as any)?.gtag,
+      googleAnalyticsActive: !!window.gtag,
     };
   }
 }

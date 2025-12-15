@@ -9,18 +9,64 @@ import PlayStyleAnalysis from './PlayStyleAnalysis';
 import FriendsList from './FriendsList';
 import ClubMemberships from './ClubMemberships';
 import ReadingLists from './ReadingLists';
+import { UserProfile, Story, Achievement } from '@/types/database';
+import { ReadingClub } from '@/services/communityService';
+
+// Define specific interfaces for props
+export interface UserStats {
+  storiesCompleted: number;
+  choicesMade: number;
+  readingStreak: number;
+  totalReadingTime: number;
+}
+
+export interface UserAchievement extends Achievement {
+  progress: number;
+  total: number;
+  unlocked: boolean;
+}
+
+export interface ChoicePatterns {
+  decisionBias: string;
+  riskAversion: number;
+  explorationVsCompletion: string;
+}
+
+export interface GenrePreferences {
+  genre: string;
+  affinity: number;
+}
+
+export interface ReadingTimeData {
+  hour: number;
+  storiesRead: number;
+}
+
+export interface Friend {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
+export interface UserReadingList {
+  id: string;
+  name: string;
+  description?: string;
+  storyCount: number;
+  isPublic: boolean;
+}
 
 interface UserProfileInteractiveProps {
-  initialUser: any;
-  initialStats: any;
-  initialAchievements: any[];
-  initialStories: any[];
-  initialChoicePatterns: any;
-  initialGenrePreferences: any[];
-  initialReadingTimes: any[];
-  initialFriends: any[];
-  initialClubs: any[];
-  initialLists: any[];
+  initialUser: UserProfile;
+  initialStats: UserStats;
+  initialAchievements: UserAchievement[];
+  initialStories: Story[];
+  initialChoicePatterns: ChoicePatterns;
+  initialGenrePreferences: GenrePreferences[];
+  initialReadingTimes: ReadingTimeData[];
+  initialFriends: Friend[];
+  initialClubs: ReadingClub[];
+  initialLists: UserReadingList[];
 }
 
 const UserProfileInteractive = ({
@@ -36,10 +82,16 @@ const UserProfileInteractive = ({
   initialLists,
 }: UserProfileInteractiveProps) => {
   const [isHydrated, setIsHydrated] = useState(false);
+  const [readingHistory, setReadingHistory] = useState<any[]>([]);
 
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
+    const fetchReadingHistory = async () => {
+      const history = await userProgressService.getAllUserProgress(initialUser.id);
+      setReadingHistory(history || []);
+    };
+    fetchReadingHistory();
+  }, [initialUser.id]);
 
   if (!isHydrated) {
     return (
@@ -109,7 +161,7 @@ const UserProfileInteractive = ({
                 totalAchievements={50}
               />
 
-              <ReadingHistory stories={initialStories} />
+              <ReadingHistory stories={readingHistory} />
 
               <PlayStyleAnalysis
                 choicePatterns={initialChoicePatterns}

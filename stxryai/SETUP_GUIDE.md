@@ -54,7 +54,7 @@ Complete setup guide for deploying Stxryai with authentication and AI features.
    - Name: `Stxryai`
    - Authorized redirect URIs:
      - `https://your-project.supabase.co/auth/v1/callback`
-     - `http://localhost:3000/auth/callback` (for local dev)
+     - `http://localhost:3000/authentication/callback` (for local dev)
    - Click **CREATE**
 5. Copy **Client ID** and **Client Secret**
 
@@ -76,7 +76,7 @@ Complete setup guide for deploying Stxryai with authentication and AI features.
 5. Copy **Client ID** and **Client Secret**
 6. Add Redirects:
    - ``
-   - `http://localhost:3000/auth/callback` (for local dev)
+   - `http://localhost:3000/authentication/callback` (for local dev)
 7. Save Changes
 
 ### Configure in Supabase

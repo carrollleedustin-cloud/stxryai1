@@ -211,6 +211,14 @@ interface CommentCardProps {
   formatTimeAgo: (date: Date) => string;
 }
 
+import ReportModal from '@/components/moderation/ReportModal';
+import { motion, AnimatePresence } from 'framer-motion';
+import { slideUp, staggerContainer } from '@/lib/animations/variants';
+import Icon from '@/components/ui/AppIcon';
+
+export interface Comment {
+//... (rest of the file is the same)
+
 function CommentCard({
   comment,
   currentUserId,
@@ -226,166 +234,187 @@ function CommentCard({
   formatTimeAgo
 }: CommentCardProps) {
   const [showReplies, setShowReplies] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const isOwner = currentUserId === comment.userId;
 
   return (
-    <motion.div variants={slideUp} className="group">
-      <div className="flex gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-        {/* Avatar */}
-        <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-            {comment.avatar ? (
-              <img
-                src={comment.avatar}
-                alt={comment.displayName}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              comment.displayName.charAt(0).toUpperCase()
-            )}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-foreground">{comment.displayName}</span>
-            <span className="text-xs text-muted-foreground">@{comment.username}</span>
-            <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground">
-              {formatTimeAgo(comment.createdAt)}
-            </span>
-            {comment.isEdited && (
-              <span className="text-xs text-muted-foreground italic">(edited)</span>
-            )}
-          </div>
-
-          {isEditing ? (
-            <div className="space-y-2">
-              <textarea
-                value={editContent}
-                onChange={(e) => onEditContentChange(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                rows={3}
-              />
-              <div className="flex gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onSaveEdit}
-                  className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
-                >
-                  Save
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onCancelEdit}
-                  className="px-3 py-1 bg-muted text-foreground rounded-lg text-sm font-medium"
-                >
-                  Cancel
-                </motion.button>
-              </div>
+    <>
+      <motion.div variants={slideUp} className="group">
+        <div className="flex gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+              {comment.avatar ? (
+                <img
+                  src={comment.avatar}
+                  alt={comment.displayName}
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                comment.displayName.charAt(0).toUpperCase()
+              )}
             </div>
-          ) : (
-            <p className="text-foreground mb-2 whitespace-pre-wrap">{comment.content}</p>
-          )}
+          </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={onLike}
-              className={`flex items-center gap-1 text-sm ${
-                comment.isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
-              } transition-colors`}
-            >
-              <Icon
-                name="HeartIcon"
-                size={16}
-                variant={comment.isLiked ? 'solid' : 'outline'}
-              />
-              {comment.likes > 0 && <span>{comment.likes}</span>}
-            </motion.button>
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-semibold text-foreground">{comment.displayName}</span>
+              <span className="text-xs text-muted-foreground">@{comment.username}</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">
+                {formatTimeAgo(comment.createdAt)}
+              </span>
+              {comment.isEdited && (
+                <span className="text-xs text-muted-foreground italic">(edited)</span>
+              )}
+            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={onReply}
-              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Icon name="ChatBubbleLeftIcon" size={16} />
-              Reply
-            </motion.button>
+            {isEditing ? (
+              <div className="space-y-2">
+                <textarea
+                  value={editContent}
+                  onChange={(e) => onEditContentChange(e.target.value)}
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  rows={3}
+                />
+                <div className="flex gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onSaveEdit}
+                    className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm font-medium"
+                  >
+                    Save
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={onCancelEdit}
+                    className="px-3 py-1 bg-muted text-foreground rounded-lg text-sm font-medium"
+                  >
+                    Cancel
+                  </motion.button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-foreground mb-2 whitespace-pre-wrap">{comment.content}</p>
+            )}
 
-            {isOwner && !isEditing && (
-              <>
+            {/* Actions */}
+            <div className="flex items-center gap-4">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onLike}
+                className={`flex items-center gap-1 text-sm ${
+                  comment.isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
+                } transition-colors`}
+              >
+                <Icon
+                  name="HeartIcon"
+                  size={16}
+                  variant={comment.isLiked ? 'solid' : 'outline'}
+                />
+                {comment.likes > 0 && <span>{comment.likes}</span>}
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={onReply}
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Icon name="ChatBubbleLeftIcon" size={16} />
+                Reply
+              </motion.button>
+
+              {!isOwner && (
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={onStartEdit}
-                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <Icon name="PencilIcon" size={16} />
-                  Edit
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={onDelete}
+                  onClick={() => setIsReportModalOpen(true)}
                   className="flex items-center gap-1 text-sm text-muted-foreground hover:text-red-500 transition-colors"
                 >
-                  <Icon name="TrashIcon" size={16} />
-                  Delete
+                  <Icon name="FlagIcon" size={16} />
+                  Report
                 </motion.button>
-              </>
+              )}
+
+              {isOwner && !isEditing && (
+                <>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={onStartEdit}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Icon name="PencilIcon" size={16} />
+                    Edit
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={onDelete}
+                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-red-500 transition-colors"
+                  >
+                    <Icon name="TrashIcon" size={16} />
+                    Delete
+                  </motion.button>
+                </>
+              )}
+            </div>
+
+            {/* Replies */}
+            {comment.replies && comment.replies.length > 0 && (
+              <div className="mt-3">
+                <button
+                  onClick={() => setShowReplies(!showReplies)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  {showReplies ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                </button>
+
+                <AnimatePresence>
+                  {showReplies && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="ml-4 mt-3 space-y-3 border-l-2 border-border pl-4"
+                    >
+                      {comment.replies.map((reply) => (
+                        <CommentCard
+                          key={reply.id}
+                          comment={reply}
+                          currentUserId={currentUserId}
+                          isEditing={false}
+                          editContent=""
+                          onEditContentChange={() => {}}
+                          onStartEdit={() => {}}
+                          onSaveEdit={() => {}}
+                          onCancelEdit={() => {}}
+                          onDelete={() => {}}
+                          onLike={() => {}}
+                          onReply={() => {}}
+                          formatTimeAgo={formatTimeAgo}
+                        />
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             )}
           </div>
-
-          {/* Replies */}
-          {comment.replies && comment.replies.length > 0 && (
-            <div className="mt-3">
-              <button
-                onClick={() => setShowReplies(!showReplies)}
-                className="text-sm text-primary hover:underline"
-              >
-                {showReplies ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
-              </button>
-
-              <AnimatePresence>
-                {showReplies && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="ml-4 mt-3 space-y-3 border-l-2 border-border pl-4"
-                  >
-                    {comment.replies.map((reply) => (
-                      <CommentCard
-                        key={reply.id}
-                        comment={reply}
-                        currentUserId={currentUserId}
-                        isEditing={false}
-                        editContent=""
-                        onEditContentChange={() => {}}
-                        onStartEdit={() => {}}
-                        onSaveEdit={() => {}}
-                        onCancelEdit={() => {}}
-                        onDelete={() => {}}
-                        onLike={() => {}}
-                        onReply={() => {}}
-                        formatTimeAgo={formatTimeAgo}
-                      />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        contentId={comment.id}
+        contentType="comment"
+      />
+    </>
   );
 }

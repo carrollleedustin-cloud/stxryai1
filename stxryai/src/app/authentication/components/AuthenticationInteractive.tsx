@@ -8,6 +8,9 @@ import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import BenefitsPanel from './BenefitsPanel';
 import TrustSignals from './TrustSignals';
+import { useAuth } from '@/contexts/AuthContext';
+import { authService } from '@/services/authService';
+import { toast } from 'sonner';
 
 const AuthenticationInteractive = () => {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -15,6 +18,7 @@ const AuthenticationInteractive = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { signIn, signUp } = useAuth();
 
   useEffect(() => {
     setIsHydrated(true);
@@ -28,34 +32,41 @@ const AuthenticationInteractive = () => {
     );
   }
 
-  const handleOAuthClick = (provider: string) => {
+  const handleOAuthClick = async (provider: 'google' | 'discord') => {
     setIsLoading(true);
     setError('');
-    setTimeout(() => {
+    try {
+      if (provider === 'google') {
+        await authService.signInWithGoogle();
+      } else if (provider === 'discord') {
+        await authService.signInWithDiscord();
+      }
+    } catch (err: any) {
+      setError(err.message);
+      toast.error(err.message);
       setIsLoading(false);
-      setError(`${provider.charAt(0).toUpperCase() + provider.slice(1)} authentication is not configured yet`);
-    }, 1500);
+    }
   };
 
-  const handleLoginSubmit = (data: {
+  const handleLoginSubmit = async (data: {
     email: string;
     password: string;
     rememberMe: boolean;
   }) => {
     setIsLoading(true);
     setError('');
-
-    setTimeout(() => {
-      if (data.email === 'demo@stxryai.com' && data.password === 'Demo@123') {
-        router.push('/user-dashboard');
-      } else {
-        setIsLoading(false);
-        setError('Invalid email or password. Please try again.');
-      }
-    }, 1500);
+    try {
+      await signIn(data.email, data.password);
+      toast.success('Login successful!');
+      router.push('/user-dashboard');
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message);
+      toast.error(err.message);
+    }
   };
 
-  const handleRegisterSubmit = (data: {
+  const handleRegisterSubmit = async (data: {
     username: string;
     email: string;
     password: string;
@@ -65,11 +76,23 @@ const AuthenticationInteractive = () => {
     setIsLoading(true);
     setError('');
 
-    setTimeout(() => {
+    if (data.password !== data.confirmPassword) {
+      setError('Passwords do not match.');
+      toast.error('Passwords do not match.');
       setIsLoading(false);
+      return;
+    }
+
+    try {
+      await signUp(data.email, data.password, data.username, data.displayName);
+      toast.success('Registration successful! Please check your email to confirm your account.');
       setActiveTab('login');
-      setError('');
-    }, 2000);
+      setIsLoading(false);
+    } catch (err: any) {
+      setIsLoading(false);
+      setError(err.message);
+      toast.error(err.message);
+    }
   };
 
   return (
@@ -127,7 +150,7 @@ const AuthenticationInteractive = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <OAuthButtons onOAuthClick={handleOAuthClick} isLoading={isLoading} />
+                  <OAuthButtons onOAuthClick={(provider) => handleOAuthClick(provider as 'google' | 'discord')} isLoading={isLoading} />
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">

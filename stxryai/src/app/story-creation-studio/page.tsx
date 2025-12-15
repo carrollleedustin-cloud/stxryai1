@@ -208,6 +208,12 @@ export default function StoryCreationStudioPage() {
     setChoices(updated);
   };
 
+  const getChapterTitle = (chapterId: string | undefined) => {
+    if (!chapterId) return 'End of story';
+    const chapter = chapters.find(c => c.id === chapterId);
+    return chapter ? `${chapter.chapterNumber}. ${chapter.title}` : 'Unknown Chapter';
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -539,146 +545,183 @@ export default function StoryCreationStudioPage() {
                 {chapters.length === 0 ? (
                   <p className="text-sm text-gray-500 text-center py-8">No chapters yet. Add your first chapter!</p>
                 ) : (
-                  chapters.map((chapter, index) => (
-                    <div
-                      key={chapter.id}
-                      className="p-3 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-medium text-gray-900 text-sm">
-                            {index + 1}. {chapter.title}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {chapter.choices?.length || 0} choices
-                          </p>
-                        </div>
-                        <span className="text-xs text-blue-600 font-medium">Ch {chapter.chapterNumber}</span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Choices Mode */}
-        {mode === 'choices' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Add Choices</h2>
-              {currentChapter && (
-                <p className="text-sm text-gray-600 mb-6">
-                  Adding choices for: <span className="font-medium">{currentChapter.title}</span>
-                </p>
-              )}
-
-              <div className="space-y-4">
-                {choices.map((choice, index) => (
-                  <div key={index} className="p-4 border border-gray-200 rounded-lg">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Choice {index + 1}</h3>
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Choice Text *</label>
-                        <input
-                          type="text"
-                          value={choice.choiceText}
-                          onChange={(e) => updateChoice(index, 'choiceText', e.target.value)}
-                          placeholder="What action can the reader take?"
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Consequence Text (Optional)</label>
-                        <input
-                          type="text"
-                          value={choice.consequenceText}
-                          onChange={(e) => updateChoice(index, 'consequenceText', e.target.value)}
-                          placeholder="What happens as a result?"
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                <button
-                  onClick={addChoiceField}
-                  className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors text-sm font-medium"
-                >
-                  + Add Another Choice
-                </button>
-
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    onClick={handleAddChoices}
-                    disabled={loading}
-                    className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 font-medium"
-                  >
-                    {loading ? 'Saving...' : 'Save Choices'}
-                  </button>
-                  <button
-                    onClick={() => setMode('chapters')}
-                    className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-                  >
-                    Back to Chapters
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Preview Mode */}
-        {mode === 'preview' && (
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg shadow p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{metadata.title}</h2>
-              <div className="flex items-center space-x-4 text-sm text-gray-600 mb-6">
-                <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full">{metadata.genre}</span>
-                <span>{metadata.difficulty}</span>
-                <span>~{metadata.estimatedDuration} min read</span>
-                {metadata.isPremium && <span className="text-yellow-600">⭐ Premium</span>}
-              </div>
-
-              <p className="text-gray-700 mb-8">{metadata.description}</p>
-
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-900 mb-3">Story Structure</h3>
-                  <p className="text-gray-600 mb-4">Total Chapters: {chapters.length}</p>
+                                    chapters.map((chapter, index) => (
+                                      <div
+                                        key={chapter.id}
+                                        className="p-3 border border-gray-200 rounded-lg"
+                                      >
+                                        <div className="flex items-start justify-between">
+                                          <div className="flex-1">
+                                            <h3 className="font-medium text-gray-900 text-sm">
+                                              {index + 1}. {chapter.title}
+                                            </h3>
+                                            <div className="text-xs text-gray-500 mt-2 space-y-1">
+                                              {chapter.choices?.map(choice => (
+                                                <div key={choice.id} className="flex items-center">
+                                                  <span className="mr-1">-&gt;</span>
+                                                  <span className="italic">"{choice.choiceText}"</span>
+                                                  <span className="mx-1"> leads to </span>
+                                                  <span className="font-semibold text-blue-600">
+                                                    {getChapterTitle(choice.nextChapterId)}
+                                                  </span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                          <span className="text-xs text-blue-600 font-medium">Ch {chapter.chapterNumber}</span>
+                                        </div>
+                                      </div>
+                                    ))
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
                   
-                  {chapters.map((chapter, index) => (
-                    <div key={chapter.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        Chapter {index + 1}: {chapter.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{chapter.content}</p>
-                      <p className="text-xs text-gray-500">{chapter.choices?.length || 0} choices available</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="pt-6 border-t border-gray-200">
-                  <button
-                    onClick={handlePublishStory}
-                    disabled={loading || chapters.length === 0}
-                    className="w-full bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 font-bold text-lg"
-                  >
-                    {loading ? 'Publishing...' : '🚀 Publish Story'}
-                  </button>
-                  <p className="text-xs text-gray-500 text-center mt-3">
-                    Your story will be available in the Story Library
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+                          {/* Choices Mode */}
+                          {mode === 'choices' && (
+                            <div className="max-w-4xl mx-auto">
+                              <div className="bg-white rounded-lg shadow p-6">
+                                <h2 className="text-xl font-semibold text-gray-900 mb-2">Add Choices</h2>
+                                {currentChapter && (
+                                  <p className="text-sm text-gray-600 mb-6">
+                                    Adding choices for: <span className="font-medium">{currentChapter.title}</span>
+                                  </p>
+                                )}
+                  
+                                <div className="space-y-4">
+                                  {choices.map((choice, index) => (
+                                    <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                                      <h3 className="text-sm font-medium text-gray-700 mb-3">Choice {index + 1}</h3>
+                                      
+                                      <div className="space-y-3">
+                                        <div>
+                                          <label className="block text-xs text-gray-600 mb-1">Choice Text *</label>
+                                          <input
+                                            type="text"
+                                            value={choice.choiceText}
+                                            onChange={(e) => updateChoice(index, 'choiceText', e.target.value)}
+                                            placeholder="What action can the reader take?"
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          />
+                                        </div>
+                  
+                                        <div>
+                                          <label className="block text-xs text-gray-600 mb-1">Consequence Text (Optional)</label>
+                                          <input
+                                            type="text"
+                                            value={choice.consequenceText}
+                                            onChange={(e) => updateChoice(index, 'consequenceText', e.target.value)}
+                                            placeholder="What happens as a result?"
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          />
+                                        </div>
+                  
+                                        <div>
+                                          <label className="block text-xs text-gray-600 mb-1">Leads to Chapter</label>
+                                          <select
+                                            value={choice.nextChapterId || ''}
+                                            onChange={(e) => updateChoice(index, 'nextChapterId', e.target.value)}
+                                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          >
+                                            <option value="">-- Select a chapter --</option>
+                                            {chapters.map(chap => (
+                                              <option key={chap.id} value={chap.id}>
+                                                {chap.chapterNumber}. {chap.title}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                  
+                                  <button
+                                    onClick={addChoiceField}
+                                    className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-600 transition-colors text-sm font-medium"
+                                  >
+                                    + Add Another Choice
+                                  </button>
+                  
+                                  <div className="flex space-x-3 pt-4">
+                                    <button
+                                      onClick={handleAddChoices}
+                                      disabled={loading}
+                                      className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 font-medium"
+                                    >
+                                      {loading ? 'Saving...' : 'Save Choices'}
+                                    </button>
+                                    <button
+                                      onClick={() => setMode('chapters')}
+                                      className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                                    >
+                                      Back to Chapters
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                  
+                          {/* Preview Mode */}
+                          {mode === 'preview' && (
+                            <div className="max-w-4xl mx-auto">
+                              <div className="bg-white rounded-lg shadow p-8">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2">{metadata.title}</h2>
+                                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-6">
+                                  <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full">{metadata.genre}</span>
+                                  <span>{metadata.difficulty}</span>
+                                  <span>~{metadata.estimatedDuration} min read</span>
+                                  {metadata.isPremium && <span className="text-yellow-600">⭐ Premium</span>}
+                                </div>
+                  
+                                <p className="text-gray-700 mb-8">{metadata.description}</p>
+                  
+                                <div className="space-y-6">
+                                  <div>
+                                    <h3 className="font-semibold text-lg text-gray-900 mb-3">Story Structure</h3>
+                                    <p className="text-gray-600 mb-4">Total Chapters: {chapters.length}</p>
+                                    
+                                    {chapters.map((chapter, index) => (
+                                      <div key={chapter.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
+                                        <h4 className="font-medium text-gray-900 mb-2">
+                                          Chapter {index + 1}: {chapter.title}
+                                        </h4>
+                                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">{chapter.content}</p>
+                                        <div className="text-xs text-gray-500 mt-2 space-y-1">
+                                          {chapter.choices?.map(choice => (
+                                            <div key={choice.id} className="flex items-center">
+                                              <span className="mr-1">-&gt;</span>
+                                              <span className="italic">"{choice.choiceText}"</span>
+                                              <span className="mx-1"> leads to </span>
+                                              <span className="font-semibold text-blue-600">
+                                                {getChapterTitle(choice.nextChapterId)}
+                                              </span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                  
+                                  <div className="pt-6 border-t border-gray-200">
+                                    <button
+                                      onClick={handlePublishStory}
+                                      disabled={loading || chapters.length === 0}
+                                      className="w-full bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 font-bold text-lg"
+                                    >
+                                      {loading ? 'Publishing...' : '🚀 Publish Story'}
+                                    </button>
+                                    <p className="text-xs text-gray-500 text-center mt-3">
+                                      Your story will be available in the Story Library
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  

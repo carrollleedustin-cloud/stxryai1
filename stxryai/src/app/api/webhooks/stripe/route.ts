@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe, verifyWebhookSignature } from '@/lib/stripe/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import type { Stripe } from 'stripe';
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -12,11 +12,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No signature' }, { status: 400 });
   }
 
-  const event = verifyWebhookSignature(body, signature);
-
-  if (!event) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  let event: Stripe.Event;
+  try {
+    event = verifyWebhookSignature(body, signature) as Stripe.Event;
+  } catch (error: any) {
+    return NextResponse.json({ error: `Webhook error: ${error.message}` }, { status: 400 });
   }
+
 
   const supabase = createServiceRoleClient();
 
@@ -24,7 +26,7 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
         // Get user by Stripe customer ID
@@ -55,7 +57,6 @@ export async function POST(req: NextRequest) {
           subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
         };
 
-        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
           .update(updateData)
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
         // Get user by Stripe customer ID
@@ -88,7 +89,6 @@ export async function POST(req: NextRequest) {
           subscription_end_date: null,
         };
 
-        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
           .update(downgradeData)
@@ -97,9 +97,9 @@ export async function POST(req: NextRequest) {
       }
 
       case 'checkout.session.completed': {
-        const session = event.data.object;
+        const session = event.data.object as Stripe.Checkout.Session;
         const customerId = session.customer as string;
-        const userId = session.client_reference_id || session.metadata?.userId;
+        const userId = session.client_reference_id;
 
         if (!userId) {
           console.error('No user ID in session');
@@ -107,7 +107,6 @@ export async function POST(req: NextRequest) {
         }
 
         // Update user with Stripe customer ID
-        // @ts-ignore - Supabase type inference issue
         await supabase
           .from('users')
           .update({ stripe_customer_id: customerId })
@@ -116,14 +115,14 @@ export async function POST(req: NextRequest) {
       }
 
       case 'invoice.payment_succeeded': {
-        const invoice = event.data.object;
+        const invoice = event.data.object as Stripe.Invoice;
         // Handle successful payment
         console.log('Payment succeeded:', invoice.id);
         break;
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object;
+        const invoice = event.data.object as Stripe.Invoice;
         const customerId = invoice.customer as string;
 
         // Get user and send notification
@@ -139,7 +138,7 @@ export async function POST(req: NextRequest) {
             type: 'story',
             title: 'Payment Failed',
             message: 'Your subscription payment failed. Please update your payment method.',
-            link: '/account/billing',
+            link: '/settings',
           });
         }
 

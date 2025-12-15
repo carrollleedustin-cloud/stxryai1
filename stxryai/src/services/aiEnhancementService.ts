@@ -7,7 +7,7 @@ export interface AIPromptTemplate {
   prompt_category: 'contextual' | 'dynamic' | 'procedural' | 'branching';
   template_name: string;
   prompt_text: string;
-  context_variables: Record<string, any>;
+  context_variables: Record<string, string | number>;
   creativity_level: number;
   usage_count: number;
   success_rate: number;
@@ -15,14 +15,25 @@ export interface AIPromptTemplate {
   updated_at: string;
 }
 
+export interface PromptStep {
+    step: number;
+    prompt: string;
+    expected_output: string;
+}
+
+export interface AdaptationRule {
+    condition: string;
+    action: string;
+}
+
 export interface DynamicPromptChain {
   id: string;
   user_id: string;
   story_id: string;
   chain_name: string;
-  prompt_sequence: Record<string, any>;
-  context_history: any[];
-  adaptation_rules: Record<string, any>;
+  prompt_sequence: PromptStep[];
+  context_history: string[];
+  adaptation_rules: AdaptationRule[];
   current_step: number;
   is_active: boolean;
   created_at: string;
@@ -56,15 +67,26 @@ export interface StoryPathAnalytics {
   updated_at: string;
 }
 
+export interface Choice {
+    chapter_id: string;
+    choice_text: string;
+    timestamp: string;
+}
+
+export interface Milestone {
+    milestone: string;
+    timestamp: string;
+}
+
 export interface ReadingJourneyRecap {
   id: string;
   user_id: string;
   story_id: string;
   recap_type: string;
-  choice_history: any[];
+  choice_history: Choice[];
   moral_alignments: Record<string, number>;
-  relationship_dynamics: Record<string, any>;
-  narrative_milestones: any[];
+  relationship_dynamics: Record<string, number>;
+  narrative_milestones: Milestone[];
   recap_content: string;
   spoiler_level: string;
   created_at: string;
@@ -130,7 +152,7 @@ export async function getPromptTemplates(userId: string, storyId?: string) {
 
     if (error) throw error;
     return data as AIPromptTemplate[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching prompt templates:', error);
     throw error;
   }
@@ -146,7 +168,7 @@ export async function createPromptTemplate(template: Partial<AIPromptTemplate>) 
 
     if (error) throw error;
     return data as AIPromptTemplate;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating prompt template:', error);
     throw error;
   }
@@ -163,7 +185,7 @@ export async function updatePromptTemplate(id: string, updates: Partial<AIPrompt
 
     if (error) throw error;
     return data as AIPromptTemplate;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating prompt template:', error);
     throw error;
   }
@@ -186,7 +208,7 @@ export async function getPromptChains(userId: string, storyId?: string) {
 
     if (error) throw error;
     return data as DynamicPromptChain[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching prompt chains:', error);
     throw error;
   }
@@ -202,7 +224,7 @@ export async function createPromptChain(chain: Partial<DynamicPromptChain>) {
 
     if (error) throw error;
     return data as DynamicPromptChain;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating prompt chain:', error);
     throw error;
   }
@@ -226,7 +248,7 @@ export async function getProceduralContent(storyId: string, chapterId?: string) 
 
     if (error) throw error;
     return data as ProceduralContent[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching procedural content:', error);
     throw error;
   }
@@ -242,7 +264,7 @@ export async function generateProceduralContent(content: Partial<ProceduralConte
 
     if (error) throw error;
     return data as ProceduralContent;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating procedural content:', error);
     throw error;
   }
@@ -264,7 +286,7 @@ export async function getStoryAnalytics(storyId: string, chapterId?: string) {
 
     if (error) throw error;
     return data as StoryPathAnalytics[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching story analytics:', error);
     throw error;
   }
@@ -287,7 +309,7 @@ export async function getReadingRecaps(userId: string, storyId?: string) {
 
     if (error) throw error;
     return data as ReadingJourneyRecap[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching reading recaps:', error);
     throw error;
   }
@@ -303,7 +325,7 @@ export async function generateReadingRecap(recap: Partial<ReadingJourneyRecap>) 
 
     if (error) throw error;
     return data as ReadingJourneyRecap;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating reading recap:', error);
     throw error;
   }
@@ -326,7 +348,7 @@ export async function getStoryTranslations(storyId: string, targetLanguage?: str
 
     if (error) throw error;
     return data as StoryTranslation[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching translations:', error);
     throw error;
   }
@@ -344,7 +366,7 @@ export async function getGlossaryEntries(userId: string, storyId: string) {
 
     if (error) throw error;
     return data as GlossaryEntry[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching glossary entries:', error);
     throw error;
   }
@@ -360,7 +382,7 @@ export async function addGlossaryEntry(entry: Partial<GlossaryEntry>) {
 
     if (error) throw error;
     return data as GlossaryEntry;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error adding glossary entry:', error);
     throw error;
   }
@@ -383,7 +405,7 @@ export async function getWritingPrompts(userId: string, promptType?: string) {
 
     if (error) throw error;
     return data as WritingPrompt[];
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching writing prompts:', error);
     throw error;
   }
@@ -399,7 +421,7 @@ export async function createWritingPrompt(prompt: Partial<WritingPrompt>) {
 
     if (error) throw error;
     return data as WritingPrompt;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating writing prompt:', error);
     throw error;
   }

@@ -1,34 +1,16 @@
-'use client';
-
-import { useState } from 'react';
-import Icon from '@/components/ui/AppIcon';
-import AppImage from '@/components/ui/AppImage';
+import { UserReadingProgress } from '@/services/userProgressService';
 import Link from 'next/link';
 
-interface Story {
-  id: string;
-  title: string;
-  cover: string;
-  genre: string;
-  completionRate: number;
-  totalChoices: number;
-  lastRead: string;
-  rating?: number;
-}
-
 interface ReadingHistoryProps {
-  stories: Story[];
+  stories: UserReadingProgress[];
 }
 
 const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
-  const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress'>(
-    'all'
-  );
+  const [filter, setFilter] = useState<'all' | 'completed' | 'in-progress'>('all');
 
-  const filteredStories = stories.filter((story) => {
-    if (filter === 'completed') return story.completionRate === 100;
-    if (filter === 'in-progress')
-      return story.completionRate > 0 && story.completionRate < 100;
+  const filteredStories = stories.filter((progress) => {
+    if (filter === 'completed') return progress.is_completed;
+    if (filter === 'in-progress') return !progress.is_completed;
     return true;
   });
 
@@ -45,7 +27,7 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
           <button
             onClick={() => setFilter('all')}
             className={`px-3 py-1 text-sm rounded-lg transition-smooth ${
-              filter === 'all' ?'bg-primary text-primary-foreground' :'bg-muted/50 text-muted-foreground hover:bg-muted'
+              filter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
             }`}
           >
             All
@@ -54,7 +36,8 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
             onClick={() => setFilter('completed')}
             className={`px-3 py-1 text-sm rounded-lg transition-smooth ${
               filter === 'completed'
-                ? 'bg-primary text-primary-foreground' :'bg-muted/50 text-muted-foreground hover:bg-muted'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted/50 text-muted-foreground hover:bg-muted'
             }`}
           >
             Completed
@@ -62,7 +45,7 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
           <button
             onClick={() => setFilter('in-progress')}
             className={`px-3 py-1 text-sm rounded-lg transition-smooth ${
-              filter === 'in-progress' ?'bg-primary text-primary-foreground' :'bg-muted/50 text-muted-foreground hover:bg-muted'
+              filter === 'in-progress' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
             }`}
           >
             In Progress
@@ -71,16 +54,16 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
       </div>
 
       <div className="space-y-4">
-        {filteredStories.map((story) => (
+        {filteredStories.map((progress) => (
           <Link
-            key={story.id}
-            href={`/story-reader?id=${story.id}`}
+            key={progress.id}
+            href={`/story-reader?id=${progress.story_id}`}
             className="flex items-center space-x-4 p-4 bg-muted/30 hover:bg-muted/50 rounded-lg transition-smooth group"
           >
             <div className="relative w-16 h-24 flex-shrink-0 rounded-lg overflow-hidden">
               <AppImage
-                src={story.cover}
-                alt={`Book cover for ${story.title} showing dark fantasy themed artwork`}
+                src={progress.stories.cover_image || ''}
+                alt={`Book cover for ${progress.stories.title}`}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -90,17 +73,17 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-smooth truncate">
-                    {story.title}
+                    {progress.stories.title}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {story.genre}
+                    {progress.stories.genre}
                   </p>
                 </div>
-                {story.rating && (
+                {progress.stories.rating && (
                   <div className="flex items-center space-x-1 ml-2">
                     <Icon name="StarIcon" size={14} className="text-accent" />
                     <span className="text-xs font-medium text-foreground">
-                      {story.rating}
+                      {progress.stories.rating}
                     </span>
                   </div>
                 )}
@@ -108,19 +91,18 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
 
               <div className="mt-3">
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                  <span>{story.completionRate}% Complete</span>
-                  <span>{story.totalChoices} choices made</span>
+                  <span>{progress.progress_percentage}% Complete</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-primary to-secondary transition-smooth"
-                    style={{ width: `${story.completionRate}%` }}
+                    style={{ width: `${progress.progress_percentage}%` }}
                   />
                 </div>
               </div>
 
               <p className="text-xs text-muted-foreground mt-2">
-                Last read: {story.lastRead}
+                Last read: {new Date(progress.last_read_at).toLocaleDateString()}
               </p>
             </div>
 

@@ -101,7 +101,7 @@ export const authService = {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/authentication/callback`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -120,7 +120,7 @@ export const authService = {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'discord',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/authentication/callback`,
       },
     });
 

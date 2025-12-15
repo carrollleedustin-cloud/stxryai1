@@ -1,100 +1,57 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
 import StoryCard from './StoryCard';
-import { storyService } from '@/services/storyService';
+import { storyService, FilterOptions } from '@/services/storyService';
 import { useAuth } from '@/contexts/AuthContext';
 import { StoryGridSkeleton } from '@/components/ui/Skeleton';
 import { staggerContainer, slideUp } from '@/lib/animations/variants';
-import { toast } from '@/lib/utils/toast';
+import { toast } from 'sonner';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import NotificationBell from '@/components/ui/NotificationBell';
 import UserMenu from '@/components/ui/UserMenu';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import { Story } from '@/types/database';
 
-interface FilterOptions {
-  genres: string[];
-  completionStatus: string[];
-  minRating: number;
-  contentMaturity: string[];
-  sortBy: string;
-}
+const PAGE_SIZE = 9;
 
 export default function StoryLibraryInteractive() {
   const router = useRouter();
-  const { user, profile } = useAuth();
-  const [stories, setStories] = useState<any[]>([]);
+  const { profile } = useAuth();
+  const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
   const [filters, setFilters] = useState<FilterOptions>({
     genres: [],
-    completionStatus: ['All'],
     minRating: 0,
-    contentMaturity: [],
     sortBy: 'relevance',
   });
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    loadStories();
-  }, [filters, searchQuery]);
-
-  const loadStories = async () => {
+  const loadStories = useCallback(async (reset = false) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      
-      // Convert FilterOptions to storyService filter format
-      const serviceFilters = {
-        genre: filters.genres.length > 0 ? filters.genres[0] : 'all',
-        difficulty: 'all',
-        isPremium: undefined as boolean | undefined,
-        searchQuery: searchQuery,
-      };
-      
-      const data = await storyService.getStories(serviceFilters);
-      
-      // Apply additional client-side filtering
-      let filteredData = data || [];
-      
-      // Filter by genres if multiple selected
-      if (filters.genres.length > 0) {
-        filteredData = filteredData.filter((story: any) =>
-          filters.genres.some((genre) => story.genre?.toLowerCase().includes(genre.toLowerCase()))
-        );
+      const newStories = await storyService.getFilteredStories({
+        ...filters,
+        searchQuery,
+        page: reset ? 1 : page,
+        pageSize: PAGE_SIZE,
+      });
+
+      if (reset) {
+        setStories(newStories);
+      } else {
+        setStories((prev) => [...prev, ...newStories]);
       }
       
-      // Filter by minimum rating
-      if (filters.minRating > 0) {
-        filteredData = filteredData.filter((story: any) => 
-          (story.average_rating || 0) >= filters.minRating
-        );
-      }
-      
-      // Sort stories based on sortBy option
-      switch (filters.sortBy) {
-        case 'popular':
-          filteredData.sort((a: any, b: any) => (b.total_reads || 0) - (a.total_reads || 0));
-          break;
-        case 'newest':
-          filteredData.sort((a: any, b: any) => 
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-          );
-          break;
-        case 'rating':
-          filteredData.sort((a: any, b: any) => 
-            (b.average_rating || 0) - (a.average_rating || 0)
-          );
-          break;
-        default:
-          // relevance - keep original order
-          break;
-      }
-      
-      setStories(filteredData);
+      setHasMore(newStories.length === PAGE_SIZE);
       setError('');
     } catch (err: any) {
       if (err?.message?.includes('Failed to fetch')) {
@@ -106,28 +63,39 @@ export default function StoryLibraryInteractive() {
     } finally {
       setLoading(false);
     }
+  }, [filters, searchQuery, page]);
+
+  useEffect(() => {
+    loadStories(true);
+  }, [filters, searchQuery]);
+  
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setPage(1);
   };
 
-  const handleFilterChange = (newFilters: FilterOptions) => {
+  const handleFilterChange = (newFilters: Omit<FilterOptions, 'searchQuery' | 'page' | 'pageSize'>) => {
     setFilters(newFilters);
+    setPage(1);
   };
 
   const handleStoryClick = (storyId: string, isPremium: boolean) => {
-    if (isPremium && profile?.subscription_tier === 'free') {
-      toast.warning('Premium Content', 'Please upgrade your subscription to access this story.');
+    if (isPremium && profile?.tier === 'free') {
+      toast.warning('This is a premium story. Please upgrade to read.');
+      router.push('/pricing');
       return;
     }
-    router.push(`/story-reader?storyId=${storyId}`);
+    router.push(`/story-reader/${storyId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
-      <header className="bg-card shadow-sm border-b border-border">
+      <header className="bg-card/80 backdrop-blur-lg shadow-sm border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <motion.h1
@@ -146,15 +114,13 @@ export default function StoryLibraryInteractive() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {/* Search Bar */}
+      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <SearchBar
           onSearch={handleSearch}
-          isPremium={profile?.subscription_tier === 'premium'}
+          isPremium={profile?.tier === 'premium'}
         />
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filter Panel */}
           <div className="lg:col-span-1">
             <FilterPanel
               filters={filters}
@@ -162,7 +128,6 @@ export default function StoryLibraryInteractive() {
             />
           </div>
 
-          {/* Story Grid */}
           <div className="lg:col-span-3">
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -170,36 +135,52 @@ export default function StoryLibraryInteractive() {
               </div>
             )}
 
-            {loading ? (
+            {(loading && page === 1) ? (
               <StoryGridSkeleton count={6} />
             ) : stories.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center py-20"
+                className="text-center py-20 bg-card/50 rounded-xl"
               >
-                <p className="text-muted-foreground text-lg">No stories found matching your criteria.</p>
+                <h3 className="text-xl font-semibold text-foreground">No Stories Found</h3>
+                <p className="text-muted-foreground text-lg mt-2">Try adjusting your search or filters.</p>
               </motion.div>
             ) : (
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-              >
-                {stories.map((story) => (
-                  <motion.div key={story.id} variants={slideUp}>
-                    <StoryCard
-                      story={story}
-                      onClick={() => handleStoryClick(story.id, story.is_premium)}
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
+              <>
+                <motion.div
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {stories.map((story) => (
+                    <motion.div key={story.id} variants={slideUp}>
+                      <StoryCard
+                        story={story}
+                        onClick={() => handleStoryClick(story.id, story.is_premium)}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+                {hasMore && (
+                  <div className="mt-8 text-center">
+                    <motion.button
+                      onClick={handleLoadMore}
+                      disabled={loading}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg disabled:opacity-50"
+                    >
+                      {loading ? 'Loading...' : 'Load More Stories'}
+                    </motion.button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
-      </div>
+      </main>
       <ScrollToTop />
     </div>
   );

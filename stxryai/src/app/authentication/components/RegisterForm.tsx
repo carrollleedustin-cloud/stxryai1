@@ -77,8 +77,24 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (!/[A-Z]/.test(formData.password)) {
+      setError('Password must contain at least one uppercase letter.');
+      return;
+    }
+    if (!/[a-z]/.test(formData.password)) {
+      setError('Password must contain at least one lowercase letter.');
+      return;
+    }
+    if (!/[0-9]/.test(formData.password)) {
+      setError('Password must contain at least one number.');
+      return;
+    }
+    if (!/[^A-Za-z0-9]/.test(formData.password)) {
+      setError('Password must contain at least one special character.');
       return;
     }
 
@@ -257,7 +273,7 @@ export default function RegisterForm({ onSubmit, isLoading: externalLoading, err
             required
             className="w-4 h-4 text-purple-600 border-white/20 rounded focus:ring-purple-500"
           />
-          <span className="ml-2 text-sm text-slate-300">I accept the Terms and Conditions</span>
+          <a href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="ml-1 text-sm text-purple-400 hover:underline">Terms and Conditions</a>
         </label>
 
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
