@@ -211,13 +211,7 @@ interface CommentCardProps {
   onReply: () => void;
   formatTimeAgo: (date: Date) => string;
 }
-
-import ReportModal from '@/components/moderation/ReportModal';
-import { motion, AnimatePresence } from 'framer-motion';
-import { slideUp, staggerContainer } from '@/lib/animations/variants';
-import Icon from '@/components/ui/AppIcon';
-
-
+export function CommentCard({
   comment,
   currentUserId,
   isEditing,
