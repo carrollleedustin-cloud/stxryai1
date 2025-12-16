@@ -217,10 +217,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { slideUp, staggerContainer } from '@/lib/animations/variants';
 import Icon from '@/components/ui/AppIcon';
 
-export interface Comment {
-//... (rest of the file is the same)
 
-function CommentCard({
   comment,
   currentUserId,
   isEditing,

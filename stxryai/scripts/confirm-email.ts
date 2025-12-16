@@ -3,11 +3,37 @@
 
 import { createClient, User } from '@supabase/supabase-js';
 
+// Load environment variables
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' }); // Or .env based on your setup
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase URL and Anon Key are required!');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 interface AugmentedUser extends User {
   email_confirmed_at: string | null;
 }
 
-// ... existing code ...
+async function confirmAllEmails() {
+  try {
+    const { data: { users }, error } = await supabase.auth.admin.listUsers();
+
+    if (error) {
+      console.error('Error listing users:', error);
+      return;
+    }
+
+    if (!users) {
+      console.log('No users found.');
+      return;
+    }
 
     const unconfirmedUsers: AugmentedUser[] = (users as AugmentedUser[])?.filter(
       (user: AugmentedUser) => !user.email_confirmed_at
@@ -44,3 +70,4 @@ interface AugmentedUser extends User {
 }
 
 confirmAllEmails();
+
