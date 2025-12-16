@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe, verifyWebhookSignature } from '@/lib/stripe/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { updateUserById, insertNotification } from '@/lib/supabase/typed';
 import type { Stripe } from 'stripe';
 
 export async function POST(req: NextRequest) {
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   }
 
 
-  const supabase = createServiceRoleClient();
+  const supabase = createServiceRoleClient() as any;
 
   try {
     switch (event.type) {
@@ -57,10 +58,7 @@ export async function POST(req: NextRequest) {
           subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
         };
 
-        await supabase
-          .from('users')
-          .update(updateData)
-          .eq('id', user.id);
+        await updateUserById(user.id, updateData);
 
         break;
       }
@@ -89,10 +87,7 @@ export async function POST(req: NextRequest) {
           subscription_end_date: null,
         };
 
-        await supabase
-          .from('users')
-          .update(downgradeData)
-          .eq('id', user.id);
+        await updateUserById(user.id, downgradeData as any);
         break;
       }
 
@@ -107,10 +102,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Update user with Stripe customer ID
-        await supabase
-          .from('users')
-          .update({ stripe_customer_id: customerId })
-          .eq('id', userId);
+        await updateUserById(userId as string, { stripe_customer_id: customerId } as any);
         break;
       }
 
@@ -133,7 +125,7 @@ export async function POST(req: NextRequest) {
           .single();
 
         if (user) {
-          await supabase.from('notifications').insert({
+          await insertNotification({
             user_id: user.id,
             type: 'story',
             title: 'Payment Failed',

@@ -1,5 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './database.types';
 
 // Lazy initialization to ensure environment variables are loaded
 let supabaseClient: SupabaseClient | null = null;
@@ -18,7 +19,7 @@ function initializeSupabase() {
   const isValidConfig = supabaseUrl?.startsWith('http') && supabaseAnonKey?.length > 0;
   isConfigured = isValidConfig;
 
-  if (isValidConfig) {
+    if (isValidConfig) {
     try {
       supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
     } catch (error) {
@@ -64,3 +65,9 @@ export const supabase = new Proxy({} as SupabaseClient, {
 });
 
 export const isSupabaseConfigured = getIsSupabaseConfigured();
+
+// Typed helper for consumers that want the Database-generic Supabase client.
+export function getTypedSupabaseClient(): SupabaseClient<Database> | null {
+  const client = getSupabaseClient();
+  return client as unknown as SupabaseClient<Database> | null;
+}

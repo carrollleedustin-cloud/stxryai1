@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { aiService, type AIServiceOptions } from '@/lib/api';
+import type { ErrorResponse } from '@/lib/api/error-handler';
 
 interface Suggestion {
   id: string;
@@ -98,7 +99,7 @@ export default function EnhancedAIAssistant({
         };
         setSuggestions([newSuggestion]);
       } else {
-        const errorResponse: ErrorResponse = result;
+        const errorResponse = result as ErrorResponse;
         setError(errorResponse.error || 'Failed to generate suggestions');
       }
     } catch (err) {

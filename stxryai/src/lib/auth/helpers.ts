@@ -1,6 +1,8 @@
 import { createClient } from '../supabase/server';
+import type { Database } from '../supabase/database.types';
 import { redirect } from 'next/navigation';
 import { UserProfile, Achievement, UserAchievement, Notification } from '@/types/database';
+import { updateUserById, upsertUserAchievement, insertNotification } from '@/lib/supabase/typed';
 
 // Get current user from server
 export async function getCurrentUser(): Promise<UserProfile | null> {
@@ -99,10 +101,8 @@ export async function consumeEnergy(amount = 1): Promise<boolean> {
 
   const supabase = createClient();
 
-  const { error } = await supabase
-    .from<UserProfile>('users')
-    .update({ energy: user.energy - amount } as Partial<UserProfile>)
-    .eq('id', user.id);
+  const { error } = await updateUserById(user.id, { energy: user.energy - amount });
+  
 
   return !error;
 }
@@ -112,7 +112,7 @@ export async function grantXP(userId: string, xpAmount: number): Promise<boolean
   const supabase = createClient();
 
   const { data: user }: { data: Pick<UserProfile, 'xp' | 'level'> | null } = await supabase
-    .from<UserProfile>('users')
+    .from('users')
     .select('xp, level')
     .eq('id', userId)
     .single();
@@ -127,10 +127,7 @@ export async function grantXP(userId: string, xpAmount: number): Promise<boolean
     newLevel = user.level + 1;
   }
 
-  const { error } = await supabase
-    .from<UserProfile>('users')
-    .update({ xp: newXP, level: newLevel } as Partial<UserProfile>)
-    .eq('id', userId);
+  const { error } = await updateUserById(userId, { xp: newXP, level: newLevel });
 
   return !error;
 }
@@ -159,20 +156,18 @@ export async function checkAchievements(userId: string, type: string, value: num
 
       if (!userAchievement || !userAchievement.unlocked_at) {
         // Unlock achievement
-        await supabase
-          .from<UserAchievement>('user_achievements')
-          .upsert({
-            user_id: userId,
-            achievement_id: achievement.id,
-            progress: achievement.requirement_value,
-            unlocked_at: new Date().toISOString(),
-          });
+        await upsertUserAchievement({
+          user_id: userId,
+          achievement_id: achievement.id,
+          progress: achievement.requirement_value,
+          unlocked_at: new Date().toISOString(),
+        });
 
         // Grant XP reward
         await grantXP(userId, achievement.xp_reward);
 
         // Create notification
-        await supabase.from<Notification>('notifications').insert({
+        await insertNotification({
           user_id: userId,
           type: 'achievement',
           title: 'Achievement Unlocked!',

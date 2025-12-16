@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { UserReadingProgress } from '@/services/userProgressService';
 import Link from 'next/link';
+import Icon from '@/components/ui/AppIcon';
+import AppImage from '@/components/ui/AppImage';
 
 interface ReadingHistoryProps {
   stories: UserReadingProgress[];

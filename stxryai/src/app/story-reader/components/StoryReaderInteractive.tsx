@@ -198,10 +198,11 @@ export default function StoryReaderInteractive() {
             // Send engagement metrics for the *previous* chapter before changing it
             sendEngagementMetrics(engagementTracking, currentChapter.id, currentChapter.content);
     
-            // Record NPC memory if choice involves NPC interaction      const npcs = await narrativeAIService.getStoryNPCs(currentStory.id);
-      const relevantNPC = npcs.find(npc => 
-        choice.choice_text?.toLowerCase().includes(npc.npc_name.toLowerCase())
-      );
+            // Record NPC memory if choice involves NPC interaction
+            const npcs = await narrativeAIService.getStoryNPCs(currentStory.id || '');
+            const relevantNPC = (npcs || []).find((npc: any) =>
+              choice.choice_text?.toLowerCase().includes(npc.npc_name?.toLowerCase())
+            );
 
       if (relevantNPC) {
         await narrativeAIService.recordNPCMemory({

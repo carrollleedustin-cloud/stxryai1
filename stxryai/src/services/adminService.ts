@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { updateStoryById, updateUserById } from '@/lib/supabase/typed';
 import { Story } from '@/types/database';
 
 export interface PlatformMetrics {
@@ -51,8 +52,9 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
     if (storyError) throw storyError;
 
     const activeUsers = profiles?.length || 0;
-    const totalStories = stories?.filter((s: Story) => s.is_published === true).length || 0;
-    const avgEngagement = stories?.reduce((acc: number, s: Story) => acc + (s.play_count || 0), 0) / (totalStories || 1);
+    const storyRows = (stories as any[]) || [];
+    const totalStories = storyRows.filter((s) => s.is_published === true).length || 0;
+    const avgEngagement = storyRows.reduce((acc: number, s: any) => acc + (s.play_count || 0), 0) / (totalStories || 1);
     const premiumUsers = profiles?.filter((p: Profile) => p.subscription_tier !== 'free').length || 0;
 
     return {
@@ -105,15 +107,10 @@ export const getStoryAnalytics = async (limit: number = 10) => {
 // Update story status (publish, archive, feature)
 export const updateStoryStatus = async (storyId: string, status: 'draft' | 'published' | 'archived') => {
   try {
-    const { data, error } = await supabase
-      .from('stories')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', storyId)
-      .select()
-      .single();
+    const { data, error } = await updateStoryById(storyId, { status, updated_at: new Date().toISOString() } as any);
 
     if (error) throw error;
-    return { success: true, data };
+    return { success: true, data: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error updating story status:', error);
     return { success: false, error };
@@ -123,15 +120,10 @@ export const updateStoryStatus = async (storyId: string, status: 'draft' | 'publ
 // Update user subscription tier
 export const updateUserSubscription = async (userId: string, tier: 'free' | 'premium' | 'vip') => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .update({ subscription_tier: tier, updated_at: new Date().toISOString() })
-      .eq('id', userId)
-      .select()
-      .single();
+    const { data, error } = await updateUserById(userId, { subscription_tier: tier, updated_at: new Date().toISOString() } as any);
 
     if (error) throw error;
-    return { success: true, data };
+    return { success: true, data: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error updating user subscription:', error);
     return { success: false, error };

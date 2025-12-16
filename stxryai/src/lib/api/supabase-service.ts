@@ -183,17 +183,17 @@ class SupabaseService {
       this.ensureConfigured();
       const client = this.getClient();
 
-      const channel = client
+        const channel = client
         .channel(`${table}_changes`)
         .on(
-          'postgres_changes',
+          'postgres_changes' as any,
           {
             event: options.event || '*',
             schema: 'public',
             table,
             filter: options.filter,
           },
-          (payload) => {
+          (payload: any) => {
             try {
               callback(payload as RealtimePostgresChangesPayload<T>);
             } catch (error) {
@@ -202,7 +202,7 @@ class SupabaseService {
             }
           }
         )
-        .subscribe((status) => {
+        .subscribe((status: any) => {
           if (status === 'SUBSCRIPTION_ERROR') {
             const error = new Error(`Failed to subscribe to ${table}`);
             console.error(error);

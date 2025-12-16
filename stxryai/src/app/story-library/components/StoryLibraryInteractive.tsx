@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import SearchBar from './SearchBar';
 import FilterPanel from './FilterPanel';
+import type { FilterOptions } from './FilterPanel';
 import StoryCard from './StoryCard';
-import { storyService, FilterOptions } from '@/services/storyService';
+import { storyService } from '@/services/storyService';
 import { useAuth } from '@/contexts/AuthContext';
 import { StoryGridSkeleton } from '@/components/ui/Skeleton';
 import { staggerContainer, slideUp } from '@/lib/animations/variants';
@@ -30,7 +31,9 @@ export default function StoryLibraryInteractive() {
 
   const [filters, setFilters] = useState<FilterOptions>({
     genres: [],
+    completionStatus: ['All'],
     minRating: 0,
+    contentMaturity: [],
     sortBy: 'relevance',
   });
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,7 +81,7 @@ export default function StoryLibraryInteractive() {
     setPage(1);
   };
 
-  const handleFilterChange = (newFilters: Omit<FilterOptions, 'searchQuery' | 'page' | 'pageSize'>) => {
+  const handleFilterChange = (newFilters: FilterOptions) => {
     setFilters(newFilters);
     setPage(1);
   };

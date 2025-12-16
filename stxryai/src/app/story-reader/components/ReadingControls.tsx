@@ -12,6 +12,8 @@ interface ReadingControlsProps {
   progress: number;
   onToggleDistractionFree: () => void;
   isDistractionFree: boolean;
+  currentTheme?: 'light' | 'dark' | 'system';
+  onThemeChange?: (theme: 'light' | 'dark' | 'system') => void;
 }
 
 const ReadingControls = ({
@@ -22,6 +24,8 @@ const ReadingControls = ({
   progress,
   onToggleDistractionFree,
   isDistractionFree,
+  currentTheme,
+  onThemeChange,
 }: ReadingControlsProps) => {
   const [isHydrated, setIsHydrated] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -64,8 +68,15 @@ const ReadingControls = ({
         </div>
 
         <div className="flex items-center space-x-2">
-        <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          <button
+            onClick={() => {
+              const next = theme === 'dark' ? 'light' : 'dark';
+              if (typeof onThemeChange === 'function') {
+                onThemeChange(next);
+              } else {
+                setTheme(next);
+              }
+            }}
             className="p-2 rounded-lg bg-card/50 backdrop-blur-sm border border-border hover:bg-muted/50 transition-smooth"
             aria-label="Change theme"
           >

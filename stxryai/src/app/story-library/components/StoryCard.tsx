@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import AppImage from '@/components/ui/AppImage';
 import { Story } from '@/types/database';
-import { Badge } from '@/components/ui/badge';
+import Badge from '@/components/ui/Badge';
 import {
   Flame,
   Book,
@@ -13,7 +13,11 @@ import {
   Swords,
   Ghost,
   Rocket,
-  Landmark
+  Landmark,
+  Zap,
+  Star,
+  Users,
+  Clock
 } from 'lucide-react';
 
 interface StoryCardProps {

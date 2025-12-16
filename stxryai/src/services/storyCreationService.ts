@@ -1,4 +1,11 @@
 import { supabase } from '@/lib/supabase/client';
+import {
+  insertStory,
+  insertChapter,
+  updateChapterById,
+  updateStoryById,
+  deleteChapterById,
+} from '@/lib/supabase/typed';
 
 export interface StoryNode {
   id: string;
@@ -23,7 +30,7 @@ export interface StoryMetadata {
   title: string;
   description: string;
   genre: 'fantasy' | 'sci-fi' | 'mystery' | 'romance' | 'horror' | 'adventure' | 'thriller' | 'historical';
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'easy' | 'medium' | 'hard';
   coverImageUrl: string;
   isPremium: boolean;
   estimatedDuration?: number;
@@ -32,24 +39,20 @@ export interface StoryMetadata {
 // Create a new story draft
 export const createStoryDraft = async (metadata: StoryMetadata, authorId: string) => {
   try {
-    const { data, error } = await supabase
-      .from('stories')
-      .insert({
-        title: metadata.title,
-        description: metadata.description,
-        genre: metadata.genre,
-        difficulty: metadata.difficulty,
-        cover_image: metadata.coverImageUrl,
-        is_premium: metadata.isPremium,
-        estimated_duration: metadata.estimatedDuration,
-        user_id: authorId,
-        is_published: false
-      })
-      .select()
-      .single();
+    const { data, error } = await insertStory({
+      title: metadata.title,
+      description: metadata.description,
+      genre: metadata.genre,
+      difficulty: metadata.difficulty,
+      cover_image: metadata.coverImageUrl,
+      is_premium: metadata.isPremium,
+      estimated_duration: metadata.estimatedDuration,
+      user_id: authorId,
+      is_published: false,
+    });
 
     if (error) throw error;
-    return { success: true, story: data };
+    return { success: true, story: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error creating story draft:', error);
     return { success: false, error };
@@ -59,16 +62,12 @@ export const createStoryDraft = async (metadata: StoryMetadata, authorId: string
 // Add a chapter to a story
 export const addChapter = async (storyId: string, chapter: Omit<StoryNode, 'id' | 'choices'>) => {
   try {
-    const { data, error } = await supabase
-      .from('chapters')
-      .insert({
-        story_id: storyId,
-        title: chapter.title,
-        content: chapter.content,
-        chapter_number: chapter.chapterNumber
-      })
-      .select()
-      .single();
+    const { data, error } = await insertChapter({
+      story_id: storyId,
+      title: chapter.title,
+      content: chapter.content,
+      chapter_number: chapter.chapterNumber,
+    });
 
     if (error) throw error;
 
@@ -79,7 +78,7 @@ export const addChapter = async (storyId: string, chapter: Omit<StoryNode, 'id' 
       column_name: 'total_chapters'
     });
 
-    return { success: true, chapter: data };
+    return { success: true, chapter: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error adding chapter:', error);
     return { success: false, error };
@@ -141,18 +140,13 @@ export const getStoryForEditing = async (storyId: string) => {
 // Update chapter content
 export const updateChapter = async (chapterId: string, updates: Partial<StoryNode>) => {
   try {
-    const { data, error } = await supabase
-      .from('chapters')
-      .update({
-        title: updates.title,
-        content: updates.content
-      })
-      .eq('id', chapterId)
-      .select()
-      .single();
+    const { data, error } = await updateChapterById(chapterId, {
+      title: updates.title,
+      content: updates.content,
+    });
 
     if (error) throw error;
-    return { success: true, chapter: data };
+    return { success: true, chapter: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error updating chapter:', error);
     return { success: false, error };
@@ -162,18 +156,21 @@ export const updateChapter = async (chapterId: string, updates: Partial<StoryNod
 // Update story metadata
 export const updateStoryMetadata = async (storyId: string, metadata: Partial<StoryMetadata>) => {
   try {
-    const { data, error } = await supabase
-      .from('stories')
-      .update({
-        ...metadata,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', storyId)
-      .select()
-      .single();
+    const patch = {
+      title: metadata.title,
+      description: metadata.description,
+      genre: metadata.genre,
+      difficulty: metadata.difficulty,
+      cover_image: metadata.coverImageUrl,
+      is_premium: metadata.isPremium,
+      estimated_duration: metadata.estimatedDuration,
+      updated_at: new Date().toISOString(),
+    } as any;
+
+    const { data, error } = await updateStoryById(storyId, patch);
 
     if (error) throw error;
-    return { success: true, story: data };
+    return { success: true, story: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error updating story metadata:', error);
     return { success: false, error };
@@ -183,19 +180,14 @@ export const updateStoryMetadata = async (storyId: string, metadata: Partial<Sto
 // Publish story (change status from draft to published)
 export const publishStory = async (storyId: string) => {
   try {
-    const { data, error } = await supabase
-      .from('stories')
-      .update({
-        is_published: true,
-        published_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', storyId)
-      .select()
-      .single();
+    const { data, error } = await updateStoryById(storyId, {
+      is_published: true,
+      published_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) throw error;
-    return { success: true, story: data };
+    return { success: true, story: Array.isArray(data) ? data[0] : data };
   } catch (error) {
     console.error('Error publishing story:', error);
     return { success: false, error };
@@ -214,10 +206,7 @@ export const deleteChapter = async (chapterId: string) => {
     if (choicesError) throw choicesError;
 
     // Then delete the chapter
-    const { error } = await supabase
-      .from('chapters')
-      .delete()
-      .eq('id', chapterId);
+    const { error } = await deleteChapterById(chapterId);
 
     if (error) throw error;
     return { success: true };

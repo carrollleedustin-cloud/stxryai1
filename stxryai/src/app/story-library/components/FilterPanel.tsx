@@ -4,13 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 import { slideUp, staggerContainer } from '@/lib/animations/variants';
+import type { FilterOptions as ServiceFilterOptions } from '@/services/storyService';
 
-interface FilterOptions {
-  genres: string[];
+export interface FilterOptions extends ServiceFilterOptions {
   completionStatus: string[];
-  minRating: number;
   contentMaturity: string[];
-  sortBy: string;
 }
 
 interface FilterPanelProps {
@@ -81,7 +79,7 @@ const FilterPanel = ({
   ];
 
   const completionOptions = ['All', 'In Progress', 'Completed', 'New'];
-  const sortOptions = [
+  const sortOptions: { value: ServiceFilterOptions['sortBy']; label: string }[] = [
     { value: 'relevance', label: 'Relevance' },
     { value: 'popular', label: 'Most Popular' },
     { value: 'newest', label: 'Newest First' },
@@ -104,7 +102,7 @@ const FilterPanel = ({
     onFilterChange(updated);
   };
 
-  const handleSortChange = (sortBy: string) => {
+  const handleSortChange = (sortBy: ServiceFilterOptions['sortBy']) => {
     const updated = { ...localFilters, sortBy };
     setLocalFilters(updated);
     onFilterChange(updated);

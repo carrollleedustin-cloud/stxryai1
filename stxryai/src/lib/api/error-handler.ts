@@ -219,7 +219,7 @@ export function validateResponse<T>(
   onError?: (error: ErrorResponse) => void
 ): response is SuccessResponse<T> {
   if (!response.success) {
-    const errorResponse: ErrorResponse = response;
+    const errorResponse = response as ErrorResponse;
     onError?.(errorResponse);
     return false;
   }

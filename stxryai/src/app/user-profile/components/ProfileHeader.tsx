@@ -6,7 +6,25 @@ import Icon from '@/components/ui/AppIcon';
 import ReportModal from '@/components/moderation/ReportModal';
 
 interface ProfileHeaderProps {
-//... (rest of the file is the same)
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    avatar?: string;
+    bio?: string | null;
+    isPremium?: boolean;
+    joinDate?: string;
+    location?: string;
+    website?: string;
+  };
+  stats: {
+    storiesCompleted: number;
+    totalChoices: number;
+    readingStreak: number;
+    achievements: number;
+  };
+  isOwnProfile?: boolean;
+  onEditProfile?: () => void;
   onAddFriend?: () => void;
   onMessage?: () => void;
 }

@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { upsertStoryReview } from '@/lib/supabase/typed';
 import { Story } from '@/types/database';
 
 export interface StoryFilters {
@@ -185,18 +186,14 @@ export const storyService = {
   },
 
   async submitReview(storyId: string, userId: string, rating: number, reviewText?: string) {
-    const { data, error } = await supabase
-      .from('story_reviews')
-      .upsert({
-        story_id: storyId,
-        user_id: userId,
-        rating,
-        review_text: reviewText,
-      })
-      .select()
-      .single();
+    const { data, error } = await upsertStoryReview({
+      story_id: storyId,
+      user_id: userId,
+      rating,
+      review: reviewText ?? null,
+    });
 
     if (error) throw error;
-    return data;
+    return Array.isArray(data) ? data[0] : data;
   },
 };

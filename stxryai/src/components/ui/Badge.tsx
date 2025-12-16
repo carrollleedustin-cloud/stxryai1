@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 
-type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'premium' | 'outline';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {

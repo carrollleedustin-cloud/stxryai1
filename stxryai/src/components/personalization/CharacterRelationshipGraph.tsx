@@ -70,7 +70,7 @@ const CharacterRelationshipGraph: React.FC<CharacterRelationshipGraphProps> = ({
             strokeWidth="2"
             markerEnd={`url(#arrowhead-${relationships[index].type})`}
             opacity={hoveredNode && (relationships[index].source !== hoveredNode && relationships[index].target !== hoveredNode) ? 0.2 : 1}
-            transition="opacity 0.2s"
+            style={{ transition: 'opacity 0.2s' }}
           />
         ))}
 

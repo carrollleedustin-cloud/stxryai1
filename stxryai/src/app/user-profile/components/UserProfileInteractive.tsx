@@ -11,6 +11,7 @@ import ClubMemberships from './ClubMemberships';
 import ReadingLists from './ReadingLists';
 import { UserProfile, Story, Achievement } from '@/types/database';
 import { ReadingClub } from '@/services/communityService';
+import { userProgressService } from '@/services/userProgressService';
 
 // Define specific interfaces for props
 export interface UserStats {
@@ -57,16 +58,16 @@ export interface UserReadingList {
 }
 
 interface UserProfileInteractiveProps {
-  initialUser: UserProfile;
-  initialStats: UserStats;
-  initialAchievements: UserAchievement[];
-  initialStories: Story[];
-  initialChoicePatterns: ChoicePatterns;
-  initialGenrePreferences: GenrePreferences[];
-  initialReadingTimes: ReadingTimeData[];
-  initialFriends: Friend[];
-  initialClubs: ReadingClub[];
-  initialLists: UserReadingList[];
+  initialUser: any;
+  initialStats: any;
+  initialAchievements: any[];
+  initialStories: any[];
+  initialChoicePatterns: any;
+  initialGenrePreferences: any[];
+  initialReadingTimes: any[];
+  initialFriends: any[];
+  initialClubs: any[];
+  initialLists: any[];
 }
 
 const UserProfileInteractive = ({

@@ -72,6 +72,7 @@ const AuthenticationInteractive = () => {
     password: string;
     confirmPassword: string;
     acceptTerms: boolean;
+    displayName?: string;
   }) => {
     setIsLoading(true);
     setError('');

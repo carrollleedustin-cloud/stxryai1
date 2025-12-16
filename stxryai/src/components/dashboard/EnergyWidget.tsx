@@ -11,6 +11,7 @@ interface EnergyWidgetProps {
   nextRechargeTime?: Date; // When next energy will be added
   isPremium?: boolean;
   variant?: 'compact' | 'full';
+  onUpgrade?: () => void;
 }
 
 export default function EnergyWidget({
@@ -20,6 +21,7 @@ export default function EnergyWidget({
   nextRechargeTime,
   isPremium = false,
   variant = 'full',
+  onUpgrade,
 }: EnergyWidgetProps) {
   const [timeUntilRecharge, setTimeUntilRecharge] = useState<string>('');
   const energyPercentage = (currentEnergy / maxEnergy) * 100;
