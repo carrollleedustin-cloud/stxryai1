@@ -39,6 +39,45 @@ export default function StoryReaderInteractive() {
   const [fontSize, setFontSize] = useState(16);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isDistractionFree, setIsDistractionFree] = useState(false);
+  const [chapterStartTime, setChapterStartTime] = useState<number | null>(null);
+  const [aiGeneratedSegments, setAiGeneratedSegments] = useState<string[]>([]);
+
+  const handleScrollDepthChange = useCallback((depth: number) => {
+    setEngagementTracking(prev => ({
+      ...prev,
+      scrollDepth: depth,
+    }));
+  }, [setEngagementTracking]);
+
+  const sendEngagementMetrics = useCallback(async (
+    latestTracking: typeof engagementTracking,
+    chapterId: string | undefined,
+    currentChapterContent: string
+  ) => {
+    if (!user || !story?.id || !chapterId) return;
+
+    const metricsToSend = {
+      user_id: user.id,
+      story_id: story.id,
+      chapter_id: chapterId,
+      time_on_scene: latestTracking.timeOnScene,
+      choice_frequency: latestTracking.choiceCount, // Simple proxy for now
+      choices_made_count: latestTracking.choiceCount,
+      scroll_depth: latestTracking.scrollDepth,
+    };
+
+    const context = {
+      storyId: story.id,
+      userId: user.id,
+      chapterId: chapterId,
+      currentChapterContent: currentChapterContent,
+    };
+
+    const feedback = await narrativeAIService.sendEngagementMetricsAndGetFeedback(metricsToSend, context);
+    if (feedback?.feedback) {
+      setAiGeneratedSegments(feedback.feedback);
+    }
+  }, [user, story, narrativeAIService, setAiGeneratedSegments]);
 
   // Calculate current chapter (moved up to avoid reference before declaration)
   const currentChapter = chapters[currentChapterIndex];
@@ -74,6 +113,7 @@ export default function StoryReaderInteractive() {
           const choicesData = await storyService.getChapterChoices(currentChapter.id);
           setChoices(choicesData || []);
         }
+        setChapterStartTime(Date.now()); // Set start time after chapter is loaded
       }
 
       setError('');
@@ -93,6 +133,23 @@ export default function StoryReaderInteractive() {
       loadStoryData();
     }
   }, [storyId, user, loadStoryData]);
+
+  useEffect(() => {
+    // This effect runs once when the component mounts.
+    // The cleanup function runs when dependencies change or component unmounts.
+    return () => {
+      // Only record time if a chapter start time was previously set and the component is not in a loading state.
+      // currentChapter is a dependency to ensure its value is fresh for the cleanup.
+      if (chapterStartTime && currentChapter && !loading) {
+        const timeSpent = Date.now() - chapterStartTime; // Time in milliseconds
+        const finalEngagementTracking = {
+          ...engagementTracking,
+          timeOnScene: engagementTracking.timeOnScene + Math.round(timeSpent / 1000)
+        };
+        sendEngagementMetrics(finalEngagementTracking, currentChapter.id, currentChapter.content);
+      }
+    };
+  }, [currentChapterIndex, chapterStartTime, loading, currentChapter, engagementTracking, sendEngagementMetrics]);
 
   // ... (rest of the component is the same)
   const handleBookmark = async () => {
@@ -122,15 +179,26 @@ export default function StoryReaderInteractive() {
       return;
     }
 
-    if (user && currentStory?.id) {
-      // Increment choice count
-      setEngagementTracking(prev => ({
-        ...prev,
-        choiceCount: prev.choiceCount + 1
-      }));
-
-      // Record NPC memory if choice involves NPC interaction
-      const npcs = await narrativeAIService.getStoryNPCs(currentStory.id);
+          if (user && currentStory?.id && currentChapter) {
+            // Increment choice count
+            setEngagementTracking(prev => ({
+              ...prev,
+              choiceCount: prev.choiceCount + 1
+            }));
+    
+            // Calculate time spent on current chapter
+            if (chapterStartTime) {
+              const timeSpent = Date.now() - chapterStartTime; // Time in milliseconds
+              setEngagementTracking(prev => ({
+                ...prev,
+                timeOnScene: prev.timeOnScene + Math.round(timeSpent / 1000) // Convert to seconds
+              }));
+            }
+    
+            // Send engagement metrics for the *previous* chapter before changing it
+            sendEngagementMetrics(engagementTracking, currentChapter.id, currentChapter.content);
+    
+            // Record NPC memory if choice involves NPC interaction      const npcs = await narrativeAIService.getStoryNPCs(currentStory.id);
       const relevantNPC = npcs.find(npc => 
         choice.choice_text?.toLowerCase().includes(npc.npc_name.toLowerCase())
       );
@@ -176,6 +244,7 @@ export default function StoryReaderInteractive() {
       const nextChoices = await storyService.getChapterChoices(nextChapter.id);
       setChoices(nextChoices || []);
       setCurrentChapterIndex(nextChapterIndex);
+      setChapterStartTime(Date.now()); // Reset for the new chapter
     } catch (err: any) {
       setError('Failed to save progress. Please try again.');
     }
@@ -235,6 +304,8 @@ export default function StoryReaderInteractive() {
               chapter={currentChapter}
               chapterNumber={currentChapterIndex + 1}
               fontSize={fontSize}
+              onScrollDepthChange={handleScrollDepthChange}
+              aiSegments={aiGeneratedSegments}
             />
 
             {choices.length > 0 && (

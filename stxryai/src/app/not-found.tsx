@@ -99,7 +99,7 @@ export default function NotFound() {
                 </motion.div>
               </Link>
 
-              <Link href="/dashboard">
+              <Link href="/user-dashboard">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer"

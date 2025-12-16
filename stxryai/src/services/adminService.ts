@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { Story } from '@/types/database';
 
 export interface PlatformMetrics {
   activeUsers: number;
@@ -27,11 +28,7 @@ export interface UserReport {
   createdAt: string;
 }
 
-interface Story {
-  id: string;
-  status: string;
-  play_count?: number;
-}
+
 
 interface Profile {
   id: string;
@@ -49,7 +46,7 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
 
     const { data: stories, error: storyError } = await supabase
       .from('stories')
-      .select('id, play_count, status');
+      .select('id, play_count, status, is_published');
     
     if (storyError) throw storyError;
 

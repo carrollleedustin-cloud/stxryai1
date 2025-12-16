@@ -219,7 +219,8 @@ export function validateResponse<T>(
   onError?: (error: ErrorResponse) => void
 ): response is SuccessResponse<T> {
   if (!response.success) {
-    onError?.(response);
+    const errorResponse: ErrorResponse = response;
+    onError?.(errorResponse);
     return false;
   }
   return true;

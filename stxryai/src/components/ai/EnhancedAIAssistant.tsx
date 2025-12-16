@@ -98,7 +98,8 @@ export default function EnhancedAIAssistant({
         };
         setSuggestions([newSuggestion]);
       } else {
-        setError(result.error || 'Failed to generate suggestions');
+        const errorResponse: ErrorResponse = result;
+        setError(errorResponse.error || 'Failed to generate suggestions');
       }
     } catch (err) {
       setError('An unexpected error occurred');

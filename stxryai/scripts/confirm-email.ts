@@ -1,38 +1,17 @@
 // Quick script to confirm unverified email accounts
 // Run with: npx ts-node scripts/confirm-email.ts
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient, User } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Error: Missing Supabase environment variables');
-  console.error('Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local');
-  process.exit(1);
+interface AugmentedUser extends User {
+  email_confirmed_at: string | null;
 }
 
-// Create admin client with service role key
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
-  }
-});
+// ... existing code ...
 
-async function confirmAllEmails() {
-  try {
-    console.log('Fetching unconfirmed users...');
-
-    // Get all users (service role can access auth.users)
-    const { data: { users }, error } = await supabase.auth.admin.listUsers();
-
-    if (error) {
-      console.error('Error fetching users:', error);
-      return;
-    }
-
-    const unconfirmedUsers = users?.filter(user => !user.email_confirmed_at) || [];
+    const unconfirmedUsers: AugmentedUser[] = (users as AugmentedUser[])?.filter(
+      (user: AugmentedUser) => !user.email_confirmed_at
+    ) || [];
 
     console.log(`Found ${unconfirmedUsers.length} unconfirmed user(s)`);
 

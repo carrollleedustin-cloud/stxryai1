@@ -54,11 +54,14 @@ export async function requireTier(tier: 'premium' | 'creator_pro'): Promise<User
 }
 
 // Check if user is story owner
+interface StoryOwner {
+  user_id: string;
+}
 export async function requireStoryOwnership(storyId: string): Promise<UserProfile> {
   const user = await requireAuth();
   const supabase = createClient();
 
-  const { data: story } = await supabase
+  const { data: story }: { data: StoryOwner | null } = await supabase
     .from('stories')
     .select('user_id')
     .eq('id', storyId)
@@ -97,8 +100,8 @@ export async function consumeEnergy(amount = 1): Promise<boolean> {
   const supabase = createClient();
 
   const { error } = await supabase
-    .from('users')
-    .update({ energy: user.energy - amount })
+    .from<UserProfile>('users')
+    .update({ energy: user.energy - amount } as Partial<UserProfile>)
     .eq('id', user.id);
 
   return !error;
@@ -108,8 +111,8 @@ export async function consumeEnergy(amount = 1): Promise<boolean> {
 export async function grantXP(userId: string, xpAmount: number): Promise<boolean> {
   const supabase = createClient();
 
-  const { data: user } = await supabase
-    .from('users')
+  const { data: user }: { data: Pick<UserProfile, 'xp' | 'level'> | null } = await supabase
+    .from<UserProfile>('users')
     .select('xp, level')
     .eq('id', userId)
     .single();
@@ -125,8 +128,8 @@ export async function grantXP(userId: string, xpAmount: number): Promise<boolean
   }
 
   const { error } = await supabase
-    .from('users')
-    .update({ xp: newXP, level: newLevel })
+    .from<UserProfile>('users')
+    .update({ xp: newXP, level: newLevel } as Partial<UserProfile>)
     .eq('id', userId);
 
   return !error;
@@ -147,7 +150,7 @@ export async function checkAchievements(userId: string, type: string, value: num
   for (const achievement of achievements as Achievement[]) {
     if (value >= achievement.requirement_value) {
       // Check if already unlocked
-      const { data: userAchievement } = await supabase
+      const { data: userAchievement }: { data: UserAchievement | null } = await supabase
         .from('user_achievements')
         .select('*')
         .eq('user_id', userId)
@@ -157,25 +160,25 @@ export async function checkAchievements(userId: string, type: string, value: num
       if (!userAchievement || !userAchievement.unlocked_at) {
         // Unlock achievement
         await supabase
-          .from('user_achievements')
+          .from<UserAchievement>('user_achievements')
           .upsert({
             user_id: userId,
             achievement_id: achievement.id,
             progress: achievement.requirement_value,
             unlocked_at: new Date().toISOString(),
-          } as UserAchievement);
+          });
 
         // Grant XP reward
         await grantXP(userId, achievement.xp_reward);
 
         // Create notification
-        await supabase.from('notifications').insert({
+        await supabase.from<Notification>('notifications').insert({
           user_id: userId,
           type: 'achievement',
           title: 'Achievement Unlocked!',
           message: `You unlocked: ${achievement.title}`,
           link: '/achievements',
-        } as Omit<Notification, 'id' | 'created_at' | 'read'>);
+        });
       }
     }
   }

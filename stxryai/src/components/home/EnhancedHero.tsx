@@ -119,7 +119,7 @@ export function EnhancedHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1 }}
             >
-              <Link href="/start-reading">
+              <Link href="/story-reader">
                 <motion.button
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-lg font-bold rounded-full shadow-2xl hover:shadow-purple-500/50 transition-shadow relative overflow-hidden group"
                   whileHover={{ scale: 1.05 }}
@@ -135,7 +135,7 @@ export function EnhancedHero() {
                 </motion.button>
               </Link>
 
-              <Link href="/create">
+              <Link href="/story-creation-studio">
                 <motion.button
                   className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/30 text-white text-lg font-bold rounded-full hover:bg-white/20 transition-all"
                   whileHover={{ scale: 1.05 }}

@@ -83,3 +83,21 @@ export interface Achievement {
     requirement_value: number;
     created_at: string;
 }
+
+export interface UserAchievement {
+  user_id: string;
+  achievement_id: string;
+  progress: number;
+  unlocked_at?: string;
+}
+
+export interface Notification {
+  id?: string;
+  user_id: string;
+  type: string;
+  title: string;
+  message: string;
+  link?: string;
+  read?: boolean;
+  created_at?: string;
+}

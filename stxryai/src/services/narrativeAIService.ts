@@ -160,6 +160,55 @@ class NarrativeAIService {
     }
   }
 
+  async sendEngagementMetricsAndGetFeedback(
+    metrics: Omit<EngagementMetrics, 'id' | 'created_at' | 'updated_at'>,
+    context: {
+      storyId: string;
+      userId: string;
+      chapterId: string;
+      currentChapterContent: string;
+    }
+  ): Promise<{ feedback?: string[]; pacingAdjustments?: any }> { // Return type for AI feedback/segments
+    try {
+      // 1. Track engagement
+      const trackedMetrics = await this.trackEngagement(metrics);
+      if (!trackedMetrics) {
+        console.warn('Failed to track engagement metrics.');
+      }
+
+      // 2. Simulate AI feedback/dynamic segment generation
+      // In a real scenario, this would involve calling another AI service or API endpoint
+      // with the collected metrics and story context to generate dynamic content or pacing adjustments.
+      const aiFeedback: string[] = [];
+      const pacingAdjustments: any = {}; // Placeholder for actual pacing adjustments
+
+      // Example AI logic: If scroll depth is low and time on scene is high, suggest speeding up.
+      if (metrics.scroll_depth < 50 && metrics.time_on_scene > 60) {
+        aiFeedback.push("The reader seems to be spending a lot of time on this section but hasn't scrolled much. Perhaps this part is too detailed? Consider a more concise approach.");
+        pacingAdjustments.suggestedPacing = 'fast';
+      } else if (metrics.choices_made_count === 0 && metrics.time_on_scene > 120) {
+        aiFeedback.push("The reader is taking a long time without making choices. Maybe they need more guidance or more immediate engagement? Offer a clear choice or a dramatic event.");
+        pacingAdjustments.suggestedPacing = 'action-oriented';
+      } else if (metrics.scroll_depth > 90 && metrics.time_on_scene < 30 && metrics.choices_made_count > 0) {
+        aiFeedback.push("The reader is quickly moving through chapters. They enjoy rapid progression. Offer more immediate choices and dynamic events.");
+        pacingAdjustments.suggestedPacing = 'very-fast';
+      }
+
+      // Here you would integrate with an actual AI model (e.g., via an API route)
+      // For now, returning simulated feedback.
+
+      // If we wanted to generate new content, this is where we'd call the AI model.
+      // E.g., const generatedSegment = await this.callAnotherAIEndpoint(context.currentChapterContent, aiFeedback);
+      // aiFeedback.push(generatedSegment);
+
+      return { feedback: aiFeedback.length > 0 ? aiFeedback : undefined, pacingAdjustments };
+
+    } catch (error) {
+      console.error('Failed to send engagement metrics or get feedback:', error);
+      return {};
+    }
+  }
+
   // ==================== NPC MANAGEMENT ====================
 
   async createNPC(npc: Omit<StoryNPC, 'id'>): Promise<StoryNPC | null> {

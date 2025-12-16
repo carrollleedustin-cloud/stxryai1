@@ -289,7 +289,7 @@ export function StoryShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <Link href="/browse">
+          <Link href="/story-library">
             <motion.button
               className="px-8 py-4 bg-white/10 backdrop-blur-lg border-2 border-white/20 text-white font-bold rounded-full hover:bg-white/20 transition-all"
               whileHover={{ scale: 1.05 }}

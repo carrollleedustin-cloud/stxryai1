@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { slideUp, staggerContainer } from '@/lib/animations/variants';
 import Icon from '@/components/ui/AppIcon';
+import ReportModal from '@/components/moderation/ReportModal';
 
 export interface Comment {
   id: string;

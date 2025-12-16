@@ -255,7 +255,7 @@ export default function TrendingStoriesSection() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                   >
-                    <Link href={`/story/${currentStory.id}`}>
+                    <Link href={`/story-reader?id=${currentStory.id}`}>
                       <motion.button
                         className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow"
                         whileHover={{ scale: 1.02 }}
