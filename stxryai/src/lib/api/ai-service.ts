@@ -3,7 +3,13 @@
  * Consolidates all AI-related API calls with consistent error handling, caching, and retry logic
  */
 
-import { generateCompletion, generateText, streamCompletion, type AIMessage, type AICompletionOptions } from '@/lib/ai/client';
+import {
+  generateCompletion,
+  generateText,
+  streamCompletion,
+  type AIMessage,
+  type AICompletionOptions,
+} from '@/lib/ai/client';
 import { withErrorHandling, withRetry, rateLimiter } from './error-handler';
 import { apiCache, withCache } from './cache';
 
@@ -52,10 +58,7 @@ class AIService {
   /**
    * Generate story content using AI
    */
-  async generateStoryContent(
-    request: StoryGenerationRequest,
-    options: AIServiceOptions = {}
-  ) {
+  async generateStoryContent(request: StoryGenerationRequest, options: AIServiceOptions = {}) {
     return withErrorHandling(
       async () => {
         // Rate limiting
@@ -112,10 +115,7 @@ class AIService {
   /**
    * Generate character description
    */
-  async generateCharacter(
-    request: CharacterGenerationRequest,
-    options: AIServiceOptions = {}
-  ) {
+  async generateCharacter(request: CharacterGenerationRequest, options: AIServiceOptions = {}) {
     return withErrorHandling(
       async () => {
         await rateLimiter.waitForSlot(
@@ -124,7 +124,8 @@ class AIService {
           this.RATE_WINDOW
         );
 
-        const systemPrompt = 'You are an expert character designer for interactive fiction. Create detailed, compelling character descriptions.';
+        const systemPrompt =
+          'You are an expert character designer for interactive fiction. Create detailed, compelling character descriptions.';
         const userPrompt = `Create a character description for:
 Name: ${request.name}
 Role: ${request.role}
@@ -154,9 +155,7 @@ Provide a rich, engaging character description that includes personality, appear
   /**
    * Moderate content for appropriateness
    */
-  async moderateContent(
-    request: ContentModerationRequest
-  ): Promise<ModerationResult> {
+  async moderateContent(request: ContentModerationRequest): Promise<ModerationResult> {
     const response = await withErrorHandling(
       async () => {
         await rateLimiter.waitForSlot(
@@ -173,14 +172,11 @@ Provide a rich, engaging character description that includes personality, appear
   "suggestion": string (optional improvement suggestion)
 }`;
 
-        const result = await withRetry(
-          () => generateText(request.content, systemPrompt, 0.3),
-          {
-            maxRetries: 2,
-            retryDelay: 1000,
-            service: this.SERVICE_NAME,
-          }
-        );
+        const result = await withRetry(() => generateText(request.content, systemPrompt, 0.3), {
+          maxRetries: 2,
+          retryDelay: 1000,
+          service: this.SERVICE_NAME,
+        });
 
         return JSON.parse(result);
       },
@@ -289,10 +285,14 @@ Triple the length while maintaining perfect pacing. Make readers feel like they'
         );
 
         const systemPrompts = {
-          pacing: 'Analyze the pacing of this story. Identify slow and fast sections, and provide suggestions for improvement.',
-          emotion: 'Analyze the emotional arc of this story. Identify emotional beats and their intensity.',
-          characters: 'Analyze the characters in this story. Evaluate their depth, development, and relationships.',
-          themes: 'Analyze the themes in this story. Identify major and minor themes and how they\'re developed.',
+          pacing:
+            'Analyze the pacing of this story. Identify slow and fast sections, and provide suggestions for improvement.',
+          emotion:
+            'Analyze the emotional arc of this story. Identify emotional beats and their intensity.',
+          characters:
+            'Analyze the characters in this story. Evaluate their depth, development, and relationships.',
+          themes:
+            "Analyze the themes in this story. Identify major and minor themes and how they're developed.",
         };
 
         const result = await withRetry(
@@ -344,21 +344,36 @@ Triple the length while maintaining perfect pacing. Make readers feel like they'
 
     // Genre-specific expertise
     const genreExpertise: Record<string, string> = {
-      'childrens-adventure': 'You write delightful stories for children ages 3-8, using simple language, fun characters, and positive messages. Every sentence sparks imagination and wonder.',
-      'childrens-educational': 'You create educational stories for children ages 5-10 that teach important lessons through engaging narratives. You make learning fun and memorable.',
-      'middle-grade': 'You write exciting adventures for readers ages 8-12, balancing action with character development and age-appropriate themes.',
-      'fantasy': 'You craft epic fantasy tales with rich magic systems, complex world-building, and memorable quests. Your stories blend wonder with depth.',
-      'scifi': 'You write hard science fiction that explores technology, space, and the future. Your stories are scientifically grounded yet imaginative.',
-      'cyberpunk': 'You create gritty cyberpunk narratives set in neon-lit dystopias where technology and humanity collide. Your prose is sharp and atmospheric.',
-      'mystery': 'You write compelling mysteries with clever clues, red herrings, and satisfying reveals. Every detail matters in your intricate plots.',
-      'horror': 'You create chilling horror that builds dread through atmosphere, psychological tension, and unexpected scares. You understand the art of fear.',
-      'romance': 'You write heartfelt romance with authentic emotions, compelling chemistry, and satisfying relationship development.',
-      'thriller': 'You craft high-stakes thrillers with relentless pacing, shocking twists, and edge-of-your-seat suspense.',
-      'steampunk': 'You write Victorian-era stories infused with steam-powered technology, adventure, and period-appropriate language with modern sensibilities.',
-      'historical': 'You write historically accurate fiction that brings past eras to life with rich detail, authentic dialogue, and emotional resonance.',
-      'western': 'You craft Western tales with authentic frontier spirit, moral complexity, and vivid depictions of the Old West.',
-      'postapocalyptic': 'You write post-apocalyptic survival stories that explore humanity, hope, and resilience in the face of devastation.',
-      'superhero': 'You create superhero stories that balance spectacular action with character depth and moral dilemmas about power and responsibility.',
+      'childrens-adventure':
+        'You write delightful stories for children ages 3-8, using simple language, fun characters, and positive messages. Every sentence sparks imagination and wonder.',
+      'childrens-educational':
+        'You create educational stories for children ages 5-10 that teach important lessons through engaging narratives. You make learning fun and memorable.',
+      'middle-grade':
+        'You write exciting adventures for readers ages 8-12, balancing action with character development and age-appropriate themes.',
+      fantasy:
+        'You craft epic fantasy tales with rich magic systems, complex world-building, and memorable quests. Your stories blend wonder with depth.',
+      scifi:
+        'You write hard science fiction that explores technology, space, and the future. Your stories are scientifically grounded yet imaginative.',
+      cyberpunk:
+        'You create gritty cyberpunk narratives set in neon-lit dystopias where technology and humanity collide. Your prose is sharp and atmospheric.',
+      mystery:
+        'You write compelling mysteries with clever clues, red herrings, and satisfying reveals. Every detail matters in your intricate plots.',
+      horror:
+        'You create chilling horror that builds dread through atmosphere, psychological tension, and unexpected scares. You understand the art of fear.',
+      romance:
+        'You write heartfelt romance with authentic emotions, compelling chemistry, and satisfying relationship development.',
+      thriller:
+        'You craft high-stakes thrillers with relentless pacing, shocking twists, and edge-of-your-seat suspense.',
+      steampunk:
+        'You write Victorian-era stories infused with steam-powered technology, adventure, and period-appropriate language with modern sensibilities.',
+      historical:
+        'You write historically accurate fiction that brings past eras to life with rich detail, authentic dialogue, and emotional resonance.',
+      western:
+        'You craft Western tales with authentic frontier spirit, moral complexity, and vivid depictions of the Old West.',
+      postapocalyptic:
+        'You write post-apocalyptic survival stories that explore humanity, hope, and resilience in the face of devastation.',
+      superhero:
+        'You create superhero stories that balance spectacular action with character depth and moral dilemmas about power and responsibility.',
     };
 
     const genreKey = request.genre?.toLowerCase().replace(/\s+/g, '-') || '';
@@ -371,15 +386,17 @@ Triple the length while maintaining perfect pacing. Make readers feel like they'
     // Tone-specific guidance
     if (request.tone) {
       const toneGuidance: Record<string, string> = {
-        'dark': 'Your tone is dark and intense, exploring shadows and moral complexity.',
-        'lighthearted': 'Your tone is fun and upbeat, bringing joy and laughter to readers.',
-        'serious': 'Your tone is thoughtful and deep, exploring meaningful themes with gravity.',
-        'humorous': 'Your tone is witty and comedic, finding humor in situations and character interactions.',
-        'adventurous': 'Your tone is exciting and energetic, capturing the thrill of adventure.',
-        'mysterious': 'Your tone is enigmatic and cryptic, weaving mystery into every scene.',
-        'romantic': 'Your tone is passionate and emotional, exploring the depths of love and connection.',
-        'gritty': 'Your tone is raw and realistic, showing life without softening the edges.',
-        'whimsical': 'Your tone is playful and fantastical, celebrating wonder and imagination.',
+        dark: 'Your tone is dark and intense, exploring shadows and moral complexity.',
+        lighthearted: 'Your tone is fun and upbeat, bringing joy and laughter to readers.',
+        serious: 'Your tone is thoughtful and deep, exploring meaningful themes with gravity.',
+        humorous:
+          'Your tone is witty and comedic, finding humor in situations and character interactions.',
+        adventurous: 'Your tone is exciting and energetic, capturing the thrill of adventure.',
+        mysterious: 'Your tone is enigmatic and cryptic, weaving mystery into every scene.',
+        romantic:
+          'Your tone is passionate and emotional, exploring the depths of love and connection.',
+        gritty: 'Your tone is raw and realistic, showing life without softening the edges.',
+        whimsical: 'Your tone is playful and fantastical, celebrating wonder and imagination.',
       };
 
       prompt += ' ' + (toneGuidance[request.tone] || `Your writing has a ${request.tone} tone.`);
@@ -389,19 +406,25 @@ Triple the length while maintaining perfect pacing. Make readers feel like they'
     if (request.narrativeStyle) {
       const styleGuidance: Record<string, string> = {
         'action-driven': 'Focus on fast-paced events, exciting sequences, and dynamic progression.',
-        'character-focused': 'Delve deep into character psychology, motivations, and internal conflicts.',
-        'atmospheric': 'Emphasize mood, setting, and sensory details to create immersive ambiance.',
+        'character-focused':
+          'Delve deep into character psychology, motivations, and internal conflicts.',
+        atmospheric: 'Emphasize mood, setting, and sensory details to create immersive ambiance.',
         'dialogue-heavy': 'Drive the story through character conversations and interactions.',
-        'philosophical': 'Explore big questions, existential themes, and intellectual depth.',
-        'cinematic': 'Write with visual storytelling techniques, showing rather than telling.',
-        'poetic': 'Use lyrical, beautiful language with careful attention to rhythm and imagery.',
-        'minimalist': 'Write with sparse, direct prose that conveys maximum meaning with minimum words.',
+        philosophical: 'Explore big questions, existential themes, and intellectual depth.',
+        cinematic: 'Write with visual storytelling techniques, showing rather than telling.',
+        poetic: 'Use lyrical, beautiful language with careful attention to rhythm and imagery.',
+        minimalist:
+          'Write with sparse, direct prose that conveys maximum meaning with minimum words.',
       };
 
-      prompt += ' ' + (styleGuidance[request.narrativeStyle] || `Use ${request.narrativeStyle} storytelling techniques.`);
+      prompt +=
+        ' ' +
+        (styleGuidance[request.narrativeStyle] ||
+          `Use ${request.narrativeStyle} storytelling techniques.`);
     }
 
-    prompt += ' Create engaging, immersive narrative content that draws readers in and makes every choice meaningful.';
+    prompt +=
+      ' Create engaging, immersive narrative content that draws readers in and makes every choice meaningful.';
 
     return prompt;
   }

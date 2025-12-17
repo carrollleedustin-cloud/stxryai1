@@ -35,7 +35,8 @@ export default function TrendingStoriesSection() {
       thumbnail: '/images/stories/scifi-1.jpg',
       gradient: 'from-cyan-500 via-blue-500 to-purple-600',
       tags: ['Time Travel', 'AI', 'Thriller'],
-      excerpt: 'When a quantum physicist discovers messages from the future, she must decide whether to prevent a catastrophe or preserve the timeline.',
+      excerpt:
+        'When a quantum physicist discovers messages from the future, she must decide whether to prevent a catastrophe or preserve the timeline.',
     },
     {
       id: '2',
@@ -47,7 +48,8 @@ export default function TrendingStoriesSection() {
       thumbnail: '/images/stories/fantasy-1.jpg',
       gradient: 'from-orange-500 via-red-500 to-pink-600',
       tags: ['Dragons', 'Magic', 'Adventure'],
-      excerpt: 'A forgotten heir must unite the dragon clans before an ancient evil rises to consume the realm.',
+      excerpt:
+        'A forgotten heir must unite the dragon clans before an ancient evil rises to consume the realm.',
     },
     {
       id: '3',
@@ -59,7 +61,8 @@ export default function TrendingStoriesSection() {
       thumbnail: '/images/stories/cyberpunk-1.jpg',
       gradient: 'from-pink-500 via-purple-500 to-indigo-600',
       tags: ['Cyberpunk', 'Noir', 'Hacking'],
-      excerpt: 'In a city where memories can be bought and sold, a rogue hacker uncovers a conspiracy that could rewrite reality itself.',
+      excerpt:
+        'In a city where memories can be bought and sold, a rogue hacker uncovers a conspiracy that could rewrite reality itself.',
     },
     {
       id: '4',
@@ -71,7 +74,8 @@ export default function TrendingStoriesSection() {
       thumbnail: '/images/stories/romance-1.jpg',
       gradient: 'from-rose-400 via-pink-400 to-red-500',
       tags: ['Romance', 'Historical', 'Drama'],
-      excerpt: 'A modern doctor finds herself trapped in 18th century Scotland, where she must choose between returning home or fighting for true love.',
+      excerpt:
+        'A modern doctor finds herself trapped in 18th century Scotland, where she must choose between returning home or fighting for true love.',
     },
     {
       id: '5',
@@ -83,7 +87,8 @@ export default function TrendingStoriesSection() {
       thumbnail: '/images/stories/mystery-1.jpg',
       gradient: 'from-gray-600 via-slate-700 to-zinc-800',
       tags: ['Mystery', 'Crime', 'Suspense'],
-      excerpt: 'A mute witness to a murder holds the key to solving the city\'s most baffling case, if only she could tell her story.',
+      excerpt:
+        "A mute witness to a murder holds the key to solving the city's most baffling case, if only she could tell her story.",
     },
   ];
 
@@ -91,7 +96,7 @@ export default function TrendingStoriesSection() {
     if (!autoPlay) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % trendingStories.length);
+      setCurrentIndex((prev) => (prev + 1) % trendingStories.length);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -116,7 +121,10 @@ export default function TrendingStoriesSection() {
   const currentStory = trendingStories[currentIndex];
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-background/80 to-background relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-24 bg-gradient-to-b from-background/80 to-background relative overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
 
@@ -150,7 +158,9 @@ export default function TrendingStoriesSection() {
             >
               <div className="grid md:grid-cols-2 gap-0">
                 {/* Story Image/Gradient */}
-                <div className={`relative h-96 md:h-auto bg-gradient-to-br ${currentStory.gradient}`}>
+                <div
+                  className={`relative h-96 md:h-auto bg-gradient-to-br ${currentStory.gradient}`}
+                >
                   <div className="absolute inset-0 bg-black/40" />
                   <div className="absolute inset-0 flex items-center justify-center p-12">
                     <div className="text-center">
@@ -160,10 +170,15 @@ export default function TrendingStoriesSection() {
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: 'spring', duration: 0.8 }}
                       >
-                        {currentStory.genre === 'Sci-Fi' ? '🚀' : 
-                         currentStory.genre === 'Fantasy' ? '🐉' : 
-                         currentStory.genre === 'Cyberpunk' ? '🌃' : 
-                         currentStory.genre === 'Romance' ? '💖' : '🔍'}
+                        {currentStory.genre === 'Sci-Fi'
+                          ? '🚀'
+                          : currentStory.genre === 'Fantasy'
+                            ? '🐉'
+                            : currentStory.genre === 'Cyberpunk'
+                              ? '🌃'
+                              : currentStory.genre === 'Romance'
+                                ? '💖'
+                                : '🔍'}
                       </motion.div>
                       <motion.div
                         className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium"
@@ -235,7 +250,9 @@ export default function TrendingStoriesSection() {
                       <div className="flex items-center gap-2">
                         <span className="text-2xl">📖</span>
                         <div>
-                          <div className="text-lg font-bold">{formatNumber(currentStory.reads)}</div>
+                          <div className="text-lg font-bold">
+                            {formatNumber(currentStory.reads)}
+                          </div>
                           <div className="text-xs text-muted-foreground">Reads</div>
                         </div>
                       </div>
@@ -294,18 +311,25 @@ export default function TrendingStoriesSection() {
                 setCurrentIndex(index);
                 setAutoPlay(false);
               }}
-              className={`flex-shrink-0 transition-all ${ 
-                currentIndex === index 
-                  ? 'ring-4 ring-primary scale-110' 
+              className={`flex-shrink-0 transition-all ${
+                currentIndex === index
+                  ? 'ring-4 ring-primary scale-110'
                   : 'opacity-50 hover:opacity-100'
               }`}
               whileHover={{ scale: currentIndex === index ? 1.1 : 1.05 }}
             >
-              <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${story.gradient} flex items-center justify-center text-3xl`}>
-                {story.genre === 'Sci-Fi' ? '🚀' : 
-                 story.genre === 'Fantasy' ? '🐉' : 
-                 story.genre === 'Cyberpunk' ? '🌃' : 
-                 story.genre === 'Romance' ? '💖' : '🔍'}
+              <div
+                className={`w-20 h-20 rounded-xl bg-gradient-to-br ${story.gradient} flex items-center justify-center text-3xl`}
+              >
+                {story.genre === 'Sci-Fi'
+                  ? '🚀'
+                  : story.genre === 'Fantasy'
+                    ? '🐉'
+                    : story.genre === 'Cyberpunk'
+                      ? '🌃'
+                      : story.genre === 'Romance'
+                        ? '💖'
+                        : '🔍'}
               </div>
             </motion.button>
           ))}
@@ -316,7 +340,7 @@ export default function TrendingStoriesSection() {
           {trendingStories.map((_, index) => (
             <div
               key={index}
-              className={`h-1 rounded-full transition-all ${ 
+              className={`h-1 rounded-full transition-all ${
                 currentIndex === index ? 'w-8 bg-primary' : 'w-2 bg-border'
               }`}
             />

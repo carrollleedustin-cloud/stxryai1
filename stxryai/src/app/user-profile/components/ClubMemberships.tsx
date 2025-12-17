@@ -44,9 +44,7 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <Icon name="UserGroupIcon" size={24} className="text-accent" />
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            Club Memberships
-          </h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">Club Memberships</h2>
           <span className="px-2 py-1 text-xs font-semibold bg-accent/20 text-accent rounded-full">
             {clubs.length}
           </span>
@@ -75,9 +73,7 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
                 </h3>
                 {getRoleBadge(club.role)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                {club.description}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{club.description}</p>
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center space-x-1 text-xs text-muted-foreground">
@@ -90,21 +86,16 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
                       <div
                         key={i}
                         className={`w-1 h-3 rounded-full ${
-                          i < club.activityLevel
-                            ? 'bg-success' :'bg-muted-foreground/30'
+                          i < club.activityLevel ? 'bg-success' : 'bg-muted-foreground/30'
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-xs text-muted-foreground ml-1">
-                    Activity
-                  </span>
+                  <span className="text-xs text-muted-foreground ml-1">Activity</span>
                 </div>
               </div>
 
-              <p className="text-xs text-muted-foreground mt-2">
-                Joined {club.joinedDate}
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">Joined {club.joinedDate}</p>
             </div>
 
             <Icon
@@ -118,11 +109,7 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
 
       {clubs.length === 0 && (
         <div className="text-center py-8">
-          <Icon
-            name="UserGroupIcon"
-            size={48}
-            className="text-muted-foreground mx-auto mb-3"
-          />
+          <Icon name="UserGroupIcon" size={48} className="text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground mb-4">
             You haven&apos;t joined any clubs yet
           </p>

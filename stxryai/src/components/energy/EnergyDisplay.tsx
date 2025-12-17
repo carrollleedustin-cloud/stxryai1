@@ -107,15 +107,15 @@ export default function EnergyDisplay({
             isUnlimited
               ? 'bg-purple-500/20 text-purple-600 dark:text-purple-400'
               : userEnergy.subscriptionTier === 'premium'
-              ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
-              : 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
+                ? 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                : 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
           }`}
         >
           {userEnergy.subscriptionTier === 'creator_pro'
             ? 'Unlimited'
             : userEnergy.subscriptionTier === 'premium'
-            ? 'Premium'
-            : 'Free'}
+              ? 'Premium'
+              : 'Free'}
         </span>
       </div>
 
@@ -140,10 +140,10 @@ export default function EnergyDisplay({
                 percentage >= 75
                   ? 'bg-green-500'
                   : percentage >= 50
-                  ? 'bg-yellow-500'
-                  : percentage >= 25
-                  ? 'bg-orange-500'
-                  : 'bg-red-500'
+                    ? 'bg-yellow-500'
+                    : percentage >= 25
+                      ? 'bg-orange-500'
+                      : 'bg-red-500'
               }`}
             />
           </div>
@@ -209,7 +209,13 @@ export default function EnergyDisplay({
 /**
  * Energy Badge - Small badge for headers/navbars
  */
-export function EnergyBadge({ userEnergy, onClick }: { userEnergy: UserEnergy; onClick?: () => void }) {
+export function EnergyBadge({
+  userEnergy,
+  onClick,
+}: {
+  userEnergy: UserEnergy;
+  onClick?: () => void;
+}) {
   const [currentEnergy, setCurrentEnergy] = useState(calculateEnergyRegen(userEnergy));
   const isUnlimited = userEnergy.subscriptionTier === 'creator_pro';
   const config = ENERGY_CONFIGS[userEnergy.subscriptionTier];
@@ -275,7 +281,12 @@ export function EnergyModal({
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

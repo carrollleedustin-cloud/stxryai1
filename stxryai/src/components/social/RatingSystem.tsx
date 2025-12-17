@@ -27,7 +27,7 @@ export default function RatingSystem({
   userRating,
   onRate,
   showDistribution = true,
-  ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+  ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
 }: RatingSystemProps) {
   const [hoveredRating, setHoveredRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,7 +71,9 @@ export default function RatingSystem({
                 name="StarIcon"
                 size={20}
                 variant={star <= Math.round(averageRating) ? 'solid' : 'outline'}
-                className={star <= Math.round(averageRating) ? 'text-accent' : 'text-muted-foreground'}
+                className={
+                  star <= Math.round(averageRating) ? 'text-accent' : 'text-muted-foreground'
+                }
               />
             ))}
           </div>
@@ -98,9 +100,7 @@ export default function RatingSystem({
                       className="h-full bg-gradient-to-r from-yellow-400 to-orange-500"
                     />
                   </div>
-                  <span className="text-sm text-muted-foreground w-12 text-right">
-                    {count}
-                  </span>
+                  <span className="text-sm text-muted-foreground w-12 text-right">{count}</span>
                 </div>
               );
             })}
@@ -138,8 +138,8 @@ export default function RatingSystem({
                     isHovered
                       ? 'text-yellow-400'
                       : isActive
-                      ? 'text-accent'
-                      : 'text-muted-foreground hover:text-accent'
+                        ? 'text-accent'
+                        : 'text-muted-foreground hover:text-accent'
                   }`}
                 />
               </motion.button>

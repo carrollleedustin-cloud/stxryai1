@@ -23,7 +23,10 @@ interface AugmentedUser extends User {
 
 async function confirmAllEmails() {
   try {
-    const { data: { users }, error } = await supabase.auth.admin.listUsers();
+    const {
+      data: { users },
+      error,
+    } = await supabase.auth.admin.listUsers();
 
     if (error) {
       console.error('Error listing users:', error);
@@ -35,9 +38,8 @@ async function confirmAllEmails() {
       return;
     }
 
-    const unconfirmedUsers: AugmentedUser[] = (users as AugmentedUser[])?.filter(
-      (user: AugmentedUser) => !user.email_confirmed_at
-    ) || [];
+    const unconfirmedUsers: AugmentedUser[] =
+      (users as AugmentedUser[])?.filter((user: AugmentedUser) => !user.email_confirmed_at) || [];
 
     console.log(`Found ${unconfirmedUsers.length} unconfirmed user(s)`);
 
@@ -50,10 +52,9 @@ async function confirmAllEmails() {
     for (const user of unconfirmedUsers) {
       console.log(`Confirming email for: ${user.email}`);
 
-      const { data, error: updateError } = await supabase.auth.admin.updateUserById(
-        user.id,
-        { email_confirm: true }
-      );
+      const { data, error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
+        email_confirm: true,
+      });
 
       if (updateError) {
         console.error(`Error confirming ${user.email}:`, updateError);
@@ -63,11 +64,9 @@ async function confirmAllEmails() {
     }
 
     console.log('\nDone! All users confirmed. You can now log in.');
-
   } catch (error) {
     console.error('Unexpected error:', error);
   }
 }
 
 confirmAllEmails();
-

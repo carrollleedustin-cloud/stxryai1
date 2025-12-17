@@ -21,11 +21,7 @@ interface FriendsListProps {
   onMessage?: (friendId: string) => void;
 }
 
-const FriendsList = ({
-  friends,
-  onRemoveFriend,
-  onMessage,
-}: FriendsListProps) => {
+const FriendsList = ({ friends, onRemoveFriend, onMessage }: FriendsListProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredFriends = friends.filter(
@@ -39,9 +35,7 @@ const FriendsList = ({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <Icon name="UserGroupIcon" size={24} className="text-secondary" />
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            Friends
-          </h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">Friends</h2>
           <span className="px-2 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
             {friends.length}
           </span>
@@ -89,19 +83,11 @@ const FriendsList = ({
               >
                 {friend.name}
               </Link>
-              <p className="text-xs text-muted-foreground truncate">
-                @{friend.username}
-              </p>
+              <p className="text-xs text-muted-foreground truncate">@{friend.username}</p>
               {friend.currentStory ? (
                 <div className="flex items-center space-x-1 mt-1">
-                  <Icon
-                    name="BookOpenIcon"
-                    size={12}
-                    className="text-accent flex-shrink-0"
-                  />
-                  <p className="text-xs text-accent truncate">
-                    Reading: {friend.currentStory}
-                  </p>
+                  <Icon name="BookOpenIcon" size={12} className="text-accent flex-shrink-0" />
+                  <p className="text-xs text-accent truncate">Reading: {friend.currentStory}</p>
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground mt-1">
@@ -132,11 +118,7 @@ const FriendsList = ({
 
       {filteredFriends.length === 0 && (
         <div className="text-center py-8">
-          <Icon
-            name="UserGroupIcon"
-            size={48}
-            className="text-muted-foreground mx-auto mb-3"
-          />
+          <Icon name="UserGroupIcon" size={48} className="text-muted-foreground mx-auto mb-3" />
           <p className="text-sm text-muted-foreground">
             {searchQuery ? 'No friends found' : 'No friends yet'}
           </p>

@@ -47,7 +47,19 @@ const DashboardSkeleton = () => (
   </div>
 );
 
-const EmptyState = ({ icon, title, message, buttonText, onButtonClick }: { icon: React.ReactNode, title: string, message: string, buttonText: string, onButtonClick: () => void }) => (
+const EmptyState = ({
+  icon,
+  title,
+  message,
+  buttonText,
+  onButtonClick,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  message: string;
+  buttonText: string;
+  onButtonClick: () => void;
+}) => (
   <div className="text-center p-8 bg-card/50 backdrop-blur-lg border-2 border-dashed border-border rounded-xl">
     <div className="mx-auto w-16 h-16 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full text-primary mb-4">
       {icon}
@@ -64,7 +76,6 @@ const EmptyState = ({ icon, title, message, buttonText, onButtonClick }: { icon:
     </motion.button>
   </div>
 );
-
 
 export default function DashboardInteractive() {
   const router = useRouter();
@@ -100,7 +111,9 @@ export default function DashboardInteractive() {
       setError('');
     } catch (err: any) {
       if (err?.message?.includes('Failed to fetch')) {
-        setError('Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.');
+        setError(
+          'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
+        );
       } else {
         setError('Failed to load dashboard data. Please try again.');
       }
@@ -128,10 +141,7 @@ export default function DashboardInteractive() {
       <header className="bg-card/50 backdrop-blur-lg shadow-sm border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <h1 className="text-3xl font-bold text-foreground">
                 Welcome back, {profile?.display_name || 'Reader'}!
               </h1>
@@ -189,17 +199,14 @@ export default function DashboardInteractive() {
                   icon: badge.badge_icon,
                   progress: 100,
                   total: 100,
-                  unlocked: true
-                }))
+                  unlocked: true,
+                })),
               }}
             />
           )}
 
           {/* Continue Reading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h2 className="text-2xl font-bold text-foreground mb-4">Continue Reading</h2>
             {continueReading.length > 0 ? (
               <motion.div

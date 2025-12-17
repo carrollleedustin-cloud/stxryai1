@@ -59,7 +59,7 @@ const defaultSections: RecommendationSection[] = [
 
 export default function StoryRecommendations({
   sections = defaultSections,
-  variant = 'full'
+  variant = 'full',
 }: StoryRecommendationsProps) {
   const [activeSection, setActiveSection] = useState(0);
 
@@ -79,7 +79,9 @@ export default function StoryRecommendations({
           {/* Section Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.color} flex items-center justify-center text-2xl`}>
+              <div
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${section.color} flex items-center justify-center text-2xl`}
+              >
                 {section.icon}
               </div>
               <div>
@@ -91,7 +93,12 @@ export default function StoryRecommendations({
               <button className="text-sm text-purple-400 hover:text-purple-300 font-medium flex items-center gap-1">
                 See All
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </Link>
@@ -121,7 +128,7 @@ export default function StoryRecommendations({
 function RecommendedStoryCard({
   story,
   index,
-  sectionColor
+  sectionColor,
 }: {
   story: Story;
   index: number;
@@ -144,7 +151,9 @@ function RecommendedStoryCard({
       {/* Match Score Badge */}
       {story.matchScore && story.matchScore > 80 && (
         <div className="absolute top-4 right-4 z-10">
-          <div className={`px-3 py-1 bg-gradient-to-r ${sectionColor} text-white text-xs font-bold rounded-full shadow-lg`}>
+          <div
+            className={`px-3 py-1 bg-gradient-to-r ${sectionColor} text-white text-xs font-bold rounded-full shadow-lg`}
+          >
             {story.matchScore}% Match
           </div>
         </div>
@@ -169,9 +178,7 @@ function RecommendedStoryCard({
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl">
-            📖
-          </div>
+          <div className="w-full h-full flex items-center justify-center text-6xl">📖</div>
         )}
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -185,9 +192,7 @@ function RecommendedStoryCard({
         </h3>
 
         {/* Description */}
-        <p className="text-sm text-gray-400 mb-4 line-clamp-2">
-          {story.description}
-        </p>
+        <p className="text-sm text-gray-400 mb-4 line-clamp-2">{story.description}</p>
 
         {/* Match Reason */}
         {story.matchReason && (
@@ -200,7 +205,9 @@ function RecommendedStoryCard({
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          <span className={`px-2 py-1 ${difficultyColors[story.difficulty]} text-xs font-medium rounded-full`}>
+          <span
+            className={`px-2 py-1 ${difficultyColors[story.difficulty]} text-xs font-medium rounded-full`}
+          >
             {story.difficulty}
           </span>
           <span className="px-2 py-1 bg-white/10 text-gray-300 text-xs font-medium rounded-full">
@@ -216,11 +223,12 @@ function RecommendedStoryCard({
         {/* Stats Footer */}
         <div className="flex items-center justify-between text-xs text-gray-400 mb-4">
           <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1">⭐ {story.rating.toFixed(1)}</span>
             <span className="flex items-center gap-1">
-              ⭐ {story.rating.toFixed(1)}
-            </span>
-            <span className="flex items-center gap-1">
-              👁️ {story.readCount >= 1000 ? `${(story.readCount / 1000).toFixed(1)}K` : story.readCount}
+              👁️{' '}
+              {story.readCount >= 1000
+                ? `${(story.readCount / 1000).toFixed(1)}K`
+                : story.readCount}
             </span>
           </div>
           <span>🕐 {story.duration}</span>
@@ -278,7 +286,11 @@ function CompactRecommendations({ sections }: { sections: RecommendationSection[
             >
               <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-purple-900 to-indigo-900 flex-shrink-0 flex items-center justify-center text-2xl overflow-hidden">
                 {story.coverImage ? (
-                  <img src={story.coverImage} alt={story.title} className="w-full h-full object-cover" />
+                  <img
+                    src={story.coverImage}
+                    alt={story.title}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   '📖'
                 )}

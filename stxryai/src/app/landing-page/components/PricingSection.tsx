@@ -15,64 +15,64 @@ interface PricingTier {
 const PricingSection = () => {
   const pricingTiers: PricingTier[] = [
     {
-      name: "Free",
-      price: "$0",
-      description: "Perfect for casual readers exploring interactive fiction",
+      name: 'Free',
+      price: '$0',
+      description: 'Perfect for casual readers exploring interactive fiction',
       features: [
-        "20 Energy (refills slowly)",
-        "1 energy per 3 hours",
-        "Access to public stories",
-        "Basic community features",
-        "Reading statistics",
-        "Story bookmarks",
-        "Mobile app access"
+        '20 Energy (refills slowly)',
+        '1 energy per 3 hours',
+        'Access to public stories',
+        'Basic community features',
+        'Reading statistics',
+        'Story bookmarks',
+        'Mobile app access',
       ],
-      ctaText: "Start Free",
-      ctaLink: "/authentication"
+      ctaText: 'Start Free',
+      ctaLink: '/authentication',
     },
     {
-      name: "Premium",
-      price: "$7.14",
-      originalPrice: "$12.99",
-      description: "Unlimited access for dedicated story enthusiasts",
+      name: 'Premium',
+      price: '$7.14',
+      originalPrice: '$12.99',
+      description: 'Unlimited access for dedicated story enthusiasts',
       features: [
-        "100 Energy (refills 2x faster)",
-        "Exclusive premium stories",
-        "Ad-free experience",
-        "Custom choice writing",
-        "AI story suggestions",
-        "Reading mode customization",
-        "Download stories offline",
-        "Priority support",
-        "Advanced reading analytics",
-        "Story collections & playlists"
+        '100 Energy (refills 2x faster)',
+        'Exclusive premium stories',
+        'Ad-free experience',
+        'Custom choice writing',
+        'AI story suggestions',
+        'Reading mode customization',
+        'Download stories offline',
+        'Priority support',
+        'Advanced reading analytics',
+        'Story collections & playlists',
       ],
       isPopular: true,
-      ctaText: "Start Premium Trial",
-      ctaLink: "/authentication"
+      ctaText: 'Start Premium Trial',
+      ctaLink: '/authentication',
     },
     {
-      name: "Creator Pro",
-      price: "$15",
-      originalPrice: "$24.99",
-      description: "For authors and professional storytellers",
+      name: 'Creator Pro',
+      price: '$15',
+      originalPrice: '$24.99',
+      description: 'For authors and professional storytellers',
       features: [
-        "Unlimited Energy (no limits!)",
-        "Everything in Premium",
-        "AI writing assistant",
-        "Advanced story creation tools",
-        "Unlimited story publishing",
-        "Co-authoring & collaboration",
-        "Creator analytics dashboard",
-        "Version control & branching",
-        "Custom story themes & styling",
-        "Monetization tools",
-        "API access for integrations",
-        "White-label options"
+        'Unlimited Energy (no limits!)',
+        'Everything in Premium',
+        'AI writing assistant',
+        'Advanced story creation tools',
+        'Unlimited story publishing',
+        'Co-authoring & collaboration',
+        'Creator analytics dashboard',
+        'Version control & branching',
+        'Custom story themes & styling',
+        'Monetization tools',
+        'API access for integrations',
+        'White-label options',
       ],
-      ctaText: "Become a Creator",
-      ctaLink: "/authentication"
-    }
+      ctaText: 'Become a Creator',
+      ctaLink: '/authentication',
+    },
   ];
 
   return (
@@ -90,7 +90,8 @@ const PricingSection = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Start free and upgrade anytime. All plans include our core interactive fiction experience.
+            Start free and upgrade anytime. All plans include our core interactive fiction
+            experience.
           </p>
         </div>
 
@@ -113,13 +114,9 @@ const PricingSection = () => {
               )}
 
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-foreground mb-2">
-                  {tier.name}
-                </h3>
+                <h3 className="text-2xl font-bold text-foreground mb-2">{tier.name}</h3>
                 <div className="flex items-baseline justify-center space-x-2 mb-2">
-                  <span className="text-5xl font-bold text-foreground">
-                    {tier.price}
-                  </span>
+                  <span className="text-5xl font-bold text-foreground">{tier.price}</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 {tier.originalPrice && (
@@ -132,9 +129,7 @@ const PricingSection = () => {
                     </span>
                   </div>
                 )}
-                <p className="text-sm text-muted-foreground mt-4">
-                  {tier.description}
-                </p>
+                <p className="text-sm text-muted-foreground mt-4">{tier.description}</p>
               </div>
 
               <ul className="space-y-4 mb-8">
@@ -167,7 +162,8 @@ const PricingSection = () => {
 
         <div className="mt-12 text-center">
           <p className="text-sm text-muted-foreground">
-            All plans include 14-day money-back guarantee • Cancel anytime • Secure payment via Stripe
+            All plans include 14-day money-back guarantee • Cancel anytime • Secure payment via
+            Stripe
           </p>
         </div>
       </div>

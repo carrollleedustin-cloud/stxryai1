@@ -91,7 +91,10 @@ export default function KeyboardShortcuts() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-white mb-1">Keyboard Shortcuts</h3>
-                  <p className="text-gray-400 text-sm">Press <kbd className="px-2 py-1 bg-white/10 rounded text-xs">?</kbd> anytime to toggle</p>
+                  <p className="text-gray-400 text-sm">
+                    Press <kbd className="px-2 py-1 bg-white/10 rounded text-xs">?</kbd> anytime to
+                    toggle
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}

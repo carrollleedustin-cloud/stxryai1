@@ -35,7 +35,9 @@ export default function AdminDashboard({
   reportedItems = [],
   onReview,
 }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'moderation' | 'users' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'moderation' | 'users' | 'analytics'>(
+    'overview'
+  );
 
   if (!stats) {
     return <AdminLoadingSkeleton />;
@@ -149,9 +151,11 @@ function AdminMetricCard({
       <div className="flex items-start justify-between mb-4">
         <div className="text-4xl">{icon}</div>
         {change !== 0 && (
-          <div className={`flex items-center gap-1 text-sm font-semibold ${
-            change >= 0 ? 'text-green-300' : 'text-red-300'
-          }`}>
+          <div
+            className={`flex items-center gap-1 text-sm font-semibold ${
+              change >= 0 ? 'text-green-300' : 'text-red-300'
+            }`}
+          >
             {change >= 0 ? '↑' : '↓'}
             {Math.abs(change)}%
           </div>
@@ -205,7 +209,15 @@ function OverviewTab({ stats }: { stats: AdminStats }) {
   );
 }
 
-function QuickActionButton({ icon, label, count }: { icon: string; label: string; count?: number }) {
+function QuickActionButton({
+  icon,
+  label,
+  count,
+}: {
+  icon: string;
+  label: string;
+  count?: number;
+}) {
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
@@ -240,15 +252,13 @@ function ModerationTab({
             All ({items.length})
           </button>
           <button className="px-4 py-2 bg-white/5 text-gray-400 rounded-lg hover:bg-white/10 text-sm">
-            Pending ({items.filter(i => i.status === 'pending').length})
+            Pending ({items.filter((i) => i.status === 'pending').length})
           </button>
         </div>
       </div>
 
       {items.length > 0 ? (
-        items.map((item) => (
-          <ModerationItemCard key={item.id} item={item} onReview={onReview} />
-        ))
+        items.map((item) => <ModerationItemCard key={item.id} item={item} onReview={onReview} />)
       ) : (
         <div className="text-center py-12 text-gray-400">
           <div className="text-6xl mb-4">✅</div>
@@ -268,10 +278,14 @@ function ModerationItemCard({
 }) {
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'story': return '📖';
-      case 'comment': return '💬';
-      case 'user': return '👤';
-      default: return '⚠️';
+      case 'story':
+        return '📖';
+      case 'comment':
+        return '💬';
+      case 'user':
+        return '👤';
+      default:
+        return '⚠️';
     }
   };
 
@@ -288,11 +302,15 @@ function ModerationItemCard({
                 {item.timestamp.toLocaleDateString()}
               </p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-              item.status === 'pending' ? 'bg-yellow-600/20 text-yellow-400' :
-              item.status === 'reviewing' ? 'bg-blue-600/20 text-blue-400' :
-              'bg-green-600/20 text-green-400'
-            }`}>
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                item.status === 'pending'
+                  ? 'bg-yellow-600/20 text-yellow-400'
+                  : item.status === 'reviewing'
+                    ? 'bg-blue-600/20 text-blue-400'
+                    : 'bg-green-600/20 text-green-400'
+              }`}
+            >
               {item.status}
             </span>
           </div>

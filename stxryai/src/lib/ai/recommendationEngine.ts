@@ -67,10 +67,10 @@ export function calculateRecommendationScore(
     genre: 0.25,
     author: 0.15,
     tags: 0.15,
-    difficulty: 0.10,
-    length: 0.10,
+    difficulty: 0.1,
+    length: 0.1,
     rating: 0.15,
-    popularity: 0.10
+    popularity: 0.1,
   };
 
   // Genre matching
@@ -82,7 +82,7 @@ export function calculateRecommendationScore(
   score += authorMatch ? weights.author * 100 : 0;
 
   // Tag matching
-  const tagMatches = story.tags.filter(tag => preferences.topTags.includes(tag)).length;
+  const tagMatches = story.tags.filter((tag) => preferences.topTags.includes(tag)).length;
   const tagScore = Math.min(tagMatches / preferences.topTags.length, 1);
   score += tagScore * weights.tags * 100;
 
@@ -100,7 +100,7 @@ export function calculateRecommendationScore(
   score += ratingScore;
 
   // Popularity score (with diminishing returns to avoid echo chamber)
-  const popularityScore = Math.log10(story.popularity + 1) / 5 * weights.popularity * 100;
+  const popularityScore = (Math.log10(story.popularity + 1) / 5) * weights.popularity * 100;
   score += popularityScore;
 
   // Penalize if already completed
@@ -109,7 +109,10 @@ export function calculateRecommendationScore(
   }
 
   // Boost if bookmarked but not completed
-  if (behavior.bookmarkedStories.includes(story.id) && !behavior.completedStories.includes(story.id)) {
+  if (
+    behavior.bookmarkedStories.includes(story.id) &&
+    !behavior.completedStories.includes(story.id)
+  ) {
     score *= 1.2;
   }
 
@@ -133,32 +136,32 @@ export function generateRecommendations(
     diversityFactor: 0.3,
     noveltyFactor: 0.2,
     trendingWeight: 0.3,
-    personalWeight: 0.7
+    personalWeight: 0.7,
   }
 ): Recommendation[] {
   const recommendations: Recommendation[] = [];
 
   // Score all stories
-  const scoredStories = availableStories.map(story => ({
+  const scoredStories = availableStories.map((story) => ({
     story,
     personalScore: calculateRecommendationScore(story, preferences, behavior),
     trendingScore: calculateTrendingScore(story),
     similarityScore: calculateSimilarityScore(story, behavior),
-    noveltyScore: calculateNoveltyScore(story, preferences, behavior)
+    noveltyScore: calculateNoveltyScore(story, preferences, behavior),
   }));
 
   // Calculate final scores with weights
-  const finalScored = scoredStories.map(item => {
+  const finalScored = scoredStories.map((item) => {
     const finalScore =
-      (item.personalScore * config.personalWeight) +
-      (item.trendingScore * config.trendingWeight) +
-      (item.noveltyScore * config.noveltyFactor) +
-      (item.similarityScore * (1 - config.personalWeight - config.trendingWeight));
+      item.personalScore * config.personalWeight +
+      item.trendingScore * config.trendingWeight +
+      item.noveltyScore * config.noveltyFactor +
+      item.similarityScore * (1 - config.personalWeight - config.trendingWeight);
 
     return {
       ...item,
       finalScore,
-      confidence: calculateConfidence(item.personalScore, behavior)
+      confidence: calculateConfidence(item.personalScore, behavior),
     };
   });
 
@@ -178,7 +181,7 @@ export function generateRecommendations(
       score: item.finalScore,
       reason,
       confidence: item.confidence,
-      category
+      category,
     });
   }
 
@@ -225,7 +228,7 @@ function calculateNoveltyScore(
   // Boost if genre hasn't been explored much
   const genreExploration = behavior.genreExploration[story.genre] || 0;
   const maxExploration = Math.max(...Object.values(behavior.genreExploration), 1);
-  const genreNovelty = 1 - (genreExploration / maxExploration);
+  const genreNovelty = 1 - genreExploration / maxExploration;
   noveltyScore += genreNovelty * 40;
 
   // Boost if author is new
@@ -233,7 +236,7 @@ function calculateNoveltyScore(
   noveltyScore += isNewAuthor ? 30 : 0;
 
   // Boost if tags are new
-  const newTags = story.tags.filter(tag => !preferences.topTags.includes(tag));
+  const newTags = story.tags.filter((tag) => !preferences.topTags.includes(tag));
   noveltyScore += (newTags.length / story.tags.length) * 30;
 
   return noveltyScore;
@@ -252,16 +255,13 @@ function calculateConfidence(score: number, behavior: UserBehavior): number {
   const dataConfidence = Math.min(dataPoints / 20, 1);
   const scoreConfidence = score / 100;
 
-  return (dataConfidence * 0.6 + scoreConfidence * 0.4);
+  return dataConfidence * 0.6 + scoreConfidence * 0.4;
 }
 
 /**
  * Apply diversity to avoid too many similar recommendations
  */
-function applyDiversity(
-  scoredStories: any[],
-  diversityFactor: number
-): any[] {
+function applyDiversity(scoredStories: any[], diversityFactor: number): any[] {
   const diverse: any[] = [];
   const genreCount: Record<string, number> = {};
   const authorCount: Record<string, number> = {};
@@ -372,8 +372,11 @@ export function analyzeUserPreferences(behavior: UserBehavior): UserPreferences 
 
   // Determine preferred length from session duration
   const preferredLength: 'short' | 'medium' | 'long' =
-    behavior.averageSessionDuration < 30 ? 'short' :
-    behavior.averageSessionDuration < 60 ? 'medium' : 'long';
+    behavior.averageSessionDuration < 30
+      ? 'short'
+      : behavior.averageSessionDuration < 60
+        ? 'medium'
+        : 'long';
 
   // Default difficulty to medium
   const preferredDifficulty: 'easy' | 'medium' | 'hard' = 'medium';
@@ -391,6 +394,6 @@ export function analyzeUserPreferences(behavior: UserBehavior): UserPreferences 
     preferredLength,
     preferredDifficulty,
     activeHours,
-    topTags
+    topTags,
   };
 }

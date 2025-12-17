@@ -6,7 +6,10 @@
 /**
  * Announce to screen readers
  */
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
+export function announceToScreenReader(
+  message: string,
+  priority: 'polite' | 'assertive' = 'polite'
+): void {
   if (typeof window === 'undefined') return;
 
   const announcement = document.createElement('div');
@@ -124,7 +127,11 @@ class LiveRegionManager {
     return region;
   }
 
-  announce(message: string, regionId: string = 'default', priority: 'polite' | 'assertive' = 'polite'): void {
+  announce(
+    message: string,
+    regionId: string = 'default',
+    priority: 'polite' | 'assertive' = 'polite'
+  ): void {
     const region = this.getOrCreateRegion(regionId, priority);
     region.textContent = message;
   }
@@ -159,7 +166,7 @@ export const KeyCodes = {
   ARROW_RIGHT: 'ArrowRight',
   TAB: 'Tab',
   HOME: 'Home',
-  END: 'End'
+  END: 'End',
 } as const;
 
 /**
@@ -210,7 +217,10 @@ export function addFocusIndicator(element: HTMLElement, className: string = 'foc
   element.classList.add(className);
 }
 
-export function removeFocusIndicator(element: HTMLElement, className: string = 'focus-visible'): void {
+export function removeFocusIndicator(
+  element: HTMLElement,
+  className: string = 'focus-visible'
+): void {
   element.classList.remove(className);
 }
 

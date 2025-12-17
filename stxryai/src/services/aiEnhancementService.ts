@@ -1,4 +1,14 @@
 import { supabase } from '@/lib/supabase/client';
+import {
+  insertAIPromptTemplate,
+  updateAIPromptTemplateById,
+  insertDynamicPromptChain,
+  insertProceduralContent,
+  insertReadingJourneyRecap,
+  insertStoryTranslation,
+  insertGlossaryEntry,
+  insertWritingPrompt,
+} from '@/lib/supabase/typed';
 
 export interface AIPromptTemplate {
   id: string;
@@ -16,14 +26,14 @@ export interface AIPromptTemplate {
 }
 
 export interface PromptStep {
-    step: number;
-    prompt: string;
-    expected_output: string;
+  step: number;
+  prompt: string;
+  expected_output: string;
 }
 
 export interface AdaptationRule {
-    condition: string;
-    action: string;
+  condition: string;
+  action: string;
 }
 
 export interface DynamicPromptChain {
@@ -44,7 +54,12 @@ export interface ProceduralContent {
   id: string;
   story_id: string;
   chapter_id: string;
-  content_type: 'item_description' | 'ambient_event' | 'lore_fragment' | 'background_character' | 'environment_detail';
+  content_type:
+    | 'item_description'
+    | 'ambient_event'
+    | 'lore_fragment'
+    | 'background_character'
+    | 'environment_detail';
   generated_content: string;
   context_tags: string[];
   quality_score: number;
@@ -68,14 +83,14 @@ export interface StoryPathAnalytics {
 }
 
 export interface Choice {
-    chapter_id: string;
-    choice_text: string;
-    timestamp: string;
+  chapter_id: string;
+  choice_text: string;
+  timestamp: string;
 }
 
 export interface Milestone {
-    milestone: string;
-    timestamp: string;
+  milestone: string;
+  timestamp: string;
 }
 
 export interface ReadingJourneyRecap {
@@ -160,14 +175,18 @@ export async function getPromptTemplates(userId: string, storyId?: string) {
 
 export async function createPromptTemplate(template: Partial<AIPromptTemplate>) {
   try {
-    const { data, error } = await supabase
-      .from('ai_prompt_templates')
-      .insert([template])
-      .select()
-      .single();
+    // ensure we have a user_id
+    if (!template.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user)
+        throw new Error('User must be authenticated to create a prompt template');
+      template.user_id = authData.user.id;
+    }
+
+    const { data, error } = await insertAIPromptTemplate([template as AIPromptTemplate]);
 
     if (error) throw error;
-    return data as AIPromptTemplate;
+    return (Array.isArray(data) ? data[0] : data) as AIPromptTemplate;
   } catch (error: unknown) {
     console.error('Error creating prompt template:', error);
     throw error;
@@ -176,15 +195,10 @@ export async function createPromptTemplate(template: Partial<AIPromptTemplate>) 
 
 export async function updatePromptTemplate(id: string, updates: Partial<AIPromptTemplate>) {
   try {
-    const { data, error } = await supabase
-      .from('ai_prompt_templates')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+    const { data, error } = await updateAIPromptTemplateById(id, updates);
 
     if (error) throw error;
-    return data as AIPromptTemplate;
+    return (Array.isArray(data) ? data[0] : data) as AIPromptTemplate;
   } catch (error: unknown) {
     console.error('Error updating prompt template:', error);
     throw error;
@@ -216,14 +230,23 @@ export async function getPromptChains(userId: string, storyId?: string) {
 
 export async function createPromptChain(chain: Partial<DynamicPromptChain>) {
   try {
-    const { data, error } = await supabase
-      .from('dynamic_prompt_chains')
-      .insert([chain])
-      .select()
-      .single();
+    if (!chain.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user) throw new Error('User must be authenticated to create a prompt chain');
+      chain.user_id = authData.user.id;
+    }
+
+    // coerce complex structures to Json for DB compatibility
+    if (chain.prompt_sequence) chain.prompt_sequence = chain.prompt_sequence as unknown as any;
+    if (chain.context_history) chain.context_history = chain.context_history as unknown as any;
+    if (chain.adaptation_rules) chain.adaptation_rules = chain.adaptation_rules as unknown as any;
+
+    const { data, error } = await insertDynamicPromptChain([
+      chain as unknown as import('@/lib/supabase/database.types').Database['public']['Tables']['dynamic_prompt_chains']['Insert'],
+    ]);
 
     if (error) throw error;
-    return data as DynamicPromptChain;
+    return (Array.isArray(data) ? data[0] : data) as DynamicPromptChain;
   } catch (error: unknown) {
     console.error('Error creating prompt chain:', error);
     throw error;
@@ -256,14 +279,12 @@ export async function getProceduralContent(storyId: string, chapterId?: string) 
 
 export async function generateProceduralContent(content: Partial<ProceduralContent>) {
   try {
-    const { data, error } = await supabase
-      .from('procedural_content')
-      .insert([content])
-      .select()
-      .single();
+    if (!content.story_id) throw new Error('story_id is required to generate procedural content');
+
+    const { data, error } = await insertProceduralContent([content as ProceduralContent]);
 
     if (error) throw error;
-    return data as ProceduralContent;
+    return (Array.isArray(data) ? data[0] : data) as ProceduralContent;
   } catch (error: unknown) {
     console.error('Error generating procedural content:', error);
     throw error;
@@ -273,10 +294,7 @@ export async function generateProceduralContent(content: Partial<ProceduralConte
 // Story Path Analytics
 export async function getStoryAnalytics(storyId: string, chapterId?: string) {
   try {
-    let query = supabase
-      .from('story_path_analytics')
-      .select('*')
-      .eq('story_id', storyId);
+    let query = supabase.from('story_path_analytics').select('*').eq('story_id', storyId);
 
     if (chapterId) {
       query = query.eq('chapter_id', chapterId);
@@ -317,14 +335,28 @@ export async function getReadingRecaps(userId: string, storyId?: string) {
 
 export async function generateReadingRecap(recap: Partial<ReadingJourneyRecap>) {
   try {
-    const { data, error } = await supabase
-      .from('reading_journey_recaps')
-      .insert([recap])
-      .select()
-      .single();
+    if (!recap.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user)
+        throw new Error('User must be authenticated to generate a reading recap');
+      recap.user_id = authData.user.id;
+    }
+    if (!recap.story_id) throw new Error('story_id is required to generate a reading recap');
+
+    // coerce arrays/objects to Json type expected by DB
+    if (recap.choice_history) recap.choice_history = recap.choice_history as unknown as any;
+    if (recap.moral_alignments) recap.moral_alignments = recap.moral_alignments as unknown as any;
+    if (recap.relationship_dynamics)
+      recap.relationship_dynamics = recap.relationship_dynamics as unknown as any;
+    if (recap.narrative_milestones)
+      recap.narrative_milestones = recap.narrative_milestones as unknown as any;
+
+    const { data, error } = await insertReadingJourneyRecap([
+      recap as unknown as import('@/lib/supabase/database.types').Database['public']['Tables']['reading_journey_recaps']['Insert'],
+    ]);
 
     if (error) throw error;
-    return data as ReadingJourneyRecap;
+    return (Array.isArray(data) ? data[0] : data) as ReadingJourneyRecap;
   } catch (error: unknown) {
     console.error('Error generating reading recap:', error);
     throw error;
@@ -374,14 +406,17 @@ export async function getGlossaryEntries(userId: string, storyId: string) {
 
 export async function addGlossaryEntry(entry: Partial<GlossaryEntry>) {
   try {
-    const { data, error } = await supabase
-      .from('story_glossary')
-      .insert([entry])
-      .select()
-      .single();
+    if (!entry.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user) throw new Error('User must be authenticated to add a glossary entry');
+      entry.user_id = authData.user.id;
+    }
+    if (!entry.story_id) throw new Error('story_id is required to add a glossary entry');
+
+    const { data, error } = await insertGlossaryEntry([entry as GlossaryEntry]);
 
     if (error) throw error;
-    return data as GlossaryEntry;
+    return (Array.isArray(data) ? data[0] : data) as GlossaryEntry;
   } catch (error: unknown) {
     console.error('Error adding glossary entry:', error);
     throw error;
@@ -413,14 +448,16 @@ export async function getWritingPrompts(userId: string, promptType?: string) {
 
 export async function createWritingPrompt(prompt: Partial<WritingPrompt>) {
   try {
-    const { data, error } = await supabase
-      .from('writing_prompts')
-      .insert([prompt])
-      .select()
-      .single();
+    if (!prompt.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user) throw new Error('User must be authenticated to create a writing prompt');
+      prompt.user_id = authData.user.id;
+    }
+
+    const { data, error } = await insertWritingPrompt([prompt as WritingPrompt]);
 
     if (error) throw error;
-    return data as WritingPrompt;
+    return (Array.isArray(data) ? data[0] : data) as WritingPrompt;
   } catch (error: unknown) {
     console.error('Error creating writing prompt:', error);
     throw error;

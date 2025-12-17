@@ -44,7 +44,7 @@ const ActivityFeedItem = ({ activity }: ActivityFeedItemProps) => {
 
   const formatTimestamp = (timestamp: string): string => {
     if (!isHydrated) return '';
-    
+
     const date = new Date(timestamp);
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
@@ -91,11 +91,7 @@ const ActivityFeedItem = ({ activity }: ActivityFeedItemProps) => {
               </Link>
             )}
           </div>
-          <Icon
-            name={icon.name as any}
-            size={18}
-            className={`${icon.color} flex-shrink-0 ml-2`}
-          />
+          <Icon name={icon.name as any} size={18} className={`${icon.color} flex-shrink-0 ml-2`} />
         </div>
         {isHydrated && (
           <p className="text-xs text-muted-foreground mt-1">

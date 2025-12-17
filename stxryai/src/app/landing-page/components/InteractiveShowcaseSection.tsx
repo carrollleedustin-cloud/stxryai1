@@ -27,7 +27,8 @@ export default function InteractiveShowcaseSection() {
       id: '1',
       title: 'The Quantum Paradox',
       genre: 'Sci-Fi',
-      excerpt: 'You stand before the quantum gateway, its swirling energy casting an otherworldly glow across the laboratory. Dr. Chen\'s voice crackles through your earpiece: "Once you step through, there\'s no coming back. Are you ready?"',
+      excerpt:
+        'You stand before the quantum gateway, its swirling energy casting an otherworldly glow across the laboratory. Dr. Chen\'s voice crackles through your earpiece: "Once you step through, there\'s no coming back. Are you ready?"',
       choices: [
         'Step through the gateway without hesitation',
         'Ask Dr. Chen for more information first',
@@ -40,7 +41,8 @@ export default function InteractiveShowcaseSection() {
       id: '2',
       title: 'Crown of Shadows',
       genre: 'Fantasy',
-      excerpt: 'The ancient throne room lies in ruins, but power still pulses through its stones. The Shadow Crown hovers before you, whispering promises of strength. Yet you remember the witch\'s warning about its terrible price.',
+      excerpt:
+        "The ancient throne room lies in ruins, but power still pulses through its stones. The Shadow Crown hovers before you, whispering promises of strength. Yet you remember the witch's warning about its terrible price.",
       choices: [
         'Claim the crown and embrace its power',
         'Destroy the crown to break its curse',
@@ -51,14 +53,11 @@ export default function InteractiveShowcaseSection() {
     },
     {
       id: '3',
-      title: 'Last Call at Murphy\'s',
+      title: "Last Call at Murphy's",
       genre: 'Mystery',
-      excerpt: 'The rain hammers against the window as you nurse your whiskey. The stranger in the corner hasn\'t moved in an hour. Your detective instincts are screaming, but you\'re officially off duty.',
-      choices: [
-        'Approach the stranger casually',
-        'Call it in to dispatch',
-        'Wait and observe',
-      ],
+      excerpt:
+        "The rain hammers against the window as you nurse your whiskey. The stranger in the corner hasn't moved in an hour. Your detective instincts are screaming, but you're officially off duty.",
+      choices: ['Approach the stranger casually', 'Call it in to dispatch', 'Wait and observe'],
       image: '/images/stories/mystery.jpg',
       color: 'from-amber-500 to-orange-600',
     },
@@ -77,7 +76,10 @@ export default function InteractiveShowcaseSection() {
   const story = storyDemos[selectedStory];
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-background to-background/80 relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-24 bg-gradient-to-b from-background to-background/80 relative overflow-hidden"
+    >
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
 
@@ -163,11 +165,13 @@ export default function InteractiveShowcaseSection() {
                           whileTap={{ scale: 0.98 }}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
-                              selectedChoice === index
-                                ? 'border-primary bg-primary text-primary-foreground'
-                                : 'border-border'
-                            }`}>
+                            <div
+                              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                selectedChoice === index
+                                  ? 'border-primary bg-primary text-primary-foreground'
+                                  : 'border-border'
+                              }`}
+                            >
                               {selectedChoice === index ? '✓' : index + 1}
                             </div>
                             <span className="flex-1">{choice}</span>
@@ -187,7 +191,9 @@ export default function InteractiveShowcaseSection() {
                         >
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-2xl">✨</span>
-                            <span className="font-semibold">AI is generating your unique path...</span>
+                            <span className="font-semibold">
+                              AI is generating your unique path...
+                            </span>
                           </div>
                           <p className="text-sm text-muted-foreground">
                             Your choice creates a branching narrative unique to your playthrough

@@ -1,5 +1,9 @@
 import { supabase } from '@/lib/supabase/client';
-import { insertEventParticipant, insertClubMember, insertDiscussionReply } from '@/lib/supabase/typed';
+import {
+  insertEventParticipant,
+  insertClubMember,
+  insertDiscussionReply,
+} from '@/lib/supabase/typed';
 
 interface UserStats {
   stories_completed: number;
@@ -97,7 +101,10 @@ export const socialService = {
   },
 
   // Get reading leaderboard
-  async getReadingLeaderboard(timeframe: 'weekly' | 'monthly' | 'all-time' = 'all-time', limit: number = 10): Promise<LeaderboardEntry[]> {
+  async getReadingLeaderboard(
+    timeframe: 'weekly' | 'monthly' | 'all-time' = 'all-time',
+    limit: number = 10
+  ): Promise<LeaderboardEntry[]> {
     try {
       let query = supabase
         .from('users')
@@ -128,10 +135,11 @@ export const socialService = {
   async getUpcomingEvents(limit: number = 10) {
     try {
       const now = new Date().toISOString();
-      
+
       const { data, error } = await supabase
         .from('community_events')
-        .select(`
+        .select(
+          `
           *,
           host:host_id (
             username,
@@ -145,7 +153,8 @@ export const socialService = {
           participants:event_participants (
             count
           )
-        `)
+        `
+        )
         .gte('start_time', now)
         .order('start_time', { ascending: true })
         .limit(limit);
@@ -164,7 +173,7 @@ export const socialService = {
       const { data, error } = await insertEventParticipant({
         event_id: eventId,
         user_id: userId,
-        rsvp_status: 'attending',
+        status: 'attending',
       });
 
       if (error) throw error;
@@ -182,7 +191,8 @@ export const socialService = {
     try {
       const { data, error } = await supabase
         .from('discussion_forums')
-        .select(`
+        .select(
+          `
           *,
           creator:created_by (
             username,
@@ -192,7 +202,8 @@ export const socialService = {
           club:club_id (
             name
           )
-        `)
+        `
+        )
         .order('view_count', { ascending: false })
         .order('reply_count', { ascending: false })
         .limit(limit);
@@ -209,7 +220,7 @@ export const socialService = {
   async postDiscussionReply(forumId: string, userId: string, content: string): Promise<void> {
     try {
       const { data, error } = await insertDiscussionReply({
-        forum_id: forumId,
+        discussion_id: forumId,
         user_id: userId,
         content: content,
       });
@@ -229,7 +240,8 @@ export const socialService = {
     try {
       const { data, error } = await supabase
         .from('club_members')
-        .select(`
+        .select(
+          `
           *,
           club:club_id (
             id,
@@ -243,7 +255,8 @@ export const socialService = {
               display_name
             )
           )
-        `)
+        `
+        )
         .eq('user_id', userId)
         .order('joined_at', { ascending: false });
 
@@ -260,13 +273,15 @@ export const socialService = {
     try {
       const { data, error } = await supabase
         .from('reading_clubs')
-        .select(`
+        .select(
+          `
           *,
           creator:creator_id (
             username,
             display_name
           )
-        `)
+        `
+        )
         .eq('is_private', false)
         .eq('status', 'active')
         .order('member_count', { ascending: false })

@@ -96,7 +96,7 @@ export const mockAnalytics = (overrides = {}) => ({
   completionRate: 0.65,
   averageRating: 4.5,
   totalRatings: 234,
-  revenue: 125.50,
+  revenue: 125.5,
   period: 'month' as const,
   ...overrides,
 });
@@ -134,10 +134,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   initialState?: any;
 }
 
-export function renderWithProviders(
-  ui: ReactElement,
-  options?: CustomRenderOptions
-) {
+export function renderWithProviders(ui: ReactElement, options?: CustomRenderOptions) {
   function Wrapper({ children }: { children: React.ReactNode }) {
     // Add your providers here (Redux, Context, etc.)
     return <>{children}</>;
@@ -147,11 +144,9 @@ export function renderWithProviders(
 }
 
 // Async utilities
-export const waitForLoadingToFinish = () =>
-  new Promise((resolve) => setTimeout(resolve, 0));
+export const waitForLoadingToFinish = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-export const flushPromises = () =>
-  new Promise((resolve) => setImmediate(resolve));
+export const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
 
 // Local storage mock
 export const mockLocalStorage = () => {
@@ -263,13 +258,16 @@ export const mockAnimations = () => {
     const originalModule = jest.requireActual('framer-motion');
     return {
       ...originalModule,
-      motion: new Proxy({}, {
-        get: (_, prop) => {
-          return React.forwardRef((props: any, ref) =>
-            React.createElement(prop as string, { ...props, ref })
-          );
-        },
-      }),
+      motion: new Proxy(
+        {},
+        {
+          get: (_, prop) => {
+            return React.forwardRef((props: any, ref) =>
+              React.createElement(prop as string, { ...props, ref })
+            );
+          },
+        }
+      ),
     };
   });
 };

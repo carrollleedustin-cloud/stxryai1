@@ -22,15 +22,15 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <Icon name="BookOpenIcon" size={24} className="text-primary" />
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            Reading History
-          </h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">Reading History</h2>
         </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setFilter('all')}
             className={`px-3 py-1 text-sm rounded-lg transition-smooth ${
-              filter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              filter === 'all'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted/50 text-muted-foreground hover:bg-muted'
             }`}
           >
             All
@@ -48,7 +48,9 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
           <button
             onClick={() => setFilter('in-progress')}
             className={`px-3 py-1 text-sm rounded-lg transition-smooth ${
-              filter === 'in-progress' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              filter === 'in-progress'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted/50 text-muted-foreground hover:bg-muted'
             }`}
           >
             In Progress
@@ -78,9 +80,7 @@ const ReadingHistory = ({ stories }: ReadingHistoryProps) => {
                   <h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-smooth truncate">
                     {progress.stories.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {progress.stories.genre}
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">{progress.stories.genre}</p>
                 </div>
                 {progress.stories.rating && (
                   <div className="flex items-center space-x-1 ml-2">

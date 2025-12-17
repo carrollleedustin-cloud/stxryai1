@@ -21,7 +21,7 @@ export function Skeleton({ className = '', count = 1 }: SkeletonProps) {
           transition={{
             duration: 1.5,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut',
           }}
           className={`bg-muted rounded-lg ${className}`}
         />
@@ -76,10 +76,7 @@ export function TextSkeleton({ lines = 3 }: { lines?: number }) {
   return (
     <div className="space-y-2">
       {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton
-          key={i}
-          className={`h-4 ${i === lines - 1 ? 'w-2/3' : 'w-full'}`}
-        />
+        <Skeleton key={i} className={`h-4 ${i === lines - 1 ? 'w-2/3' : 'w-full'}`} />
       ))}
     </div>
   );
@@ -93,7 +90,7 @@ export function AvatarSkeleton({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-12 h-12',
-    lg: 'w-16 h-16'
+    lg: 'w-16 h-16',
   };
 
   return <Skeleton className={`${sizeClasses[size]} rounded-full`} />;

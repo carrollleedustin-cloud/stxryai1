@@ -19,13 +19,15 @@ const welcomeSteps: WelcomeStep[] = [
   {
     id: 'welcome',
     title: 'Welcome to StxryAI! 🎉',
-    description: 'Create and experience interactive stories powered by AI. Your imagination is the only limit.',
+    description:
+      'Create and experience interactive stories powered by AI. Your imagination is the only limit.',
     icon: '✨',
   },
   {
     id: 'explore',
     title: 'Discover Amazing Stories',
-    description: 'Browse thousands of AI-powered interactive stories across every genre imaginable.',
+    description:
+      'Browse thousands of AI-powered interactive stories across every genre imaginable.',
     icon: '📚',
     action: {
       label: 'Explore Library',
@@ -35,7 +37,8 @@ const welcomeSteps: WelcomeStep[] = [
   {
     id: 'create',
     title: 'Become a Creator',
-    description: 'Use our AI-powered tools to create your own interactive stories in minutes. No writing experience needed!',
+    description:
+      'Use our AI-powered tools to create your own interactive stories in minutes. No writing experience needed!',
     icon: '✍️',
     action: {
       label: 'Create Your First Story',
@@ -45,7 +48,8 @@ const welcomeSteps: WelcomeStep[] = [
   {
     id: 'gamification',
     title: 'Earn Achievements & XP',
-    description: 'Complete stories, make choices, and climb the leaderboard. Unlock achievements as you read and create!',
+    description:
+      'Complete stories, make choices, and climb the leaderboard. Unlock achievements as you read and create!',
     icon: '🏆',
     action: {
       label: 'View Achievements',
@@ -55,7 +59,8 @@ const welcomeSteps: WelcomeStep[] = [
   {
     id: 'energy',
     title: 'Energy System',
-    description: 'Free users get 25 energy daily. Premium users enjoy unlimited energy to read and create as much as you want!',
+    description:
+      'Free users get 25 energy daily. Premium users enjoy unlimited energy to read and create as much as you want!',
     icon: '⚡',
     action: {
       label: 'View Pricing',
@@ -145,8 +150,8 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
                         index === currentStep
                           ? 'w-8 bg-gradient-to-r from-purple-600 to-pink-600'
                           : index < currentStep
-                          ? 'w-2 bg-purple-400'
-                          : 'w-2 bg-gray-300 dark:bg-gray-600'
+                            ? 'w-2 bg-purple-400'
+                            : 'w-2 bg-gray-300 dark:bg-gray-600'
                       }`}
                     />
                   ))}
@@ -196,8 +201,18 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
                           className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                         >
                           {step.action.label}
-                          <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          <svg
+                            className="w-5 h-5 ml-2"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
                           </svg>
                         </Link>
                       </motion.div>
@@ -218,8 +233,18 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
                   </svg>
                   Previous
                 </button>
@@ -238,8 +263,18 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
                   className="flex items-center px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   {currentStep === totalSteps - 1 ? "Let's Go!" : 'Next'}
-                  <svg className="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5 ml-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </button>
               </div>

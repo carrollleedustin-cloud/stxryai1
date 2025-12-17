@@ -24,7 +24,9 @@ export default function ContinueReadingWidget({ progress, onClick }: ContinueRea
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-2 left-3 right-3">
-          <h3 className="text-white font-bold text-lg line-clamp-1">{story?.title || 'Unknown Story'}</h3>
+          <h3 className="text-white font-bold text-lg line-clamp-1">
+            {story?.title || 'Unknown Story'}
+          </h3>
         </div>
       </div>
 

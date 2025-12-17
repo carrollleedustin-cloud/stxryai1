@@ -22,7 +22,7 @@ export default function ShareButton({
   hashtags = [],
   onShare,
   variant = 'button',
-  size = 'md'
+  size = 'md',
 }: ShareButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -45,7 +45,7 @@ export default function ShareButton({
       const subject = encodeURIComponent(title);
       const body = encodeURIComponent(`${description}\n\n${url}`);
       return `mailto:?subject=${subject}&body=${body}`;
-    }
+    },
   };
 
   const platforms = [
@@ -53,7 +53,7 @@ export default function ShareButton({
     { id: 'facebook', name: 'Facebook', icon: '📘', color: 'from-blue-600 to-blue-800' },
     { id: 'linkedin', name: 'LinkedIn', icon: '💼', color: 'from-blue-700 to-blue-900' },
     { id: 'reddit', name: 'Reddit', icon: '🔴', color: 'from-orange-500 to-red-600' },
-    { id: 'email', name: 'Email', icon: '✉️', color: 'from-gray-600 to-gray-800' }
+    { id: 'email', name: 'Email', icon: '✉️', color: 'from-gray-600 to-gray-800' },
   ];
 
   const handleShare = (platformId: string) => {
@@ -79,7 +79,7 @@ export default function ShareButton({
         await navigator.share({
           title,
           text: description,
-          url
+          url,
         });
         onShare?.('native');
       } catch (error) {
@@ -91,13 +91,13 @@ export default function ShareButton({
   const sizeClasses = {
     sm: 'text-sm px-3 py-1.5',
     md: 'text-base px-4 py-2',
-    lg: 'text-lg px-6 py-3'
+    lg: 'text-lg px-6 py-3',
   };
 
   const iconSizes = {
     sm: 16,
     md: 20,
-    lg: 24
+    lg: 24,
   };
 
   return (
@@ -173,7 +173,9 @@ export default function ShareButton({
                     onClick={() => handleShare(platform.id)}
                     className="w-full flex items-center gap-3 p-3 rounded-lg transition-colors"
                   >
-                    <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${platform.color} flex items-center justify-center text-xl`}>
+                    <div
+                      className={`w-10 h-10 rounded-full bg-gradient-to-br ${platform.color} flex items-center justify-center text-xl`}
+                    >
                       {platform.icon}
                     </div>
                     <span className="font-medium text-foreground">{platform.name}</span>

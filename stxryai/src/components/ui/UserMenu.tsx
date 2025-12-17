@@ -30,7 +30,7 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
       onClick: () => {
         setIsOpen(false);
         router.push('/user-profile');
-      }
+      },
     },
     {
       icon: 'ChartBarIcon',
@@ -39,7 +39,7 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
       onClick: () => {
         setIsOpen(false);
         router.push('/user-dashboard');
-      }
+      },
     },
     {
       icon: 'BookmarkIcon',
@@ -48,7 +48,7 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
       onClick: () => {
         setIsOpen(false);
         // Navigate to saved stories
-      }
+      },
     },
     {
       icon: 'Cog6ToothIcon',
@@ -57,15 +57,15 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
       onClick: () => {
         setIsOpen(false);
         router.push('/user-profile');
-      }
-    }
+      },
+    },
   ];
 
   const getInitials = (name?: string) => {
     if (!name) return 'U';
     return name
       .split(' ')
-      .map(n => n[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -143,9 +143,7 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
                     <p className="font-bold text-foreground truncate">
                       {profile?.display_name || 'User'}
                     </p>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {user?.email}
-                    </p>
+                    <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
                   </div>
                 </div>
 
@@ -156,7 +154,11 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
                     animate={{ scale: 1 }}
                     className="mt-3 p-2 bg-gradient-to-r from-yellow-400/10 to-orange-500/10 border border-yellow-500/20 rounded-lg flex items-center gap-2"
                   >
-                    <Icon name="SparklesIcon" size={16} className="text-yellow-600 dark:text-yellow-400" />
+                    <Icon
+                      name="SparklesIcon"
+                      size={16}
+                      className="text-yellow-600 dark:text-yellow-400"
+                    />
                     <span className="text-xs font-semibold text-yellow-600 dark:text-yellow-400">
                       Premium Member
                     </span>
@@ -192,12 +194,8 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
                       <Icon name={item.icon} size={20} className="text-primary" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">
-                        {item.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.description}
-                      </p>
+                      <p className="text-sm font-medium text-foreground">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{item.description}</p>
                     </div>
                     <Icon name="ChevronRightIcon" size={16} className="text-muted-foreground" />
                   </motion.button>
@@ -213,9 +211,7 @@ export default function UserMenu({ className = '' }: UserMenuProps) {
                   className="w-full px-4 py-2 flex items-center gap-3 text-left rounded-lg transition-colors"
                 >
                   <Icon name="ArrowRightOnRectangleIcon" size={20} className="text-destructive" />
-                  <span className="text-sm font-medium text-destructive">
-                    Sign Out
-                  </span>
+                  <span className="text-sm font-medium text-destructive">Sign Out</span>
                 </motion.button>
               </div>
             </motion.div>

@@ -37,10 +37,7 @@ export default function Header() {
                 stroke="var(--color-accent)"
                 strokeWidth="1.5"
               />
-              <path
-                d="M20 14L14 18V26L20 30L26 26V18L20 14Z"
-                fill="var(--color-background)"
-              />
+              <path d="M20 14L14 18V26L20 30L26 26V18L20 14Z" fill="var(--color-background)" />
               <defs>
                 <linearGradient
                   id="header-logo-gradient"
@@ -55,19 +52,26 @@ export default function Header() {
                 </linearGradient>
               </defs>
             </svg>
-            <span className="font-heading text-xl font-bold text-foreground">
-              Stxryai
-            </span>
+            <span className="font-heading text-xl font-bold text-foreground">Stxryai</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/story-library" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="/story-library"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
               Library
             </Link>
-            <Link href="/community-hub" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="/community-hub"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
               Community
             </Link>
-            <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="/pricing"
+              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
               Pricing
             </Link>
           </nav>
@@ -75,7 +79,10 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Link href="/user-dashboard" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/user-dashboard"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
                   Dashboard
                 </Link>
                 <div className="flex items-center gap-3">
@@ -88,13 +95,20 @@ export default function Header() {
                     onClick={handleSignOut}
                     className="flex items-center justify-center w-8 h-8 rounded-full bg-muted/50 hover:bg-muted"
                   >
-                    <Icon name="ArrowLeftOnRectangleIcon" size={18} className="text-muted-foreground" />
+                    <Icon
+                      name="ArrowLeftOnRectangleIcon"
+                      size={18}
+                      className="text-muted-foreground"
+                    />
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <Link href="/authentication" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/authentication"
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+                >
                   Sign In
                 </Link>
                 <Link

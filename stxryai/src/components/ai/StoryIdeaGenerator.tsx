@@ -32,8 +32,18 @@ export default function StoryIdeaGenerator() {
   const [error, setError] = useState<string | null>(null);
 
   const genres = [
-    { id: 'childrens-adventure', name: 'Children\'s Adventure', icon: '🌟', desc: 'Fun stories for kids 3-8' },
-    { id: 'childrens-educational', name: 'Children\'s Learning', icon: '📚', desc: 'Educational for kids 5-10' },
+    {
+      id: 'childrens-adventure',
+      name: "Children's Adventure",
+      icon: '🌟',
+      desc: 'Fun stories for kids 3-8',
+    },
+    {
+      id: 'childrens-educational',
+      name: "Children's Learning",
+      icon: '📚',
+      desc: 'Educational for kids 5-10',
+    },
     { id: 'middle-grade', name: 'Middle Grade', icon: '🎒', desc: 'Ages 8-12 adventures' },
     { id: 'fantasy', name: 'Fantasy', icon: '🧙', desc: 'Magic and mythical worlds' },
     { id: 'scifi', name: 'Sci-Fi', icon: '🚀', desc: 'Future tech and space' },
@@ -45,7 +55,12 @@ export default function StoryIdeaGenerator() {
     { id: 'steampunk', name: 'Steampunk', icon: '⚙️', desc: 'Victorian tech' },
     { id: 'historical', name: 'Historical', icon: '📜', desc: 'Past eras and events' },
     { id: 'western', name: 'Western', icon: '🤠', desc: 'Frontier adventures' },
-    { id: 'postapocalyptic', name: 'Post-Apocalyptic', icon: '☢️', desc: 'Survival after disaster' },
+    {
+      id: 'postapocalyptic',
+      name: 'Post-Apocalyptic',
+      icon: '☢️',
+      desc: 'Survival after disaster',
+    },
     { id: 'superhero', name: 'Superhero', icon: '🦸', desc: 'Powers and heroics' },
   ];
 

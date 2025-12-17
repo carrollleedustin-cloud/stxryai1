@@ -139,9 +139,7 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
           <button
             onClick={() => setMethod('url')}
             className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
-              method === 'url'
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted hover:bg-muted/70'
+              method === 'url' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/70'
             }`}
           >
             🔗 From URL
@@ -152,9 +150,7 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
         <div className="mb-6">
           {method === 'paste' && (
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Paste your story content
-              </label>
+              <label className="block text-sm font-medium mb-2">Paste your story content</label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -163,16 +159,15 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
                 className="w-full px-4 py-3 rounded-lg border-2 border-border bg-background focus:outline-none focus:border-primary resize-none font-mono text-sm"
               />
               <p className="text-xs text-muted-foreground mt-2">
-                💡 Tip: For best results, use # for chapter titles and separate paragraphs with blank lines
+                💡 Tip: For best results, use # for chapter titles and separate paragraphs with
+                blank lines
               </p>
             </div>
           )}
 
           {method === 'file' && (
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Upload a file
-              </label>
+              <label className="block text-sm font-medium mb-2">Upload a file</label>
               <div
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer"
                 onClick={() => document.getElementById('file-input')?.click()}
@@ -216,9 +211,7 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
 
           {method === 'url' && (
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Enter URL
-              </label>
+              <label className="block text-sm font-medium mb-2">Enter URL</label>
               <input
                 type="url"
                 value={url}
@@ -244,10 +237,18 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
         <div className="mb-6 p-4 rounded-lg bg-muted/50">
           <h4 className="font-medium mb-2">📖 Supported Formats</h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• <strong>JSON:</strong> Exported stories from StxryAI</li>
-            <li>• <strong>Markdown:</strong> # for titles, ## for chapters</li>
-            <li>• <strong>Plain Text:</strong> Auto-detected chapter breaks</li>
-            <li>• <strong>URL:</strong> Direct link to .txt, .md, or .json file</li>
+            <li>
+              • <strong>JSON:</strong> Exported stories from StxryAI
+            </li>
+            <li>
+              • <strong>Markdown:</strong> # for titles, ## for chapters
+            </li>
+            <li>
+              • <strong>Plain Text:</strong> Auto-detected chapter breaks
+            </li>
+            <li>
+              • <strong>URL:</strong> Direct link to .txt, .md, or .json file
+            </li>
           </ul>
         </div>
 
@@ -297,7 +298,7 @@ export default function ImportStory({ onImport, onCancel }: ImportStoryProps) {
 // Helper functions to parse different formats
 
 function parseTextToStory(text: string): any {
-  const lines = text.split('\n').filter(line => line.trim());
+  const lines = text.split('\n').filter((line) => line.trim());
 
   // Try to detect title (first non-empty line or line starting with #)
   let title = 'Imported Story';
@@ -329,9 +330,12 @@ function parseTextToStory(text: string): any {
       // Start new chapter
       currentChapter = {
         id: `chapter_${chapterOrder}`,
-        title: line.replace(/^##\s+/, '').replace(/^Chapter\s+\d+:?\s*/i, '').trim(),
+        title: line
+          .replace(/^##\s+/, '')
+          .replace(/^Chapter\s+\d+:?\s*/i, '')
+          .trim(),
         content: '',
-        order: chapterOrder++
+        order: chapterOrder++,
       };
     } else if (currentChapter) {
       // Add content to current chapter
@@ -343,7 +347,7 @@ function parseTextToStory(text: string): any {
           id: `chapter_${chapterOrder}`,
           title: 'Chapter 1',
           content: line + '\n',
-          order: chapterOrder++
+          order: chapterOrder++,
         };
       }
     }
@@ -360,7 +364,7 @@ function parseTextToStory(text: string): any {
       id: 'chapter_0',
       title: 'Chapter 1',
       content: lines.slice(startIdx).join('\n'),
-      order: 0
+      order: 0,
     });
   }
 
@@ -372,7 +376,7 @@ function parseTextToStory(text: string): any {
     tags: ['imported'],
     chapters,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 }
 
@@ -402,7 +406,7 @@ function parseMarkdownToStory(markdown: string): any {
         id: `chapter_${chapterOrder}`,
         title: line.replace(/^##\s+/, '').trim(),
         content: '',
-        order: chapterOrder++
+        order: chapterOrder++,
       };
     } else if (currentChapter) {
       currentChapter.content += line + '\n';
@@ -421,13 +425,18 @@ function parseMarkdownToStory(markdown: string): any {
     description: description.trim() || 'Imported from markdown',
     genre: 'General',
     tags: ['imported', 'markdown'],
-    chapters: chapters.length > 0 ? chapters : [{
-      id: 'chapter_0',
-      title: 'Chapter 1',
-      content: markdown,
-      order: 0
-    }],
+    chapters:
+      chapters.length > 0
+        ? chapters
+        : [
+            {
+              id: 'chapter_0',
+              title: 'Chapter 1',
+              content: markdown,
+              order: 0,
+            },
+          ],
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 }

@@ -28,20 +28,20 @@ export default function GamificationDashboard({
   userId,
   userStats,
   unlockedAchievements,
-  leaderboardData = []
+  leaderboardData = [],
 }: GamificationDashboardProps) {
   const [selectedTab, setSelectedTab] = useState<'achievements' | 'leaderboard'>('achievements');
   const [achievementFilter, setAchievementFilter] = useState<'all' | 'unlocked' | 'locked'>('all');
 
   const tabs = [
     { value: 'achievements' as const, label: 'Achievements', icon: 'TrophyIcon' },
-    { value: 'leaderboard' as const, label: 'Leaderboard', icon: 'ChartBarIcon' }
+    { value: 'leaderboard' as const, label: 'Leaderboard', icon: 'ChartBarIcon' },
   ];
 
   const filters = [
     { value: 'all' as const, label: 'All' },
     { value: 'unlocked' as const, label: 'Unlocked' },
-    { value: 'locked' as const, label: 'Locked' }
+    { value: 'locked' as const, label: 'Locked' },
   ];
 
   const filteredAchievements = ACHIEVEMENTS.filter((achievement) => {
@@ -51,7 +51,7 @@ export default function GamificationDashboard({
     return true;
   });
 
-  const unlockedCount = ACHIEVEMENTS.filter(a => unlockedAchievements.includes(a.id)).length;
+  const unlockedCount = ACHIEVEMENTS.filter((a) => unlockedAchievements.includes(a.id)).length;
   const completionPercentage = (unlockedCount / ACHIEVEMENTS.length) * 100;
 
   return (
@@ -77,9 +77,7 @@ export default function GamificationDashboard({
             <Icon name="BookOpenIcon" size={20} className="text-blue-500" />
             <span className="text-sm text-muted-foreground">Stories</span>
           </div>
-          <div className="text-2xl font-bold text-foreground">
-            {userStats.stories_completed}
-          </div>
+          <div className="text-2xl font-bold text-foreground">{userStats.stories_completed}</div>
         </motion.div>
 
         <motion.div variants={slideUp} className="bg-card border border-border rounded-xl p-4">
@@ -87,9 +85,7 @@ export default function GamificationDashboard({
             <Icon name="BoltIcon" size={20} className="text-purple-500" />
             <span className="text-sm text-muted-foreground">Choices</span>
           </div>
-          <div className="text-2xl font-bold text-foreground">
-            {userStats.choices_made}
-          </div>
+          <div className="text-2xl font-bold text-foreground">{userStats.choices_made}</div>
         </motion.div>
 
         <motion.div variants={slideUp} className="bg-card border border-border rounded-xl p-4">
@@ -97,9 +93,7 @@ export default function GamificationDashboard({
             <Icon name="FireIcon" size={20} className="text-orange-500" />
             <span className="text-sm text-muted-foreground">Streak</span>
           </div>
-          <div className="text-2xl font-bold text-foreground">
-            {userStats.reading_streak} days
-          </div>
+          <div className="text-2xl font-bold text-foreground">{userStats.reading_streak} days</div>
         </motion.div>
 
         <motion.div variants={slideUp} className="bg-card border border-border rounded-xl p-4">
@@ -198,7 +192,11 @@ export default function GamificationDashboard({
 
             {filteredAchievements.length === 0 && (
               <div className="py-20 text-center">
-                <Icon name="TrophyIcon" size={64} className="text-muted-foreground mx-auto mb-4 opacity-50" />
+                <Icon
+                  name="TrophyIcon"
+                  size={64}
+                  className="text-muted-foreground mx-auto mb-4 opacity-50"
+                />
                 <p className="text-lg text-muted-foreground">
                   No achievements in this category yet
                 </p>
@@ -215,11 +213,7 @@ export default function GamificationDashboard({
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <Leaderboard
-              entries={leaderboardData}
-              currentUserId={userId}
-              timeframe="all-time"
-            />
+            <Leaderboard entries={leaderboardData} currentUserId={userId} timeframe="all-time" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -31,10 +31,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     checkUser();
-    
+
     // Safe subscription handling with null checks
     let authSubscription: { unsubscribe: () => void } | null = null;
-    
+
     try {
       const authListenerResult = authService.onAuthStateChange(async (session: any) => {
         if (session?.user) {
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         setLoading(false);
       });
-      
+
       // Safely extract subscription
       authSubscription = authListenerResult?.data?.subscription || null;
     } catch (error) {
@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           retries--;
           if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise((resolve) => setTimeout(resolve, 500));
           }
         }
       }
@@ -142,7 +142,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}>
+    <AuthContext.Provider
+      value={{ user, profile, loading, signIn, signUp, signOut, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

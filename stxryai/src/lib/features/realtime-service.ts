@@ -345,11 +345,7 @@ export class CollaborativeWritingService {
   /**
    * Share edit with collaborators
    */
-  async shareEdit(
-    sessionId: string,
-    userId: string,
-    edit: TextEdit
-  ): Promise<void> {
+  async shareEdit(sessionId: string, userId: string, edit: TextEdit): Promise<void> {
     const session = this.activeSessions.get(sessionId);
     if (!session) return;
 

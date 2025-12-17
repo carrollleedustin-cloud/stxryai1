@@ -1,6 +1,10 @@
 import { supabase } from '@/lib/supabase/client';
 import { PostgrestError } from '@supabase/supabase-js';
-import { insertClubMember, insertDiscussionForum, insertEventParticipant } from '@/lib/supabase/typed';
+import {
+  insertClubMember,
+  insertDiscussionForum,
+  insertEventParticipant,
+} from '@/lib/supabase/typed';
 
 // ============================================
 // TYPES
@@ -127,7 +131,9 @@ export const communityService = {
   },
 
   // Get club by ID with members
-  async getClubById(clubId: string): Promise<{ data: ReadingClub | null; error: PostgrestError | null }> {
+  async getClubById(
+    clubId: string
+  ): Promise<{ data: ReadingClub | null; error: PostgrestError | null }> {
     const { data, error } = await supabase
       .from('reading_clubs')
       .select('*')
@@ -151,13 +157,15 @@ export const communityService = {
   // ============================================
   // DISCUSSION FORUMS
   // ============================================
-  
+
   // Get forums by category
-  async getForumsByCategory(category: string): Promise<{ data: DiscussionForum[] | null; error: PostgrestError | null }> {
+  async getForumsByCategory(
+    category: string
+  ): Promise<{ data: DiscussionForum[] | null; error: PostgrestError | null }> {
     const { data, error } = await supabase
       .from('discussion_forums')
       .select('*')
-      .eq('category', category)
+      .ilike('title', `%${category}%`)
       .order('is_pinned', { ascending: false })
       .order('updated_at', { ascending: false });
 
@@ -165,7 +173,9 @@ export const communityService = {
   },
 
   // Get forum replies
-  async getForumReplies(forumId: string): Promise<{ data: DiscussionReply[] | null; error: PostgrestError | null }> {
+  async getForumReplies(
+    forumId: string
+  ): Promise<{ data: DiscussionReply[] | null; error: PostgrestError | null }> {
     const { data, error } = await supabase
       .from('discussion_replies')
       .select('*')
@@ -176,24 +186,30 @@ export const communityService = {
   },
 
   // Create forum post
-  async createForum(forum: Partial<DiscussionForum>): Promise<{ data: DiscussionForum | null; error: PostgrestError | null }> {
+  async createForum(
+    forum: Partial<DiscussionForum>
+  ): Promise<{ data: DiscussionForum | null; error: PostgrestError | null }> {
     const { data, error } = await insertDiscussionForum({
       title: forum.title as string,
-      category: forum.category as string,
-      story_id: forum.story_id as any,
       club_id: forum.club_id as any,
       created_by: forum.created_by as string,
     });
 
-    return { data: Array.isArray(data) ? (data[0] as DiscussionForum) : (data as DiscussionForum), error };
+    return {
+      data: Array.isArray(data) ? (data[0] as DiscussionForum) : (data as DiscussionForum),
+      error,
+    };
   },
 
   // ============================================
   // COMMUNITY EVENTS
   // ============================================
-  
+
   // Get upcoming events
-  async getUpcomingEvents(): Promise<{ data: CommunityEvent[] | null; error: PostgrestError | null }> {
+  async getUpcomingEvents(): Promise<{
+    data: CommunityEvent[] | null;
+    error: PostgrestError | null;
+  }> {
     const { data, error } = await supabase
       .from('community_events')
       .select('*')
@@ -208,7 +224,7 @@ export const communityService = {
     const { data, error } = await insertEventParticipant({
       event_id: eventId,
       user_id: userId,
-      rsvp_status: 'going',
+      status: 'going',
     });
 
     return { error };
@@ -217,13 +233,12 @@ export const communityService = {
   // ============================================
   // USER CONTENT
   // ============================================
-  
+
   // Get user generated content
-  async getUserContent(storyId?: string): Promise<{ data: UserContent[] | null; error: PostgrestError | null }> {
-    let query = supabase
-      .from('user_content')
-      .select('*')
-      .order('vote_count', { ascending: false });
+  async getUserContent(
+    storyId?: string
+  ): Promise<{ data: UserContent[] | null; error: PostgrestError | null }> {
+    let query = supabase.from('user_content').select('*').order('vote_count', { ascending: false });
 
     if (storyId) {
       query = query.eq('story_id', storyId);
@@ -237,9 +252,11 @@ export const communityService = {
   // ============================================
   // MENTORSHIP
   // ============================================
-  
+
   // Get active mentorships for user
-  async getUserMentorships(userId: string): Promise<{ data: MentorshipProgram[] | null; error: PostgrestError | null }> {
+  async getUserMentorships(
+    userId: string
+  ): Promise<{ data: MentorshipProgram[] | null; error: PostgrestError | null }> {
     const { data, error } = await supabase
       .from('mentorship_programs')
       .select('*')
@@ -253,9 +270,11 @@ export const communityService = {
   // ============================================
   // REPUTATION
   // ============================================
-  
+
   // Get user reputation
-  async getUserReputation(userId: string): Promise<{ data: UserReputation | null; error: PostgrestError | null }> {
+  async getUserReputation(
+    userId: string
+  ): Promise<{ data: UserReputation | null; error: PostgrestError | null }> {
     const { data, error } = await supabase
       .from('user_reputation')
       .select('*')
@@ -263,5 +282,5 @@ export const communityService = {
       .single();
 
     return { data: data as UserReputation, error };
-  }
+  },
 };

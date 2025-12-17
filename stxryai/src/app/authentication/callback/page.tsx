@@ -32,7 +32,9 @@ export default function AuthCallback() {
           }
 
           // Get the user session to verify
-          const { data: { session } } = await supabase.auth.getSession();
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
 
           if (session) {
             // Successfully authenticated, redirect to dashboard

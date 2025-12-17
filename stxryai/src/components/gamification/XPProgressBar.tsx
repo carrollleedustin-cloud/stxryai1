@@ -14,7 +14,7 @@ export default function XPProgressBar({
   totalXP,
   showDetails = true,
   size = 'md',
-  animated = true
+  animated = true,
 }: XPProgressBarProps) {
   const currentLevel = getLevelFromXP(totalXP);
   const progress = getXPProgress(totalXP);
@@ -25,7 +25,7 @@ export default function XPProgressBar({
   const sizeClasses = {
     sm: 'h-2 text-xs',
     md: 'h-3 text-sm',
-    lg: 'h-4 text-base'
+    lg: 'h-4 text-base',
   };
 
   return (
@@ -40,9 +40,7 @@ export default function XPProgressBar({
             <span className="mr-1">{currentLevel.badge}</span>
             Level {currentLevel.level}
           </motion.div>
-          <span className="text-sm font-medium text-muted-foreground">
-            {currentLevel.title}
-          </span>
+          <span className="text-sm font-medium text-muted-foreground">{currentLevel.title}</span>
         </div>
         {showDetails && (
           <span className="text-xs text-muted-foreground">
@@ -65,12 +63,12 @@ export default function XPProgressBar({
             {/* Shimmer Effect */}
             <motion.div
               animate={{
-                x: ['-100%', '100%']
+                x: ['-100%', '100%'],
               }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: 'linear'
+                ease: 'linear',
               }}
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
             />

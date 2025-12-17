@@ -48,14 +48,14 @@ export const readingShortcuts: KeyboardShortcut[] = [
     description: 'Previous chapter',
     action: () => {
       // Handled by parent component
-    }
+    },
   },
   {
     key: 'ArrowRight',
     description: 'Next chapter',
     action: () => {
       // Handled by parent component
-    }
+    },
   },
   {
     key: 'f',
@@ -66,22 +66,22 @@ export const readingShortcuts: KeyboardShortcut[] = [
       } else {
         document.documentElement.requestFullscreen();
       }
-    }
+    },
   },
   {
     key: 'b',
     description: 'Bookmark current position',
     action: () => {
       // Handled by parent component
-    }
+    },
   },
   {
     key: 'n',
     description: 'Toggle night mode',
     action: () => {
       // Handled by parent component
-    }
-  }
+    },
+  },
 ];
 
 /**

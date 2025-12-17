@@ -19,13 +19,13 @@ interface ActivityHeatmapProps {
 export default function ActivityHeatmap({
   activities,
   year = new Date().getFullYear(),
-  showLegend = true
+  showLegend = true,
 }: ActivityHeatmapProps) {
   const [hoveredDay, setHoveredDay] = useState<DayActivity | null>(null);
   const [hoveredPosition, setHoveredPosition] = useState({ x: 0, y: 0 });
 
   // Create a map for quick lookup
-  const activityMap = new Map(activities.map(a => [a.date, a]));
+  const activityMap = new Map(activities.map((a) => [a.date, a]));
 
   // Generate all weeks of the year
   const weeks: DayActivity[][] = [];
@@ -62,7 +62,7 @@ export default function ActivityHeatmap({
   }
 
   // Calculate intensity levels
-  const maxCount = Math.max(...activities.map(a => a.count), 1);
+  const maxCount = Math.max(...activities.map((a) => a.count), 1);
 
   const getIntensityColor = (count: number): string => {
     if (count === 0) return 'bg-muted';
@@ -79,7 +79,7 @@ export default function ActivityHeatmap({
       const rect = (e.target as HTMLElement).getBoundingClientRect();
       setHoveredPosition({
         x: rect.left + rect.width / 2,
-        y: rect.top
+        y: rect.top,
       });
     }
   };
@@ -92,14 +92,27 @@ export default function ActivityHeatmap({
     return new Date(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const totalDaysActive = activities.filter(a => a.count > 0).length;
+  const totalDaysActive = activities.filter((a) => a.count > 0).length;
   const totalMinutes = activities.reduce((sum, a) => sum + a.minutesRead, 0);
 
   return (
@@ -112,7 +125,8 @@ export default function ActivityHeatmap({
             Activity Heatmap - {year}
           </h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {totalDaysActive} days active • {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m total
+            {totalDaysActive} days active • {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
+            total
           </p>
         </div>
       </div>
@@ -138,10 +152,7 @@ export default function ActivityHeatmap({
             {/* Day Labels */}
             <div className="flex flex-col gap-0.5">
               {days.map((day, idx) => (
-                <div
-                  key={day}
-                  className="h-3 flex items-center text-xs text-muted-foreground"
-                >
+                <div key={day} className="h-3 flex items-center text-xs text-muted-foreground">
                   {idx % 2 === 1 ? day : ''}
                 </div>
               ))}
@@ -195,7 +206,7 @@ export default function ActivityHeatmap({
             left: hoveredPosition.x,
             top: hoveredPosition.y - 80,
             transform: 'translateX(-50%)',
-            zIndex: 100
+            zIndex: 100,
           }}
           className="px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-xl pointer-events-none"
         >
@@ -210,7 +221,7 @@ export default function ActivityHeatmap({
             style={{
               borderLeft: '6px solid transparent',
               borderRight: '6px solid transparent',
-              borderTop: '6px solid rgb(17, 24, 39)'
+              borderTop: '6px solid rgb(17, 24, 39)',
             }}
           />
         </motion.div>

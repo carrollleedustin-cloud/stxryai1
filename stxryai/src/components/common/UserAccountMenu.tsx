@@ -15,11 +15,7 @@ interface UserAccountMenuProps {
   onLogout?: () => void;
 }
 
-const UserAccountMenu = ({
-  user,
-  notificationCount = 0,
-  onLogout,
-}: UserAccountMenuProps) => {
+const UserAccountMenu = ({ user, notificationCount = 0, onLogout }: UserAccountMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
@@ -55,34 +51,25 @@ const UserAccountMenu = ({
         </div>
         <div className="hidden sm:block text-left">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-foreground">
-              {user.name}
-            </span>
+            <span className="text-sm font-medium text-foreground">{user.name}</span>
             {user.isPremium && (
               <span className="px-2 py-0.5 text-xs font-semibold bg-accent/20 text-accent rounded-full border border-accent/30">
                 Premium
               </span>
             )}
           </div>
-          {user.email && (
-            <span className="text-xs text-muted-foreground">{user.email}</span>
-          )}
+          {user.email && <span className="text-xs text-muted-foreground">{user.email}</span>}
         </div>
         <Icon
           name="ChevronDownIcon"
           size={16}
-          className={`text-muted-foreground transition-smooth ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={`text-muted-foreground transition-smooth ${isOpen ? 'rotate-180' : ''}`}
         />
       </button>
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-[190]"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-[190]" onClick={() => setIsOpen(false)} />
           <div className="absolute right-0 mt-2 w-72 bg-card/95 backdrop-blur-glass border border-border rounded-lg shadow-elevation-2 z-[200] overflow-hidden">
             <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
               <div className="flex items-center space-x-3">
@@ -101,21 +88,13 @@ const UserAccountMenu = ({
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <p className="text-sm font-semibold text-foreground truncate">
-                      {user.name}
-                    </p>
+                    <p className="text-sm font-semibold text-foreground truncate">{user.name}</p>
                     {user.isPremium && (
-                      <Icon
-                        name="SparklesIcon"
-                        size={16}
-                        className="text-accent flex-shrink-0"
-                      />
+                      <Icon name="SparklesIcon" size={16} className="text-accent flex-shrink-0" />
                     )}
                   </div>
                   {user.email && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {user.email}
-                    </p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   )}
                 </div>
               </div>
@@ -130,9 +109,7 @@ const UserAccountMenu = ({
                 <Icon name="UserIcon" size={18} />
                 <div className="flex-1">
                   <span className="font-medium">My Profile</span>
-                  <p className="text-xs text-muted-foreground">
-                    View and edit profile
-                  </p>
+                  <p className="text-xs text-muted-foreground">View and edit profile</p>
                 </div>
               </Link>
 
@@ -144,9 +121,7 @@ const UserAccountMenu = ({
                 <Icon name="ChartBarIcon" size={18} />
                 <div className="flex-1">
                   <span className="font-medium">Reading Stats</span>
-                  <p className="text-xs text-muted-foreground">
-                    Track your progress
-                  </p>
+                  <p className="text-xs text-muted-foreground">Track your progress</p>
                 </div>
               </Link>
 
@@ -158,9 +133,7 @@ const UserAccountMenu = ({
                 <Icon name="Cog6ToothIcon" size={18} />
                 <div className="flex-1">
                   <span className="font-medium">Settings</span>
-                  <p className="text-xs text-muted-foreground">
-                    Preferences and privacy
-                  </p>
+                  <p className="text-xs text-muted-foreground">Preferences and privacy</p>
                 </div>
               </Link>
 
@@ -174,18 +147,10 @@ const UserAccountMenu = ({
                   >
                     <Icon name="SparklesIcon" size={18} className="text-accent" />
                     <div className="flex-1">
-                      <span className="font-semibold text-accent">
-                        Upgrade to Premium
-                      </span>
-                      <p className="text-xs text-muted-foreground">
-                        Unlock exclusive features
-                      </p>
+                      <span className="font-semibold text-accent">Upgrade to Premium</span>
+                      <p className="text-xs text-muted-foreground">Unlock exclusive features</p>
                     </div>
-                    <Icon
-                      name="ArrowRightIcon"
-                      size={16}
-                      className="text-accent"
-                    />
+                    <Icon name="ArrowRightIcon" size={16} className="text-accent" />
                   </Link>
                 </>
               )}
@@ -199,9 +164,7 @@ const UserAccountMenu = ({
                 <Icon name="ArrowRightOnRectangleIcon" size={18} />
                 <div className="flex-1">
                   <span className="font-medium">Logout</span>
-                  <p className="text-xs text-muted-foreground">
-                    Sign out of your account
-                  </p>
+                  <p className="text-xs text-muted-foreground">Sign out of your account</p>
                 </div>
               </button>
             </div>

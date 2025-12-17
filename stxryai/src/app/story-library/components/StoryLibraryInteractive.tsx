@@ -38,40 +38,45 @@ export default function StoryLibraryInteractive() {
   });
   const [searchQuery, setSearchQuery] = useState('');
 
-  const loadStories = useCallback(async (reset = false) => {
-    setLoading(true);
-    try {
-      const newStories = await storyService.getFilteredStories({
-        ...filters,
-        searchQuery,
-        page: reset ? 1 : page,
-        pageSize: PAGE_SIZE,
-      });
+  const loadStories = useCallback(
+    async (reset = false) => {
+      setLoading(true);
+      try {
+        const newStories = await storyService.getFilteredStories({
+          ...filters,
+          searchQuery,
+          page: reset ? 1 : page,
+          pageSize: PAGE_SIZE,
+        });
 
-      if (reset) {
-        setStories(newStories);
-      } else {
-        setStories((prev) => [...prev, ...newStories]);
+        if (reset) {
+          setStories(newStories);
+        } else {
+          setStories((prev) => [...prev, ...newStories]);
+        }
+
+        setHasMore(newStories.length === PAGE_SIZE);
+        setError('');
+      } catch (err: any) {
+        if (err?.message?.includes('Failed to fetch')) {
+          setError(
+            'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
+          );
+        } else {
+          setError('Failed to load stories. Please try again.');
+        }
+        setStories([]);
+      } finally {
+        setLoading(false);
       }
-      
-      setHasMore(newStories.length === PAGE_SIZE);
-      setError('');
-    } catch (err: any) {
-      if (err?.message?.includes('Failed to fetch')) {
-        setError('Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.');
-      } else {
-        setError('Failed to load stories. Please try again.');
-      }
-      setStories([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [filters, searchQuery, page]);
+    },
+    [filters, searchQuery, page]
+  );
 
   useEffect(() => {
     loadStories(true);
   }, [filters, searchQuery]);
-  
+
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
   };
@@ -118,17 +123,11 @@ export default function StoryLibraryInteractive() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <SearchBar
-          onSearch={handleSearch}
-          isPremium={profile?.tier === 'premium'}
-        />
+        <SearchBar onSearch={handleSearch} isPremium={profile?.tier === 'premium'} />
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
-            <FilterPanel
-              filters={filters}
-              onFilterChange={handleFilterChange}
-            />
+            <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
           </div>
 
           <div className="lg:col-span-3">
@@ -138,7 +137,7 @@ export default function StoryLibraryInteractive() {
               </div>
             )}
 
-            {(loading && page === 1) ? (
+            {loading && page === 1 ? (
               <StoryGridSkeleton count={6} />
             ) : stories.length === 0 ? (
               <motion.div
@@ -147,7 +146,9 @@ export default function StoryLibraryInteractive() {
                 className="text-center py-20 bg-card/50 rounded-xl"
               >
                 <h3 className="text-xl font-semibold text-foreground">No Stories Found</h3>
-                <p className="text-muted-foreground text-lg mt-2">Try adjusting your search or filters.</p>
+                <p className="text-muted-foreground text-lg mt-2">
+                  Try adjusting your search or filters.
+                </p>
               </motion.div>
             ) : (
               <>

@@ -75,17 +75,35 @@ class NarrativeAIService {
 
   // ==================== ENGAGEMENT METRICS ====================
 
-  async trackEngagement(metrics: Omit<EngagementMetrics, 'id' | 'created_at' | 'updated_at'>): Promise<EngagementMetrics | null> {
+  async trackEngagement(
+    metrics: Omit<EngagementMetrics, 'id' | 'created_at' | 'updated_at'>
+  ): Promise<EngagementMetrics | null> {
     try {
-      const { data, error } = await upsertUserEngagementMetrics({
-        user_id: metrics.user_id,
-        story_id: metrics.story_id,
-        chapter_id: metrics.chapter_id,
-        time_on_scene: metrics.time_on_scene,
-        choice_frequency: metrics.choice_frequency,
-        choices_made_count: metrics.choices_made_count,
-        scroll_depth: metrics.scroll_depth,
-      });
+      // Store each metric as its own record (DB schema stores metric_key/metric_value)
+      const payloads = [
+        {
+          user_id: metrics.user_id,
+          metric_key: 'time_on_scene',
+          metric_value: metrics.time_on_scene,
+        },
+        {
+          user_id: metrics.user_id,
+          metric_key: 'choice_frequency',
+          metric_value: metrics.choice_frequency,
+        },
+        {
+          user_id: metrics.user_id,
+          metric_key: 'choices_made_count',
+          metric_value: metrics.choices_made_count,
+        },
+        {
+          user_id: metrics.user_id,
+          metric_key: 'scroll_depth',
+          metric_value: metrics.scroll_depth,
+        },
+      ];
+
+      const { data, error } = await upsertUserEngagementMetrics(payloads as any);
 
       if (error) {
         console.error('Error tracking engagement:', error);
@@ -121,7 +139,11 @@ class NarrativeAIService {
     }
   }
 
-  async getCurrentPacing(userId: string, storyId: string, chapterId?: string): Promise<{
+  async getCurrentPacing(
+    userId: string,
+    storyId: string,
+    chapterId?: string
+  ): Promise<{
     recommendedPacing: string;
     adjustmentFactor: number;
     engagementLevel: string;
@@ -146,14 +168,14 @@ class NarrativeAIService {
         return {
           recommendedPacing: 'balanced',
           adjustmentFactor: 1.0,
-          engagementLevel: 'medium'
+          engagementLevel: 'medium',
         };
       }
 
       return {
         recommendedPacing: data.recommended_pacing || 'balanced',
         adjustmentFactor: data.pacing_adjustment_factor || 1.0,
-        engagementLevel: data.engagement_level || 'medium'
+        engagementLevel: data.engagement_level || 'medium',
       };
     } catch (error) {
       console.error('Failed to get current pacing:', error);
@@ -169,7 +191,8 @@ class NarrativeAIService {
       chapterId: string;
       currentChapterContent: string;
     }
-  ): Promise<{ feedback?: string[]; pacingAdjustments?: any }> { // Return type for AI feedback/segments
+  ): Promise<{ feedback?: string[]; pacingAdjustments?: any }> {
+    // Return type for AI feedback/segments
     try {
       // 1. Track engagement
       const trackedMetrics = await this.trackEngagement(metrics);
@@ -185,13 +208,23 @@ class NarrativeAIService {
 
       // Example AI logic: If scroll depth is low and time on scene is high, suggest speeding up.
       if (metrics.scroll_depth < 50 && metrics.time_on_scene > 60) {
-        aiFeedback.push("The reader seems to be spending a lot of time on this section but hasn't scrolled much. Perhaps this part is too detailed? Consider a more concise approach.");
+        aiFeedback.push(
+          "The reader seems to be spending a lot of time on this section but hasn't scrolled much. Perhaps this part is too detailed? Consider a more concise approach."
+        );
         pacingAdjustments.suggestedPacing = 'fast';
       } else if (metrics.choices_made_count === 0 && metrics.time_on_scene > 120) {
-        aiFeedback.push("The reader is taking a long time without making choices. Maybe they need more guidance or more immediate engagement? Offer a clear choice or a dramatic event.");
+        aiFeedback.push(
+          'The reader is taking a long time without making choices. Maybe they need more guidance or more immediate engagement? Offer a clear choice or a dramatic event.'
+        );
         pacingAdjustments.suggestedPacing = 'action-oriented';
-      } else if (metrics.scroll_depth > 90 && metrics.time_on_scene < 30 && metrics.choices_made_count > 0) {
-        aiFeedback.push("The reader is quickly moving through chapters. They enjoy rapid progression. Offer more immediate choices and dynamic events.");
+      } else if (
+        metrics.scroll_depth > 90 &&
+        metrics.time_on_scene < 30 &&
+        metrics.choices_made_count > 0
+      ) {
+        aiFeedback.push(
+          'The reader is quickly moving through chapters. They enjoy rapid progression. Offer more immediate choices and dynamic events.'
+        );
         pacingAdjustments.suggestedPacing = 'very-fast';
       }
 
@@ -203,7 +236,6 @@ class NarrativeAIService {
       // aiFeedback.push(generatedSegment);
 
       return { feedback: aiFeedback.length > 0 ? aiFeedback : undefined, pacingAdjustments };
-
     } catch (error) {
       console.error('Failed to send engagement metrics or get feedback:', error);
       return {};
@@ -217,13 +249,11 @@ class NarrativeAIService {
       const { data, error } = await insertStoryNPC({
         story_id: npc.story_id,
         npc_name: npc.npc_name,
-        npc_role: npc.npc_role,
-        personality_traits: npc.personality_traits,
-        base_dialogue_style: npc.base_dialogue_style,
-        base_knowledge: npc.base_knowledge,
+        role: npc.npc_role,
+        attributes: npc.base_knowledge as any,
         first_appears_chapter: npc.first_appears_chapter,
         last_appears_chapter: npc.last_appears_chapter,
-      });
+      } as any);
 
       if (error) {
         console.error('Error creating NPC:', error);
@@ -286,14 +316,12 @@ class NarrativeAIService {
       const { data, error } = await insertNPCMemory({
         npc_id: memory.npc_id,
         user_id: memory.user_id,
-        story_id: memory.story_id,
-        memory_type: memory.memory_type,
-        memory_content: memory.memory_content,
+        memory: memory.memory_content,
         chapter_number: memory.chapter_number,
         importance_score: memory.importance_score || 0.5,
         relationship_delta: memory.relationship_delta || 0,
         revealed_traits: memory.revealed_traits,
-      });
+      } as any);
 
       if (error) {
         console.error('Error recording NPC memory:', error);
@@ -329,7 +357,10 @@ class NarrativeAIService {
     }
   }
 
-  async getNPCRelationshipStatus(npcId: string, userId: string): Promise<{
+  async getNPCRelationshipStatus(
+    npcId: string,
+    userId: string
+  ): Promise<{
     relationshipType: string;
     cumulativeScore: number;
     revealedTraits: string[];
@@ -349,7 +380,7 @@ class NarrativeAIService {
         return {
           relationshipType: 'neutral',
           cumulativeScore: 0,
-          revealedTraits: []
+          revealedTraits: [],
         };
       }
 
@@ -361,7 +392,7 @@ class NarrativeAIService {
         .eq('user_id', userId);
 
       const allTraits = new Set<string>();
-      allMemories?.forEach(memory => {
+      allMemories?.forEach((memory) => {
         if (memory.revealed_traits) {
           memory.revealed_traits.forEach((trait: string) => allTraits.add(trait));
         }
@@ -370,7 +401,7 @@ class NarrativeAIService {
       return {
         relationshipType: data.relationship_type || 'neutral',
         cumulativeScore: data.cumulative_relationship_score || 0,
-        revealedTraits: Array.from(allTraits)
+        revealedTraits: Array.from(allTraits),
       };
     } catch (error) {
       console.error('Failed to get NPC relationship status:', error);
@@ -380,18 +411,15 @@ class NarrativeAIService {
 
   // ==================== PACING ADJUSTMENTS ====================
 
-  async createPacingAdjustment(adjustment: Omit<PacingAdjustment, 'id' | 'applied_at'>): Promise<PacingAdjustment | null> {
+  async createPacingAdjustment(
+    adjustment: Omit<PacingAdjustment, 'id' | 'applied_at'>
+  ): Promise<PacingAdjustment | null> {
     try {
       const { data, error } = await insertPacingAdjustment({
-        user_id: adjustment.user_id,
         story_id: adjustment.story_id,
-        chapter_id: adjustment.chapter_id,
-        adjustment_type: adjustment.adjustment_type,
-        engagement_trigger: adjustment.engagement_trigger,
-        adjustment_data: adjustment.adjustment_data,
-        generated_content: adjustment.generated_content,
-        prompt_used: adjustment.prompt_used,
-      });
+        adjustment: adjustment.adjustment_data as any,
+        reason: adjustment.adjustment_type,
+      } as any);
 
       if (error) {
         console.error('Error creating pacing adjustment:', error);
@@ -429,17 +457,17 @@ class NarrativeAIService {
 
   // ==================== AI GENERATION HELPERS ====================
 
-  generateNPCDialogue(
-    npc: StoryNPC,
-    memories: NPCMemory[],
-    currentContext: string
-  ): string {
-    const relationshipContext = memories.length > 0
-      ? `The NPC remembers: ${memories.slice(-3).map(m => m.memory_content).join(', ')}`
-      : 'This is your first meeting.';
+  generateNPCDialogue(npc: StoryNPC, memories: NPCMemory[], currentContext: string): string {
+    const relationshipContext =
+      memories.length > 0
+        ? `The NPC remembers: ${memories
+            .slice(-3)
+            .map((m) => m.memory_content)
+            .join(', ')}`
+        : 'This is your first meeting.';
 
     const personalityContext = npc.personality_traits?.join(', ') || 'balanced personality';
-    
+
     return `Generate dialogue for ${npc.npc_name}, a ${npc.npc_role} with ${personalityContext}. 
     ${relationshipContext}
     Current situation: ${currentContext}
@@ -456,7 +484,7 @@ class NarrativeAIService {
       low: 'Increase tension and introduce plot developments quickly',
       medium: 'Maintain balanced narrative with mix of description and action',
       high: 'Allow for more descriptive passages and character development',
-      very_high: 'Slow down pacing with rich descriptions and introspection'
+      very_high: 'Slow down pacing with rich descriptions and introspection',
     };
 
     return `${pacingInstructions[engagementLevel] || pacingInstructions.medium}

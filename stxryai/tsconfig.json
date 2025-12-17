@@ -23,10 +23,15 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-    "types": ["jest", "node"],
-    "isolatedModules": false
+    "types": [
+      "jest",
+      "node"
+    ],
+    "isolatedModules": true
   },
   "include": [
     "next-env.d.ts",

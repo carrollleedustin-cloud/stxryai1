@@ -7,20 +7,24 @@ const HelpPage: React.FC = () => {
   const faqs = [
     {
       question: 'What is Stxryai?',
-      answer: 'Stxryai is an AI-powered interactive fiction platform where you can read and create stories that branch and evolve based on your choices.'
+      answer:
+        'Stxryai is an AI-powered interactive fiction platform where you can read and create stories that branch and evolve based on your choices.',
     },
     {
       question: 'How do I create a story?',
-      answer: 'Navigate to the Story Creation Studio from the navigation bar. You can start by creating a new draft, adding chapters, and defining choices.'
+      answer:
+        'Navigate to the Story Creation Studio from the navigation bar. You can start by creating a new draft, adding chapters, and defining choices.',
     },
     {
       question: 'What are energy points?',
-      answer: 'Energy points are used to make choices in stories. They regenerate over time, and you can get more by upgrading to a premium plan.'
+      answer:
+        'Energy points are used to make choices in stories. They regenerate over time, and you can get more by upgrading to a premium plan.',
     },
     {
       question: 'How do I report inappropriate content?',
-      answer: 'You can report stories, comments, or users by clicking the "Report" button next to the content. Our moderation team will review the report.'
-    }
+      answer:
+        'You can report stories, comments, or users by clicking the "Report" button next to the content. Our moderation team will review the report.',
+    },
   ];
 
   return (
@@ -28,9 +32,7 @@ const HelpPage: React.FC = () => {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Help Center
-          </h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">Help Center</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Find answers to frequently asked questions.
           </p>

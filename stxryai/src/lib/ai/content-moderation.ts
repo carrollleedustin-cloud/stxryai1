@@ -90,7 +90,7 @@ export class ContentModerationService {
         return this.getMockModerationResult();
       }
 
-      const data = await response.json() as OpenAIModerationResponse;
+      const data = (await response.json()) as OpenAIModerationResponse;
       return this.parseModerationResponse(data);
     } catch (error) {
       console.error('Content moderation failed:', error);
@@ -109,7 +109,9 @@ export class ContentModerationService {
   /**
    * Check for spam patterns
    */
-  async detectSpam(content: string): Promise<{ isSpam: boolean; confidence: number; reasons: string[] }> {
+  async detectSpam(
+    content: string
+  ): Promise<{ isSpam: boolean; confidence: number; reasons: string[] }> {
     const spamIndicators = {
       excessiveLinks: (content.match(/https?:\/\//g) || []).length > 3,
       excessiveCaps: (content.match(/[A-Z]/g) || []).length / content.length > 0.5,
@@ -247,7 +249,7 @@ export class ContentModerationService {
     }
 
     // Determine severity
-    const maxScore = Math.max(...Object.values(result.category_scores).map(v => Number(v)));
+    const maxScore = Math.max(...Object.values(result.category_scores).map((v) => Number(v)));
     let severity: ModerationResult['severity'] = 'low';
     if (maxScore >= this.SEVERITY_THRESHOLDS.critical) severity = 'critical';
     else if (maxScore >= this.SEVERITY_THRESHOLDS.high) severity = 'high';

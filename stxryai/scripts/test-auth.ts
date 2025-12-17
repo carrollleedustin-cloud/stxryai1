@@ -2,7 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://lxtjkhphwihroktujzzi.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDU5NjMsImV4cCI6MjA4MDQ4MTk2M30.KesxRh32YnfDngzXKfCIQ1Vb-jjLwQv0kI74hnwN8K0';
+const supabaseAnonKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDU5NjMsImV4cCI6MjA4MDQ4MTk2M30.KesxRh32YnfDngzXKfCIQ1Vb-jjLwQv0kI74hnwN8K0';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -42,7 +43,7 @@ async function testAuth() {
 
   // Wait a moment for trigger
   console.log('\n2. Waiting for database trigger to create profile...');
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   // Test 2: Try to sign in immediately
   console.log('\n3. Attempting to sign in...');

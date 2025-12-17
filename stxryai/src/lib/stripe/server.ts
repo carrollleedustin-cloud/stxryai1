@@ -86,13 +86,7 @@ export async function createPortalSession({
 }
 
 // Create or retrieve customer
-export async function getOrCreateCustomer({
-  email,
-  userId,
-}: {
-  email: string;
-  userId: string;
-}) {
+export async function getOrCreateCustomer({ email, userId }: { email: string; userId: string }) {
   // Check if customer exists
   const existingCustomers = await stripe.customers.list({
     email,

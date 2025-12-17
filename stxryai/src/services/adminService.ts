@@ -29,8 +29,6 @@ export interface UserReport {
   createdAt: string;
 }
 
-
-
 interface Profile {
   id: string;
   subscription_tier: string;
@@ -42,26 +40,28 @@ export const getPlatformMetrics = async (): Promise<PlatformMetrics | null> => {
     const { data: profiles, error: profileError } = await supabase
       .from('users')
       .select('id, subscription_tier');
-    
+
     if (profileError) throw profileError;
 
     const { data: stories, error: storyError } = await supabase
       .from('stories')
       .select('id, play_count, status, is_published');
-    
+
     if (storyError) throw storyError;
 
     const activeUsers = profiles?.length || 0;
     const storyRows = (stories as any[]) || [];
     const totalStories = storyRows.filter((s) => s.is_published === true).length || 0;
-    const avgEngagement = storyRows.reduce((acc: number, s: any) => acc + (s.play_count || 0), 0) / (totalStories || 1);
-    const premiumUsers = profiles?.filter((p: Profile) => p.subscription_tier !== 'free').length || 0;
+    const avgEngagement =
+      storyRows.reduce((acc: number, s: any) => acc + (s.play_count || 0), 0) / (totalStories || 1);
+    const premiumUsers =
+      profiles?.filter((p: Profile) => p.subscription_tier !== 'free').length || 0;
 
     return {
       activeUsers,
       totalStories,
       avgEngagementRate: Math.round(avgEngagement),
-      premiumConversions: premiumUsers
+      premiumConversions: premiumUsers,
     };
   } catch (error) {
     console.error('Error fetching platform metrics:', error);
@@ -74,7 +74,9 @@ export const getUserAnalytics = async (limit: number = 10) => {
   try {
     const { data, error } = await supabase
       .from('users')
-      .select('id, username, display_name, subscription_tier, stories_completed, total_reading_time, created_at')
+      .select(
+        'id, username, display_name, subscription_tier, stories_completed, total_reading_time, created_at'
+      )
       .order('stories_completed', { ascending: false })
       .limit(limit);
 
@@ -105,9 +107,15 @@ export const getStoryAnalytics = async (limit: number = 10) => {
 };
 
 // Update story status (publish, archive, feature)
-export const updateStoryStatus = async (storyId: string, status: 'draft' | 'published' | 'archived') => {
+export const updateStoryStatus = async (
+  storyId: string,
+  status: 'draft' | 'published' | 'archived'
+) => {
   try {
-    const { data, error } = await updateStoryById(storyId, { status, updated_at: new Date().toISOString() } as any);
+    const { data, error } = await updateStoryById(storyId, {
+      status,
+      updated_at: new Date().toISOString(),
+    } as any);
 
     if (error) throw error;
     return { success: true, data: Array.isArray(data) ? data[0] : data };
@@ -120,7 +128,10 @@ export const updateStoryStatus = async (storyId: string, status: 'draft' | 'publ
 // Update user subscription tier
 export const updateUserSubscription = async (userId: string, tier: 'free' | 'premium' | 'vip') => {
   try {
-    const { data, error } = await updateUserById(userId, { subscription_tier: tier, updated_at: new Date().toISOString() } as any);
+    const { data, error } = await updateUserById(userId, {
+      subscription_tier: tier,
+      updated_at: new Date().toISOString(),
+    } as any);
 
     if (error) throw error;
     return { success: true, data: Array.isArray(data) ? data[0] : data };
@@ -135,13 +146,15 @@ export const getRecentActivities = async (limit: number = 20) => {
   try {
     const { data, error } = await supabase
       .from('user_activities')
-      .select(`
+      .select(
+        `
         id,
         activity_type,
         activity_data,
         created_at,
         users (username, display_name)
-      `)
+      `
+      )
       .order('created_at', { ascending: false })
       .limit(limit);
 

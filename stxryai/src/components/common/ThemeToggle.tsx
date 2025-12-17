@@ -16,7 +16,7 @@ export default function ThemeToggle() {
   const themes: Array<{ value: 'light' | 'dark' | 'system'; icon: string; label: string }> = [
     { value: 'light', icon: 'SunIcon', label: 'Light' },
     { value: 'dark', icon: 'MoonIcon', label: 'Dark' },
-    { value: 'system', icon: 'ComputerDesktopIcon', label: 'System' }
+    { value: 'system', icon: 'ComputerDesktopIcon', label: 'System' },
   ];
 
   // Don't render until mounted on client

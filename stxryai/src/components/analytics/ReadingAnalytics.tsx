@@ -34,7 +34,7 @@ export default function ReadingAnalytics({
   favoriteGenre,
   readingData,
   topAuthors,
-  timeOfDayPreference
+  timeOfDayPreference,
 }: ReadingAnalyticsProps) {
   const formatTime = (minutes: number): string => {
     const hours = Math.floor(minutes / 60);
@@ -45,21 +45,31 @@ export default function ReadingAnalytics({
 
   const getTimeOfDayEmoji = (timeOfDay: string): string => {
     switch (timeOfDay) {
-      case 'morning': return '🌅';
-      case 'afternoon': return '☀️';
-      case 'evening': return '🌆';
-      case 'night': return '🌙';
-      default: return '📖';
+      case 'morning':
+        return '🌅';
+      case 'afternoon':
+        return '☀️';
+      case 'evening':
+        return '🌆';
+      case 'night':
+        return '🌙';
+      default:
+        return '📖';
     }
   };
 
   const getTimeOfDayLabel = (timeOfDay: string): string => {
     switch (timeOfDay) {
-      case 'morning': return 'Early Bird (6AM-12PM)';
-      case 'afternoon': return 'Afternoon Reader (12PM-6PM)';
-      case 'evening': return 'Evening Explorer (6PM-10PM)';
-      case 'night': return 'Night Owl (10PM-6AM)';
-      default: return 'Reader';
+      case 'morning':
+        return 'Early Bird (6AM-12PM)';
+      case 'afternoon':
+        return 'Afternoon Reader (12PM-6PM)';
+      case 'evening':
+        return 'Evening Explorer (6PM-10PM)';
+      case 'night':
+        return 'Night Owl (10PM-6AM)';
+      default:
+        return 'Reader';
     }
   };
 
@@ -69,33 +79,33 @@ export default function ReadingAnalytics({
       label: 'Total Time Read',
       value: formatTime(totalMinutesRead),
       color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10'
+      bgColor: 'bg-blue-500/10',
     },
     {
       icon: 'BookOpenIcon',
       label: 'Stories Completed',
       value: totalStoriesCompleted.toString(),
       color: 'text-purple-500',
-      bgColor: 'bg-purple-500/10'
+      bgColor: 'bg-purple-500/10',
     },
     {
       icon: 'BoltIcon',
       label: 'Choices Made',
       value: totalChoicesMade.toLocaleString(),
       color: 'text-yellow-500',
-      bgColor: 'bg-yellow-500/10'
+      bgColor: 'bg-yellow-500/10',
     },
     {
       icon: 'ChartBarIcon',
       label: 'Avg Session',
       value: formatTime(averageSessionLength),
       color: 'text-green-500',
-      bgColor: 'bg-green-500/10'
-    }
+      bgColor: 'bg-green-500/10',
+    },
   ];
 
   // Calculate max value for bar chart scaling
-  const maxMinutes = Math.max(...readingData.map(d => d.minutesRead), 1);
+  const maxMinutes = Math.max(...readingData.map((d) => d.minutesRead), 1);
 
   return (
     <div className="space-y-6">
@@ -121,15 +131,13 @@ export default function ReadingAnalytics({
             whileHover={{ scale: 1.05, y: -4 }}
             className="bg-card border border-border rounded-xl p-4 shadow-lg"
           >
-            <div className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center mb-3`}>
+            <div
+              className={`w-12 h-12 rounded-lg ${stat.bgColor} flex items-center justify-center mb-3`}
+            >
               <Icon name={stat.icon} size={24} className={stat.color} />
             </div>
-            <div className="text-2xl font-bold text-foreground mb-1">
-              {stat.value}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {stat.label}
-            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+            <div className="text-sm text-muted-foreground">{stat.label}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -183,9 +191,7 @@ export default function ReadingAnalytics({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-3xl font-bold text-foreground mb-1">
-                  {currentStreak} days
-                </div>
+                <div className="text-3xl font-bold text-foreground mb-1">{currentStreak} days</div>
                 <div className="text-sm text-muted-foreground">Current Streak</div>
               </div>
               <motion.div
@@ -197,9 +203,7 @@ export default function ReadingAnalytics({
               </motion.div>
             </div>
             <div className="pt-4 border-t border-border">
-              <div className="text-xl font-bold text-foreground mb-1">
-                {longestStreak} days
-              </div>
+              <div className="text-xl font-bold text-foreground mb-1">{longestStreak} days</div>
               <div className="text-sm text-muted-foreground">Longest Streak</div>
             </div>
           </div>

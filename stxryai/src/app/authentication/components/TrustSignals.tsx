@@ -12,12 +12,8 @@ const TrustSignals = () => {
       <div className="grid grid-cols-3 gap-4">
         {stats?.map((stat, index) => (
           <div key={index} className="text-center">
-            <div className="text-2xl font-bold text-primary mb-1">
-              {stat?.value}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {stat?.label}
-            </div>
+            <div className="text-2xl font-bold text-primary mb-1">{stat?.value}</div>
+            <div className="text-xs text-muted-foreground">{stat?.label}</div>
           </div>
         ))}
       </div>
@@ -32,9 +28,7 @@ const TrustSignals = () => {
         </div>
       </div>
       <div className="text-center">
-        <p className="text-xs text-muted-foreground">
-          Trusted by readers worldwide since 2024
-        </p>
+        <p className="text-xs text-muted-foreground">Trusted by readers worldwide since 2024</p>
       </div>
     </div>
   );

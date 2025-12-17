@@ -87,9 +87,7 @@ export async function withRetry<T>(
       lastError = error;
 
       const apiError = normalizeError(error, service);
-      const isRetryable =
-        apiError.statusCode &&
-        retryableStatusCodes.includes(apiError.statusCode);
+      const isRetryable = apiError.statusCode && retryableStatusCodes.includes(apiError.statusCode);
 
       if (!isRetryable || attempt === maxRetries) {
         throw error;
@@ -129,24 +127,14 @@ function normalizeError(error: unknown, service: string): APIError {
     // Parse fetch errors
     if ('status' in error) {
       const fetchError = error as any;
-      return new APIError(
-        error.message,
-        fetchError.status,
-        error,
-        service
-      );
+      return new APIError(error.message, fetchError.status, error, service);
     }
 
     return new APIError(error.message, undefined, error, service);
   }
 
   // Unknown error type
-  return new APIError(
-    'An unexpected error occurred',
-    500,
-    error,
-    service
-  );
+  return new APIError('An unexpected error occurred', 500, error, service);
 }
 
 /**
@@ -156,7 +144,7 @@ function getUserFriendlyMessage(error: APIError): string {
   const statusMessages: Record<number, string> = {
     400: 'Invalid request. Please check your input.',
     401: 'You need to be logged in to perform this action.',
-    403: 'You don\'t have permission to perform this action.',
+    403: "You don't have permission to perform this action.",
     404: 'The requested resource was not found.',
     408: 'Request timed out. Please try again.',
     409: 'This action conflicts with existing data.',
@@ -237,7 +225,7 @@ class RateLimiter {
     const requests = this.requests.get(key) || [];
 
     // Remove old requests outside the window
-    const recentRequests = requests.filter(time => now - time < windowMs);
+    const recentRequests = requests.filter((time) => now - time < windowMs);
 
     if (recentRequests.length >= limit) {
       return false;
@@ -250,7 +238,7 @@ class RateLimiter {
 
   async waitForSlot(key: string, limit: number, windowMs: number): Promise<void> {
     while (!(await this.checkLimit(key, limit, windowMs))) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 }
@@ -300,7 +288,7 @@ export class BatchProcessor<T, R> {
     if (this.queue.length === 0) return;
 
     const batch = this.queue.splice(0);
-    const inputs = batch.map(item => item.input);
+    const inputs = batch.map((item) => item.input);
 
     try {
       const results = await this.processBatch(inputs);
@@ -308,7 +296,7 @@ export class BatchProcessor<T, R> {
         item.resolve(results[index]);
       });
     } catch (error) {
-      batch.forEach(item => {
+      batch.forEach((item) => {
         item.reject(error);
       });
     }

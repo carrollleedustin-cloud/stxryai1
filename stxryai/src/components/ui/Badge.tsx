@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 
-type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'premium' | 'outline';
+type BadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info'
+  | 'premium'
+  | 'outline';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
@@ -23,7 +32,7 @@ export default function Badge({
   animated = false,
   pulse = false,
   className = '',
-  onClick
+  onClick,
 }: BadgeProps) {
   const variantStyles = {
     default: 'bg-muted text-muted-foreground border-border',
@@ -32,42 +41,46 @@ export default function Badge({
     success: 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
     warning: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20',
     error: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
-    info: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
+    info: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
   };
 
   const sizeStyles = {
     sm: 'text-xs px-2 py-0.5',
     md: 'text-sm px-3 py-1',
-    lg: 'text-base px-4 py-1.5'
+    lg: 'text-base px-4 py-1.5',
   };
 
   const iconSizes = {
     sm: 12,
     md: 14,
-    lg: 16
+    lg: 16,
   };
 
   const BadgeComponent = animated ? motion.span : 'span';
 
-  const animationProps = animated ? {
-    whileHover: { scale: 1.05 },
-    whileTap: onClick ? { scale: 0.95 } : undefined,
-    initial: { opacity: 0, scale: 0.8 },
-    animate: { opacity: 1, scale: 1 },
-    transition: { duration: 0.2 }
-  } : {};
+  const animationProps = animated
+    ? {
+        whileHover: { scale: 1.05 },
+        whileTap: onClick ? { scale: 0.95 } : undefined,
+        initial: { opacity: 0, scale: 0.8 },
+        animate: { opacity: 1, scale: 1 },
+        transition: { duration: 0.2 },
+      }
+    : {};
 
-  const pulseAnimation = pulse ? {
-    animate: {
-      scale: [1, 1.05, 1],
-      opacity: [1, 0.8, 1]
-    },
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      ease: 'easeInOut' as const
-    }
-  } : {};
+  const pulseAnimation = pulse
+    ? {
+        animate: {
+          scale: [1, 1.05, 1],
+          opacity: [1, 0.8, 1],
+        },
+        transition: {
+          duration: 2,
+          repeat: Infinity,
+          ease: 'easeInOut' as const,
+        },
+      }
+    : {};
 
   return (
     <BadgeComponent
@@ -85,7 +98,15 @@ export default function Badge({
 /**
  * Achievement Badge with special styling
  */
-export function AchievementBadge({ title, icon = 'TrophyIcon', unlocked = false }: { title: string; icon?: string; unlocked?: boolean }) {
+export function AchievementBadge({
+  title,
+  icon = 'TrophyIcon',
+  unlocked = false,
+}: {
+  title: string;
+  icon?: string;
+  unlocked?: boolean;
+}) {
   return (
     <motion.div
       initial={{ scale: 0, rotate: -180 }}
@@ -139,12 +160,12 @@ export function NewBadge({ className = '' }: { className?: string }) {
     <motion.div
       animate={{
         scale: [1, 1.1, 1],
-        opacity: [1, 0.8, 1]
+        opacity: [1, 0.8, 1],
       }}
       transition={{
         duration: 2,
         repeat: Infinity,
-        ease: 'easeInOut'
+        ease: 'easeInOut',
       }}
       className={`inline-flex items-center gap-1 px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full ${className}`}
     >
@@ -157,7 +178,15 @@ export function NewBadge({ className = '' }: { className?: string }) {
 /**
  * Count Badge (for notifications, etc.)
  */
-export function CountBadge({ count, max = 99, className = '' }: { count: number; max?: number; className?: string }) {
+export function CountBadge({
+  count,
+  max = 99,
+  className = '',
+}: {
+  count: number;
+  max?: number;
+  className?: string;
+}) {
   const displayCount = count > max ? `${max}+` : count;
 
   return (
@@ -175,12 +204,18 @@ export function CountBadge({ count, max = 99, className = '' }: { count: number;
 /**
  * Status Badge
  */
-export function StatusBadge({ status, className = '' }: { status: 'online' | 'offline' | 'away' | 'busy'; className?: string }) {
+export function StatusBadge({
+  status,
+  className = '',
+}: {
+  status: 'online' | 'offline' | 'away' | 'busy';
+  className?: string;
+}) {
   const statusConfig = {
     online: { color: 'bg-green-500', label: 'Online' },
     offline: { color: 'bg-gray-500', label: 'Offline' },
     away: { color: 'bg-yellow-500', label: 'Away' },
-    busy: { color: 'bg-red-500', label: 'Busy' }
+    busy: { color: 'bg-red-500', label: 'Busy' },
   };
 
   const config = statusConfig[status];

@@ -54,7 +54,9 @@ export default function CreatorAnalyticsDashboard({
   timeRange = '30d',
   onTimeRangeChange,
 }: CreatorAnalyticsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'stories' | 'audience' | 'revenue'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'stories' | 'audience' | 'revenue'>(
+    'overview'
+  );
 
   if (!data) {
     return <AnalyticsLoadingSkeleton />;
@@ -140,7 +142,9 @@ export default function CreatorAnalyticsDashboard({
       <div>
         {activeTab === 'overview' && <OverviewTab data={data} />}
         {activeTab === 'stories' && <StoriesTab stories={data.storyPerformance} />}
-        {activeTab === 'audience' && <AudienceTab demographics={data.readerDemographics} engagement={data.engagement} />}
+        {activeTab === 'audience' && (
+          <AudienceTab demographics={data.readerDemographics} engagement={data.engagement} />
+        )}
         {activeTab === 'revenue' && <RevenueTab breakdown={data.revenueBreakdown} />}
       </div>
     </div>
@@ -171,9 +175,11 @@ function MetricCard({
     >
       <div className="flex items-start justify-between mb-4">
         <div className="text-4xl">{icon}</div>
-        <div className={`flex items-center gap-1 text-sm font-semibold ${
-          isPositive ? 'text-green-300' : 'text-red-300'
-        }`}>
+        <div
+          className={`flex items-center gap-1 text-sm font-semibold ${
+            isPositive ? 'text-green-300' : 'text-red-300'
+          }`}
+        >
           {isPositive ? '↑' : '↓'}
           {Math.abs(change)}%
         </div>
@@ -222,9 +228,17 @@ function OverviewTab({ data }: { data: AnalyticsData }) {
               key={story.id}
               className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all"
             >
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                index === 0 ? 'bg-yellow-600' : index === 1 ? 'bg-gray-400' : index === 2 ? 'bg-orange-600' : 'bg-white/10'
-              } text-white text-sm`}>
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                  index === 0
+                    ? 'bg-yellow-600'
+                    : index === 1
+                      ? 'bg-gray-400'
+                      : index === 2
+                        ? 'bg-orange-600'
+                        : 'bg-white/10'
+                } text-white text-sm`}
+              >
                 {index + 1}
               </div>
               <div className="flex-1 min-w-0">
@@ -259,20 +273,33 @@ function StoriesTab({ stories }: { stories: StoryStats[] }) {
           </thead>
           <tbody>
             {stories.map((story) => (
-              <tr key={story.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+              <tr
+                key={story.id}
+                className="border-b border-white/5 hover:bg-white/5 transition-colors"
+              >
                 <td className="p-4 text-white font-medium">{story.title}</td>
                 <td className="p-4 text-gray-300">{story.views.toLocaleString()}</td>
                 <td className="p-4 text-gray-300">{story.readers.toLocaleString()}</td>
                 <td className="p-4 text-gray-300">⭐ {story.rating.toFixed(1)}</td>
                 <td className="p-4 text-gray-300">{story.completionRate}%</td>
-                <td className="p-4 text-green-400 font-semibold">${story.revenue.toLocaleString()}</td>
+                <td className="p-4 text-green-400 font-semibold">
+                  ${story.revenue.toLocaleString()}
+                </td>
                 <td className="p-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    story.trend === 'up' ? 'bg-green-600/20 text-green-400' :
-                    story.trend === 'down' ? 'bg-red-600/20 text-red-400' :
-                    'bg-gray-600/20 text-gray-400'
-                  }`}>
-                    {story.trend === 'up' ? '↑ Trending' : story.trend === 'down' ? '↓ Declining' : '→ Stable'}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      story.trend === 'up'
+                        ? 'bg-green-600/20 text-green-400'
+                        : story.trend === 'down'
+                          ? 'bg-red-600/20 text-red-400'
+                          : 'bg-gray-600/20 text-gray-400'
+                    }`}
+                  >
+                    {story.trend === 'up'
+                      ? '↑ Trending'
+                      : story.trend === 'down'
+                        ? '↓ Declining'
+                        : '→ Stable'}
                   </span>
                 </td>
               </tr>
@@ -285,7 +312,10 @@ function StoriesTab({ stories }: { stories: StoryStats[] }) {
 }
 
 // Audience Tab
-function AudienceTab({ demographics, engagement }: {
+function AudienceTab({
+  demographics,
+  engagement,
+}: {
   demographics: AnalyticsData['readerDemographics'];
   engagement: AnalyticsData['engagement'];
 }) {

@@ -65,9 +65,7 @@ const ProfileHeader = ({
 
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
-                  <h1 className="font-heading text-2xl font-bold text-foreground">
-                    {user.name}
-                  </h1>
+                  <h1 className="font-heading text-2xl font-bold text-foreground">{user.name}</h1>
                   {user.isPremium && (
                     <span className="px-2 py-1 text-xs font-semibold bg-accent/20 text-accent rounded-full border border-accent/30">
                       Premium
@@ -75,9 +73,7 @@ const ProfileHeader = ({
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">@{user.username}</p>
-                {user.bio && (
-                  <p className="text-sm text-foreground max-w-2xl">{user.bio}</p>
-                )}
+                {user.bio && <p className="text-sm text-foreground max-w-2xl">{user.bio}</p>}
                 <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <Icon name="CalendarIcon" size={14} />
@@ -123,13 +119,8 @@ const ProfileHeader = ({
                         : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                     }`}
                   >
-                    <Icon
-                      name={isFollowing ? 'CheckIcon' : 'UserPlusIcon'}
-                      size={18}
-                    />
-                    <span className="font-medium">
-                      {isFollowing ? 'Following' : 'Follow'}
-                    </span>
+                    <Icon name={isFollowing ? 'CheckIcon' : 'UserPlusIcon'} size={18} />
+                    <span className="font-medium">{isFollowing ? 'Following' : 'Follow'}</span>
                   </button>
                   <button
                     onClick={onMessage}
@@ -151,36 +142,22 @@ const ProfileHeader = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
             <div className="text-center p-4 bg-muted/30 rounded-lg">
-              <div className="text-2xl font-bold text-primary">
-                {stats.storiesCompleted}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Stories Completed
-              </div>
+              <div className="text-2xl font-bold text-primary">{stats.storiesCompleted}</div>
+              <div className="text-xs text-muted-foreground mt-1">Stories Completed</div>
             </div>
             <div className="text-center p-4 bg-muted/30 rounded-lg">
               <div className="text-2xl font-bold text-secondary">
                 {stats.totalChoices.toLocaleString()}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Total Choices
-              </div>
+              <div className="text-xs text-muted-foreground mt-1">Total Choices</div>
             </div>
             <div className="text-center p-4 bg-muted/30 rounded-lg">
-              <div className="text-2xl font-bold text-accent">
-                {stats.readingStreak}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Day Streak
-              </div>
+              <div className="text-2xl font-bold text-accent">{stats.readingStreak}</div>
+              <div className="text-xs text-muted-foreground mt-1">Day Streak</div>
             </div>
             <div className="text-center p-4 bg-muted/30 rounded-lg">
-              <div className="text-2xl font-bold text-success">
-                {stats.achievements}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Achievements
-              </div>
+              <div className="text-2xl font-bold text-success">{stats.achievements}</div>
+              <div className="text-xs text-muted-foreground mt-1">Achievements</div>
             </div>
           </div>
         </div>

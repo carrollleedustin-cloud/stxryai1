@@ -1,6 +1,5 @@
 'use client';
 
-
 import Icon from '@/components/ui/AppIcon';
 
 interface AuthTabsProps {
@@ -14,7 +13,9 @@ const AuthTabs = ({ activeTab, onTabChange }: AuthTabsProps) => {
       <button
         onClick={() => onTabChange('login')}
         className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-md font-medium transition-smooth ${
-          activeTab === 'login' ?'bg-primary text-primary-foreground shadow-elevation-1' :'text-muted-foreground hover:text-foreground'
+          activeTab === 'login'
+            ? 'bg-primary text-primary-foreground shadow-elevation-1'
+            : 'text-muted-foreground hover:text-foreground'
         }`}
       >
         <Icon
@@ -27,7 +28,9 @@ const AuthTabs = ({ activeTab, onTabChange }: AuthTabsProps) => {
       <button
         onClick={() => onTabChange('register')}
         className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-md font-medium transition-smooth ${
-          activeTab === 'register' ?'bg-primary text-primary-foreground shadow-elevation-1' :'text-muted-foreground hover:text-foreground'
+          activeTab === 'register'
+            ? 'bg-primary text-primary-foreground shadow-elevation-1'
+            : 'text-muted-foreground hover:text-foreground'
         }`}
       >
         <Icon

@@ -40,7 +40,7 @@ export default function CommentSystem({
   onEditComment,
   onDeleteComment,
   onLikeComment,
-  isLoading = false
+  isLoading = false,
 }: CommentSystemProps) {
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -188,7 +188,11 @@ export default function CommentSystem({
       {/* Empty State */}
       {comments.length === 0 && (
         <div className="py-12 text-center">
-          <Icon name="ChatBubbleLeftRightIcon" size={64} className="text-muted-foreground mx-auto mb-4 opacity-50" />
+          <Icon
+            name="ChatBubbleLeftRightIcon"
+            size={64}
+            className="text-muted-foreground mx-auto mb-4 opacity-50"
+          />
           <p className="text-lg text-muted-foreground mb-2">No comments yet</p>
           <p className="text-sm text-muted-foreground">Be the first to share your thoughts!</p>
         </div>
@@ -223,7 +227,7 @@ export function CommentCard({
   onDelete,
   onLike,
   onReply,
-  formatTimeAgo
+  formatTimeAgo,
 }: CommentCardProps) {
   const [showReplies, setShowReplies] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
@@ -303,11 +307,7 @@ export function CommentCard({
                   comment.isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
                 } transition-colors`}
               >
-                <Icon
-                  name="HeartIcon"
-                  size={16}
-                  variant={comment.isLiked ? 'solid' : 'outline'}
-                />
+                <Icon name="HeartIcon" size={16} variant={comment.isLiked ? 'solid' : 'outline'} />
                 {comment.likes > 0 && <span>{comment.likes}</span>}
               </motion.button>
 
@@ -365,7 +365,8 @@ export function CommentCard({
                   onClick={() => setShowReplies(!showReplies)}
                   className="text-sm text-primary hover:underline"
                 >
-                  {showReplies ? 'Hide' : 'Show'} {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                  {showReplies ? 'Hide' : 'Show'} {comment.replies.length}{' '}
+                  {comment.replies.length === 1 ? 'reply' : 'replies'}
                 </button>
 
                 <AnimatePresence>

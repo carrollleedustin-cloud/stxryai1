@@ -38,9 +38,7 @@ const ReadingLists = ({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
           <Icon name="BookmarkIcon" size={24} className="text-primary" />
-          <h2 className="font-heading text-xl font-bold text-foreground">
-            Reading Lists
-          </h2>
+          <h2 className="font-heading text-xl font-bold text-foreground">Reading Lists</h2>
           <span className="px-2 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
             {lists.length}
           </span>
@@ -78,19 +76,12 @@ const ReadingLists = ({
                     }}
                     className="p-1 hover:bg-muted rounded transition-smooth"
                   >
-                    <Icon
-                      name="EllipsisVerticalIcon"
-                      size={16}
-                      className="text-muted-foreground"
-                    />
+                    <Icon name="EllipsisVerticalIcon" size={16} className="text-muted-foreground" />
                   </button>
 
                   {activeMenu === list.id && (
                     <>
-                      <div
-                        className="fixed inset-0 z-[190]"
-                        onClick={() => setActiveMenu(null)}
-                      />
+                      <div className="fixed inset-0 z-[190]" onClick={() => setActiveMenu(null)} />
                       <div className="absolute right-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-elevation-2 z-[200] overflow-hidden">
                         <button
                           onClick={(e) => {
@@ -115,9 +106,7 @@ const ReadingLists = ({
                             name={list.isPublic ? 'LockClosedIcon' : 'LockOpenIcon'}
                             size={16}
                           />
-                          <span>
-                            Make {list.isPublic ? 'Private' : 'Public'}
-                          </span>
+                          <span>Make {list.isPublic ? 'Private' : 'Public'}</span>
                         </button>
                         <button
                           onClick={(e) => {
@@ -138,10 +127,7 @@ const ReadingLists = ({
 
               <div className="grid grid-cols-3 gap-1 mb-3 h-24">
                 {list.coverImages.slice(0, 3).map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative rounded overflow-hidden bg-muted"
-                  >
+                  <div key={index} className="relative rounded overflow-hidden bg-muted">
                     <AppImage
                       src={image}
                       alt={`Story cover ${index + 1} from ${list.name} reading list`}
@@ -151,11 +137,7 @@ const ReadingLists = ({
                 ))}
                 {list.coverImages.length === 0 && (
                   <div className="col-span-3 flex items-center justify-center h-full bg-muted rounded">
-                    <Icon
-                      name="BookOpenIcon"
-                      size={32}
-                      className="text-muted-foreground"
-                    />
+                    <Icon name="BookOpenIcon" size={32} className="text-muted-foreground" />
                   </div>
                 )}
               </div>
@@ -169,9 +151,7 @@ const ReadingLists = ({
                   <Icon
                     name={list.isPublic ? 'GlobeAltIcon' : 'LockClosedIcon'}
                     size={14}
-                    className={
-                      list.isPublic ? 'text-success' : 'text-muted-foreground'
-                    }
+                    className={list.isPublic ? 'text-success' : 'text-muted-foreground'}
                   />
                   <span className="text-muted-foreground">
                     {list.isPublic ? 'Public' : 'Private'}
@@ -185,14 +165,8 @@ const ReadingLists = ({
 
       {lists.length === 0 && (
         <div className="text-center py-12">
-          <Icon
-            name="BookmarkIcon"
-            size={48}
-            className="text-muted-foreground mx-auto mb-3"
-          />
-          <p className="text-sm text-muted-foreground mb-4">
-            Create your first reading list
-          </p>
+          <Icon name="BookmarkIcon" size={48} className="text-muted-foreground mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground mb-4">Create your first reading list</p>
           <button
             onClick={onCreateList}
             className="inline-flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-smooth"

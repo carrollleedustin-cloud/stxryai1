@@ -97,7 +97,7 @@ class AnalyticsService {
         document.head.appendChild(script);
 
         window.dataLayer = window.dataLayer || [];
-        window.gtag = function() {
+        window.gtag = function () {
           window.dataLayer.push(arguments);
         };
 
@@ -196,7 +196,7 @@ class AnalyticsService {
     const eventsToSend = [...this.queue];
     this.queue = [];
 
-    eventsToSend.forEach(event => {
+    eventsToSend.forEach((event) => {
       this.eventBatcher.add(event);
     });
   }
@@ -210,7 +210,7 @@ class AnalyticsService {
     try {
       // Send to PostHog
       if (posthog) {
-        events.forEach(event => {
+        events.forEach((event) => {
           posthog.capture(event.name, {
             ...event.properties,
             timestamp: event.timestamp,
@@ -220,7 +220,7 @@ class AnalyticsService {
 
       // Send to Google Analytics
       if (window.gtag) {
-        events.forEach(event => {
+        events.forEach((event) => {
           window.gtag('event', event.name, event.properties);
         });
       }

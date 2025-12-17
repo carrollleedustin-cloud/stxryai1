@@ -47,9 +47,7 @@ const QuickAccessWidget = ({ isPremium }: QuickAccessWidgetProps) => {
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-heading font-semibold text-foreground">
-          Quick Access
-        </h2>
+        <h2 className="text-xl font-heading font-semibold text-foreground">Quick Access</h2>
         <Icon name="BoltIcon" size={24} className="text-primary" />
       </div>
 
@@ -68,19 +66,11 @@ const QuickAccessWidget = ({ isPremium }: QuickAccessWidgetProps) => {
               <div
                 className={`w-10 h-10 rounded-lg bg-gradient-to-br ${action.color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-smooth`}
               >
-                <Icon
-                  name={action.icon as any}
-                  size={20}
-                  className="text-white"
-                />
+                <Icon name={action.icon as any} size={20} className="text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-foreground mb-1">
-                  {action.label}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {action.description}
-                </p>
+                <h3 className="text-sm font-semibold text-foreground mb-1">{action.label}</h3>
+                <p className="text-xs text-muted-foreground">{action.description}</p>
               </div>
               <Icon
                 name="ChevronRightIcon"

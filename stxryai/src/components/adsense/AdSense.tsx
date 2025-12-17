@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import type { AdSenseProps } from '@/types/adsense';
 
-const AdSense: React.FC<AdSenseProps> = ({ 
-  adClient, 
-  adSlot, 
-  adFormat = 'auto', 
-  adLayout, 
-  adStyle = {}
+const AdSense: React.FC<AdSenseProps> = ({
+  adClient,
+  adSlot,
+  adFormat = 'auto',
+  adLayout,
+  adStyle = {},
 }) => {
   const adRef = useRef<HTMLModElement>(null);
   const [isAdInitialized, setIsAdInitialized] = useState<boolean>(false);
@@ -26,12 +26,12 @@ const AdSense: React.FC<AdSenseProps> = ({
 
   const checkElementDimensions = useCallback((): boolean => {
     if (!adRef.current) return false;
-    
+
     const rect = adRef.current.getBoundingClientRect();
     const computedStyle = window.getComputedStyle(adRef.current);
     const hasWidth = rect.width > 0 || parseFloat(computedStyle.width) > 0;
     const isVisible = computedStyle.display !== 'none' && computedStyle.visibility !== 'hidden';
-    
+
     return hasWidth && isVisible;
   }, []);
 
@@ -65,8 +65,8 @@ const AdSense: React.FC<AdSenseProps> = ({
     const adElement = adRef.current;
 
     // Check if this specific element already has been processed by AdSense
-    const hasExistingAd = 
-      adElement?.getAttribute('data-adsbygoogle-status') || 
+    const hasExistingAd =
+      adElement?.getAttribute('data-adsbygoogle-status') ||
       adElement?.hasAttribute('data-ad-initialized') ||
       adElement?.querySelector('iframe'); // Check for iframe which indicates ad is loaded
 
@@ -96,12 +96,14 @@ const AdSense: React.FC<AdSenseProps> = ({
           entries.forEach((entry) => {
             if (entry.isIntersecting && entry.target === adElement && !isAdInitialized) {
               observerRef.current?.disconnect();
-              
+
               try {
                 // Double check that the element hasn't been processed yet
                 const currentStatus = adElement.getAttribute('data-adsbygoogle-status');
                 if (currentStatus && currentStatus !== 'none') {
-                  console.log(`AdSense: Element ${adInstanceId} already processed with status: ${currentStatus}`);
+                  console.log(
+                    `AdSense: Element ${adInstanceId} already processed with status: ${currentStatus}`
+                  );
                   setIsAdInitialized(true);
                   setIsProcessing(false);
                   return;
@@ -125,7 +127,7 @@ const AdSense: React.FC<AdSenseProps> = ({
         },
         {
           threshold: 0.1,
-          rootMargin: '50px'
+          rootMargin: '50px',
         }
       );
 
@@ -151,14 +153,16 @@ const AdSense: React.FC<AdSenseProps> = ({
           // Wait for AdSense script to load with timeout
           let attempts = 0;
           const maxAttempts = 50; // 5 seconds max wait
-          
+
           intervalRef.current = setInterval(() => {
             attempts++;
             if (window.adsbygoogle) {
               cleanupTimers();
               initializeAd();
             } else if (attempts >= maxAttempts) {
-              console.error(`AdSense: Script failed to load within timeout for instance ${adInstanceId}`);
+              console.error(
+                `AdSense: Script failed to load within timeout for instance ${adInstanceId}`
+              );
               cleanupTimers();
               setHasError(true);
             }
@@ -199,11 +203,11 @@ const AdSense: React.FC<AdSenseProps> = ({
       <ins
         ref={adRef}
         className="adsbygoogle block w-full"
-        style={{ 
-          display: 'block', 
+        style={{
+          display: 'block',
           minHeight: '100px',
           minWidth: '300px',
-          ...adStyle
+          ...adStyle,
         }}
         data-ad-client={adClient}
         data-ad-slot={adSlot}

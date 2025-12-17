@@ -1,13 +1,11 @@
 import { supabase } from '@/lib/supabase/client';
-import {
-  insertComment,
-  updateCommentById,
-  deleteCommentById,
-} from '@/lib/supabase/typed';
+import { insertComment, updateCommentById, deleteCommentById } from '@/lib/supabase/typed';
 
 export const commentService = {
   async postComment(storyId: string, content: string, parentId?: string) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
     const { data, error } = await insertComment({
@@ -35,8 +33,7 @@ export const commentService = {
   async likeComment(commentId: string) {
     // This is a placeholder implementation.
     // A real implementation would require a 'likes' table.
-    const { data, error } = await supabase
-      .rpc('increment_comment_like', { comment_id: commentId });
+    const { data, error } = await supabase.rpc('increment_comment_like', { comment_id: commentId });
 
     if (error) throw error;
     return data;

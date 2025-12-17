@@ -35,7 +35,7 @@ export default function UserProfileCard({
   onFollow,
   onUnfollow,
   onViewProfile,
-  variant = 'full'
+  variant = 'full',
 }: UserProfileCardProps) {
   const level = getLevelFromXP(user.totalXP);
   const isOwnProfile = currentUserId === user.id;
@@ -64,7 +64,11 @@ export default function UserProfileCard({
         <div className="relative">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold overflow-hidden">
             {user.avatar ? (
-              <img src={user.avatar} alt={user.displayName} className="w-full h-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.displayName}
+                className="w-full h-full object-cover"
+              />
             ) : (
               user.displayName.charAt(0).toUpperCase()
             )}
@@ -124,7 +128,11 @@ export default function UserProfileCard({
         <div className="relative inline-block mb-4">
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-3xl border-4 border-card overflow-hidden">
             {user.avatar ? (
-              <img src={user.avatar} alt={user.displayName} className="w-full h-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.displayName}
+                className="w-full h-full object-cover"
+              />
             ) : (
               user.displayName.charAt(0).toUpperCase()
             )}
@@ -150,13 +158,13 @@ export default function UserProfileCard({
         {/* Level Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-bold mb-4">
           <span>{level.badge}</span>
-          <span>Level {level.level} - {level.title}</span>
+          <span>
+            Level {level.level} - {level.title}
+          </span>
         </div>
 
         {/* Bio */}
-        {user.bio && (
-          <p className="text-foreground mb-4 line-clamp-3">{user.bio}</p>
-        )}
+        {user.bio && <p className="text-foreground mb-4 line-clamp-3">{user.bio}</p>}
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-4">

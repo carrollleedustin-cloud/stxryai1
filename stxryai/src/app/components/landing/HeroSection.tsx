@@ -17,15 +17,15 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
   }, []);
 
   const choices = [
-    "Enter the abandoned mansion...",
-    "Follow the mysterious stranger...",
-    "Investigate the strange noise...",
-    "Open the ancient book..."
+    'Enter the abandoned mansion...',
+    'Follow the mysterious stranger...',
+    'Investigate the strange noise...',
+    'Open the ancient book...',
   ];
 
   useEffect(() => {
     if (!isHydrated) return;
-    
+
     const interval = setInterval(() => {
       setCurrentChoice((prev) => (prev + 1) % choices.length);
     }, 3000);
@@ -37,7 +37,10 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-card to-background">
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: '1s' }}
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -55,7 +58,8 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
           </h1>
 
           <p className="text-xl sm:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12">
-            Experience AI-generated interactive fiction where every decision creates a unique narrative path. Join thousands of readers exploring limitless story possibilities.
+            Experience AI-generated interactive fiction where every decision creates a unique
+            narrative path. Join thousands of readers exploring limitless story possibilities.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -80,7 +84,8 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
               <div className="glassmorphism rounded-xl p-8 border border-border shadow-elevation-2">
                 <p className="text-sm text-muted-foreground mb-4">Live Story Preview</p>
                 <p className="text-lg text-foreground mb-6 italic">
-                  "The door creaks open, revealing a dimly lit corridor. Shadows dance on the walls as you step inside..."
+                  "The door creaks open, revealing a dimly lit corridor. Shadows dance on the walls
+                  as you step inside..."
                 </p>
                 <div className="space-y-3">
                   {choices.map((choice, index) => (

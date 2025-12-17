@@ -121,7 +121,8 @@ const BranchVisualization = ({
                           node.isCurrent
                             ? 'border-accent bg-accent/10 shadow-elevation-1'
                             : node.isCompleted
-                            ? 'border-primary/30 bg-primary/5' :'border-border bg-card/50'
+                              ? 'border-primary/30 bg-primary/5'
+                              : 'border-border bg-card/50'
                         } ${onNodeClick ? 'cursor-pointer hover:scale-[1.02]' : ''}`}
                         onClick={() => onNodeClick?.(node.id)}
                       >
@@ -173,8 +174,11 @@ const BranchVisualization = ({
                         <div className="flex flex-col items-end space-y-2">
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              node.impact === 'high' ?'bg-error/20 text-error'
-                                : node.impact === 'medium' ?'bg-warning/20 text-warning' :'bg-primary/20 text-primary'
+                              node.impact === 'high'
+                                ? 'bg-error/20 text-error'
+                                : node.impact === 'medium'
+                                  ? 'bg-warning/20 text-warning'
+                                  : 'bg-primary/20 text-primary'
                             }`}
                           >
                             {node.impact} impact

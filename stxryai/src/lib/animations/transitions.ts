@@ -9,27 +9,27 @@ import { Transition, Variants } from 'framer-motion';
  * Standard page transition configuration
  */
 export const pageTransition: Transition = {
-  type: "tween",
-  ease: "anticipate",
-  duration: 0.5
+  type: 'tween',
+  ease: 'anticipate',
+  duration: 0.5,
 };
 
 /**
  * Fast page transition
  */
 export const fastTransition: Transition = {
-  type: "tween",
-  ease: "easeInOut",
-  duration: 0.3
+  type: 'tween',
+  ease: 'easeInOut',
+  duration: 0.3,
 };
 
 /**
  * Spring-based page transition
  */
 export const springTransition: Transition = {
-  type: "spring",
+  type: 'spring',
   damping: 25,
-  stiffness: 300
+  stiffness: 300,
 };
 
 /**
@@ -38,7 +38,7 @@ export const springTransition: Transition = {
 export const pageVariants: Variants = {
   initial: { opacity: 0, x: -20 },
   in: { opacity: 1, x: 0 },
-  out: { opacity: 0, x: 20 }
+  out: { opacity: 0, x: 20 },
 };
 
 /**
@@ -47,7 +47,7 @@ export const pageVariants: Variants = {
 export const pageFadeVariants: Variants = {
   initial: { opacity: 0 },
   in: { opacity: 1 },
-  out: { opacity: 0 }
+  out: { opacity: 0 },
 };
 
 /**
@@ -56,7 +56,7 @@ export const pageFadeVariants: Variants = {
 export const pageScaleVariants: Variants = {
   initial: { opacity: 0, scale: 0.95 },
   in: { opacity: 1, scale: 1 },
-  out: { opacity: 0, scale: 1.05 }
+  out: { opacity: 0, scale: 1.05 },
 };
 
 /**
@@ -65,7 +65,7 @@ export const pageScaleVariants: Variants = {
 export const pageSlideUpVariants: Variants = {
   initial: { opacity: 0, y: 50 },
   in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -50 }
+  out: { opacity: 0, y: -50 },
 };
 
 /**
@@ -75,9 +75,9 @@ export const pageSlideUpVariants: Variants = {
 export const routeTransition = {
   variants: pageVariants,
   transition: pageTransition,
-  initial: "initial",
-  animate: "in",
-  exit: "out"
+  initial: 'initial',
+  animate: 'in',
+  exit: 'out',
 };
 
 /**
@@ -85,7 +85,7 @@ export const routeTransition = {
  */
 export const modalTransition: Transition = {
   duration: 0.2,
-  ease: "easeOut"
+  ease: 'easeOut',
 };
 
 /**
@@ -93,7 +93,7 @@ export const modalTransition: Transition = {
  */
 export const staggerTiming = {
   staggerChildren: 0.1,
-  delayChildren: 0.1
+  delayChildren: 0.1,
 };
 
 /**
@@ -101,5 +101,5 @@ export const staggerTiming = {
  */
 export const hoverTransition: Transition = {
   duration: 0.3,
-  ease: "easeInOut"
+  ease: 'easeInOut',
 };

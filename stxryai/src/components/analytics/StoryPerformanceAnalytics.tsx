@@ -65,9 +65,11 @@ export default function StoryPerformanceAnalytics({
   chapterPerformance,
   choiceAnalytics,
   demographics,
-  revenueData
+  revenueData,
 }: StoryPerformanceAnalyticsProps) {
-  const [selectedTab, setSelectedTab] = useState<'overview' | 'chapters' | 'choices' | 'audience'>('overview');
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'chapters' | 'choices' | 'audience'>(
+    'overview'
+  );
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -81,9 +83,12 @@ export default function StoryPerformanceAnalytics({
 
   const getTrendIcon = (trend: 'up' | 'down' | 'stable') => {
     switch (trend) {
-      case 'up': return { icon: 'ArrowTrendingUpIcon', color: 'text-green-500' };
-      case 'down': return { icon: 'ArrowTrendingDownIcon', color: 'text-red-500' };
-      case 'stable': return { icon: 'MinusIcon', color: 'text-yellow-500' };
+      case 'up':
+        return { icon: 'ArrowTrendingUpIcon', color: 'text-green-500' };
+      case 'down':
+        return { icon: 'ArrowTrendingDownIcon', color: 'text-red-500' };
+      case 'stable':
+        return { icon: 'MinusIcon', color: 'text-yellow-500' };
     }
   };
 
@@ -98,7 +103,7 @@ export default function StoryPerformanceAnalytics({
     { id: 'overview', label: 'Overview', icon: 'ChartBarIcon' },
     { id: 'chapters', label: 'Chapters', icon: 'BookOpenIcon' },
     { id: 'choices', label: 'Choices', icon: 'ArrowPathIcon' },
-    { id: 'audience', label: 'Audience', icon: 'UserGroupIcon' }
+    { id: 'audience', label: 'Audience', icon: 'UserGroupIcon' },
   ];
 
   return (
@@ -147,7 +152,9 @@ export default function StoryPerformanceAnalytics({
               className="bg-card border border-border rounded-xl p-4 shadow-lg"
             >
               <div className="flex items-center gap-2 mb-3">
-                <div className={`w-10 h-10 rounded-lg ${metric.color.replace('text', 'bg')}/10 flex items-center justify-center`}>
+                <div
+                  className={`w-10 h-10 rounded-lg ${metric.color.replace('text', 'bg')}/10 flex items-center justify-center`}
+                >
                   <span className="text-2xl">{metric.icon}</span>
                 </div>
               </div>
@@ -230,9 +237,21 @@ export default function StoryPerformanceAnalytics({
                   <div className="space-y-3">
                     {[
                       { label: 'Story Views', value: 100, count: metrics[0]?.value || 0 },
-                      { label: 'Started Reading', value: 75, count: Math.floor((metrics[0]?.value || 0) * 0.75) },
-                      { label: 'Reached Midpoint', value: 50, count: Math.floor((metrics[0]?.value || 0) * 0.5) },
-                      { label: 'Completed', value: 35, count: Math.floor((metrics[0]?.value || 0) * 0.35) }
+                      {
+                        label: 'Started Reading',
+                        value: 75,
+                        count: Math.floor((metrics[0]?.value || 0) * 0.75),
+                      },
+                      {
+                        label: 'Reached Midpoint',
+                        value: 50,
+                        count: Math.floor((metrics[0]?.value || 0) * 0.5),
+                      },
+                      {
+                        label: 'Completed',
+                        value: 35,
+                        count: Math.floor((metrics[0]?.value || 0) * 0.35),
+                      },
                     ].map((stage, index) => (
                       <div key={stage.label}>
                         <div className="flex items-center justify-between mb-1">
@@ -264,7 +283,7 @@ export default function StoryPerformanceAnalytics({
                       { label: 'Peak Reading Time', value: '8:00 PM - 10:00 PM', icon: 'SunIcon' },
                       { label: 'Avg Session Duration', value: '24 minutes', icon: 'ClockIcon' },
                       { label: 'Binge Read Rate', value: '42%', icon: 'FireIcon' },
-                      { label: 'Return Reader Rate', value: '68%', icon: 'ArrowPathIcon' }
+                      { label: 'Return Reader Rate', value: '68%', icon: 'ArrowPathIcon' },
                     ].map((stat) => (
                       <div key={stat.label} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -284,8 +303,12 @@ export default function StoryPerformanceAnalytics({
           {selectedTab === 'chapters' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-sm font-semibold text-foreground">Chapter-by-Chapter Analysis</h4>
-                <span className="text-xs text-muted-foreground">{chapterPerformance.length} chapters</span>
+                <h4 className="text-sm font-semibold text-foreground">
+                  Chapter-by-Chapter Analysis
+                </h4>
+                <span className="text-xs text-muted-foreground">
+                  {chapterPerformance.length} chapters
+                </span>
               </div>
               {chapterPerformance.map((chapter, index) => (
                 <motion.div
@@ -321,7 +344,9 @@ export default function StoryPerformanceAnalytics({
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs text-muted-foreground">Completion Rate</span>
-                        <span className={`text-xs font-bold ${getPerformanceColor(chapter.completionRate)}`}>
+                        <span
+                          className={`text-xs font-bold ${getPerformanceColor(chapter.completionRate)}`}
+                        >
                           {chapter.completionRate}%
                         </span>
                       </div>
@@ -334,10 +359,10 @@ export default function StoryPerformanceAnalytics({
                             chapter.completionRate >= 80
                               ? 'bg-green-500'
                               : chapter.completionRate >= 60
-                              ? 'bg-blue-500'
-                              : chapter.completionRate >= 40
-                              ? 'bg-yellow-500'
-                              : 'bg-red-500'
+                                ? 'bg-blue-500'
+                                : chapter.completionRate >= 40
+                                  ? 'bg-yellow-500'
+                                  : 'bg-red-500'
                           }`}
                         />
                       </div>
@@ -346,7 +371,9 @@ export default function StoryPerformanceAnalytics({
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs text-muted-foreground">Drop-off Rate</span>
-                        <span className="text-xs font-bold text-red-500">{chapter.dropOffRate}%</span>
+                        <span className="text-xs font-bold text-red-500">
+                          {chapter.dropOffRate}%
+                        </span>
                       </div>
                       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                         <motion.div
@@ -399,7 +426,9 @@ export default function StoryPerformanceAnalytics({
                       </div>
                     </div>
                     <div className="px-3 py-1 bg-primary/10 rounded-full">
-                      <span className="text-sm font-bold text-primary">{choice.selectionPercentage}%</span>
+                      <span className="text-sm font-bold text-primary">
+                        {choice.selectionPercentage}%
+                      </span>
                     </div>
                   </div>
 
@@ -455,12 +484,17 @@ export default function StoryPerformanceAnalytics({
                 </h4>
                 <div className="space-y-3">
                   {demographics.topCountries.map((country, index) => (
-                    <div key={country.country} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div
+                      key={country.country}
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
                           {index + 1}
                         </div>
-                        <span className="text-sm font-medium text-foreground">{country.country}</span>
+                        <span className="text-sm font-medium text-foreground">
+                          {country.country}
+                        </span>
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-bold text-primary">{country.percentage}%</div>

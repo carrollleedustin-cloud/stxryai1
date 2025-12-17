@@ -47,11 +47,7 @@ export function preloadImage(src: string): void {
 /**
  * Lazy load images with Intersection Observer
  */
-export function lazyLoadImage(
-  img: HTMLImageElement,
-  src: string,
-  onLoad?: () => void
-): () => void {
+export function lazyLoadImage(img: HTMLImageElement, src: string, onLoad?: () => void): () => void {
   if (typeof window === 'undefined') return () => {};
 
   const observer = new IntersectionObserver(
@@ -69,7 +65,7 @@ export function lazyLoadImage(
       });
     },
     {
-      rootMargin: '50px' // Start loading 50px before visible
+      rootMargin: '50px', // Start loading 50px before visible
     }
   );
 
@@ -103,7 +99,7 @@ export function generateSrcSet(
   widths: number[] = [320, 640, 960, 1280, 1920]
 ): string {
   return widths
-    .map(width => {
+    .map((width) => {
       const url = getOptimizedImageUrl(baseUrl, { width });
       return `${url} ${width}w`;
     })
@@ -117,7 +113,7 @@ export function generateSizes(
   breakpoints: { [key: string]: string } = {
     sm: '100vw',
     md: '50vw',
-    lg: '33vw'
+    lg: '33vw',
   }
 ): string {
   const entries = Object.entries(breakpoints);
@@ -166,7 +162,7 @@ export function getAspectRatioPadding(width: number, height: number): string {
 export const ImageLoadingStrategy = {
   EAGER: 'eager', // Load immediately
   LAZY: 'lazy', // Load when near viewport
-  PRIORITY: 'priority' // Preload with high priority
+  PRIORITY: 'priority', // Preload with high priority
 } as const;
 
 /**
@@ -177,7 +173,7 @@ export const ImageSizes = {
   THUMBNAIL: { width: 320, height: 180 },
   CARD: { width: 640, height: 360 },
   HERO: { width: 1920, height: 1080 },
-  COVER: { width: 1280, height: 720 }
+  COVER: { width: 1280, height: 720 },
 } as const;
 
 /**

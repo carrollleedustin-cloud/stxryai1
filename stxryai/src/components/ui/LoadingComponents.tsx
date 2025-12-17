@@ -8,7 +8,13 @@
 import { motion } from 'framer-motion';
 
 // Spinner Loader
-export function Spinner({ size = 'md', color = 'purple' }: { size?: 'sm' | 'md' | 'lg'; color?: string }) {
+export function Spinner({
+  size = 'md',
+  color = 'purple',
+}: {
+  size?: 'sm' | 'md' | 'lg';
+  color?: string;
+}) {
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-8 h-8',
@@ -90,7 +96,13 @@ export function FullPageLoader({ message = 'Loading...' }: { message?: string })
 }
 
 // Skeleton Components
-export function SkeletonText({ lines = 3, className = '' }: { lines?: number; className?: string }) {
+export function SkeletonText({
+  lines = 3,
+  className = '',
+}: {
+  lines?: number;
+  className?: string;
+}) {
   return (
     <div className={`space-y-3 ${className}`}>
       {Array.from({ length: lines }).map((_, i) => (
@@ -131,14 +143,24 @@ export function SkeletonAvatar({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   };
 
   return (
-    <div className={`${sizeClasses[size]} bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse`} />
+    <div
+      className={`${sizeClasses[size]} bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse`}
+    />
   );
 }
 
 // Progress Bar
-export function ProgressBar({ progress, className = '' }: { progress: number; className?: string }) {
+export function ProgressBar({
+  progress,
+  className = '',
+}: {
+  progress: number;
+  className?: string;
+}) {
   return (
-    <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden ${className}`}>
+    <div
+      className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden ${className}`}
+    >
       <motion.div
         className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
         initial={{ width: 0 }}

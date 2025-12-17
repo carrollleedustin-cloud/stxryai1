@@ -107,25 +107,22 @@ export const mockDate = (dateString: string) => {
 
 // Random data generators
 export const randomString = (length = 10) =>
-  Math.random().toString(36).substring(2, length + 2);
+  Math.random()
+    .toString(36)
+    .substring(2, length + 2);
 
 export const randomNumber = (min = 0, max = 100) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
-export const randomEmail = () =>
-  `${randomString()}@${randomString()}.com`;
+export const randomEmail = () => `${randomString()}@${randomString()}.com`;
 
 export const randomBoolean = () => Math.random() > 0.5;
 
-export const randomFromArray = <T,>(array: T[]): T =>
+export const randomFromArray = <T>(array: T[]): T =>
   array[Math.floor(Math.random() * array.length)];
 
 // File upload testing helper
-export const createMockFile = (
-  name = 'test.txt',
-  size = 1024,
-  type = 'text/plain'
-) => {
+export const createMockFile = (name = 'test.txt', size = 1024, type = 'text/plain') => {
   const blob = new Blob(['a'.repeat(size)], { type });
   return new File([blob], name, { type });
 };
@@ -306,9 +303,7 @@ export const mockClipboard = () => {
 };
 
 // Geolocation mock
-export const mockGeolocation = (
-  coords = { latitude: 40.7128, longitude: -74.0060 }
-) => {
+export const mockGeolocation = (coords = { latitude: 40.7128, longitude: -74.006 }) => {
   const mockGeolocation = {
     getCurrentPosition: jest.fn((success) =>
       success({

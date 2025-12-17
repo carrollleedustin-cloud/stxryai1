@@ -37,12 +37,10 @@ export async function uploadFile({
     // Generate unique filename if path not provided
     const fileName = path || `${Date.now()}-${file.name}`;
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file, {
-        upsert,
-        contentType: file.type,
-      });
+    const { data, error } = await supabase.storage.from(bucket).upload(fileName, file, {
+      upsert,
+      contentType: file.type,
+    });
 
     if (error) {
       return {
@@ -132,9 +130,7 @@ export async function getSignedUrl(
   try {
     const supabase = getSupabase();
 
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(path, expiresIn);
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
 
     if (error) {
       console.error('Signed URL error:', error);

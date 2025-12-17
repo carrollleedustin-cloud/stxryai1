@@ -17,11 +17,7 @@ export {
 } from './error-handler';
 
 // Caching
-export {
-  apiCache,
-  withCache,
-  useCacheManagement,
-} from './cache';
+export { apiCache, withCache, useCacheManagement } from './cache';
 
 // AI Service
 export {
@@ -34,9 +30,7 @@ export {
 } from './ai-service';
 
 // Supabase Service
-export {
-  supabaseService,
-} from './supabase-service';
+export { supabaseService } from './supabase-service';
 
 // Analytics Service - Re-export
 export * from './analytics-service';

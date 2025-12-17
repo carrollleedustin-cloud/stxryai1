@@ -6,7 +6,11 @@
 import { getSupabaseClient, getIsSupabaseConfigured } from '@/lib/supabase/client';
 import { withErrorHandling, withRetry, APIResponse } from './error-handler';
 import { apiCache } from './cache';
-import type { SupabaseClient, PostgrestError, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type {
+  SupabaseClient,
+  PostgrestError,
+  RealtimePostgresChangesPayload,
+} from '@supabase/supabase-js';
 
 interface QueryOptions {
   cache?: boolean;
@@ -128,7 +132,7 @@ class SupabaseService {
 
     // Invalidate related cache entries on successful mutation
     if (result.success && cacheInvalidation) {
-      cacheInvalidation.forEach(pattern => {
+      cacheInvalidation.forEach((pattern) => {
         apiCache.delete(pattern, { storage: 'both' });
       });
     }
@@ -140,7 +144,9 @@ class SupabaseService {
    * Batch operations with transaction support
    */
   async batch<T>(
-    operations: Array<(client: SupabaseClient) => Promise<{ data: any; error: PostgrestError | null }>>,
+    operations: Array<
+      (client: SupabaseClient) => Promise<{ data: any; error: PostgrestError | null }>
+    >,
     operationName: string
   ): Promise<APIResponse<T[]>> {
     return withErrorHandling(
@@ -183,7 +189,7 @@ class SupabaseService {
       this.ensureConfigured();
       const client = this.getClient();
 
-        const channel = client
+      const channel = client
         .channel(`${table}_changes`)
         .on(
           'postgres_changes' as any,
@@ -242,21 +248,17 @@ class SupabaseService {
         const client = this.getClient();
 
         const uploadFn = async () => {
-          const { data, error } = await client.storage
-            .from(bucket)
-            .upload(path, file, {
-              cacheControl: options.cacheControl || '3600',
-              upsert: options.upsert || false,
-            });
+          const { data, error } = await client.storage.from(bucket).upload(path, file, {
+            cacheControl: options.cacheControl || '3600',
+            upsert: options.upsert || false,
+          });
 
           if (error) {
             throw new Error(`File upload failed: ${error.message}`);
           }
 
           // Get public URL
-          const { data: urlData } = client.storage
-            .from(bucket)
-            .getPublicUrl(path);
+          const { data: urlData } = client.storage.from(bucket).getPublicUrl(path);
 
           return {
             path: data.path,
@@ -280,17 +282,12 @@ class SupabaseService {
   /**
    * Delete file from Supabase Storage
    */
-  async deleteFile(
-    bucket: string,
-    paths: string[]
-  ): Promise<APIResponse<void>> {
+  async deleteFile(bucket: string, paths: string[]): Promise<APIResponse<void>> {
     return withErrorHandling(
       async () => {
         const client = this.getClient();
 
-        const { error } = await client.storage
-          .from(bucket)
-          .remove(paths);
+        const { error } = await client.storage.from(bucket).remove(paths);
 
         if (error) {
           throw new Error(`File deletion failed: ${error.message}`);
@@ -306,10 +303,7 @@ class SupabaseService {
   /**
    * Call Supabase Edge Function with retry
    */
-  async callFunction<T, R>(
-    functionName: string,
-    payload: T
-  ): Promise<APIResponse<R>> {
+  async callFunction<T, R>(functionName: string, payload: T): Promise<APIResponse<R>> {
     return withErrorHandling(
       async () => {
         const client = this.getClient();
@@ -342,10 +336,7 @@ class SupabaseService {
   /**
    * Execute RPC function with retry
    */
-  async rpc<T>(
-    functionName: string,
-    params: Record<string, any> = {}
-  ): Promise<APIResponse<T>> {
+  async rpc<T>(functionName: string, params: Record<string, any> = {}): Promise<APIResponse<T>> {
     return withErrorHandling(
       async () => {
         const client = this.getClient();

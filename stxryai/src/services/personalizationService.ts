@@ -10,25 +10,25 @@ import {
 } from '@/lib/supabase/typed';
 
 export interface ThemeSettings {
-    [key: string]: string | number;
+  [key: string]: string | number;
 }
 
 export interface EmotionalBond {
-    type: string;
-    intensity: number;
-    timestamp: string;
+  type: string;
+  intensity: number;
+  timestamp: string;
 }
 
 export interface ConflictHistory {
-    description: string;
-    outcome: string;
-    timestamp: string;
+  description: string;
+  outcome: string;
+  timestamp: string;
 }
 
 export interface EvolutionEvent {
-    event: string;
-    change: string;
-    timestamp: string;
+  event: string;
+  change: string;
+  timestamp: string;
 }
 
 export interface UserUITheme {
@@ -137,7 +137,14 @@ export async function getActiveTheme(userId: string) {
 
 export async function createTheme(theme: Partial<UserUITheme>) {
   try {
-    const { data, error } = await insertUserUITheme([theme]);
+    // Ensure `user_id` is present
+    if (!theme.user_id) {
+      const { data: authData } = await supabase.auth.getUser();
+      if (!authData?.user) throw new Error('User must be authenticated to create a theme');
+      theme.user_id = authData.user.id;
+    }
+
+    const { data, error } = await insertUserUITheme([theme as any]);
 
     if (error) throw error;
     return Array.isArray(data) ? (data[0] as UserUITheme) : (data as UserUITheme);
@@ -204,20 +211,48 @@ export async function getCharacterRelationships(userId: string, storyId: string)
 
 export async function createCharacterRelationship(relationship: Partial<CharacterRelationship>) {
   try {
-    const { data, error } = await insertCharacterRelationship([relationship]);
+    if (!relationship.user_id) {
+      throw new Error('user_id is required to create a character relationship');
+    }
+
+    // Attempt to derive a character_id from available fields if not provided
+    const charId =
+      (relationship as any).character_id ||
+      (relationship.character_a_name as unknown as string) ||
+      (relationship.character_b_name as unknown as string);
+    if (!charId)
+      throw new Error(
+        'character_id (or character name) is required to create a character relationship'
+      );
+
+    const payload = {
+      user_id: relationship.user_id,
+      character_id: charId,
+      relationship_type: relationship.relationship_type,
+      strength: relationship.relationship_strength,
+    } as any;
+
+    const { data, error } = await insertCharacterRelationship([payload]);
     if (error) throw error;
-    return Array.isArray(data) ? (data[0] as CharacterRelationship) : (data as CharacterRelationship);
+    return Array.isArray(data)
+      ? (data[0] as CharacterRelationship)
+      : (data as CharacterRelationship);
   } catch (error: unknown) {
     console.error('Error creating character relationship:', error);
     throw error;
   }
 }
 
-export async function updateCharacterRelationship(id: string, updates: Partial<CharacterRelationship>) {
+export async function updateCharacterRelationship(
+  id: string,
+  updates: Partial<CharacterRelationship>
+) {
   try {
     const { data, error } = await updateCharacterRelationshipById(id, updates);
     if (error) throw error;
-    return Array.isArray(data) ? (data[0] as CharacterRelationship) : (data as CharacterRelationship);
+    return Array.isArray(data)
+      ? (data[0] as CharacterRelationship)
+      : (data as CharacterRelationship);
   } catch (error: unknown) {
     console.error('Error updating character relationship:', error);
     throw error;
@@ -263,7 +298,10 @@ export async function getDiscoveryPreferences(userId: string) {
   }
 }
 
-export async function updateDiscoveryPreferences(userId: string, preferences: Partial<DiscoveryPreferences>) {
+export async function updateDiscoveryPreferences(
+  userId: string,
+  preferences: Partial<DiscoveryPreferences>
+) {
   try {
     // Try update first
     const { data, error } = await upsertDiscoveryPreferences({ ...preferences, user_id: userId });
@@ -295,7 +333,16 @@ export async function getReceivedFeedback(userId: string) {
 
 export async function giveFeedback(feedback: Partial<ReaderFeedback>) {
   try {
-    const { data, error } = await insertReaderFeedback([feedback]);
+    // Map application feedback shape to DB shape
+    if (!feedback.giver_user_id || !feedback.story_id)
+      throw new Error('giver_user_id and story_id required');
+    const dbPayload = {
+      user_id: feedback.giver_user_id,
+      story_id: feedback.story_id,
+      feedback: feedback.message || '',
+    };
+
+    const { data, error } = await insertReaderFeedback([dbPayload as any]);
     if (error) throw error;
     return Array.isArray(data) ? (data[0] as ReaderFeedback) : (data as ReaderFeedback);
   } catch (error: unknown) {

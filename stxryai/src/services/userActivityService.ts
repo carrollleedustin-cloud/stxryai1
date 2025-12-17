@@ -1,4 +1,12 @@
 import { supabase } from '@/lib/supabase/client';
+import {
+  insertUserActivity,
+  insertUserFriendship,
+  updateUserFriendshipById,
+  insertReadingList,
+  insertReadingListItem,
+  deleteReadingListItemByKeys,
+} from '@/lib/supabase/typed';
 
 interface UserActivity {
   id: string;
@@ -43,7 +51,10 @@ export const userActivityService = {
   async getUserActivities(userId: string, limit: number = 20): Promise<ActivityWithProfile[]> {
     try {
       const { data, error } = await supabase
-        .from('user_activities').select(`*,users!user_id (username,display_name,avatar_url)`).eq('user_id', userId).order('created_at', { ascending: false })
+        .from('user_activities')
+        .select(`*,users!user_id (username,display_name,avatar_url)`)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -73,7 +84,10 @@ export const userActivityService = {
 
       // Get activities from friends and user
       const { data, error } = await supabase
-        .from('user_activities').select(`*,users!user_id (username,display_name,avatar_url)`).in('user_id', friendIds).order('created_at', { ascending: false })
+        .from('user_activities')
+        .select(`*,users!user_id (username,display_name,avatar_url)`)
+        .in('user_id', friendIds)
+        .order('created_at', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
@@ -86,23 +100,19 @@ export const userActivityService = {
 
   // Log a new activity
   async createActivity(
-    userId: string, 
-    activityType: string, 
+    userId: string,
+    activityType: string,
     activityData: Record<string, unknown>
   ): Promise<UserActivity> {
     try {
-      const { data, error } = await supabase
-        .from('user_activities')
-        .insert({
-          user_id: userId,
-          activity_type: activityType,
-          activity_data: activityData,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertUserActivity({
+        user_id: userId,
+        activity_type: activityType,
+        activity_data: activityData as unknown as any,
+      } as any);
 
       if (error) throw error;
-      return data;
+      return Array.isArray(data) ? data[0] : data;
     } catch (error) {
       console.error('Error creating activity:', error);
       throw error;
@@ -114,7 +124,8 @@ export const userActivityService = {
     try {
       const { data, error } = await supabase
         .from('user_friendships')
-        .select(`
+        .select(
+          `
           *,
           friend:friend_id (
             id,
@@ -125,7 +136,8 @@ export const userActivityService = {
             stories_completed,
             total_reading_time
           )
-        `)
+        `
+        )
         .eq('user_id', userId)
         .eq('status', 'accepted')
         .order('created_at', { ascending: false });
@@ -143,7 +155,8 @@ export const userActivityService = {
     try {
       const { data, error } = await supabase
         .from('user_friendships')
-        .select(`
+        .select(
+          `
           *,
           requester:user_id (
             id,
@@ -151,7 +164,8 @@ export const userActivityService = {
             display_name,
             avatar_url
           )
-        `)
+        `
+        )
         .eq('friend_id', userId)
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
@@ -167,24 +181,17 @@ export const userActivityService = {
   // Send friend request
   async sendFriendRequest(userId: string, friendId: string): Promise<Friendship> {
     try {
-      const { data, error } = await supabase
-        .from('user_friendships')
-        .insert({
-          user_id: userId,
-          friend_id: friendId,
-          status: 'pending'
-        })
-        .select()
-        .single();
+      const { data, error } = await insertUserFriendship({
+        user_id: userId,
+        friend_id: friendId,
+        status: 'pending',
+      });
 
       if (error) throw error;
 
-      // Log activity
-      await this.createActivity(userId, 'friend_request_sent', {
-        friend_id: friendId
-      });
+      await this.createActivity(userId, 'friend_request_sent', { friend_id: friendId });
 
-      return data;
+      return Array.isArray(data) ? data[0] : data;
     } catch (error) {
       console.error('Error sending friend request:', error);
       throw error;
@@ -194,17 +201,11 @@ export const userActivityService = {
   // Accept friend request
   async acceptFriendRequest(friendshipId: string, userId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('user_friendships')
-        .update({ status: 'accepted' })
-        .eq('id', friendshipId);
+      const { data, error } = await updateUserFriendshipById(friendshipId, { status: 'accepted' });
 
       if (error) throw error;
 
-      // Log activity
-      await this.createActivity(userId, 'friend_accepted', {
-        friendship_id: friendshipId
-      });
+      await this.createActivity(userId, 'friend_accepted', { friendship_id: friendshipId });
     } catch (error) {
       console.error('Error accepting friend request:', error);
       throw error;
@@ -215,7 +216,12 @@ export const userActivityService = {
   async getReadingLists(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('user_reading_lists').select(`*,items:reading_list_items (id,story:story_id (id,title,cover_image_url,genre,rating,author:user_id (username,display_name)))`).eq('user_id', userId).order('created_at', { ascending: false });
+        .from('user_reading_lists')
+        .select(
+          `*,items:reading_list_items (id,story:story_id (id,title,cover_image_url,genre,rating,author:user_id (username,display_name)))`
+        )
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data || [];
@@ -227,32 +233,28 @@ export const userActivityService = {
 
   // Create new reading list
   async createReadingList(
-    userId: string, 
-    listName: string, 
-    description?: string, 
+    userId: string,
+    listName: string,
+    description?: string,
     isPublic: boolean = false
   ): Promise<ReadingList> {
     try {
-      const { data, error } = await supabase
-        .from('user_reading_lists')
-        .insert({
-          user_id: userId,
-          list_name: listName,
-          description,
-          is_public: isPublic,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertReadingList({
+        user_id: userId,
+        list_name: listName,
+        description,
+        is_public: isPublic,
+      });
 
       if (error) throw error;
 
-      // Log activity
+      const created = Array.isArray(data) ? data[0] : data;
       await this.createActivity(userId, 'reading_list_created', {
-        list_id: data.id,
-        list_name: listName
+        list_id: created.id,
+        list_name: listName,
       });
 
-      return data;
+      return created;
     } catch (error) {
       console.error('Error creating reading list:', error);
       throw error;
@@ -262,21 +264,13 @@ export const userActivityService = {
   // Add story to reading list
   async addToReadingList(listId: string, storyId: string, userId: string): Promise<void> {
     try {
-      const { data, error } = await supabase
-        .from('reading_list_items')
-        .insert({
-          list_id: listId,
-          story_id: storyId,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertReadingListItem({ list_id: listId, story_id: storyId });
 
       if (error) throw error;
 
-      // Log activity
       await this.createActivity(userId, 'story_added_to_list', {
         list_id: listId,
-        story_id: storyId
+        story_id: storyId,
       });
     } catch (error) {
       console.error('Error adding to reading list:', error);
@@ -287,8 +281,7 @@ export const userActivityService = {
   // Remove story from reading list
   async removeFromReadingList(listId: string, storyId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('reading_list_items').delete().eq('list_id', listId).eq('story_id', storyId);
+      const { data, error } = await deleteReadingListItemByKeys(listId, storyId);
 
       if (error) throw error;
     } catch (error) {

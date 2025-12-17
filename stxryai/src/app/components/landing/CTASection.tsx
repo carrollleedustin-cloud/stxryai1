@@ -14,7 +14,8 @@ const CTASection = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of readers exploring infinite story possibilities. Start your journey today with our free plan or unlock unlimited access with premium.
+            Join thousands of readers exploring infinite story possibilities. Start your journey
+            today with our free plan or unlock unlimited access with premium.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

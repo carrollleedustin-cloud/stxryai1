@@ -119,8 +119,8 @@ class APICache {
       if (options.prefix) {
         const prefix = this.getCacheKey('', options.prefix);
         Array.from(this.memoryCache.keys())
-          .filter(key => key.startsWith(prefix))
-          .forEach(key => this.memoryCache.delete(key));
+          .filter((key) => key.startsWith(prefix))
+          .forEach((key) => this.memoryCache.delete(key));
       } else {
         this.memoryCache.clear();
       }
@@ -136,7 +136,7 @@ class APICache {
             keysToDelete.push(key);
           }
         }
-        keysToDelete.forEach(key => localStorage.removeItem(key));
+        keysToDelete.forEach((key) => localStorage.removeItem(key));
       } catch (error) {
         console.warn('Failed to clear localStorage:', error);
       }
@@ -189,7 +189,7 @@ class APICache {
             }
           }
         }
-        keysToDelete.forEach(key => localStorage.removeItem(key));
+        keysToDelete.forEach((key) => localStorage.removeItem(key));
       } catch (error) {
         console.warn('Failed to cleanup localStorage:', error);
       }
@@ -273,7 +273,10 @@ export function useCacheManagement() {
 
 // Automatically cleanup expired entries every 10 minutes
 if (typeof window !== 'undefined') {
-  setInterval(() => {
-    apiCache.cleanup();
-  }, 10 * 60 * 1000);
+  setInterval(
+    () => {
+      apiCache.cleanup();
+    },
+    10 * 60 * 1000
+  );
 }

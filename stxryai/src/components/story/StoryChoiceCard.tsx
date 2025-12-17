@@ -32,12 +32,12 @@ export default function StoryChoiceCard({
   isSelected = false,
   showStats = true,
   disabled = false,
-  animate = true
+  animate = true,
 }: StoryChoiceCardProps) {
   const difficultyConfig = {
     easy: { color: 'text-green-500', label: 'Easy Path', icon: 'CheckCircleIcon' },
     medium: { color: 'text-yellow-500', label: 'Moderate Path', icon: 'ExclamationCircleIcon' },
-    hard: { color: 'text-red-500', label: 'Challenging Path', icon: 'FireIcon' }
+    hard: { color: 'text-red-500', label: 'Challenging Path', icon: 'FireIcon' },
   };
 
   const difficulty = choice.difficulty || 'medium';
@@ -55,8 +55,8 @@ export default function StoryChoiceCard({
         isSelected
           ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
           : disabled
-          ? 'border-border bg-muted opacity-50 cursor-not-allowed'
-          : 'border-border bg-card hover:border-primary/50 hover:shadow-lg'
+            ? 'border-border bg-muted opacity-50 cursor-not-allowed'
+            : 'border-border bg-card hover:border-primary/50 hover:shadow-lg'
       }`}
     >
       {/* Choice Number Badge */}
@@ -91,9 +91,7 @@ export default function StoryChoiceCard({
       )}
 
       {/* Choice Icon */}
-      {choice.icon && (
-        <div className="mb-4 text-4xl">{choice.icon}</div>
-      )}
+      {choice.icon && <div className="mb-4 text-4xl">{choice.icon}</div>}
 
       {/* Choice Text */}
       <h3 className="text-lg font-bold text-foreground mb-2">{choice.text}</h3>
@@ -112,7 +110,11 @@ export default function StoryChoiceCard({
           <div className="space-y-1">
             {choice.consequences.map((consequence, idx) => (
               <div key={idx} className="flex items-start gap-2 text-sm text-foreground">
-                <Icon name="ChevronRightIcon" size={16} className="text-primary flex-shrink-0 mt-0.5" />
+                <Icon
+                  name="ChevronRightIcon"
+                  size={16}
+                  className="text-primary flex-shrink-0 mt-0.5"
+                />
                 <span>{consequence}</span>
               </div>
             ))}

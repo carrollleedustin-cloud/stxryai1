@@ -158,11 +158,11 @@ function AchievementCard({
     >
       {/* Rarity Badge */}
       <div className="absolute top-2 right-2">
-        <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-          achievement.unlocked
-            ? 'bg-black/30 text-white'
-            : 'bg-white/10 text-gray-400'
-        }`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-bold ${
+            achievement.unlocked ? 'bg-black/30 text-white' : 'bg-white/10 text-gray-400'
+          }`}
+        >
           {rarityLabel}
         </span>
       </div>
@@ -188,9 +188,11 @@ function AchievementCard({
       </h4>
 
       {/* Description */}
-      <p className={`text-sm mb-3 line-clamp-2 ${
-        achievement.unlocked ? 'text-white/80' : 'text-gray-500'
-      }`}>
+      <p
+        className={`text-sm mb-3 line-clamp-2 ${
+          achievement.unlocked ? 'text-white/80' : 'text-gray-500'
+        }`}
+      >
         {achievement.description}
       </p>
 
@@ -199,13 +201,15 @@ function AchievementCard({
         <div className="mb-3">
           <div className="flex justify-between text-xs text-gray-400 mb-1">
             <span>Progress</span>
-            <span>{achievement.progress.current} / {achievement.progress.total}</span>
+            <span>
+              {achievement.progress.current} / {achievement.progress.total}
+            </span>
           </div>
           <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{
-                width: `${(achievement.progress.current / achievement.progress.total) * 100}%`
+                width: `${(achievement.progress.current / achievement.progress.total) * 100}%`,
               }}
               className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
             />
@@ -214,16 +218,14 @@ function AchievementCard({
       )}
 
       {/* XP Reward */}
-      <div className={`flex items-center justify-between text-sm ${
-        achievement.unlocked ? 'text-white/90' : 'text-gray-500'
-      }`}>
-        <span className="flex items-center gap-1">
-          ⚡ {achievement.xpReward} XP
-        </span>
+      <div
+        className={`flex items-center justify-between text-sm ${
+          achievement.unlocked ? 'text-white/90' : 'text-gray-500'
+        }`}
+      >
+        <span className="flex items-center gap-1">⚡ {achievement.xpReward} XP</span>
         {achievement.unlocked && achievement.unlockedAt && (
-          <span className="text-xs">
-            {achievement.unlockedAt.toLocaleDateString()}
-          </span>
+          <span className="text-xs">{achievement.unlockedAt.toLocaleDateString()}</span>
         )}
       </div>
 
@@ -294,14 +296,10 @@ function FeaturedAchievementsShowcase({ achievements }: { achievements: Achievem
             </motion.div>
 
             {/* Title */}
-            <h3 className="text-xl font-bold text-white text-center mb-2">
-              {achievement.title}
-            </h3>
+            <h3 className="text-xl font-bold text-white text-center mb-2">{achievement.title}</h3>
 
             {/* Description */}
-            <p className="text-sm text-gray-300 text-center mb-4">
-              {achievement.description}
-            </p>
+            <p className="text-sm text-gray-300 text-center mb-4">{achievement.description}</p>
 
             {/* Badge */}
             <div className="flex justify-center">
@@ -319,9 +317,7 @@ function FeaturedAchievementsShowcase({ achievements }: { achievements: Achievem
 // Compact Achievements (for sidebar/profile)
 function CompactAchievements({ achievements }: { achievements: Achievement[] }) {
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
-  const recentlyUnlocked = achievements
-    .filter((a) => a.unlocked)
-    .slice(0, 5);
+  const recentlyUnlocked = achievements.filter((a) => a.unlocked).slice(0, 5);
 
   return (
     <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">

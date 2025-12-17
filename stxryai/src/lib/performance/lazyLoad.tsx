@@ -19,7 +19,7 @@ export function lazyLoad<T extends ComponentType<any>>(
         )}
       </div>
     ),
-    ssr: false
+    ssr: false,
   });
 }
 
@@ -38,16 +38,14 @@ export function lazyLoadWithSSR<T extends ComponentType<any>>(
         )}
       </div>
     ),
-    ssr: true
+    ssr: true,
   });
 }
 
 /**
  * Preload a component for faster transitions
  */
-export function preloadComponent<T>(
-  importFunc: () => Promise<{ default: T }>
-): void {
+export function preloadComponent<T>(importFunc: () => Promise<{ default: T }>): void {
   importFunc();
 }
 
@@ -57,49 +55,33 @@ export function preloadComponent<T>(
  * Lazy load analytics components (heavy with charts)
  */
 export const LazyAnalytics = {
-  ReadingAnalytics: lazyLoad(() =>
-    import('@/components/analytics/ReadingAnalytics')
+  ReadingAnalytics: lazyLoad(() => import('@/components/analytics/ReadingAnalytics')),
+  ActivityHeatmap: lazyLoad(() => import('@/components/analytics/ActivityHeatmap')),
+  ReadingInsights: lazyLoad(() => import('@/components/analytics/ReadingInsights')),
+  StoryPerformanceAnalytics: lazyLoad(
+    () => import('@/components/analytics/StoryPerformanceAnalytics')
   ),
-  ActivityHeatmap: lazyLoad(() =>
-    import('@/components/analytics/ActivityHeatmap')
-  ),
-  ReadingInsights: lazyLoad(() =>
-    import('@/components/analytics/ReadingInsights')
-  ),
-  StoryPerformanceAnalytics: lazyLoad(() =>
-    import('@/components/analytics/StoryPerformanceAnalytics')
-  )
 };
 
 /**
  * Lazy load AI components (require API calls)
  */
 export const LazyAI = {
-  ContentSuggestions: lazyLoad(() =>
-    import('@/components/ai/ContentSuggestions')
-  ),
-  PersonalizedFeed: lazyLoad(() =>
-    import('@/components/ai/PersonalizedFeed')
-  )
+  ContentSuggestions: lazyLoad(() => import('@/components/ai/ContentSuggestions')),
+  PersonalizedFeed: lazyLoad(() => import('@/components/ai/PersonalizedFeed')),
 };
 
 /**
  * Lazy load gamification components
  */
 export const LazyGamification = {
-  GamificationDashboard: lazyLoad(() =>
-    import('@/components/gamification/GamificationDashboard')
-  ),
-  Leaderboard: lazyLoad(() =>
-    import('@/components/gamification/Leaderboard')
-  )
+  GamificationDashboard: lazyLoad(() => import('@/components/gamification/GamificationDashboard')),
+  Leaderboard: lazyLoad(() => import('@/components/gamification/Leaderboard')),
 };
 
 /**
  * Lazy load social components
  */
 export const LazySocial = {
-  CommentSystem: lazyLoad(() =>
-    import('@/components/social/CommentSystem')
-  )
+  CommentSystem: lazyLoad(() => import('@/components/social/CommentSystem')),
 };

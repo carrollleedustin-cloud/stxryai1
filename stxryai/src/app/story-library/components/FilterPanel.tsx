@@ -90,7 +90,7 @@ const FilterPanel = ({
     const newGenres = localFilters.genres?.includes(genre)
       ? localFilters.genres.filter((g) => g !== genre)
       : [...(localFilters.genres || []), genre];
-    
+
     const updated = { ...localFilters, genres: newGenres };
     setLocalFilters(updated);
     onFilterChange(updated);
@@ -167,9 +167,7 @@ const FilterPanel = ({
       </motion.div>
 
       <motion.div variants={slideUp}>
-        <label className="block text-sm font-medium text-foreground mb-3">
-          Sort By
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-3">Sort By</label>
         <div className="grid grid-cols-2 gap-2">
           {sortOptions.map((option) => (
             <motion.button
@@ -190,9 +188,7 @@ const FilterPanel = ({
       </motion.div>
 
       <motion.div variants={slideUp}>
-        <label className="block text-sm font-medium text-foreground mb-3">
-          Genres
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-3">Genres</label>
         <div className="flex flex-wrap gap-2">
           {availableGenres.map((genre) => (
             <motion.button
@@ -213,9 +209,7 @@ const FilterPanel = ({
       </motion.div>
 
       <motion.div variants={slideUp}>
-        <label className="block text-sm font-medium text-foreground mb-3">
-          Minimum Rating
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-3">Minimum Rating</label>
         <div className="flex items-center space-x-2">
           {[1, 2, 3, 4, 5].map((rating) => (
             <motion.button
@@ -231,7 +225,8 @@ const FilterPanel = ({
                 variant={rating <= localFilters.minRating ? 'solid' : 'outline'}
                 className={
                   rating <= localFilters.minRating
-                    ? 'text-accent' :'text-muted-foreground hover:text-accent'
+                    ? 'text-accent'
+                    : 'text-muted-foreground hover:text-accent'
                 }
               />
             </motion.button>
@@ -301,11 +296,7 @@ const FilterPanel = ({
     );
   }
 
-  return (
-    <div className="bg-card border border-border rounded-lg p-6">
-      {content}
-    </div>
-  );
+  return <div className="bg-card border border-border rounded-lg p-6">{content}</div>;
 };
 
 export default FilterPanel;

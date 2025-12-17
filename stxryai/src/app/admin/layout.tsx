@@ -5,11 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
   const router = useRouter();
 
@@ -46,9 +42,7 @@ export default function AdminLayout({
           </ul>
         </nav>
       </aside>
-      <main className="flex-1 p-8">
-        {children}
-      </main>
+      <main className="flex-1 p-8">{children}</main>
     </div>
   );
 }

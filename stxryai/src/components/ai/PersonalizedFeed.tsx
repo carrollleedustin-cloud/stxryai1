@@ -38,21 +38,23 @@ export default function PersonalizedFeed({
   onStoryClick,
   onBookmark,
   onDismiss,
-  loading = false
+  loading = false,
 }: PersonalizedFeedProps) {
-  const [selectedCategory, setSelectedCategory] = useState<'all' | 'personalized' | 'trending' | 'new'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<
+    'all' | 'personalized' | 'trending' | 'new'
+  >('all');
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   const categories = [
     { id: 'all', label: 'For You', icon: 'SparklesIcon', color: 'text-purple-500' },
     { id: 'personalized', label: 'Personalized', icon: 'UserIcon', color: 'text-blue-500' },
     { id: 'trending', label: 'Trending', icon: 'FireIcon', color: 'text-orange-500' },
-    { id: 'new', label: 'New Releases', icon: 'BoltIcon', color: 'text-green-500' }
+    { id: 'new', label: 'New Releases', icon: 'BoltIcon', color: 'text-green-500' },
   ];
 
   const filteredRecommendations = recommendations
-    .filter(rec => !dismissedIds.has(rec.story.id))
-    .filter(rec => {
+    .filter((rec) => !dismissedIds.has(rec.story.id))
+    .filter((rec) => {
       if (selectedCategory === 'all') return true;
       if (selectedCategory === 'personalized') return rec.category === 'personalized';
       if (selectedCategory === 'trending') return rec.story.isTrending;
@@ -61,16 +63,20 @@ export default function PersonalizedFeed({
     });
 
   const handleDismiss = (storyId: string) => {
-    setDismissedIds(prev => new Set(prev).add(storyId));
+    setDismissedIds((prev) => new Set(prev).add(storyId));
     onDismiss?.(storyId);
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-500';
-      case 'medium': return 'text-yellow-500';
-      case 'hard': return 'text-red-500';
-      default: return 'text-gray-500';
+      case 'easy':
+        return 'text-green-500';
+      case 'medium':
+        return 'text-yellow-500';
+      case 'hard':
+        return 'text-red-500';
+      default:
+        return 'text-gray-500';
     }
   };
 
@@ -83,7 +89,8 @@ export default function PersonalizedFeed({
   const getCategoryBadge = (rec: Recommendation & { story: Story }) => {
     if (rec.story.isNew) return { label: 'NEW', color: 'from-green-500 to-emerald-500' };
     if (rec.story.isTrending) return { label: 'TRENDING', color: 'from-orange-500 to-red-500' };
-    if (rec.category === 'personalized') return { label: 'FOR YOU', color: 'from-purple-500 to-pink-500' };
+    if (rec.category === 'personalized')
+      return { label: 'FOR YOU', color: 'from-purple-500 to-pink-500' };
     return null;
   };
 
@@ -116,7 +123,11 @@ export default function PersonalizedFeed({
                 : 'bg-card border border-border text-muted-foreground hover:bg-muted'
             }`}
           >
-            <Icon name={category.icon} size={16} className={selectedCategory === category.id ? '' : category.color} />
+            <Icon
+              name={category.icon}
+              size={16}
+              className={selectedCategory === category.id ? '' : category.color}
+            />
             {category.label}
           </motion.button>
         ))}
@@ -135,7 +146,11 @@ export default function PersonalizedFeed({
         </div>
       ) : filteredRecommendations.length === 0 ? (
         <div className="text-center py-12 bg-card border border-border rounded-xl">
-          <Icon name="InformationCircleIcon" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+          <Icon
+            name="InformationCircleIcon"
+            size={48}
+            className="mx-auto mb-4 text-muted-foreground opacity-50"
+          />
           <h3 className="text-lg font-bold text-foreground mb-2">No recommendations available</h3>
           <p className="text-sm text-muted-foreground">
             Try reading more stories to get personalized recommendations

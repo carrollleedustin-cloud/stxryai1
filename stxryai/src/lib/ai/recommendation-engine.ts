@@ -138,8 +138,7 @@ export class RecommendationEngine {
     const discoveryStories = availableStories
       .filter(
         (story) =>
-          !userProfile.readingHistory.includes(story.id) &&
-          (genreCounts.get(story.genre) || 0) < 3
+          !userProfile.readingHistory.includes(story.id) && (genreCounts.get(story.genre) || 0) < 3
       )
       .filter((story) => story.averageRating >= 4.0)
       .sort((a, b) => {
@@ -165,11 +164,7 @@ export class RecommendationEngine {
   ): Promise<Story[]> {
     const inProgressStories = Array.from(progressData.entries())
       .filter(([storyId, progress]) => {
-        return (
-          progress > 0 &&
-          progress < 100 &&
-          !userProfile.completedStories.includes(storyId)
-        );
+        return progress > 0 && progress < 100 && !userProfile.completedStories.includes(storyId);
       })
       .map(([storyId, progress]) => {
         const story = stories.find((s) => s.id === storyId);

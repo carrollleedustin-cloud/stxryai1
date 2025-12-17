@@ -151,7 +151,10 @@ const AuthenticationInteractive = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <OAuthButtons onOAuthClick={(provider) => handleOAuthClick(provider as 'google' | 'discord')} isLoading={isLoading} />
+                  <OAuthButtons
+                    onOAuthClick={(provider) => handleOAuthClick(provider as 'google' | 'discord')}
+                    isLoading={isLoading}
+                  />
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
@@ -165,11 +168,7 @@ const AuthenticationInteractive = () => {
                   </div>
 
                   {activeTab === 'login' ? (
-                    <LoginForm
-                      onSubmit={handleLoginSubmit}
-                      isLoading={isLoading}
-                      error={error}
-                    />
+                    <LoginForm onSubmit={handleLoginSubmit} isLoading={isLoading} error={error} />
                   ) : (
                     <RegisterForm
                       onSubmit={handleRegisterSubmit}

@@ -89,13 +89,9 @@ export default function EnergyWidget({
             <span className={`font-bold ${isPremium ? 'text-yellow-400' : 'text-white'}`}>
               {isPremium ? '∞' : currentEnergy}
             </span>
-            {!isPremium && (
-              <span className="text-gray-400 text-sm">/ {maxEnergy}</span>
-            )}
+            {!isPremium && <span className="text-gray-400 text-sm">/ {maxEnergy}</span>}
           </div>
-          {isPremium && (
-            <span className="text-xs text-yellow-400">Premium</span>
-          )}
+          {isPremium && <span className="text-xs text-yellow-400">Premium</span>}
         </div>
       </div>
     );
@@ -148,9 +144,14 @@ export default function EnergyWidget({
         <div className="mb-4">
           <div className="h-3 bg-gray-700 rounded-full overflow-hidden">
             <motion.div
+              role="progressbar"
+              aria-valuenow={Math.round(energyPercentage)}
+              aria-valuemin={0}
+              aria-valuemax={100}
               initial={{ width: 0 }}
               animate={{ width: `${energyPercentage}%` }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
+              style={{ width: `${energyPercentage}%` }}
               className={`h-full bg-gradient-to-r ${getEnergyColor()} relative`}
             >
               {/* Shimmer effect */}
@@ -176,15 +177,11 @@ export default function EnergyWidget({
           <>
             <div className="bg-white/5 rounded-lg p-3 border border-white/10">
               <div className="text-xs text-gray-400 mb-1">Recharge Rate</div>
-              <div className="text-sm font-semibold text-white">
-                +{rechargeRate} / hour
-              </div>
+              <div className="text-sm font-semibold text-white">+{rechargeRate} / hour</div>
             </div>
             <div className="bg-white/5 rounded-lg p-3 border border-white/10">
               <div className="text-xs text-gray-400 mb-1">Next Recharge</div>
-              <div className="text-sm font-semibold text-white">
-                {timeUntilRecharge || 'Full'}
-              </div>
+              <div className="text-sm font-semibold text-white">{timeUntilRecharge || 'Full'}</div>
             </div>
           </>
         )}
@@ -238,22 +235,49 @@ export default function EnergyWidget({
       )}
 
       {/* CTA Button */}
-      {!isPremium && (
-        <Link href="/landing-page#pricing">
+      {!isPremium &&
+        // If an onUpgrade handler is provided (tests or custom flows), call it.
+        // Otherwise fall back to the marketing link.
+        (onUpgrade ? (
           <motion.button
+            onClick={onUpgrade}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <div className="flex items-center justify-center gap-2">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
               </svg>
               Get Unlimited Energy
             </div>
           </motion.button>
-        </Link>
-      )}
+        ) : (
+          <Link href="/landing-page#pricing">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Get Unlimited Energy
+              </div>
+            </motion.button>
+          </Link>
+        ))}
     </motion.div>
   );
 }
@@ -285,9 +309,7 @@ export function EnergyBadge({
       <span className={`text-sm font-bold ${isPremium ? 'text-yellow-400' : 'text-white'}`}>
         {isPremium ? '∞' : currentEnergy}
       </span>
-      {!isPremium && (
-        <span className="text-xs text-gray-400">/ {maxEnergy}</span>
-      )}
+      {!isPremium && <span className="text-xs text-gray-400">/ {maxEnergy}</span>}
     </div>
   );
 }

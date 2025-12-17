@@ -18,19 +18,14 @@ interface StoryCollectionSectionProps {
   isPremium: boolean;
 }
 
-const StoryCollectionSection = ({
-  collections,
-  isPremium,
-}: StoryCollectionSectionProps) => {
+const StoryCollectionSection = ({ collections, isPremium }: StoryCollectionSectionProps) => {
   const [expandedCollection, setExpandedCollection] = useState<string | null>(null);
 
   if (collections.length === 0) {
     return (
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-heading font-semibold text-foreground">
-            My Collections
-          </h2>
+          <h2 className="text-xl font-heading font-semibold text-foreground">My Collections</h2>
           <Icon name="FolderIcon" size={24} className="text-primary" />
         </div>
         <div className="text-center py-8">
@@ -51,9 +46,7 @@ const StoryCollectionSection = ({
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-heading font-semibold text-foreground">
-          My Collections
-        </h2>
+        <h2 className="text-xl font-heading font-semibold text-foreground">My Collections</h2>
         <div className="flex items-center space-x-2">
           <Icon name="FolderIcon" size={24} className="text-primary" />
           {isPremium && (
@@ -72,9 +65,7 @@ const StoryCollectionSection = ({
           >
             <button
               onClick={() =>
-                setExpandedCollection(
-                  expandedCollection === collection.id ? null : collection.id
-                )
+                setExpandedCollection(expandedCollection === collection.id ? null : collection.id)
               }
               className="w-full p-4 flex items-center space-x-4 hover:bg-muted/30 transition-smooth"
             >
@@ -99,7 +90,11 @@ const StoryCollectionSection = ({
                     {collection.name}
                   </h3>
                   {collection.isPublic && (
-                    <Icon name="GlobeAltIcon" size={14} className="text-muted-foreground flex-shrink-0" />
+                    <Icon
+                      name="GlobeAltIcon"
+                      size={14}
+                      className="text-muted-foreground flex-shrink-0"
+                    />
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground line-clamp-1">

@@ -58,7 +58,7 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
       neutral: 'text-gray-600',
       friendly: 'text-green-600',
       mentor: 'text-blue-600',
-      romantic: 'text-pink-600'
+      romantic: 'text-pink-600',
     };
     return colors[type] || colors.neutral;
   };
@@ -70,7 +70,7 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
       neutral: '🤝',
       friendly: '😊',
       mentor: '🎓',
-      romantic: '❤️'
+      romantic: '❤️',
     };
     return icons[type] || icons.neutral;
   };
@@ -106,20 +106,16 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
             onClick={() => setSelectedNPC(npc)}
             className={`text-left p-4 rounded-lg border-2 transition-all ${
               selectedNPC?.id === npc.id
-                ? 'border-indigo-600 bg-indigo-50' :'border-gray-200 hover:border-indigo-300'
+                ? 'border-indigo-600 bg-indigo-50'
+                : 'border-gray-200 hover:border-indigo-300'
             }`}
           >
             <h4 className="font-semibold text-lg text-gray-900">{npc.npc_name}</h4>
-            {npc.npc_role && (
-              <p className="text-sm text-gray-600 capitalize">{npc.npc_role}</p>
-            )}
+            {npc.npc_role && <p className="text-sm text-gray-600 capitalize">{npc.npc_role}</p>}
             {npc.personality_traits && npc.personality_traits.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {npc.personality_traits.slice(0, 3).map((trait, idx) => (
-                  <span
-                    key={idx}
-                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
-                  >
+                  <span key={idx} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                     {trait}
                   </span>
                 ))}
@@ -133,28 +129,29 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
       {selectedNPC && (
         <div className="border-t pt-6 space-y-6">
           <div>
-            <h4 className="font-semibold text-xl text-gray-900 mb-3">
-              {selectedNPC.npc_name}
-            </h4>
-            
+            <h4 className="font-semibold text-xl text-gray-900 mb-3">{selectedNPC.npc_name}</h4>
+
             {/* Relationship Status */}
             {relationshipStatus && user && (
               <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700">Relationship</span>
-                  <span className={`text-lg font-bold ${getRelationshipColor(relationshipStatus.relationshipType)}`}>
-                    {getRelationshipIcon(relationshipStatus.relationshipType)} {relationshipStatus.relationshipType}
+                  <span
+                    className={`text-lg font-bold ${getRelationshipColor(relationshipStatus.relationshipType)}`}
+                  >
+                    {getRelationshipIcon(relationshipStatus.relationshipType)}{' '}
+                    {relationshipStatus.relationshipType}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                   <div
                     className="bg-indigo-600 h-2 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, Math.max(0, (relationshipStatus.cumulativeScore + 30) * 100 / 60))}%` }}
+                    style={{
+                      width: `${Math.min(100, Math.max(0, ((relationshipStatus.cumulativeScore + 30) * 100) / 60))}%`,
+                    }}
                   ></div>
                 </div>
-                <p className="text-xs text-gray-600">
-                  Score: {relationshipStatus.cumulativeScore}
-                </p>
+                <p className="text-xs text-gray-600">Score: {relationshipStatus.cumulativeScore}</p>
               </div>
             )}
 
@@ -242,7 +239,8 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
 
           {npcMemories.length === 0 && user && (
             <p className="text-sm text-gray-500 text-center py-4">
-              No interactions with {selectedNPC.npc_name} yet. Your choices will shape your relationship.
+              No interactions with {selectedNPC.npc_name} yet. Your choices will shape your
+              relationship.
             </p>
           )}
 

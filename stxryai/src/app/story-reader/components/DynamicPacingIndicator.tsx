@@ -9,7 +9,10 @@ interface DynamicPacingIndicatorProps {
   chapterId?: string;
 }
 
-export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPacingIndicatorProps) {
+export default function DynamicPacingIndicator({
+  storyId,
+  chapterId,
+}: DynamicPacingIndicatorProps) {
   const { user } = useAuth();
   const [pacingInfo, setPacingInfo] = useState<{
     recommendedPacing: string;
@@ -38,7 +41,7 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
     const colors: Record<string, string> = {
       slow: 'bg-blue-500',
       balanced: 'bg-green-500',
-      fast: 'bg-orange-500'
+      fast: 'bg-orange-500',
     };
     return colors[pacing] || colors.balanced;
   };
@@ -49,7 +52,7 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
       low: 'text-orange-600',
       medium: 'text-yellow-600',
       high: 'text-green-600',
-      very_high: 'text-blue-600'
+      very_high: 'text-blue-600',
     };
     return colors[level] || colors.medium;
   };
@@ -58,7 +61,7 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
     const icons: Record<string, string> = {
       slow: '🐢',
       balanced: '⚖️',
-      fast: '🐆'
+      fast: '🐆',
     };
     return icons[pacing] || icons.balanced;
   };
@@ -67,7 +70,7 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
     const descriptions: Record<string, string> = {
       slow: 'Rich descriptions and deeper character development ahead',
       balanced: 'A perfect mix of action and storytelling',
-      fast: 'Action-packed scenes with frequent choices coming'
+      fast: 'Action-packed scenes with frequent choices coming',
     };
     return descriptions[pacing] || descriptions.balanced;
   };
@@ -81,9 +84,7 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
           className={`${getPacingColor(pacingInfo.recommendedPacing)} text-white rounded-full p-4 shadow-lg hover:scale-110 transition-transform`}
           title="Show pacing details"
         >
-          <span className="text-2xl">
-            {getPacingIcon(pacingInfo.recommendedPacing)}
-          </span>
+          <span className="text-2xl">{getPacingIcon(pacingInfo.recommendedPacing)}</span>
         </button>
       )}
 
@@ -104,7 +105,9 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600">Current Pacing</span>
-              <span className={`${getPacingColor(pacingInfo.recommendedPacing)} text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1`}>
+              <span
+                className={`${getPacingColor(pacingInfo.recommendedPacing)} text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1`}
+              >
                 {getPacingIcon(pacingInfo.recommendedPacing)}
                 {pacingInfo.recommendedPacing}
               </span>
@@ -118,7 +121,9 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600">Your Engagement</span>
-              <span className={`${getEngagementColor(pacingInfo.engagementLevel)} font-medium text-sm capitalize`}>
+              <span
+                className={`${getEngagementColor(pacingInfo.engagementLevel)} font-medium text-sm capitalize`}
+              >
                 {pacingInfo.engagementLevel.replace('_', ' ')}
               </span>
             </div>
@@ -134,11 +139,11 @@ export default function DynamicPacingIndicator({ storyId, chapterId }: DynamicPa
           <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3">
             <p className="text-xs text-gray-600 mb-1">AI Pacing Adjustment</p>
             <p className="text-sm font-medium text-gray-900">
-              {pacingInfo.adjustmentFactor < 1.0 
+              {pacingInfo.adjustmentFactor < 1.0
                 ? 'Story will move faster based on your engagement'
                 : pacingInfo.adjustmentFactor > 1.0
-                ? 'Story will slow down for richer details'
-                : 'Perfect pacing balance maintained'}
+                  ? 'Story will slow down for richer details'
+                  : 'Perfect pacing balance maintained'}
             </p>
           </div>
 

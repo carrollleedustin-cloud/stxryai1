@@ -41,10 +41,30 @@ const ReportsPage: React.FC = () => {
     <div>
       <h1 className="text-3xl font-bold mb-4">Content Reports</h1>
       <div className="mb-4 flex space-x-2">
-        <button onClick={() => setFilter('pending')} className={`px-4 py-2 rounded ${filter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Pending</button>
-        <button onClick={() => setFilter('addressed')} className={`px-4 py-2 rounded ${filter === 'addressed' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}>Addressed</button>
-        <button onClick={() => setFilter('dismissed')} className={`px-4 py-2 rounded ${filter === 'dismissed' ? 'bg-gray-500 text-white' : 'bg-gray-200'}`}>Dismissed</button>
-        <button onClick={() => setFilter(undefined)} className={`px-4 py-2 rounded ${filter === undefined ? 'bg-gray-800 text-white' : 'bg-gray-200'}`}>All</button>
+        <button
+          onClick={() => setFilter('pending')}
+          className={`px-4 py-2 rounded ${filter === 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+        >
+          Pending
+        </button>
+        <button
+          onClick={() => setFilter('addressed')}
+          className={`px-4 py-2 rounded ${filter === 'addressed' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+        >
+          Addressed
+        </button>
+        <button
+          onClick={() => setFilter('dismissed')}
+          className={`px-4 py-2 rounded ${filter === 'dismissed' ? 'bg-gray-500 text-white' : 'bg-gray-200'}`}
+        >
+          Dismissed
+        </button>
+        <button
+          onClick={() => setFilter(undefined)}
+          className={`px-4 py-2 rounded ${filter === undefined ? 'bg-gray-800 text-white' : 'bg-gray-200'}`}
+        >
+          All
+        </button>
       </div>
 
       {loading && <p>Loading reports...</p>}
@@ -74,8 +94,18 @@ const ReportsPage: React.FC = () => {
                     <button className="text-blue-500 hover:underline mr-2">View Content</button>
                     {report.status === 'pending' && (
                       <>
-                        <button onClick={() => handleUpdateStatus(report.id, 'addressed')} className="text-green-500 hover:underline mr-2">Address</button>
-                        <button onClick={() => handleUpdateStatus(report.id, 'dismissed')} className="text-red-500 hover:underline">Dismiss</button>
+                        <button
+                          onClick={() => handleUpdateStatus(report.id, 'addressed')}
+                          className="text-green-500 hover:underline mr-2"
+                        >
+                          Address
+                        </button>
+                        <button
+                          onClick={() => handleUpdateStatus(report.id, 'dismissed')}
+                          className="text-red-500 hover:underline"
+                        >
+                          Dismiss
+                        </button>
                       </>
                     )}
                   </td>

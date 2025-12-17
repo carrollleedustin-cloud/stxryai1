@@ -28,7 +28,7 @@ export default function Leaderboard({
   entries,
   currentUserId,
   timeframe = 'all-time',
-  onTimeframeChange
+  onTimeframeChange,
 }: LeaderboardProps) {
   const [selectedTimeframe, setSelectedTimeframe] = useState(timeframe);
 
@@ -36,10 +36,10 @@ export default function Leaderboard({
     { value: 'daily' as const, label: 'Daily', icon: 'CalendarDaysIcon' },
     { value: 'weekly' as const, label: 'Weekly', icon: 'CalendarIcon' },
     { value: 'monthly' as const, label: 'Monthly', icon: 'ChartBarIcon' },
-    { value: 'all-time' as const, label: 'All Time', icon: 'TrophyIcon' }
+    { value: 'all-time' as const, label: 'All Time', icon: 'TrophyIcon' },
   ];
 
-  const handleTimeframeChange = (newTimeframe: typeof timeframes[number]['value']) => {
+  const handleTimeframeChange = (newTimeframe: (typeof timeframes)[number]['value']) => {
     setSelectedTimeframe(newTimeframe);
     onTimeframeChange?.(newTimeframe);
   };
@@ -139,14 +139,14 @@ export default function Leaderboard({
                     {medal ? (
                       <span className="text-3xl">{medal}</span>
                     ) : (
-                      <div className="text-2xl font-bold text-muted-foreground">
-                        #{entry.rank}
-                      </div>
+                      <div className="text-2xl font-bold text-muted-foreground">#{entry.rank}</div>
                     )}
                   </div>
 
                   {/* Avatar */}
-                  <div className={`flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br ${rankColor} flex items-center justify-center text-white font-bold`}>
+                  <div
+                    className={`flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br ${rankColor} flex items-center justify-center text-white font-bold`}
+                  >
                     {entry.avatar ? (
                       <img
                         src={entry.avatar}
@@ -154,9 +154,7 @@ export default function Leaderboard({
                         className="w-full h-full rounded-full object-cover"
                       />
                     ) : (
-                      <span className="text-lg">
-                        {entry.displayName.charAt(0).toUpperCase()}
-                      </span>
+                      <span className="text-lg">{entry.displayName.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
 
@@ -201,7 +199,11 @@ export default function Leaderboard({
       {/* Empty State */}
       {entries.length === 0 && (
         <div className="p-12 text-center">
-          <Icon name="TrophyIcon" size={48} className="text-muted-foreground mx-auto mb-3 opacity-50" />
+          <Icon
+            name="TrophyIcon"
+            size={48}
+            className="text-muted-foreground mx-auto mb-3 opacity-50"
+          />
           <p className="text-muted-foreground">No leaderboard data available</p>
         </div>
       )}

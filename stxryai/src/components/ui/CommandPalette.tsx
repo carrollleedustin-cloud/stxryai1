@@ -30,7 +30,7 @@ export default function CommandPalette() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { profile } = useAuth();
-  
+
   const [storyResults, setStoryResults] = useState<Story[]>([]);
   const [userResults, setUserResults] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
@@ -78,15 +78,18 @@ export default function CommandPalette() {
     }
     fetchData();
   }, [debouncedSearch]);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const navigate = useCallback((path: string) => {
-    router.push(path);
-    setOpen(false);
-  }, [router]);
+  const navigate = useCallback(
+    (path: string) => {
+      router.push(path);
+      setOpen(false);
+    },
+    [router]
+  );
 
   const toggleTheme = useCallback(() => {
     const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system'];
@@ -139,15 +142,17 @@ export default function CommandPalette() {
                   <Command.Empty className="py-6 text-center text-muted-foreground">
                     No results found.
                   </Command.Empty>
-                  
-                  {loading && <div className="py-6 text-center text-muted-foreground">Searching...</div>}
+
+                  {loading && (
+                    <div className="py-6 text-center text-muted-foreground">Searching...</div>
+                  )}
 
                   {!loading && storyResults.length > 0 && (
                     <Command.Group
                       heading="Stories"
                       className="text-xs font-semibold text-muted-foreground px-2 py-2"
                     >
-                      {storyResults.map(story => (
+                      {storyResults.map((story) => (
                         <CommandItem
                           key={story.id}
                           icon="BookOpenIcon"
@@ -164,13 +169,14 @@ export default function CommandPalette() {
                       heading="Users"
                       className="text-xs font-semibold text-muted-foreground px-2 py-2"
                     >
-                      {userResults.map(user => (
+                      {userResults.map((user) => (
                         <CommandItem
                           key={user.id}
                           icon="UserCircleIcon"
                           onSelect={() => navigate(`/user-profile/${user.id}`)}
                         >
-                          {user.display_name} <span className="text-muted-foreground">@{user.username}</span>
+                          {user.display_name}{' '}
+                          <span className="text-muted-foreground">@{user.username}</span>
                         </CommandItem>
                       ))}
                     </Command.Group>
@@ -183,31 +189,60 @@ export default function CommandPalette() {
                           heading="Admin"
                           className="text-xs font-semibold text-muted-foreground px-2 py-2"
                         >
-                          <CommandItem icon="ShieldCheckIcon" onSelect={() => navigate('/admin')}>Admin Dashboard</CommandItem>
-                          <CommandItem icon="FlagIcon" onSelect={() => navigate('/admin/reports')}>View Reports</CommandItem>
+                          <CommandItem icon="ShieldCheckIcon" onSelect={() => navigate('/admin')}>
+                            Admin Dashboard
+                          </CommandItem>
+                          <CommandItem icon="FlagIcon" onSelect={() => navigate('/admin/reports')}>
+                            View Reports
+                          </CommandItem>
                         </Command.Group>
                       )}
                       <Command.Group
                         heading="Navigation"
                         className="text-xs font-semibold text-muted-foreground px-2 py-2"
                       >
-                        <CommandItem icon="HomeIcon" onSelect={() => navigate('/')}>Home</CommandItem>
-                        <CommandItem icon="BookOpenIcon" onSelect={() => navigate('/story-library')}>Story Library</CommandItem>
-                        <CommandItem icon="UserCircleIcon" onSelect={() => navigate('/user-dashboard')}>Dashboard</CommandItem>
-                        <CommandItem icon="Cog6ToothIcon" onSelect={() => navigate('/settings')}>Settings</CommandItem>
+                        <CommandItem icon="HomeIcon" onSelect={() => navigate('/')}>
+                          Home
+                        </CommandItem>
+                        <CommandItem
+                          icon="BookOpenIcon"
+                          onSelect={() => navigate('/story-library')}
+                        >
+                          Story Library
+                        </CommandItem>
+                        <CommandItem
+                          icon="UserCircleIcon"
+                          onSelect={() => navigate('/user-dashboard')}
+                        >
+                          Dashboard
+                        </CommandItem>
+                        <CommandItem icon="Cog6ToothIcon" onSelect={() => navigate('/settings')}>
+                          Settings
+                        </CommandItem>
                       </Command.Group>
                       <Command.Group
                         heading="Actions"
                         className="text-xs font-semibold text-muted-foreground px-2 py-2"
                       >
-                        <CommandItem icon="PencilSquareIcon" onSelect={() => navigate('/story-creation-studio')}>Create New Story</CommandItem>
+                        <CommandItem
+                          icon="PencilSquareIcon"
+                          onSelect={() => navigate('/story-creation-studio')}
+                        >
+                          Create New Story
+                        </CommandItem>
                       </Command.Group>
                       <Command.Group
                         heading="Appearance"
                         className="text-xs font-semibold text-muted-foreground px-2 py-2"
                       >
                         <CommandItem
-                          icon={theme === 'dark' ? 'MoonIcon' : theme === 'light' ? 'SunIcon' : 'ComputerDesktopIcon'}
+                          icon={
+                            theme === 'dark'
+                              ? 'MoonIcon'
+                              : theme === 'light'
+                                ? 'SunIcon'
+                                : 'ComputerDesktopIcon'
+                          }
                           onSelect={toggleTheme}
                         >
                           Toggle Theme ({theme})
@@ -217,8 +252,15 @@ export default function CommandPalette() {
                         heading="Help & Support"
                         className="text-xs font-semibold text-muted-foreground px-2 py-2"
                       >
-                        <CommandItem icon="QuestionMarkCircleIcon" onSelect={() => navigate('/help')}>Help Center</CommandItem>
-                        <CommandItem icon="KeyIcon" onSelect={() => {}}>Keyboard Shortcuts</CommandItem>
+                        <CommandItem
+                          icon="QuestionMarkCircleIcon"
+                          onSelect={() => navigate('/help')}
+                        >
+                          Help Center
+                        </CommandItem>
+                        <CommandItem icon="KeyIcon" onSelect={() => {}}>
+                          Keyboard Shortcuts
+                        </CommandItem>
                       </Command.Group>
                     </>
                   )}

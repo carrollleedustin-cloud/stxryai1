@@ -57,11 +57,7 @@ export function AIWritingAssistant({
     }
   };
 
-  const handleGenerateDialogue = async (
-    character: string,
-    traits: string[],
-    situation: string
-  ) => {
+  const handleGenerateDialogue = async (character: string, traits: string[], situation: string) => {
     setIsLoading(true);
     try {
       const result = await aiStoryGenerator.generateDialogue(
@@ -195,9 +191,7 @@ function SuggestionsMode({
 }: any) {
   return (
     <div className="space-y-4">
-      <p className="text-gray-400 text-sm">
-        Get AI-powered suggestions to improve your writing.
-      </p>
+      <p className="text-gray-400 text-sm">Get AI-powered suggestions to improve your writing.</p>
 
       <button
         onClick={onGetSuggestions}

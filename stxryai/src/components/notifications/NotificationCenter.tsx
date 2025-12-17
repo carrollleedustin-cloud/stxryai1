@@ -36,18 +36,14 @@ export default function NotificationCenter({
   const [filter, setFilter] = useState<'all' | NotificationType>('all');
   const [showPanel, setShowPanel] = useState(false);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-  const filteredNotifications = filter === 'all'
-    ? notifications
-    : notifications.filter(n => n.type === filter);
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const filteredNotifications =
+    filter === 'all' ? notifications : notifications.filter((n) => n.type === filter);
 
   return (
     <>
       {/* Notification Bell */}
-      <NotificationBell
-        count={unreadCount}
-        onClick={() => setShowPanel(!showPanel)}
-      />
+      <NotificationBell count={unreadCount} onClick={() => setShowPanel(!showPanel)} />
 
       {/* Notification Panel */}
       <AnimatePresence>
@@ -117,10 +113,7 @@ export default function NotificationCenter({
                     Mark all as read
                   </button>
                   <span className="text-gray-600">•</span>
-                  <button
-                    onClick={onClearAll}
-                    className="text-sm text-gray-400 hover:text-white"
-                  >
+                  <button onClick={onClearAll} className="text-sm text-gray-400 hover:text-white">
                     Clear all
                   </button>
                 </div>
@@ -152,13 +145,7 @@ export default function NotificationCenter({
 }
 
 // Notification Bell Component
-export function NotificationBell({
-  count = 0,
-  onClick,
-}: {
-  count?: number;
-  onClick?: () => void;
-}) {
+export function NotificationBell({ count = 0, onClick }: { count?: number; onClick?: () => void }) {
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
@@ -216,11 +203,16 @@ function NotificationItem({
 
   const getTypeColor = (type: NotificationType) => {
     switch (type) {
-      case 'story': return 'from-blue-600 to-cyan-600';
-      case 'social': return 'from-purple-600 to-pink-600';
-      case 'achievement': return 'from-yellow-600 to-orange-600';
-      case 'system': return 'from-gray-600 to-gray-700';
-      default: return 'from-purple-600 to-pink-600';
+      case 'story':
+        return 'from-blue-600 to-cyan-600';
+      case 'social':
+        return 'from-purple-600 to-pink-600';
+      case 'achievement':
+        return 'from-yellow-600 to-orange-600';
+      case 'system':
+        return 'from-gray-600 to-gray-700';
+      default:
+        return 'from-purple-600 to-pink-600';
     }
   };
 
@@ -247,14 +239,18 @@ function NotificationItem({
     >
       <div className="flex gap-3">
         {/* Icon */}
-        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${getTypeColor(notification.type)} flex items-center justify-center text-lg flex-shrink-0`}>
+        <div
+          className={`w-10 h-10 rounded-lg bg-gradient-to-br ${getTypeColor(notification.type)} flex items-center justify-center text-lg flex-shrink-0`}
+        >
           {notification.icon}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h4 className={`font-semibold ${!notification.read ? 'text-white' : 'text-gray-300'} line-clamp-1`}>
+            <h4
+              className={`font-semibold ${!notification.read ? 'text-white' : 'text-gray-300'} line-clamp-1`}
+            >
               {notification.title}
             </h4>
             {!notification.read && (
@@ -262,14 +258,10 @@ function NotificationItem({
             )}
           </div>
 
-          <p className="text-sm text-gray-400 line-clamp-2 mb-2">
-            {notification.message}
-          </p>
+          <p className="text-sm text-gray-400 line-clamp-2 mb-2">{notification.message}</p>
 
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              {timeAgo(notification.timestamp)}
-            </span>
+            <span className="text-xs text-gray-500">{timeAgo(notification.timestamp)}</span>
 
             {notification.actionUrl && (
               <Link href={notification.actionUrl}>
@@ -331,9 +323,7 @@ function EmptyNotifications({ filter }: { filter: string }) {
         {filter === 'all' ? 'No Notifications' : `No ${filter} notifications`}
       </h3>
       <p className="text-gray-400 text-sm">
-        {filter === 'all'
-          ? "You're all caught up!"
-          : `No ${filter} notifications at the moment`}
+        {filter === 'all' ? "You're all caught up!" : `No ${filter} notifications at the moment`}
       </p>
     </div>
   );

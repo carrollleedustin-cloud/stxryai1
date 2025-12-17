@@ -7,14 +7,22 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { storyStarters, getRandomStarters, generatePromptFromStarter, type StoryStarter } from '@/lib/story/ai-starters';
+import {
+  storyStarters,
+  getRandomStarters,
+  generatePromptFromStarter,
+  type StoryStarter,
+} from '@/lib/story/ai-starters';
 
 interface OneClickStoryCreationProps {
   onCreateStory: (storyData: any) => void;
   className?: string;
 }
 
-export default function OneClickStoryCreation({ onCreateStory, className = '' }: OneClickStoryCreationProps) {
+export default function OneClickStoryCreation({
+  onCreateStory,
+  className = '',
+}: OneClickStoryCreationProps) {
   const [selectedStarter, setSelectedStarter] = useState<StoryStarter | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -34,7 +42,7 @@ export default function OneClickStoryCreation({ onCreateStory, className = '' }:
         estimatedChapters: parseInt(starter.estimatedLength.split('-')[0]),
         aiPrompt: generatePromptFromStarter(starter),
         isQuickCreated: true,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       };
 
       onCreateStory(storyData);
@@ -54,24 +62,22 @@ export default function OneClickStoryCreation({ onCreateStory, className = '' }:
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {getRandomStarters(6).map((starter) => (
-          <motion.div
-            key={starter.id}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className="relative"
-          >
+          <motion.div key={starter.id} whileHover={{ scale: 1.02, y: -4 }} className="relative">
             <div className="p-4 rounded-lg border-2 border-border hover:border-primary/50 transition-all bg-card">
               {/* Genre Badge */}
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-medium px-2 py-1 rounded bg-primary/10 text-primary">
                   {starter.genre}
                 </span>
-                <span className={`text-xs px-2 py-1 rounded ${
-                  starter.difficulty === 'easy'
-                    ? 'bg-green-500/20 text-green-600 dark:text-green-400'
-                    : starter.difficulty === 'medium'
-                    ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
-                    : 'bg-red-500/20 text-red-600 dark:text-red-400'
-                }`}>
+                <span
+                  className={`text-xs px-2 py-1 rounded ${
+                    starter.difficulty === 'easy'
+                      ? 'bg-green-500/20 text-green-600 dark:text-green-400'
+                      : starter.difficulty === 'medium'
+                        ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                        : 'bg-red-500/20 text-red-600 dark:text-red-400'
+                  }`}
+                >
                   {starter.difficulty}
                 </span>
               </div>
@@ -139,7 +145,10 @@ export default function OneClickStoryCreation({ onCreateStory, className = '' }:
  * Prompt Input Component
  * Quick text input for custom story ideas
  */
-export function QuickPromptInput({ onSubmit, className = '' }: {
+export function QuickPromptInput({
+  onSubmit,
+  className = '',
+}: {
   onSubmit: (prompt: string) => void;
   className?: string;
 }) {
@@ -164,7 +173,7 @@ export function QuickPromptInput({ onSubmit, className = '' }: {
     'A detective who can read memories from objects',
     'Time travelers competing in a race through history',
     'A chef who cooks magical meals with real effects',
-    'Siblings who discover their dreams are connected'
+    'Siblings who discover their dreams are connected',
   ];
 
   return (
@@ -214,7 +223,9 @@ export function QuickPromptInput({ onSubmit, className = '' }: {
 
           <button
             type="button"
-            onClick={() => setPrompt(examplePrompts[Math.floor(Math.random() * examplePrompts.length)])}
+            onClick={() =>
+              setPrompt(examplePrompts[Math.floor(Math.random() * examplePrompts.length)])
+            }
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Try an example
@@ -245,7 +256,10 @@ export function QuickPromptInput({ onSubmit, className = '' }: {
  * Story From Title Component
  * Generate complete story from just a title
  */
-export function StoryFromTitle({ onCreate, className = '' }: {
+export function StoryFromTitle({
+  onCreate,
+  className = '',
+}: {
   onCreate: (title: string) => void;
   className?: string;
 }) {

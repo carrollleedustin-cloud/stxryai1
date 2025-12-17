@@ -12,7 +12,7 @@ export const toast = {
   success: (message: string, description?: string, options?: ExternalToast) => {
     return sonnerToast.success(message, {
       description,
-      ...options
+      ...options,
     });
   },
 
@@ -22,7 +22,7 @@ export const toast = {
   error: (message: string, description?: string, options?: ExternalToast) => {
     return sonnerToast.error(message, {
       description,
-      ...options
+      ...options,
     });
   },
 
@@ -32,7 +32,7 @@ export const toast = {
   info: (message: string, description?: string, options?: ExternalToast) => {
     return sonnerToast.info(message, {
       description,
-      ...options
+      ...options,
     });
   },
 
@@ -42,7 +42,7 @@ export const toast = {
   warning: (message: string, description?: string, options?: ExternalToast) => {
     return sonnerToast.warning(message, {
       description,
-      ...options
+      ...options,
     });
   },
 
@@ -52,14 +52,14 @@ export const toast = {
   loading: (message: string, description?: string, options?: ExternalToast) => {
     return sonnerToast.loading(message, {
       description,
-      ...options
+      ...options,
     });
   },
 
   /**
    * Promise-based toast with loading, success, and error states
    */
-  promise: <T,>(
+  promise: <T>(
     promise: Promise<T>,
     msgs: {
       loading: string;
@@ -89,7 +89,7 @@ export const toast = {
    */
   dismissAll: () => {
     sonnerToast.dismiss();
-  }
+  },
 };
 
 /**
@@ -104,5 +104,5 @@ export const toastMessages = {
   copyError: 'Failed to copy',
   networkError: 'Network error. Please check your connection.',
   unauthorized: 'You need to be logged in to do that',
-  permissionDenied: 'You don\'t have permission to do that'
+  permissionDenied: "You don't have permission to do that",
 };

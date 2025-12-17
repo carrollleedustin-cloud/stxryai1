@@ -23,21 +23,21 @@ export default function ReadingModeControls({
   theme,
   onThemeChange,
   fontFamily,
-  onFontFamilyChange
+  onFontFamilyChange,
 }: ReadingModeControlsProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const themes = [
     { value: 'light', label: 'Light', bg: 'bg-white', text: 'text-black' },
     { value: 'dark', label: 'Dark', bg: 'bg-gray-900', text: 'text-white' },
-    { value: 'sepia', label: 'Sepia', bg: 'bg-amber-50', text: 'text-amber-900' }
+    { value: 'sepia', label: 'Sepia', bg: 'bg-amber-50', text: 'text-amber-900' },
   ] as const;
 
   const fonts = [
     { value: 'serif', label: 'Serif', font: 'font-serif' },
     { value: 'sans', label: 'Sans', font: 'font-sans' },
     { value: 'mono', label: 'Mono', font: 'font-mono' },
-    { value: 'dyslexic', label: 'Dyslexic', font: 'font-sans' }
+    { value: 'dyslexic', label: 'Dyslexic', font: 'font-sans' },
   ];
 
   return (
@@ -117,9 +117,7 @@ export default function ReadingModeControls({
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onThemeChange(t.value)}
                     className={`p-4 rounded-lg border-2 transition-colors ${
-                      theme === t.value
-                        ? 'border-primary'
-                        : 'border-border'
+                      theme === t.value ? 'border-primary' : 'border-border'
                     } ${t.bg}`}
                   >
                     <div className={`text-sm font-medium ${t.text}`}>{t.label}</div>

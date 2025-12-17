@@ -108,16 +108,12 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
       >
         <motion.div
           animate={{
-            scale: showSuggestions && query ? 1.05 : 1
+            scale: showSuggestions && query ? 1.05 : 1,
           }}
           transition={{ duration: 0.2 }}
           className="absolute left-4 top-1/2 -translate-y-1/2"
         >
-          <Icon
-            name="MagnifyingGlassIcon"
-            size={20}
-            className="text-muted-foreground"
-          />
+          <Icon name="MagnifyingGlassIcon" size={20} className="text-muted-foreground" />
         </motion.div>
 
         <input
@@ -176,10 +172,7 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
                   onClick={() => handleSearch(suggestion.title)}
                   className="w-full flex items-center space-x-3 px-4 py-3 transition-colors text-left"
                 >
-                  <motion.div
-                    whileHover={{ rotate: 360 }}
-                    transition={{ duration: 0.3 }}
-                  >
+                  <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.3 }}>
                     <Icon
                       name={getTypeIcon(suggestion.type)}
                       size={18}
@@ -187,14 +180,16 @@ const SearchBar = ({ onSearch, isPremium }: SearchBarProps) => {
                     />
                   </motion.div>
                   <div className="flex-1">
-                    <span className="text-sm font-medium text-foreground">
-                      {suggestion.title}
-                    </span>
+                    <span className="text-sm font-medium text-foreground">{suggestion.title}</span>
                     <span className="ml-2 text-xs text-muted-foreground capitalize">
                       {suggestion.type}
                     </span>
                   </div>
-                  <Icon name="ArrowRightIcon" size={14} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <Icon
+                    name="ArrowRightIcon"
+                    size={14}
+                    className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
                 </motion.button>
               ))}
             </motion.div>

@@ -34,7 +34,7 @@ const FriendsList: React.FC = () => {
           userActivityService.getUserFriends(user.id),
           userActivityService.getPendingFriendRequests(user.id),
         ]);
-        
+
         setFriends(friendsData as Friend[]);
         setPendingRequests(requestsData);
       } catch (error) {
@@ -94,8 +94,8 @@ const FriendsList: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     {request.requester?.avatar_url ? (
-                      <img 
-                        src={request.requester.avatar_url} 
+                      <img
+                        src={request.requester.avatar_url}
                         alt={request.requester.display_name || 'User avatar'}
                         className="w-10 h-10 rounded-full object-cover"
                       />
@@ -128,13 +128,11 @@ const FriendsList: React.FC = () => {
 
       {/* Friends List */}
       <div>
-        <h3 className="text-lg font-semibold mb-4 text-gray-900">
-          Friends ({friends.length})
-        </h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">Friends ({friends.length})</h3>
         {friends.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <p className="text-gray-500 mb-4">You haven't added any friends yet</p>
-            <Link 
+            <Link
               href="/community-hub"
               className="inline-block px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
@@ -144,15 +142,15 @@ const FriendsList: React.FC = () => {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {friends.map((friendship) => (
-              <Link 
+              <Link
                 key={friendship.id}
                 href={`/user-profile?userId=${friendship.friend.id}`}
                 className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-4"
               >
                 <div className="flex items-center space-x-3">
                   {friendship.friend.avatar_url ? (
-                    <img 
-                      src={friendship.friend.avatar_url} 
+                    <img
+                      src={friendship.friend.avatar_url}
                       alt={friendship.friend.display_name || 'User avatar'}
                       className="w-12 h-12 rounded-full object-cover"
                     />

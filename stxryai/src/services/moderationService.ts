@@ -12,7 +12,7 @@ export const moderationService = {
   async getReports(status?: ReportStatus): Promise<Report[]> {
     let query = supabase.from('reported_content').select(`
       *,
-      reporter:users!reporter_id (
+      reporter:users!reported_by (
         id,
         display_name,
         avatar_url
@@ -44,15 +44,17 @@ export const moderationService = {
   },
 
   async submitReport(payload: SubmitReportPayload): Promise<void> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       throw new Error('You must be logged in to report content.');
     }
-  
+
     const { data, error } = await insertReportedContent({
-      reporter_id: user.id,
-      content_id: payload.contentId,
-      content_type: payload.contentType,
+      reported_by: user.id,
+      target_table: payload.contentType,
+      target_id: payload.contentId,
       reason: payload.reason,
     });
 
@@ -62,6 +64,6 @@ export const moderationService = {
     }
     return;
   },
-  
+
   // More functions for moderation actions will be added here
 };

@@ -3,11 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import CharacterRelationshipGraph from '@/components/personalization/CharacterRelationshipGraph';
-import { getUserThemes, getActiveTheme, createTheme, setActiveTheme, deleteTheme, getAchievementTiers, getDiscoveryPreferences, getReceivedFeedback, UserUITheme, CharacterRelationship, AchievementTier, DiscoveryPreferences } from '@/services/personalizationService';
+import {
+  getUserThemes,
+  getActiveTheme,
+  createTheme,
+  setActiveTheme,
+  deleteTheme,
+  getAchievementTiers,
+  getDiscoveryPreferences,
+  getReceivedFeedback,
+  UserUITheme,
+  CharacterRelationship,
+  AchievementTier,
+  DiscoveryPreferences,
+} from '@/services/personalizationService';
 
 export default function PersonalizationStudio() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'themes' | 'relationships' | 'achievements' | 'discovery' | 'feedback'>('themes');
+  const [activeTab, setActiveTab] = useState<
+    'themes' | 'relationships' | 'achievements' | 'discovery' | 'feedback'
+  >('themes');
   const [loading, setLoading] = useState(true);
 
   // State for different features
@@ -25,7 +40,7 @@ export default function PersonalizationStudio() {
     secondary: '#8b5cf6',
     accent: '#ec4899',
     background: '#ffffff',
-    text: '#1f2937'
+    text: '#1f2937',
   });
 
   useEffect(() => {
@@ -36,7 +51,7 @@ export default function PersonalizationStudio() {
 
   const loadData = async () => {
     if (!user?.id) return;
-    
+
     setLoading(true);
     try {
       switch (activeTab) {
@@ -78,7 +93,7 @@ export default function PersonalizationStudio() {
         theme_name: newThemeName,
         theme_category: 'color_palette',
         color_palette: selectedColorPalette,
-        is_active: false
+        is_active: false,
       });
 
       setUserThemes([newTheme, ...userThemes]);
@@ -102,7 +117,7 @@ export default function PersonalizationStudio() {
   const handleDeleteTheme = async (themeId: string) => {
     try {
       await deleteTheme(themeId);
-      setUserThemes(userThemes.filter(t => t.id !== themeId));
+      setUserThemes(userThemes.filter((t) => t.id !== themeId));
     } catch (error) {
       console.error('Error deleting theme:', error);
     }
@@ -124,7 +139,7 @@ export default function PersonalizationStudio() {
     { id: 'relationships', label: 'Character Map', icon: '🕸️' },
     { id: 'achievements', label: 'Achievements', icon: '🏆' },
     { id: 'discovery', label: 'Discovery', icon: '🔍' },
-    { id: 'feedback', label: 'Feedback', icon: '💝' }
+    { id: 'feedback', label: 'Feedback', icon: '💝' },
   ];
 
   return (
@@ -182,7 +197,9 @@ export default function PersonalizationStudio() {
                   <h2 className="text-xl font-bold text-gray-900 mb-4">Create Custom Theme</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Theme Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Theme Name
+                      </label>
                       <input
                         type="text"
                         value={newThemeName}
@@ -200,10 +217,12 @@ export default function PersonalizationStudio() {
                           <input
                             type="color"
                             value={value}
-                            onChange={(e) => setSelectedColorPalette({
-                              ...selectedColorPalette,
-                              [key]: e.target.value
-                            })}
+                            onChange={(e) =>
+                              setSelectedColorPalette({
+                                ...selectedColorPalette,
+                                [key]: e.target.value,
+                              })
+                            }
                             className="h-10 w-20 cursor-pointer"
                           />
                           <span className="text-sm text-gray-600 font-mono">{value}</span>
@@ -236,7 +255,9 @@ export default function PersonalizationStudio() {
                           <div className="flex items-center justify-between mb-3">
                             <h3 className="font-semibold text-gray-900">{theme.theme_name}</h3>
                             {theme.is_active && (
-                              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">Active</span>
+                              <span className="px-2 py-1 bg-purple-600 text-white text-xs rounded-full">
+                                Active
+                              </span>
                             )}
                           </div>
 
@@ -303,7 +324,7 @@ export default function PersonalizationStudio() {
                             </span>
                           )}
                         </div>
-                        
+
                         {tier.requirements && (
                           <div className="mt-3 text-sm text-gray-700">
                             <span className="font-medium">Requirements:</span>
@@ -311,7 +332,9 @@ export default function PersonalizationStudio() {
                               {Object.entries(tier.requirements).map(([key, value]) => (
                                 <div key={key} className="flex items-center gap-2">
                                   <span className="text-gray-600">•</span>
-                                  <span>{key}: {String(value)}</span>
+                                  <span>
+                                    {key}: {String(value)}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -338,7 +361,10 @@ export default function PersonalizationStudio() {
                       <h3 className="font-semibold text-gray-900 mb-3">Favorite Genres</h3>
                       <div className="flex flex-wrap gap-2">
                         {discoveryPrefs.favorite_genres?.map((genre, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                          <span
+                            key={idx}
+                            className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                          >
                             {genre}
                           </span>
                         ))}
@@ -349,7 +375,10 @@ export default function PersonalizationStudio() {
                       <h3 className="font-semibold text-gray-900 mb-3">Preferred Writing Styles</h3>
                       <div className="flex flex-wrap gap-2">
                         {discoveryPrefs.preferred_writing_styles?.map((style, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                          <span
+                            key={idx}
+                            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                          >
                             {style}
                           </span>
                         ))}
@@ -357,10 +386,15 @@ export default function PersonalizationStudio() {
                     </div>
 
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-3">Emotional Tone Preferences</h3>
+                      <h3 className="font-semibold text-gray-900 mb-3">
+                        Emotional Tone Preferences
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         {discoveryPrefs.emotional_tone_preferences?.map((tone, idx) => (
-                          <span key={idx} className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm">
+                          <span
+                            key={idx}
+                            className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm"
+                          >
                             {tone}
                           </span>
                         ))}
@@ -369,12 +403,16 @@ export default function PersonalizationStudio() {
 
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">Reading Pace</h3>
-                      <p className="text-gray-700 capitalize">{discoveryPrefs.reading_pace_preference}</p>
+                      <p className="text-gray-700 capitalize">
+                        {discoveryPrefs.reading_pace_preference}
+                      </p>
                     </div>
 
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">Content Maturity Level</h3>
-                      <p className="text-gray-700 capitalize">{discoveryPrefs.content_maturity_level}</p>
+                      <p className="text-gray-700 capitalize">
+                        {discoveryPrefs.content_maturity_level}
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -422,9 +460,7 @@ export default function PersonalizationStudio() {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center text-gray-500 py-8">
-                      No feedback received yet
-                    </div>
+                    <div className="text-center text-gray-500 py-8">No feedback received yet</div>
                   )}
                 </div>
               </div>
@@ -434,7 +470,9 @@ export default function PersonalizationStudio() {
             {activeTab === 'relationships' && (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
                 <div className="text-6xl mb-4">🕸️</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Character Relationship Mapper</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Character Relationship Mapper
+                </h3>
                 <p className="text-gray-600">Select a story to view character relationships</p>
               </div>
             )}

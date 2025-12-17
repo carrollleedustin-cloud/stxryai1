@@ -39,7 +39,7 @@ export default function StoryStats({
   genre,
   tags = [],
   createdDate,
-  lastUpdated
+  lastUpdated,
 }: StoryStatsProps) {
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -51,14 +51,14 @@ export default function StoryStats({
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const difficultyConfig = {
     easy: { color: 'text-green-500', bg: 'bg-green-500/10', label: 'Easy Read' },
     medium: { color: 'text-yellow-500', bg: 'bg-yellow-500/10', label: 'Moderate' },
-    hard: { color: 'text-red-500', bg: 'bg-red-500/10', label: 'Challenging' }
+    hard: { color: 'text-red-500', bg: 'bg-red-500/10', label: 'Challenging' },
   };
 
   const difficultyInfo = difficultyConfig[difficulty];
@@ -66,20 +66,45 @@ export default function StoryStats({
   const mainStats = [
     { icon: 'EyeIcon', label: 'Views', value: formatNumber(views), color: 'text-blue-500' },
     { icon: 'HeartIcon', label: 'Likes', value: formatNumber(likes), color: 'text-red-500' },
-    { icon: 'BookmarkIcon', label: 'Bookmarks', value: formatNumber(bookmarks), color: 'text-purple-500' },
-    { icon: 'CheckCircleIcon', label: 'Completions', value: formatNumber(completions), color: 'text-green-500' }
+    {
+      icon: 'BookmarkIcon',
+      label: 'Bookmarks',
+      value: formatNumber(bookmarks),
+      color: 'text-purple-500',
+    },
+    {
+      icon: 'CheckCircleIcon',
+      label: 'Completions',
+      value: formatNumber(completions),
+      color: 'text-green-500',
+    },
   ];
 
   const engagementStats = [
-    { icon: 'StarIcon', label: 'Rating', value: `${averageRating.toFixed(1)} (${formatNumber(totalRatings)})`, color: 'text-yellow-500' },
-    { icon: 'ChatBubbleLeftIcon', label: 'Comments', value: formatNumber(comments), color: 'text-blue-500' },
-    { icon: 'ShareIcon', label: 'Shares', value: formatNumber(shares), color: 'text-green-500' }
+    {
+      icon: 'StarIcon',
+      label: 'Rating',
+      value: `${averageRating.toFixed(1)} (${formatNumber(totalRatings)})`,
+      color: 'text-yellow-500',
+    },
+    {
+      icon: 'ChatBubbleLeftIcon',
+      label: 'Comments',
+      value: formatNumber(comments),
+      color: 'text-blue-500',
+    },
+    { icon: 'ShareIcon', label: 'Shares', value: formatNumber(shares), color: 'text-green-500' },
   ];
 
   const contentStats = [
     { icon: 'ClockIcon', label: 'Read Time', value: `${readTime} min`, color: 'text-orange-500' },
-    { icon: 'DocumentTextIcon', label: 'Words', value: formatNumber(wordCount), color: 'text-purple-500' },
-    { icon: 'BookOpenIcon', label: 'Chapters', value: chapters.toString(), color: 'text-blue-500' }
+    {
+      icon: 'DocumentTextIcon',
+      label: 'Words',
+      value: formatNumber(wordCount),
+      color: 'text-purple-500',
+    },
+    { icon: 'BookOpenIcon', label: 'Chapters', value: chapters.toString(), color: 'text-blue-500' },
   ];
 
   return (
@@ -99,16 +124,14 @@ export default function StoryStats({
             className="bg-card border border-border rounded-xl p-4 shadow-lg"
           >
             <div className="flex items-center gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-lg ${stat.color.replace('text', 'bg')}/10 flex items-center justify-center`}>
+              <div
+                className={`w-10 h-10 rounded-lg ${stat.color.replace('text', 'bg')}/10 flex items-center justify-center`}
+              >
                 <Icon name={stat.icon} size={20} className={stat.color} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-foreground mb-1">
-              {stat.value}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {stat.label}
-            </div>
+            <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+            <div className="text-xs text-muted-foreground">{stat.label}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -126,7 +149,10 @@ export default function StoryStats({
             <h4 className="text-sm font-semibold text-muted-foreground mb-3">Engagement</h4>
             <div className="grid grid-cols-3 gap-3">
               {engagementStats.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                <div
+                  key={stat.label}
+                  className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg"
+                >
                   <Icon name={stat.icon} size={16} className={stat.color} />
                   <div>
                     <div className="text-sm font-bold text-foreground">{stat.value}</div>
@@ -142,7 +168,10 @@ export default function StoryStats({
             <h4 className="text-sm font-semibold text-muted-foreground mb-3">Content</h4>
             <div className="grid grid-cols-3 gap-3">
               {contentStats.map((stat) => (
-                <div key={stat.label} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+                <div
+                  key={stat.label}
+                  className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg"
+                >
                   <Icon name={stat.icon} size={16} className={stat.color} />
                   <div>
                     <div className="text-sm font-bold text-foreground">{stat.value}</div>

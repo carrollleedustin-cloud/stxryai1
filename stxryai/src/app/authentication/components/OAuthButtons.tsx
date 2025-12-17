@@ -1,7 +1,5 @@
 'use client';
 
-
-
 interface OAuthButtonsProps {
   onOAuthClick: (provider: string) => void;
   isLoading: boolean;
@@ -34,11 +32,7 @@ const OAuthButtons = ({ onOAuthClick, isLoading }: OAuthButtonsProps) => {
           disabled={isLoading}
           className={`w-full flex items-center justify-center space-x-3 px-4 py-3 rounded-lg border border-border ${provider.bgColor} ${provider.textColor} font-medium transition-smooth disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md`}
         >
-          <img
-            src={provider.icon}
-            alt={provider.alt}
-            className="w-5 h-5"
-          />
+          <img src={provider.icon} alt={provider.alt} className="w-5 h-5" />
           <span>Continue with {provider.name}</span>
         </button>
       ))}

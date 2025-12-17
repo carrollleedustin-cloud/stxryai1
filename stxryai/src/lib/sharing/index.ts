@@ -29,7 +29,7 @@ export async function shareNative(data: ShareData): Promise<boolean> {
     await navigator.share({
       title: data.title,
       text: data.text,
-      url: data.url
+      url: data.url,
     });
     return true;
   } catch (error) {
@@ -161,11 +161,7 @@ export const SharePlatforms = {
    */
   whatsapp(data: ShareData): void {
     const text = encodeURIComponent(`${data.title} ${data.url}`);
-    window.open(
-      `https://wa.me/?text=${text}`,
-      '_blank',
-      'width=550,height=420'
-    );
+    window.open(`https://wa.me/?text=${text}`, '_blank', 'width=550,height=420');
   },
 
   /**
@@ -174,11 +170,7 @@ export const SharePlatforms = {
   telegram(data: ShareData): void {
     const url = encodeURIComponent(data.url);
     const text = encodeURIComponent(data.title);
-    window.open(
-      `https://t.me/share/url?url=${url}&text=${text}`,
-      '_blank',
-      'width=550,height=420'
-    );
+    window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank', 'width=550,height=420');
   },
 
   /**
@@ -190,7 +182,7 @@ export const SharePlatforms = {
       `${data.text || data.title}\n\n${data.url}\n\nShared from StxryAI`
     );
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
-  }
+  },
 };
 
 /**
@@ -207,7 +199,7 @@ export function generateOGTags(data: ShareData): Record<string, string> {
     'twitter:card': 'summary_large_image',
     'twitter:title': data.title,
     'twitter:description': data.text || '',
-    'twitter:image': data.image || '/og-image.png'
+    'twitter:image': data.image || '/og-image.png',
   };
 }
 
@@ -227,7 +219,7 @@ export function trackShare(platform: string, storyId: string): void {
     (window as any).gtag('event', 'share', {
       method: platform,
       content_type: 'story',
-      content_id: storyId
+      content_id: storyId,
     });
   }
 
@@ -245,7 +237,7 @@ export function downloadStoryAsFile(
   const mimeTypes = {
     txt: 'text/plain',
     html: 'text/html',
-    md: 'text/markdown'
+    md: 'text/markdown',
   };
 
   const blob = new Blob([content], { type: mimeTypes[format] });

@@ -18,10 +18,38 @@ export default function LiveStatsSection() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   const [stats, setStats] = useState<LiveStat[]>([
-    { label: 'Stories Created', value: 0, target: 12847, suffix: '+', icon: '📚', color: 'from-purple-500 to-pink-500' },
-    { label: 'Active Readers', value: 0, target: 58932, suffix: '+', icon: '👥', color: 'from-blue-500 to-cyan-500' },
-    { label: 'Choices Made Today', value: 0, target: 342567, suffix: '+', icon: '🎯', color: 'from-green-500 to-emerald-500' },
-    { label: 'AI Generations', value: 0, target: 1247893, suffix: '+', icon: '✨', color: 'from-orange-500 to-red-500' },
+    {
+      label: 'Stories Created',
+      value: 0,
+      target: 12847,
+      suffix: '+',
+      icon: '📚',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      label: 'Active Readers',
+      value: 0,
+      target: 58932,
+      suffix: '+',
+      icon: '👥',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      label: 'Choices Made Today',
+      value: 0,
+      target: 342567,
+      suffix: '+',
+      icon: '🎯',
+      color: 'from-green-500 to-emerald-500',
+    },
+    {
+      label: 'AI Generations',
+      value: 0,
+      target: 1247893,
+      suffix: '+',
+      icon: '✨',
+      color: 'from-orange-500 to-red-500',
+    },
   ]);
 
   // Animate counters when in view
@@ -37,8 +65,8 @@ export default function LiveStatsSection() {
       frame++;
       const progress = frame / frames;
 
-      setStats(prevStats =>
-        prevStats.map(stat => ({
+      setStats((prevStats) =>
+        prevStats.map((stat) => ({
           ...stat,
           value: Math.floor(stat.target * easeOutCubic(progress)),
         }))
@@ -46,8 +74,8 @@ export default function LiveStatsSection() {
 
       if (frame >= frames) {
         clearInterval(interval);
-        setStats(prevStats =>
-          prevStats.map(stat => ({
+        setStats((prevStats) =>
+          prevStats.map((stat) => ({
             ...stat,
             value: stat.target,
           }))
@@ -66,7 +94,10 @@ export default function LiveStatsSection() {
   };
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-background via-background/50 to-background relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-24 bg-gradient-to-b from-background via-background/50 to-background relative overflow-hidden"
+    >
       {/* Animated Background */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-pink-500/10" />
@@ -75,8 +106,14 @@ export default function LiveStatsSection() {
             key={i}
             className="absolute w-1 h-1 bg-purple-500 rounded-full"
             initial={{
-              x: typeof window !== 'undefined' ? Math.random() * window.innerWidth : Math.random() * 1200,
-              y: typeof window !== 'undefined' ? Math.random() * window.innerHeight : Math.random() * 800,
+              x:
+                typeof window !== 'undefined'
+                  ? Math.random() * window.innerWidth
+                  : Math.random() * 1200,
+              y:
+                typeof window !== 'undefined'
+                  ? Math.random() * window.innerHeight
+                  : Math.random() * 800,
             }}
             animate={{
               y: [null, Math.random() * -200],
@@ -117,7 +154,9 @@ export default function LiveStatsSection() {
             >
               <div className="relative p-8 bg-card border border-border rounded-2xl hover:border-primary/50 transition-all duration-300 overflow-hidden">
                 {/* Gradient Background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                />
 
                 {/* Icon */}
                 <motion.div
@@ -137,13 +176,12 @@ export default function LiveStatsSection() {
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
                   >
-                    {formatNumber(stat.value)}{stat.suffix}
+                    {formatNumber(stat.value)}
+                    {stat.suffix}
                   </motion.div>
 
                   {/* Label */}
-                  <div className="text-sm text-muted-foreground font-medium">
-                    {stat.label}
-                  </div>
+                  <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
                 </div>
 
                 {/* Pulse Animation */}

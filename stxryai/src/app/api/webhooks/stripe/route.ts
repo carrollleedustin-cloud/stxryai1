@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: `Webhook error: ${error.message}` }, { status: 400 });
   }
 
-
   const supabase = createServiceRoleClient() as any;
 
   try {
@@ -144,9 +143,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
   }
 }

@@ -39,20 +39,24 @@ export default function StoryEditor({
   onPublish,
   onPreview,
 }: StoryEditorProps) {
-  const [content, setContent] = useState<EditorContent>(initialContent || {
-    title: '',
-    chapters: [{
-      id: '1',
-      title: 'Chapter 1',
-      content: '',
-      choices: [],
-    }],
-    metadata: {
-      genre: '',
-      difficulty: 'medium',
-      tags: [],
-    },
-  });
+  const [content, setContent] = useState<EditorContent>(
+    initialContent || {
+      title: '',
+      chapters: [
+        {
+          id: '1',
+          title: 'Chapter 1',
+          content: '',
+          choices: [],
+        },
+      ],
+      metadata: {
+        genre: '',
+        difficulty: 'medium',
+        tags: [],
+      },
+    }
+  );
 
   const [activeChapter, setActiveChapter] = useState(0);
   const [showToolbar, setShowToolbar] = useState(true);
@@ -174,12 +178,32 @@ export default function StoryEditor({
               <ToolbarButton icon="I" label="Italic" onClick={() => formatText('italic')} />
               <ToolbarButton icon="U" label="Underline" onClick={() => formatText('underline')} />
               <div className="w-px bg-white/10 mx-2" />
-              <ToolbarButton icon="H1" label="Heading 1" onClick={() => formatText('formatBlock', '<h1>')} />
-              <ToolbarButton icon="H2" label="Heading 2" onClick={() => formatText('formatBlock', '<h2>')} />
-              <ToolbarButton icon="¶" label="Paragraph" onClick={() => formatText('formatBlock', '<p>')} />
+              <ToolbarButton
+                icon="H1"
+                label="Heading 1"
+                onClick={() => formatText('formatBlock', '<h1>')}
+              />
+              <ToolbarButton
+                icon="H2"
+                label="Heading 2"
+                onClick={() => formatText('formatBlock', '<h2>')}
+              />
+              <ToolbarButton
+                icon="¶"
+                label="Paragraph"
+                onClick={() => formatText('formatBlock', '<p>')}
+              />
               <div className="w-px bg-white/10 mx-2" />
-              <ToolbarButton icon="•" label="Bullet List" onClick={() => formatText('insertUnorderedList')} />
-              <ToolbarButton icon="1." label="Numbered List" onClick={() => formatText('insertOrderedList')} />
+              <ToolbarButton
+                icon="•"
+                label="Bullet List"
+                onClick={() => formatText('insertUnorderedList')}
+              />
+              <ToolbarButton
+                icon="1."
+                label="Numbered List"
+                onClick={() => formatText('insertOrderedList')}
+              />
               <div className="w-px bg-white/10 mx-2" />
               <ToolbarButton icon="↶" label="Undo" onClick={() => formatText('undo')} />
               <ToolbarButton icon="↷" label="Redo" onClick={() => formatText('redo')} />
@@ -238,7 +262,9 @@ export default function StoryEditor({
                       }}
                       onDelete={() => {
                         const updatedChapters = [...content.chapters];
-                        updatedChapters[activeChapter].choices = updatedChapters[activeChapter].choices.filter((_, i) => i !== index);
+                        updatedChapters[activeChapter].choices = updatedChapters[
+                          activeChapter
+                        ].choices.filter((_, i) => i !== index);
                         setContent({ ...content, chapters: updatedChapters });
                       }}
                     />
@@ -258,10 +284,12 @@ export default function StoryEditor({
             <label className="text-sm text-gray-400 mb-2 block">Genre</label>
             <select
               value={content.metadata.genre}
-              onChange={(e) => setContent({
-                ...content,
-                metadata: { ...content.metadata, genre: e.target.value }
-              })}
+              onChange={(e) =>
+                setContent({
+                  ...content,
+                  metadata: { ...content.metadata, genre: e.target.value },
+                })
+              }
               className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
             >
               <option value="">Select Genre</option>
@@ -281,10 +309,12 @@ export default function StoryEditor({
               {['easy', 'medium', 'hard'].map((diff) => (
                 <button
                   key={diff}
-                  onClick={() => setContent({
-                    ...content,
-                    metadata: { ...content.metadata, difficulty: diff as any }
-                  })}
+                  onClick={() =>
+                    setContent({
+                      ...content,
+                      metadata: { ...content.metadata, difficulty: diff as any },
+                    })
+                  }
                   className={`flex-1 px-3 py-2 rounded-lg text-sm transition-all ${
                     content.metadata.difficulty === diff
                       ? 'bg-purple-600 text-white'
@@ -329,7 +359,15 @@ export default function StoryEditor({
 }
 
 // Toolbar Button Component
-function ToolbarButton({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
+function ToolbarButton({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: string;
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       onClick={onClick}

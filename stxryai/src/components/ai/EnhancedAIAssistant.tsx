@@ -81,14 +81,10 @@ export default function EnhancedAIAssistant({
     setSuggestions([]);
 
     try {
-      const result = await aiService.generateWritingSuggestions(
-        text,
-        mode.suggestionType,
-        {
-          temperature: 0.7,
-          cache: true,
-        }
-      );
+      const result = await aiService.generateWritingSuggestions(text, mode.suggestionType, {
+        temperature: 0.7,
+        cache: true,
+      });
 
       if (result.success) {
         const newSuggestion: Suggestion = {
@@ -111,9 +107,8 @@ export default function EnhancedAIAssistant({
   };
 
   const handleApplySuggestion = (suggestion: Suggestion) => {
-    const newText = suggestion.type === 'continue'
-      ? text + '\n\n' + suggestion.content
-      : suggestion.content;
+    const newText =
+      suggestion.type === 'continue' ? text + '\n\n' + suggestion.content : suggestion.content;
 
     setText(newText);
     onTextChange?.(newText);
@@ -166,7 +161,9 @@ export default function EnhancedAIAssistant({
             whileTap={!isGenerating ? { scale: 0.98 } : {}}
           >
             {/* Background Gradient */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${mode.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+            <div
+              className={`absolute inset-0 bg-gradient-to-br ${mode.color} opacity-0 group-hover:opacity-10 transition-opacity`}
+            />
 
             {/* Content */}
             <div className="relative">
@@ -260,7 +257,8 @@ export default function EnhancedAIAssistant({
             <div>
               <h4 className="font-semibold mb-1">Pro Tip</h4>
               <p className="text-sm text-muted-foreground">
-                Select an AI mode above to get personalized suggestions for your writing. Each mode offers different enhancements to help you craft better stories.
+                Select an AI mode above to get personalized suggestions for your writing. Each mode
+                offers different enhancements to help you craft better stories.
               </p>
             </div>
           </div>

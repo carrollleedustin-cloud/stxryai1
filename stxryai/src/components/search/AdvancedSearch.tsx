@@ -39,13 +39,29 @@ interface AdvancedSearchProps {
 }
 
 const availableGenres = [
-  'Sci-Fi', 'Fantasy', 'Mystery', 'Romance', 'Horror',
-  'Thriller', 'Adventure', 'Historical', 'Comedy', 'Drama'
+  'Sci-Fi',
+  'Fantasy',
+  'Mystery',
+  'Romance',
+  'Horror',
+  'Thriller',
+  'Adventure',
+  'Historical',
+  'Comedy',
+  'Drama',
 ];
 
 const popularTags = [
-  'AI', 'Magic', 'Time Travel', 'Detective', 'Dragons',
-  'Space', 'Medieval', 'Post-Apocalyptic', 'Supernatural', 'Cyberpunk'
+  'AI',
+  'Magic',
+  'Time Travel',
+  'Detective',
+  'Dragons',
+  'Space',
+  'Medieval',
+  'Post-Apocalyptic',
+  'Supernatural',
+  'Cyberpunk',
 ];
 
 export default function AdvancedSearch({
@@ -70,29 +86,27 @@ export default function AdvancedSearch({
   };
 
   const toggleGenre = (genre: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       genres: prev.genres.includes(genre)
-        ? prev.genres.filter(g => g !== genre)
-        : [...prev.genres, genre]
+        ? prev.genres.filter((g) => g !== genre)
+        : [...prev.genres, genre],
     }));
   };
 
   const toggleTag = (tag: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter(t => t !== tag)
-        : [...prev.tags, tag]
+      tags: prev.tags.includes(tag) ? prev.tags.filter((t) => t !== tag) : [...prev.tags, tag],
     }));
   };
 
   const toggleDifficulty = (difficulty: 'easy' | 'medium' | 'hard') => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       difficulty: prev.difficulty.includes(difficulty)
-        ? prev.difficulty.filter(d => d !== difficulty)
-        : [...prev.difficulty, difficulty]
+        ? prev.difficulty.filter((d) => d !== difficulty)
+        : [...prev.difficulty, difficulty],
     }));
   };
 
@@ -175,7 +189,7 @@ export default function AdvancedSearch({
                   {['relevance', 'popularity', 'rating', 'recent', 'trending'].map((sort) => (
                     <button
                       key={sort}
-                      onClick={() => setFilters(prev => ({ ...prev, sortBy: sort as any }))}
+                      onClick={() => setFilters((prev) => ({ ...prev, sortBy: sort as any }))}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                         filters.sortBy === sort
                           ? 'bg-purple-600 text-white'
@@ -259,10 +273,12 @@ export default function AdvancedSearch({
                   max="5"
                   step="0.5"
                   value={filters.rating.min}
-                  onChange={(e) => setFilters(prev => ({
-                    ...prev,
-                    rating: { ...prev.rating, min: parseFloat(e.target.value) }
-                  }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      rating: { ...prev.rating, min: parseFloat(e.target.value) },
+                    }))
+                  }
                   className="w-full accent-purple-600"
                 />
               </div>
@@ -279,10 +295,12 @@ export default function AdvancedSearch({
                     max="120"
                     step="5"
                     value={filters.duration.min}
-                    onChange={(e) => setFilters(prev => ({
-                      ...prev,
-                      duration: { ...prev.duration, min: parseInt(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        duration: { ...prev.duration, min: parseInt(e.target.value) },
+                      }))
+                    }
                     className="flex-1 accent-purple-600"
                   />
                   <input
@@ -291,10 +309,12 @@ export default function AdvancedSearch({
                     max="120"
                     step="5"
                     value={filters.duration.max}
-                    onChange={(e) => setFilters(prev => ({
-                      ...prev,
-                      duration: { ...prev.duration, max: parseInt(e.target.value) }
-                    }))}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        duration: { ...prev.duration, max: parseInt(e.target.value) },
+                      }))
+                    }
                     className="flex-1 accent-purple-600"
                   />
                 </div>
@@ -305,7 +325,7 @@ export default function AdvancedSearch({
                 <label className="text-sm font-medium text-gray-300 mb-2 block">Content Type</label>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => setFilters(prev => ({ ...prev, isPremium: null }))}
+                    onClick={() => setFilters((prev) => ({ ...prev, isPremium: null }))}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filters.isPremium === null
                         ? 'bg-purple-600 text-white'
@@ -315,7 +335,7 @@ export default function AdvancedSearch({
                     All
                   </button>
                   <button
-                    onClick={() => setFilters(prev => ({ ...prev, isPremium: false }))}
+                    onClick={() => setFilters((prev) => ({ ...prev, isPremium: false }))}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filters.isPremium === false
                         ? 'bg-purple-600 text-white'
@@ -325,7 +345,7 @@ export default function AdvancedSearch({
                     Free Only
                   </button>
                   <button
-                    onClick={() => setFilters(prev => ({ ...prev, isPremium: true }))}
+                    onClick={() => setFilters((prev) => ({ ...prev, isPremium: true }))}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       filters.isPremium === true
                         ? 'bg-purple-600 text-white'
@@ -389,7 +409,11 @@ function SearchResultCard({ result, index }: { result: SearchResult; index: numb
         {/* Cover Image */}
         <div className="w-24 h-32 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-purple-900 to-indigo-900">
           {result.coverImage ? (
-            <img src={result.coverImage} alt={result.title} className="w-full h-full object-cover" />
+            <img
+              src={result.coverImage}
+              alt={result.title}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl">📖</div>
           )}
@@ -412,24 +436,29 @@ function SearchResultCard({ result, index }: { result: SearchResult; index: numb
             by <span className="text-gray-300 font-medium">{result.author.displayName}</span>
           </p>
 
-          <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-            {result.description}
-          </p>
+          <p className="text-gray-400 text-sm mb-3 line-clamp-2">{result.description}</p>
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-3">
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              result.difficulty === 'easy' ? 'bg-green-600/20 text-green-400' :
-              result.difficulty === 'medium' ? 'bg-yellow-600/20 text-yellow-400' :
-              'bg-red-600/20 text-red-400'
-            }`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                result.difficulty === 'easy'
+                  ? 'bg-green-600/20 text-green-400'
+                  : result.difficulty === 'medium'
+                    ? 'bg-yellow-600/20 text-yellow-400'
+                    : 'bg-red-600/20 text-red-400'
+              }`}
+            >
               {result.difficulty}
             </span>
             <span className="px-2 py-1 bg-white/10 text-gray-300 rounded-full text-xs">
               {result.genre}
             </span>
-            {result.tags.slice(0, 2).map(tag => (
-              <span key={tag} className="px-2 py-1 bg-purple-600/20 text-purple-300 rounded-full text-xs">
+            {result.tags.slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="px-2 py-1 bg-purple-600/20 text-purple-300 rounded-full text-xs"
+              >
                 #{tag}
               </span>
             ))}
@@ -437,7 +466,9 @@ function SearchResultCard({ result, index }: { result: SearchResult; index: numb
 
           {/* Stats */}
           <div className="flex items-center gap-4 text-sm text-gray-400">
-            <span>⭐ {result.rating.toFixed(1)} ({result.reviews})</span>
+            <span>
+              ⭐ {result.rating.toFixed(1)} ({result.reviews})
+            </span>
             <span>👁️ {result.views.toLocaleString()}</span>
             <span>🕐 {result.duration}</span>
           </div>

@@ -49,6 +49,14 @@
     "out/",
     "public/"
   ],
+  "overrides": [
+    {
+      "files": ["**/*.test.{ts,tsx,js,jsx}", "**/__tests__/**"],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
   "env": {
     "browser": true,
     "node": true,

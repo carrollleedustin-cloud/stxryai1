@@ -19,7 +19,10 @@ const memoryCache = new Map<string, CacheEntry<any>>();
 /**
  * Get from cache
  */
-export function getFromCache<T>(key: string, storage: 'memory' | 'localStorage' = 'memory'): T | null {
+export function getFromCache<T>(
+  key: string,
+  storage: 'memory' | 'localStorage' = 'memory'
+): T | null {
   if (storage === 'localStorage') {
     if (typeof window === 'undefined') return null;
 
@@ -54,11 +57,7 @@ export function getFromCache<T>(key: string, storage: 'memory' | 'localStorage' 
 /**
  * Set to cache
  */
-export function setToCache<T>(
-  key: string,
-  value: T,
-  options: CacheOptions = {}
-): void {
+export function setToCache<T>(key: string, value: T, options: CacheOptions = {}): void {
   const { ttl = 5 * 60 * 1000, storage = 'memory' } = options; // Default 5 minutes
   const expiry = Date.now() + ttl;
   const entry: CacheEntry<T> = { value, expiry };
@@ -97,7 +96,7 @@ export function clearAllCache(storage: 'memory' | 'localStorage' = 'memory'): vo
     if (typeof window === 'undefined') return;
 
     const keys = Object.keys(localStorage);
-    keys.forEach(key => {
+    keys.forEach((key) => {
       if (key.startsWith('cache_')) {
         localStorage.removeItem(key);
       }
@@ -110,10 +109,7 @@ export function clearAllCache(storage: 'memory' | 'localStorage' = 'memory'): vo
 /**
  * Memoize function results
  */
-export function memoize<T extends (...args: any[]) => any>(
-  fn: T,
-  options: CacheOptions = {}
-): T {
+export function memoize<T extends (...args: any[]) => any>(fn: T, options: CacheOptions = {}): T {
   return ((...args: Parameters<T>) => {
     const key = `memoize_${fn.name}_${JSON.stringify(args)}`;
     const cached = getFromCache<ReturnType<T>>(key, options.storage);
@@ -193,11 +189,7 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Cache hook result
  */
-export function useCachedValue<T>(
-  key: string,
-  getValue: () => T,
-  options: CacheOptions = {}
-): T {
+export function useCachedValue<T>(key: string, getValue: () => T, options: CacheOptions = {}): T {
   const cached = getFromCache<T>(key, options.storage);
 
   if (cached !== null) {

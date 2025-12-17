@@ -11,25 +11,25 @@ const CommunityHubPage: React.FC = () => {
       title: 'Discussion Forums',
       description: 'Join conversations about your favorite stories, genres, and characters.',
       href: '/forums',
-      icon: 'ChatBubbleLeftRightIcon'
+      icon: 'ChatBubbleLeftRightIcon',
     },
     {
       title: 'Leaderboards',
       description: 'See who is leading the charts in reading streaks, achievements, and more.',
       href: '/leaderboards',
-      icon: 'TrophyIcon'
+      icon: 'TrophyIcon',
     },
     {
       title: 'Reading Clubs',
       description: 'Find or create a club with readers who share your interests.',
       href: '/clubs',
-      icon: 'UserGroupIcon'
+      icon: 'UserGroupIcon',
     },
     {
       title: 'Latest Reviews',
       description: 'Read what others are saying about the latest stories.',
       href: '/reviews',
-      icon: 'StarIcon'
+      icon: 'StarIcon',
     },
   ];
 
@@ -38,9 +38,7 @@ const CommunityHubPage: React.FC = () => {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Community Hub
-          </h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">Community Hub</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Connect with fellow readers, share your experiences, and discover new stories together.
           </p>

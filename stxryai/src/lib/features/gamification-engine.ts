@@ -101,7 +101,11 @@ export class GamificationEngine {
   /**
    * Calculate level from total XP
    */
-  calculateLevelFromXP(totalXP: number): { level: number; currentLevelXP: number; nextLevelXP: number } {
+  calculateLevelFromXP(totalXP: number): {
+    level: number;
+    currentLevelXP: number;
+    nextLevelXP: number;
+  } {
     let level = 1;
     let xpForCurrentLevel = 0;
 
@@ -124,7 +128,11 @@ export class GamificationEngine {
   /**
    * Award XP to player
    */
-  awardXP(progress: PlayerProgress, amount: number, reason: string): {
+  awardXP(
+    progress: PlayerProgress,
+    amount: number,
+    reason: string
+  ): {
     newProgress: PlayerProgress;
     leveledUp: boolean;
     newLevel?: number;

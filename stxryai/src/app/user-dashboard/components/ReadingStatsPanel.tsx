@@ -37,9 +37,7 @@ const ReadingStatsPanel = ({ stats }: ReadingStatsPanelProps) => {
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-heading font-semibold text-foreground">
-          Reading Statistics
-        </h2>
+        <h2 className="text-xl font-heading font-semibold text-foreground">Reading Statistics</h2>
         <Icon name="ChartBarIcon" size={24} className="text-primary" />
       </div>
 
@@ -49,9 +47,7 @@ const ReadingStatsPanel = ({ stats }: ReadingStatsPanelProps) => {
             <Icon name="BookOpenIcon" size={20} className="text-primary" />
             <span className="text-sm text-muted-foreground">Stories</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
-            {stats.storiesCompleted}
-          </p>
+          <p className="text-2xl font-bold text-foreground">{stats.storiesCompleted}</p>
         </div>
 
         <div className="bg-gradient-to-br from-accent/10 to-warning/10 rounded-lg p-4 border border-accent/20">
@@ -59,9 +55,7 @@ const ReadingStatsPanel = ({ stats }: ReadingStatsPanelProps) => {
             <Icon name="ChatBubbleLeftRightIcon" size={20} className="text-accent" />
             <span className="text-sm text-muted-foreground">Choices</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
-            {stats.choicesMade}
-          </p>
+          <p className="text-2xl font-bold text-foreground">{stats.choicesMade}</p>
         </div>
 
         <div className="bg-gradient-to-br from-success/10 to-emerald-500/10 rounded-lg p-4 border border-success/20">
@@ -69,9 +63,7 @@ const ReadingStatsPanel = ({ stats }: ReadingStatsPanelProps) => {
             <Icon name="FireIcon" size={20} className="text-success" />
             <span className="text-sm text-muted-foreground">Streak</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">
-            {stats.readingStreak} days
-          </p>
+          <p className="text-2xl font-bold text-foreground">{stats.readingStreak} days</p>
         </div>
 
         <div className="bg-gradient-to-br from-secondary/10 to-purple-500/10 rounded-lg p-4 border border-secondary/20">
@@ -86,32 +78,25 @@ const ReadingStatsPanel = ({ stats }: ReadingStatsPanelProps) => {
       </div>
 
       <div className="border-t border-border pt-6">
-        <h3 className="text-sm font-semibold text-foreground mb-4">
-          Recent Achievements
-        </h3>
+        <h3 className="text-sm font-semibold text-foreground mb-4">Recent Achievements</h3>
         <div className="space-y-3">
           {stats.achievements.slice(0, 3).map((achievement) => (
             <div key={achievement.id} className="flex items-center space-x-3">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  achievement.unlocked
-                    ? 'bg-gradient-to-br from-accent to-warning' :'bg-muted'
+                  achievement.unlocked ? 'bg-gradient-to-br from-accent to-warning' : 'bg-muted'
                 }`}
               >
                 <Icon
                   name={achievement.icon as any}
                   size={20}
                   className={
-                    achievement.unlocked
-                      ? 'text-accent-foreground'
-                      : 'text-muted-foreground'
+                    achievement.unlocked ? 'text-accent-foreground' : 'text-muted-foreground'
                   }
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {achievement.name}
-                </p>
+                <p className="text-sm font-medium text-foreground truncate">{achievement.name}</p>
                 <div className="flex items-center space-x-2 mt-1">
                   <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                     <div

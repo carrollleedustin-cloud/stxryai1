@@ -56,9 +56,7 @@ const DailyChoiceLimitWidget = ({
             <Icon name="SparklesIcon" size={24} className="text-accent-foreground" />
           </div>
           <div>
-            <h3 className="text-lg font-heading font-semibold text-foreground">
-              Premium Active
-            </h3>
+            <h3 className="text-lg font-heading font-semibold text-foreground">Premium Active</h3>
             <p className="text-sm text-muted-foreground">Unlimited choices</p>
           </div>
         </div>
@@ -75,9 +73,7 @@ const DailyChoiceLimitWidget = ({
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-heading font-semibold text-foreground">
-          Daily Choices
-        </h3>
+        <h3 className="text-lg font-heading font-semibold text-foreground">Daily Choices</h3>
         <Icon name="ChatBubbleLeftRightIcon" size={24} className="text-primary" />
       </div>
 
@@ -86,15 +82,14 @@ const DailyChoiceLimitWidget = ({
           <span className="text-sm text-muted-foreground">
             {choicesUsed} of {choicesLimit} used
           </span>
-          <span className="text-sm font-semibold text-foreground">
-            {choicesRemaining} left
-          </span>
+          <span className="text-sm font-semibold text-foreground">{choicesRemaining} left</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${
               progressPercentage >= 80
-                ? 'bg-gradient-to-r from-error to-warning' :'bg-gradient-to-r from-primary to-secondary'
+                ? 'bg-gradient-to-r from-error to-warning'
+                : 'bg-gradient-to-r from-primary to-secondary'
             }`}
             style={{ width: `${progressPercentage}%` }}
           />
@@ -111,7 +106,11 @@ const DailyChoiceLimitWidget = ({
       {choicesRemaining <= 2 && (
         <div className="bg-accent/10 border border-accent/30 rounded-lg p-3 mb-4">
           <div className="flex items-start space-x-2">
-            <Icon name="ExclamationTriangleIcon" size={18} className="text-accent flex-shrink-0 mt-0.5" />
+            <Icon
+              name="ExclamationTriangleIcon"
+              size={18}
+              className="text-accent flex-shrink-0 mt-0.5"
+            />
             <p className="text-sm text-foreground">
               You're running low on choices! Upgrade to premium for unlimited access.
             </p>

@@ -60,8 +60,9 @@ async function populateStories(userId: string) {
     {
       id: 'c1000000-0000-0000-0000-000000000001',
       title: 'The Magic Treehouse Mystery',
-      description: 'Join Luna and Max as they discover a magical treehouse in their backyard that transports them to different worlds! Perfect for young readers learning to make choices.',
-      genre: 'Children\'s Adventure',
+      description:
+        'Join Luna and Max as they discover a magical treehouse in their backyard that transports them to different worlds! Perfect for young readers learning to make choices.',
+      genre: "Children's Adventure",
       difficulty: 'easy',
       tags: ['kids', 'magic', 'adventure', 'animals', 'educational'],
       is_published: true,
@@ -92,8 +93,9 @@ What should they do?`,
     {
       id: 'c1000000-0000-0000-0000-000000000002',
       title: 'Benny the Brave Bunny',
-      description: 'Benny is a little bunny who is afraid of the dark. Follow his journey as he learns to be brave with help from his forest friends!',
-      genre: 'Children\'s Educational',
+      description:
+        'Benny is a little bunny who is afraid of the dark. Follow his journey as he learns to be brave with help from his forest friends!',
+      genre: "Children's Educational",
       difficulty: 'easy',
       tags: ['kids', 'animals', 'emotions', 'friendship', 'learning'],
       is_published: true,
@@ -109,7 +111,8 @@ What should they do?`,
     {
       id: 'c2000000-0000-0000-0000-000000000001',
       title: 'The Secret of Willow Creek',
-      description: 'When strange things start happening in the small town of Willow Creek, 12-year-old detective Sophie Chen must solve the mystery before it\'s too late!',
+      description:
+        "When strange things start happening in the small town of Willow Creek, 12-year-old detective Sophie Chen must solve the mystery before it's too late!",
       genre: 'Mystery',
       difficulty: 'medium',
       tags: ['mystery', 'detective', 'middle-grade', 'puzzle', 'adventure'],
@@ -126,7 +129,8 @@ What should they do?`,
     {
       id: 'c3000000-0000-0000-0000-000000000001',
       title: 'Echoes of the Shattered Realm',
-      description: 'In a world where magic is dying, 16-year-old Aria must choose between saving her kingdom or discovering the truth about her mysterious past.',
+      description:
+        'In a world where magic is dying, 16-year-old Aria must choose between saving her kingdom or discovering the truth about her mysterious past.',
       genre: 'Fantasy',
       difficulty: 'medium',
       tags: ['fantasy', 'magic', 'ya', 'coming-of-age', 'epic'],
@@ -141,7 +145,8 @@ What should they do?`,
     {
       id: 'c3000000-0000-0000-0000-000000000002',
       title: 'Neon Nights: 2084',
-      description: 'In Neo-Tokyo 2084, teenage hacker Kai discovers a conspiracy that could bring down the megacorporations controlling the city. But can he trust his new allies?',
+      description:
+        'In Neo-Tokyo 2084, teenage hacker Kai discovers a conspiracy that could bring down the megacorporations controlling the city. But can he trust his new allies?',
       genre: 'Cyberpunk',
       difficulty: 'hard',
       tags: ['cyberpunk', 'sci-fi', 'hacking', 'dystopia', 'action'],
@@ -158,7 +163,8 @@ What should they do?`,
     {
       id: 'c4000000-0000-0000-0000-000000000001',
       title: 'Coffee Shop Chronicles',
-      description: 'Emma, a struggling writer, finds unexpected romance when she meets Alex, a mysterious regular at her favorite coffee shop. But both are hiding secrets that could tear them apart.',
+      description:
+        'Emma, a struggling writer, finds unexpected romance when she meets Alex, a mysterious regular at her favorite coffee shop. But both are hiding secrets that could tear them apart.',
       genre: 'Romance',
       difficulty: 'medium',
       tags: ['romance', 'contemporary', 'sweet', 'coffee', 'writer'],
@@ -173,7 +179,8 @@ What should they do?`,
     {
       id: 'c4000000-0000-0000-0000-000000000002',
       title: 'The Last Witness',
-      description: 'Detective Sarah Morgan has 48 hours to find the only witness to a murder before the killer does. Every choice matters. Every second counts.',
+      description:
+        'Detective Sarah Morgan has 48 hours to find the only witness to a murder before the killer does. Every choice matters. Every second counts.',
       genre: 'Thriller',
       difficulty: 'hard',
       tags: ['thriller', 'mystery', 'detective', 'suspense', 'crime'],
@@ -217,16 +224,17 @@ What should they do?`,
       // Insert chapters if any
       if (chapters && chapters.length > 0) {
         for (const chapterData of chapters) {
-          const { error: chapterError } = await supabase
-            .from('chapters')
-            .insert({
-              story_id: story.id,
-              ...chapterData,
-              is_published: true,
-            });
+          const { error: chapterError } = await supabase.from('chapters').insert({
+            story_id: story.id,
+            ...chapterData,
+            is_published: true,
+          });
 
           if (chapterError) {
-            console.error(`   ❌ Error creating chapter "${chapterData.title}":`, chapterError.message);
+            console.error(
+              `   ❌ Error creating chapter "${chapterData.title}":`,
+              chapterError.message
+            );
           } else {
             console.log(`   ✅ Created chapter: "${chapterData.title}"`);
           }

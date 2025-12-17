@@ -28,7 +28,8 @@ export function StoryShowcase() {
       author: 'Alex Chen',
       genre: 'Sci-Fi',
       banner: '/1.jpg',
-      description: 'A mind-bending journey through time and space where reality itself is at stake.',
+      description:
+        'A mind-bending journey through time and space where reality itself is at stake.',
       rating: 4.8,
       readers: '12.5K',
       chapters: 24,
@@ -62,8 +63,7 @@ export function StoryShowcase() {
       author: 'Luna Star',
       genre: 'Adventure',
       banner: '/4.jpg',
-      description:
-        'When all magic fades, one final summoner must restore balance to the realm.',
+      description: 'When all magic fades, one final summoner must restore balance to the realm.',
       rating: 4.6,
       readers: '14.1K',
       chapters: 28,
@@ -85,8 +85,7 @@ export function StoryShowcase() {
       author: 'James Cosmos',
       genre: 'Space Opera',
       banner: '/6.jpg',
-      description:
-        'Explore the galaxy in an epic tale of war, diplomacy, and cosmic discoveries.',
+      description: 'Explore the galaxy in an epic tale of war, diplomacy, and cosmic discoveries.',
       rating: 4.9,
       readers: '22.7K',
       chapters: 40,
@@ -131,9 +130,7 @@ export function StoryShowcase() {
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.5 }}
               className="relative h-[600px] rounded-3xl overflow-hidden group cursor-pointer"
-              onClick={() =>
-                (window.location.href = `/stories/${stories[activeStory].id}`)
-              }
+              onClick={() => (window.location.href = `/stories/${stories[activeStory].id}`)}
             >
               {/* Banner Image */}
               <Image
@@ -160,9 +157,7 @@ export function StoryShowcase() {
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="text-yellow-400 text-xl">⭐</span>
-                      <span className="text-white font-bold">
-                        {stories[activeStory].rating}
-                      </span>
+                      <span className="text-white font-bold">{stories[activeStory].rating}</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-300">
                       <span>👥</span>
@@ -178,9 +173,7 @@ export function StoryShowcase() {
                     {stories[activeStory].title}
                   </h3>
 
-                  <p className="text-xl text-gray-300 mb-2">
-                    by {stories[activeStory].author}
-                  </p>
+                  <p className="text-xl text-gray-300 mb-2">by {stories[activeStory].author}</p>
 
                   <p className="text-lg text-gray-400 mb-8 max-w-3xl">
                     {stories[activeStory].description}

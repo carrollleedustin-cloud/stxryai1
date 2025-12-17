@@ -68,9 +68,7 @@ const SocialActivityNotifications = ({
 
   const formatTimestamp = (date: Date) => {
     const now = new Date();
-    const diffInMinutes = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60)
-    );
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
 
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
@@ -92,8 +90,7 @@ const SocialActivityNotifications = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`relative p-2 rounded-lg transition-smooth focus:outline-none focus:ring-2 focus:ring-ring ${
-          isInReadingSession
-            ? 'hover:bg-muted/30' :'hover:bg-muted/50'
+          isInReadingSession ? 'hover:bg-muted/30' : 'hover:bg-muted/50'
         }`}
       >
         <Icon
@@ -110,18 +107,13 @@ const SocialActivityNotifications = ({
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-[190]"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-[190]" onClick={() => setIsOpen(false)} />
           <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] bg-card/95 backdrop-blur-glass border border-border rounded-lg shadow-elevation-2 z-[200] max-h-[80vh] overflow-hidden flex flex-col">
             <div className="p-4 border-b border-border bg-gradient-to-r from-primary/10 to-secondary/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Icon name="BellIcon" size={20} className="text-primary" />
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Notifications
-                  </h3>
+                  <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
                   {unreadCount > 0 && (
                     <span className="px-2 py-0.5 text-xs font-bold bg-error/20 text-error rounded-full">
                       {unreadCount}
@@ -142,14 +134,8 @@ const SocialActivityNotifications = ({
             <div className="flex-1 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
-                  <Icon
-                    name="BellSlashIcon"
-                    size={48}
-                    className="text-muted-foreground mb-3"
-                  />
-                  <p className="text-sm text-muted-foreground text-center">
-                    No notifications yet
-                  </p>
+                  <Icon name="BellSlashIcon" size={48} className="text-muted-foreground mb-3" />
+                  <p className="text-sm text-muted-foreground text-center">No notifications yet</p>
                 </div>
               ) : (
                 <div className="divide-y divide-border">
@@ -158,11 +144,9 @@ const SocialActivityNotifications = ({
                       key={notification.id}
                       className={`p-4 transition-smooth cursor-pointer ${
                         notification.isRead
-                          ? 'hover:bg-muted/30' :'bg-primary/5 hover:bg-primary/10'
-                      } ${
-                        notification.hasSpoiler && !showSpoilers
-                          ? 'opacity-50' :''
-                      }`}
+                          ? 'hover:bg-muted/30'
+                          : 'bg-primary/5 hover:bg-primary/10'
+                      } ${notification.hasSpoiler && !showSpoilers ? 'opacity-50' : ''}`}
                       onClick={() => handleNotificationClick(notification)}
                     >
                       <div className="flex space-x-3">
@@ -180,9 +164,7 @@ const SocialActivityNotifications = ({
                               <Icon
                                 name={getNotificationIcon(notification.type)}
                                 size={20}
-                                className={getNotificationColor(
-                                  notification.type
-                                )}
+                                className={getNotificationColor(notification.type)}
                               />
                             </div>
                           )}
@@ -200,14 +182,8 @@ const SocialActivityNotifications = ({
 
                           {notification.hasSpoiler && !showSpoilers ? (
                             <div className="mt-1 flex items-center space-x-2">
-                              <Icon
-                                name="EyeSlashIcon"
-                                size={14}
-                                className="text-warning"
-                              />
-                              <p className="text-xs text-warning">
-                                Contains spoilers
-                              </p>
+                              <Icon name="EyeSlashIcon" size={14} className="text-warning" />
+                              <p className="text-xs text-warning">Contains spoilers</p>
                             </div>
                           ) : (
                             <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
@@ -232,13 +208,8 @@ const SocialActivityNotifications = ({
                   onClick={() => setShowSpoilers(!showSpoilers)}
                   className="flex items-center space-x-2 text-xs font-medium text-warning hover:text-accent transition-smooth"
                 >
-                  <Icon
-                    name={showSpoilers ? 'EyeSlashIcon' : 'EyeIcon'}
-                    size={16}
-                  />
-                  <span>
-                    {showSpoilers ? 'Hide spoilers' : 'Show spoilers'}
-                  </span>
+                  <Icon name={showSpoilers ? 'EyeSlashIcon' : 'EyeIcon'} size={16} />
+                  <span>{showSpoilers ? 'Hide spoilers' : 'Show spoilers'}</span>
                 </button>
               </div>
             )}

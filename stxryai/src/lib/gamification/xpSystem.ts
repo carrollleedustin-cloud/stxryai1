@@ -12,7 +12,14 @@ export interface Level {
 }
 
 export interface XPActivity {
-  type: 'story_completed' | 'choice_made' | 'daily_login' | 'profile_completed' | 'story_created' | 'comment_posted' | 'story_shared';
+  type:
+    | 'story_completed'
+    | 'choice_made'
+    | 'daily_login'
+    | 'profile_completed'
+    | 'story_created'
+    | 'comment_posted'
+    | 'story_shared';
   xpReward: number;
   description: string;
 }
@@ -22,38 +29,38 @@ export const XP_ACTIVITIES: Record<string, XPActivity> = {
   story_completed: {
     type: 'story_completed',
     xpReward: 100,
-    description: 'Complete a story'
+    description: 'Complete a story',
   },
   choice_made: {
     type: 'choice_made',
     xpReward: 10,
-    description: 'Make a choice in a story'
+    description: 'Make a choice in a story',
   },
   daily_login: {
     type: 'daily_login',
     xpReward: 25,
-    description: 'Daily login bonus'
+    description: 'Daily login bonus',
   },
   profile_completed: {
     type: 'profile_completed',
     xpReward: 50,
-    description: 'Complete your profile'
+    description: 'Complete your profile',
   },
   story_created: {
     type: 'story_created',
     xpReward: 150,
-    description: 'Create a new story'
+    description: 'Create a new story',
   },
   comment_posted: {
     type: 'comment_posted',
     xpReward: 15,
-    description: 'Post a comment'
+    description: 'Post a comment',
   },
   story_shared: {
     type: 'story_shared',
     xpReward: 30,
-    description: 'Share a story'
-  }
+    description: 'Share a story',
+  },
 };
 
 // Level progression curve - exponential growth
@@ -96,7 +103,7 @@ export const LEVELS: Level[] = Array.from({ length: 100 }, (_, i) => {
     minXP,
     maxXP,
     title,
-    badge
+    badge,
   };
 });
 
@@ -144,7 +151,10 @@ export function calculateXPReward(
 /**
  * Check if XP gain results in level up
  */
-export function checkLevelUp(oldXP: number, newXP: number): {
+export function checkLevelUp(
+  oldXP: number,
+  newXP: number
+): {
   leveledUp: boolean;
   oldLevel: number;
   newLevel: number;
@@ -157,6 +167,6 @@ export function checkLevelUp(oldXP: number, newXP: number): {
     leveledUp: newLevel.level > oldLevel.level,
     oldLevel: oldLevel.level,
     newLevel: newLevel.level,
-    levelsGained: newLevel.level - oldLevel.level
+    levelsGained: newLevel.level - oldLevel.level,
   };
 }

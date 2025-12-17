@@ -191,9 +191,7 @@ function CollectionCard({
         <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
 
         {/* Description */}
-        <p className="text-white/80 text-sm mb-4 line-clamp-2">
-          {collection.description}
-        </p>
+        <p className="text-white/80 text-sm mb-4 line-clamp-2">{collection.description}</p>
 
         {/* Stats */}
         <div className="flex items-center justify-between text-white/70 text-sm">
@@ -212,7 +210,8 @@ function EmptyCollections({ onCreate }: { onCreate: () => void }) {
       <div className="text-6xl mb-4">📚</div>
       <h3 className="text-xl font-semibold text-white mb-2">No Collections Yet</h3>
       <p className="text-gray-400 mb-6 max-w-md mx-auto">
-        Create collections to organize your favorite stories into playlists. Reading lists, favorites, or themed collections!
+        Create collections to organize your favorite stories into playlists. Reading lists,
+        favorites, or themed collections!
       </p>
       <button
         onClick={onCreate}
@@ -271,10 +270,7 @@ function CreateCollectionModal({
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-white">Create Collection</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
             ✕
           </button>
         </div>
@@ -297,9 +293,7 @@ function CreateCollectionModal({
 
           {/* Description */}
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
-              Description
-            </label>
+            <label className="text-sm font-medium text-gray-300 mb-2 block">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -312,9 +306,7 @@ function CreateCollectionModal({
 
           {/* Icon Selection */}
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
-              Choose an Icon
-            </label>
+            <label className="text-sm font-medium text-gray-300 mb-2 block">Choose an Icon</label>
             <div className="grid grid-cols-6 gap-2">
               {icons.map((icon) => (
                 <button
@@ -334,9 +326,7 @@ function CreateCollectionModal({
 
           {/* Color Selection */}
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
-              Choose a Color
-            </label>
+            <label className="text-sm font-medium text-gray-300 mb-2 block">Choose a Color</label>
             <div className="grid grid-cols-3 gap-2">
               {colors.map((color) => (
                 <button
@@ -364,9 +354,11 @@ function CreateCollectionModal({
                 isPublic ? 'bg-purple-600' : 'bg-gray-700'
               }`}
             >
-              <div className={`absolute w-5 h-5 bg-white rounded-full top-1 transition-all ${
-                isPublic ? 'left-8' : 'left-1'
-              }`} />
+              <div
+                className={`absolute w-5 h-5 bg-white rounded-full top-1 transition-all ${
+                  isPublic ? 'left-8' : 'left-1'
+                }`}
+              />
             </button>
           </div>
 
@@ -427,10 +419,7 @@ function CollectionDetailModal({
                 <p className="text-white/80">{collection.description}</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-white/80 hover:text-white text-2xl"
-            >
+            <button onClick={onClose} className="text-white/80 hover:text-white text-2xl">
               ✕
             </button>
           </div>
@@ -447,9 +436,15 @@ function CollectionDetailModal({
                 >
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-purple-900 to-indigo-900 flex-shrink-0 overflow-hidden">
                     {story.coverImage ? (
-                      <img src={story.coverImage} alt={story.title} className="w-full h-full object-cover" />
+                      <img
+                        src={story.coverImage}
+                        alt={story.title}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-2xl">📖</div>
+                      <div className="w-full h-full flex items-center justify-center text-2xl">
+                        📖
+                      </div>
                     )}
                   </div>
                   <div className="flex-1">

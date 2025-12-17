@@ -72,12 +72,7 @@ interface LongPressProps {
   children: React.ReactNode;
 }
 
-export function LongPress({
-  onLongPress,
-  onPress,
-  duration = 500,
-  children,
-}: LongPressProps) {
+export function LongPress({ onLongPress, onPress, duration = 500, children }: LongPressProps) {
   const [isPressed, setIsPressed] = useState(false);
   const timerRef = useRef<NodeJS.Timeout>();
 
@@ -136,11 +131,7 @@ interface PinchToZoomProps {
   maxZoom?: number;
 }
 
-export function PinchToZoom({
-  children,
-  minZoom = 1,
-  maxZoom = 4,
-}: PinchToZoomProps) {
+export function PinchToZoom({ children, minZoom = 1, maxZoom = 4 }: PinchToZoomProps) {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const lastDistance = useRef(0);
@@ -219,12 +210,7 @@ interface DoubleTapProps {
   children: React.ReactNode;
 }
 
-export function DoubleTap({
-  onDoubleTap,
-  onSingleTap,
-  delay = 300,
-  children,
-}: DoubleTapProps) {
+export function DoubleTap({ onDoubleTap, onSingleTap, delay = 300, children }: DoubleTapProps) {
   const [tapCount, setTapCount] = useState(0);
   const timerRef = useRef<NodeJS.Timeout>();
 

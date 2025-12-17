@@ -290,11 +290,13 @@ export class AIImageGenerator {
   async createVariations(imageUrl: string, count: number = 3): Promise<GeneratedImage[]> {
     // Placeholder for DALL-E variations endpoint
     // In production, implement actual variations API
-    return Array(count).fill(null).map(() => ({
-      url: imageUrl,
-      width: 1024,
-      height: 1024,
-    }));
+    return Array(count)
+      .fill(null)
+      .map(() => ({
+        url: imageUrl,
+        width: 1024,
+        height: 1024,
+      }));
   }
 }
 

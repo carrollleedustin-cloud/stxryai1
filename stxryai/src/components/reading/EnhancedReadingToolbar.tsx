@@ -41,7 +41,9 @@ export default function EnhancedReadingToolbar({
           {/* Progress Bar */}
           <div className="mb-3">
             <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
-              <span>Chapter {currentChapter} of {totalChapters}</span>
+              <span>
+                Chapter {currentChapter} of {totalChapters}
+              </span>
               <button
                 onClick={() => setShowProgress(!showProgress)}
                 className="hover:text-white transition-colors"
@@ -71,19 +73,10 @@ export default function EnhancedReadingToolbar({
               />
 
               {/* Comments */}
-              <ToolbarButton
-                icon="💬"
-                label="Comments"
-                badge={commentCount}
-                onClick={onComment}
-              />
+              <ToolbarButton icon="💬" label="Comments" badge={commentCount} onClick={onComment} />
 
               {/* Share */}
-              <ToolbarButton
-                icon="📤"
-                label="Share"
-                onClick={onShare}
-              />
+              <ToolbarButton icon="📤" label="Share" onClick={onShare} />
             </div>
 
             {/* Center - Quick Stats */}
@@ -101,18 +94,10 @@ export default function EnhancedReadingToolbar({
             {/* Right Actions */}
             <div className="flex items-center gap-2">
               {/* Text Size */}
-              <ToolbarButton
-                icon="🔤"
-                label="Text Size"
-                onClick={() => setShowSettings(true)}
-              />
+              <ToolbarButton icon="🔤" label="Text Size" onClick={() => setShowSettings(true)} />
 
               {/* Settings */}
-              <ToolbarButton
-                icon="⚙️"
-                label="Settings"
-                onClick={onSettings}
-              />
+              <ToolbarButton icon="⚙️" label="Settings" onClick={onSettings} />
             </div>
           </div>
         </div>
@@ -151,17 +136,19 @@ export default function EnhancedReadingToolbar({
                       isCurrent
                         ? 'bg-purple-600/20 border border-purple-600/30'
                         : isComplete
-                        ? 'bg-white/5'
-                        : 'bg-white/5 opacity-50'
+                          ? 'bg-white/5'
+                          : 'bg-white/5 opacity-50'
                     }`}
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      isCurrent
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
-                        : isComplete
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-700 text-gray-400'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        isCurrent
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+                          : isComplete
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-700 text-gray-400'
+                      }`}
+                    >
                       {isComplete ? '✓' : chapterNum}
                     </div>
                     <div className="flex-1">
@@ -182,9 +169,7 @@ export default function EnhancedReadingToolbar({
 
       {/* Settings Panel */}
       <AnimatePresence>
-        {showSettings && (
-          <ReadingSettingsPanel onClose={() => setShowSettings(false)} />
-        )}
+        {showSettings && <ReadingSettingsPanel onClose={() => setShowSettings(false)} />}
       </AnimatePresence>
     </>
   );
@@ -263,10 +248,7 @@ function ReadingSettingsPanel({ onClose }: { onClose: () => void }) {
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-white">Reading Settings</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white text-2xl"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-2xl">
             ✕
           </button>
         </div>
@@ -305,18 +287,14 @@ function ReadingSettingsPanel({ onClose }: { onClose: () => void }) {
 
           {/* Theme */}
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
-              Theme
-            </label>
+            <label className="text-sm font-medium text-gray-300 mb-2 block">Theme</label>
             <div className="grid grid-cols-3 gap-2">
               {themes.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setTheme(t.id as any)}
                   className={`p-3 rounded-lg border-2 transition-all ${
-                    theme === t.id
-                      ? 'border-purple-600'
-                      : 'border-white/10 hover:border-white/20'
+                    theme === t.id ? 'border-purple-600' : 'border-white/10 hover:border-white/20'
                   }`}
                 >
                   <div className={`w-full h-8 rounded ${t.bg} mb-2`} />
@@ -328,9 +306,7 @@ function ReadingSettingsPanel({ onClose }: { onClose: () => void }) {
 
           {/* Font Family */}
           <div>
-            <label className="text-sm font-medium text-gray-300 mb-2 block">
-              Font Family
-            </label>
+            <label className="text-sm font-medium text-gray-300 mb-2 block">Font Family</label>
             <div className="grid grid-cols-3 gap-2">
               {fonts.map((f) => (
                 <button
@@ -357,7 +333,12 @@ function ReadingSettingsPanel({ onClose }: { onClose: () => void }) {
               style={{
                 fontSize: `${fontSize}px`,
                 lineHeight: lineHeight,
-                fontFamily: fontFamily === 'serif' ? 'serif' : fontFamily === 'sans' ? 'sans-serif' : 'monospace',
+                fontFamily:
+                  fontFamily === 'serif'
+                    ? 'serif'
+                    : fontFamily === 'sans'
+                      ? 'sans-serif'
+                      : 'monospace',
               }}
             >
               The quick brown fox jumps over the lazy dog.

@@ -1,7 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Achievement, getRarityColor, getRarityLabel, checkAchievementProgress } from '@/lib/gamification/achievements';
+import {
+  Achievement,
+  getRarityColor,
+  getRarityLabel,
+  checkAchievementProgress,
+} from '@/lib/gamification/achievements';
 import Icon from '@/components/ui/AppIcon';
 
 interface AchievementCardProps {
@@ -17,7 +22,7 @@ export default function AchievementCard({
   userStats,
   unlocked,
   showProgress = true,
-  size = 'md'
+  size = 'md',
 }: AchievementCardProps) {
   const progress = checkAchievementProgress(achievement, userStats);
   const isUnlocked = unlocked ?? progress.unlocked;
@@ -25,13 +30,13 @@ export default function AchievementCard({
   const sizeClasses = {
     sm: 'p-3 text-sm',
     md: 'p-4 text-base',
-    lg: 'p-6 text-lg'
+    lg: 'p-6 text-lg',
   };
 
   const iconSizes = {
     sm: 32,
     md: 48,
-    lg: 64
+    lg: 64,
   };
 
   return (
@@ -47,14 +52,12 @@ export default function AchievementCard({
           animate={isUnlocked ? { rotate: [0, 10, -10, 0] } : {}}
           transition={{ duration: 0.5, repeat: isUnlocked ? Infinity : 0, repeatDelay: 3 }}
           className={`flex-shrink-0 flex items-center justify-center rounded-full ${
-            isUnlocked
-              ? 'bg-gradient-to-br from-yellow-400 to-orange-500'
-              : 'bg-muted'
+            isUnlocked ? 'bg-gradient-to-br from-yellow-400 to-orange-500' : 'bg-muted'
           }`}
           style={{
             width: iconSizes[size],
             height: iconSizes[size],
-            fontSize: iconSizes[size] * 0.6
+            fontSize: iconSizes[size] * 0.6,
           }}
         >
           {achievement.icon}
@@ -63,16 +66,19 @@ export default function AchievementCard({
         {/* Achievement Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <h3 className="font-bold text-foreground truncate">
-              {achievement.name}
-            </h3>
+            <h3 className="font-bold text-foreground truncate">{achievement.name}</h3>
             {isUnlocked && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 15 }}
               >
-                <Icon name="CheckCircleIcon" size={20} variant="solid" className="text-green-500 flex-shrink-0" />
+                <Icon
+                  name="CheckCircleIcon"
+                  size={20}
+                  variant="solid"
+                  className="text-green-500 flex-shrink-0"
+                />
               </motion.div>
             )}
           </div>
@@ -87,8 +93,7 @@ export default function AchievementCard({
               {getRarityLabel(achievement.rarity)}
             </span>
             <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Icon name="SparklesIcon" size={12} />
-              +{achievement.xpReward} XP
+              <Icon name="SparklesIcon" size={12} />+{achievement.xpReward} XP
             </span>
           </div>
 

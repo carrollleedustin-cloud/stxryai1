@@ -27,16 +27,17 @@ export default function InteractiveShowcaseSection() {
       id: '1',
       title: 'The Quantum Paradox',
       genre: 'Sci-Fi',
-      excerpt: 'You stand before the quantum gateway, its swirling energy casting an otherworldly glow across the laboratory. Dr. Chen\'s voice crackles through your earpiece: \'Once you step through, there\'s no coming back. Are you ready?\'',
+      excerpt:
+        "You stand before the quantum gateway, its swirling energy casting an otherworldly glow across the laboratory. Dr. Chen's voice crackles through your earpiece: 'Once you step through, there's no coming back. Are you ready?'",
       choices: [
         'Step through the gateway without hesitation',
         'Ask Dr. Chen for more information first',
         'Check your equipment one more time',
       ],
       results: [
-        "The world dissolves into a kaleidoscope of colors. You feel a strange sensation, as if you are everywhere and nowhere at once.",
-        "Dr. Chen explains the risks, her voice trembling slightly. The gateway is unstable, and the outcome is uncertain. Armed with this knowledge, you feel a new sense of dread.",
-        "You notice a loose cable on your suit. A simple mistake could have been fatal. You secure it, your heart pounding with the near-miss."
+        'The world dissolves into a kaleidoscope of colors. You feel a strange sensation, as if you are everywhere and nowhere at once.',
+        'Dr. Chen explains the risks, her voice trembling slightly. The gateway is unstable, and the outcome is uncertain. Armed with this knowledge, you feel a new sense of dread.',
+        'You notice a loose cable on your suit. A simple mistake could have been fatal. You secure it, your heart pounding with the near-miss.',
       ],
       image: '/images/stories/scifi.jpg',
       color: 'from-cyan-500 to-blue-600',
@@ -45,34 +46,32 @@ export default function InteractiveShowcaseSection() {
       id: '2',
       title: 'Crown of Shadows',
       genre: 'Fantasy',
-      excerpt: 'The ancient throne room lies in ruins, but power still pulses through its stones. The Shadow Crown hovers before you, whispering promises of strength. Yet you remember the witch\'s warning about its terrible price.',
+      excerpt:
+        "The ancient throne room lies in ruins, but power still pulses through its stones. The Shadow Crown hovers before you, whispering promises of strength. Yet you remember the witch's warning about its terrible price.",
       choices: [
         'Claim the crown and embrace its power',
         'Destroy the crown to break its curse',
         'Leave the crown and search for another way',
       ],
       results: [
-        "A surge of dark energy flows through you. You feel powerful, but also a chilling emptiness. The whispers of the crown are now inside your head.",
-        "As you shatter the crown, a shriek echoes through the chamber. The shadows recede, and you feel a great burden lifted from the land, but also a sense of loss.",
-        "You turn your back on the crown. The whispers fade, replaced by the sound of your own footsteps. The path ahead is uncertain, but it is your own."
+        'A surge of dark energy flows through you. You feel powerful, but also a chilling emptiness. The whispers of the crown are now inside your head.',
+        'As you shatter the crown, a shriek echoes through the chamber. The shadows recede, and you feel a great burden lifted from the land, but also a sense of loss.',
+        'You turn your back on the crown. The whispers fade, replaced by the sound of your own footsteps. The path ahead is uncertain, but it is your own.',
       ],
       image: '/images/stories/fantasy.jpg',
       color: 'from-purple-500 to-pink-600',
     },
     {
       id: '3',
-      title: 'Last Call at Murphy\'s',
+      title: "Last Call at Murphy's",
       genre: 'Mystery',
-      excerpt: 'The rain hammers against the window as you nurse your whiskey. The stranger in the corner hasn\'t moved in an hour. Your detective instincts are screaming, but you\'re officially off duty.',
-      choices: [
-        'Approach the stranger casually',
-        'Call it in to dispatch',
-        'Wait and observe',
-      ],
+      excerpt:
+        "The rain hammers against the window as you nurse your whiskey. The stranger in the corner hasn't moved in an hour. Your detective instincts are screaming, but you're officially off duty.",
+      choices: ['Approach the stranger casually', 'Call it in to dispatch', 'Wait and observe'],
       results: [
         "You slide into the booth. The stranger doesn't look up. As you get closer, you notice a small, dark stain on his trench coat. It looks like blood.",
-        "You make the call. As you describe the scene, you see a flicker of movement. The stranger is gone, leaving only a half-empty glass and a cryptic note.",
-        "You watch as the stranger finally moves. He stands up, and for a fleeting moment, you see the glint of a gun under his coat. This is more than just a quiet drink."
+        'You make the call. As you describe the scene, you see a flicker of movement. The stranger is gone, leaving only a half-empty glass and a cryptic note.',
+        'You watch as the stranger finally moves. He stands up, and for a fleeting moment, you see the glint of a gun under his coat. This is more than just a quiet drink.',
       ],
       image: '/images/stories/mystery.jpg',
       color: 'from-amber-500 to-orange-600',
@@ -86,7 +85,10 @@ export default function InteractiveShowcaseSection() {
   const story = storyDemos[selectedStory];
 
   return (
-    <section ref={ref} className="py-24 bg-gradient-to-b from-background to-background/80 relative overflow-hidden">
+    <section
+      ref={ref}
+      className="py-24 bg-gradient-to-b from-background to-background/80 relative overflow-hidden"
+    >
       {/* Background Effects */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
 
@@ -163,7 +165,8 @@ export default function InteractiveShowcaseSection() {
                         <motion.button
                           key={index}
                           onClick={() => handleChoiceClick(index)}
-                          className={`w-full text-left p-4 rounded-xl border-2 transition-all ${selectedChoice === index
+                          className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+                            selectedChoice === index
                               ? 'border-primary bg-primary/10'
                               : 'border-border hover:border-primary/50 hover:bg-accent'
                           }`}
@@ -171,10 +174,13 @@ export default function InteractiveShowcaseSection() {
                           whileTap={{ scale: 0.98 }}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${selectedChoice === index
-                                ? 'border-primary bg-primary text-primary-foreground'
-                                : 'border-border'
-                            }`}>
+                            <div
+                              className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${
+                                selectedChoice === index
+                                  ? 'border-primary bg-primary text-primary-foreground'
+                                  : 'border-border'
+                              }`}
+                            >
                               {selectedChoice === index ? '✓' : index + 1}
                             </div>
                             <span className="flex-1">{choice}</span>
@@ -226,7 +232,8 @@ export default function InteractiveShowcaseSection() {
                       setSelectedStory(index);
                       setSelectedChoice(null);
                     }}
-                    className={`p-4 rounded-xl border-2 transition-all ${selectedStory === index
+                    className={`p-4 rounded-xl border-2 transition-all ${
+                      selectedStory === index
                         ? 'border-primary bg-primary/10'
                         : 'border-border hover:border-primary/30'
                     }`}
@@ -245,7 +252,7 @@ export default function InteractiveShowcaseSection() {
             {/* Features */}
             <div className="space-y-4">
               <h3 className="text-xl font-semibold mb-4">How It Works</h3>
-              {[ 
+              {[
                 {
                   icon: '🎯',
                   title: 'Make Meaningful Choices',

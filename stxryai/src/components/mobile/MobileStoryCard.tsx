@@ -84,9 +84,7 @@ export default function MobileStoryCard({
 
           {/* Bottom Info */}
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="text-white font-bold text-lg mb-1 line-clamp-2">
-              {story.title}
-            </h3>
+            <h3 className="text-white font-bold text-lg mb-1 line-clamp-2">{story.title}</h3>
             <p className="text-white/80 text-sm mb-3">by {story.author}</p>
 
             <div className="flex items-center gap-3 text-xs text-white/70">
@@ -157,9 +155,7 @@ export default function MobileStoryCard({
             </div>
           )}
 
-          <h2 className="text-white font-bold text-3xl mb-2 line-clamp-2">
-            {story.title}
-          </h2>
+          <h2 className="text-white font-bold text-3xl mb-2 line-clamp-2">{story.title}</h2>
           <p className="text-white/90 text-xl mb-4">by {story.author}</p>
 
           <div className="flex items-center gap-2 mb-6">
@@ -202,11 +198,7 @@ interface MobileStoryStackProps {
   onSwipeRight?: (story: Story) => void;
 }
 
-export function MobileStoryStack({
-  stories,
-  onSwipeLeft,
-  onSwipeRight,
-}: MobileStoryStackProps) {
+export function MobileStoryStack({ stories, onSwipeLeft, onSwipeRight }: MobileStoryStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleSwipe = (callback?: (story: Story) => void) => {

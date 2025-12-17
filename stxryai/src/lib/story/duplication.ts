@@ -65,7 +65,7 @@ export function duplicateStory(
     keepChapters = true,
     keepCharacters = true,
     keepSettings = true,
-    addSuffix = true
+    addSuffix = true,
   } = options;
 
   // Generate new title
@@ -79,15 +79,15 @@ export function duplicateStory(
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     // Remove author reference for clones (they become new stories)
-    author_id: undefined
+    author_id: undefined,
   };
 
   // Clone chapters if requested
   if (keepChapters && originalStory.chapters) {
-    duplicatedStory.chapters = originalStory.chapters.map(chapter => ({
+    duplicatedStory.chapters = originalStory.chapters.map((chapter) => ({
       ...chapter,
       id: generateNewId(),
-      story_id: duplicatedStory.id
+      story_id: duplicatedStory.id,
     }));
   } else {
     duplicatedStory.chapters = [];
@@ -95,14 +95,14 @@ export function duplicateStory(
 
   // Clone characters if requested
   if (keepCharacters && originalStory.characters) {
-    duplicatedStory.characters = originalStory.characters.map(char => ({ ...char }));
+    duplicatedStory.characters = originalStory.characters.map((char) => ({ ...char }));
   } else {
     duplicatedStory.characters = [];
   }
 
   // Clone settings if requested
   if (keepSettings && originalStory.settings) {
-    duplicatedStory.settings = originalStory.settings.map(setting => ({ ...setting }));
+    duplicatedStory.settings = originalStory.settings.map((setting) => ({ ...setting }));
   } else {
     duplicatedStory.settings = [];
   }
@@ -121,37 +121,37 @@ export function remixStory(originalStory: Story, newTitle: string): Story {
     description: `A remix of: ${originalStory.title}`,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    author_id: undefined
+    author_id: undefined,
   };
 
   // Keep structure but clear content
   if (originalStory.chapters) {
-    remixedStory.chapters = originalStory.chapters.map(chapter => ({
+    remixedStory.chapters = originalStory.chapters.map((chapter) => ({
       id: generateNewId(),
       title: chapter.title,
       content: '', // Clear content for user to fill
       order: chapter.order,
-      choices: chapter.choices?.map(choice => ({
+      choices: chapter.choices?.map((choice) => ({
         ...choice,
-        id: generateNewId()
-      }))
+        id: generateNewId(),
+      })),
     }));
   }
 
   // Keep character names but clear details
   if (originalStory.characters) {
-    remixedStory.characters = originalStory.characters.map(char => ({
+    remixedStory.characters = originalStory.characters.map((char) => ({
       name: char.name,
       description: '',
-      traits: []
+      traits: [],
     }));
   }
 
   // Keep setting names but clear details
   if (originalStory.settings) {
-    remixedStory.settings = originalStory.settings.map(setting => ({
+    remixedStory.settings = originalStory.settings.map((setting) => ({
       name: setting.name,
-      description: ''
+      description: '',
     }));
   }
 
@@ -168,21 +168,22 @@ export function cloneStoryStructure(originalStory: Story): Story {
     description: '',
     genre: originalStory.genre,
     tags: [...originalStory.tags],
-    chapters: originalStory.chapters?.map(chapter => ({
-      id: generateNewId(),
-      title: `Chapter ${chapter.order}`,
-      content: '',
-      order: chapter.order,
-      choices: chapter.choices?.map((choice, idx) => ({
+    chapters:
+      originalStory.chapters?.map((chapter) => ({
         id: generateNewId(),
-        text: `Choice ${idx + 1}`,
-        nextChapterId: ''
-      }))
-    })) || [],
+        title: `Chapter ${chapter.order}`,
+        content: '',
+        order: chapter.order,
+        choices: chapter.choices?.map((choice, idx) => ({
+          id: generateNewId(),
+          text: `Choice ${idx + 1}`,
+          nextChapterId: '',
+        })),
+      })) || [],
     characters: [],
     settings: [],
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 }
 
@@ -201,36 +202,29 @@ export function createTemplateFromStory(story: Story): {
     structure: {
       chapters: story.chapters?.length || 0,
       choicesPerChapter: calculateAverageChoices(story.chapters || []),
-      averageLength: calculateAverageLength(story.chapters || [])
+      averageLength: calculateAverageLength(story.chapters || []),
     },
-    outline: story.chapters?.map(ch => ch.title) || []
+    outline: story.chapters?.map((ch) => ch.title) || [],
   };
 }
 
 /**
  * Duplicate specific chapters
  */
-export function duplicateChapters(
-  chapters: Chapter[],
-  chapterIds: string[]
-): Chapter[] {
+export function duplicateChapters(chapters: Chapter[], chapterIds: string[]): Chapter[] {
   return chapters
-    .filter(ch => chapterIds.includes(ch.id))
-    .map(ch => ({
+    .filter((ch) => chapterIds.includes(ch.id))
+    .map((ch) => ({
       ...ch,
       id: generateNewId(),
-      title: `${ch.title} (Copy)`
+      title: `${ch.title} (Copy)`,
     }));
 }
 
 /**
  * Merge two stories
  */
-export function mergeStories(
-  story1: Story,
-  story2: Story,
-  mergeTitle: string
-): Story {
+export function mergeStories(story1: Story, story2: Story, mergeTitle: string): Story {
   return {
     id: generateNewId(),
     title: mergeTitle,
@@ -241,24 +235,18 @@ export function mergeStories(
       ...(story1.chapters || []).map((ch, idx) => ({
         ...ch,
         id: generateNewId(),
-        order: idx
+        order: idx,
       })),
       ...(story2.chapters || []).map((ch, idx) => ({
         ...ch,
         id: generateNewId(),
-        order: (story1.chapters?.length || 0) + idx
-      }))
+        order: (story1.chapters?.length || 0) + idx,
+      })),
     ],
-    characters: [
-      ...(story1.characters || []),
-      ...(story2.characters || [])
-    ],
-    settings: [
-      ...(story1.settings || []),
-      ...(story2.settings || [])
-    ],
+    characters: [...(story1.characters || []), ...(story2.characters || [])],
+    settings: [...(story1.settings || []), ...(story2.settings || [])],
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 }
 
@@ -272,14 +260,14 @@ export function createBranchingVariant(
 ): Story {
   const branchedStory = duplicateStory(originalStory, {
     newTitle: variantTitle,
-    addSuffix: false
+    addSuffix: false,
   });
 
   // Keep only chapters up to the branch point
   if (branchedStory.chapters) {
     branchedStory.chapters = branchedStory.chapters
-      .filter(ch => ch.order <= branchFromChapter)
-      .map(ch => ({ ...ch, id: generateNewId() }));
+      .filter((ch) => ch.order <= branchFromChapter)
+      .map((ch) => ({ ...ch, id: generateNewId() }));
   }
 
   branchedStory.description = `Branched from "${originalStory.title}" at Chapter ${branchFromChapter}`;
@@ -309,7 +297,7 @@ export function importStory(jsonString: string): Story {
     if (story.chapters) {
       story.chapters = story.chapters.map((ch: Chapter) => ({
         ...ch,
-        id: generateNewId()
+        id: generateNewId(),
       }));
     }
 
@@ -322,7 +310,10 @@ export function importStory(jsonString: string): Story {
 /**
  * Compare two stories
  */
-export function compareStories(story1: Story, story2: Story): {
+export function compareStories(
+  story1: Story,
+  story2: Story
+): {
   titleDiff: boolean;
   chapterCountDiff: boolean;
   contentSimilarity: number;
@@ -346,7 +337,7 @@ export function compareStories(story1: Story, story2: Story): {
     titleDiff: story1.title !== story2.title,
     chapterCountDiff: (story1.chapters?.length || 0) !== (story2.chapters?.length || 0),
     contentSimilarity: calculateContentSimilarity(story1, story2),
-    structureDiff: differences
+    structureDiff: differences,
   };
 }
 
@@ -364,10 +355,11 @@ function calculateAverageChoices(chapters: Chapter[]): number {
 
 function calculateAverageLength(chapters: Chapter[]): 'short' | 'medium' | 'long' {
   if (chapters.length === 0) return 'medium';
-  const avgWords = chapters.reduce((sum, ch) => {
-    const wordCount = ch.content?.split(/\s+/).length || 0;
-    return sum + wordCount;
-  }, 0) / chapters.length;
+  const avgWords =
+    chapters.reduce((sum, ch) => {
+      const wordCount = ch.content?.split(/\s+/).length || 0;
+      return sum + wordCount;
+    }, 0) / chapters.length;
 
   if (avgWords < 300) return 'short';
   if (avgWords < 600) return 'medium';
@@ -378,7 +370,7 @@ function calculateContentSimilarity(story1: Story, story2: Story): number {
   // Simple similarity check based on shared tags
   const tags1 = new Set(story1.tags);
   const tags2 = new Set(story2.tags);
-  const intersection = new Set(Array.from(tags1).filter(x => tags2.has(x)));
+  const intersection = new Set(Array.from(tags1).filter((x) => tags2.has(x)));
   const union = new Set([...story1.tags, ...story2.tags]);
 
   return union.size === 0 ? 0 : Math.round((intersection.size / union.size) * 100);

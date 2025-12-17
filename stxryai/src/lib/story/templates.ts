@@ -36,9 +36,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 8,
       choicesPerChapter: 3,
-      averageLength: 'medium'
+      averageLength: 'medium',
     },
-    starterPrompt: 'Write a detective mystery where a valuable artifact has been stolen from a museum. The detective must interview suspects and gather clues.',
+    starterPrompt:
+      'Write a detective mystery where a valuable artifact has been stolen from a museum. The detective must interview suspects and gather clues.',
     outline: [
       'The Crime: Discovery of the stolen artifact',
       'The Investigation Begins: Meet the suspects',
@@ -47,11 +48,17 @@ export const storyTemplates: StoryTemplate[] = [
       'A New Lead: Uncover a hidden connection',
       'The Twist: Everything you thought was wrong',
       'The Confrontation: Accuse the culprit',
-      'The Resolution: Reveal how it was done'
+      'The Resolution: Reveal how it was done',
     ],
-    characters: ['Detective', 'Museum Curator', 'Security Guard', 'Art Dealer', 'Wealthy Collector'],
-    settings: ['Museum', 'Crime Scene', 'Police Station', 'Suspect\'s Home'],
-    themes: ['Justice', 'Deception', 'Truth', 'Investigation']
+    characters: [
+      'Detective',
+      'Museum Curator',
+      'Security Guard',
+      'Art Dealer',
+      'Wealthy Collector',
+    ],
+    settings: ['Museum', 'Crime Scene', 'Police Station', "Suspect's Home"],
+    themes: ['Justice', 'Deception', 'Truth', 'Investigation'],
   },
   {
     id: 'fantasy-quest',
@@ -64,9 +71,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 10,
       choicesPerChapter: 4,
-      averageLength: 'medium'
+      averageLength: 'medium',
     },
-    starterPrompt: 'Create a fantasy quest where a young hero must retrieve a magical artifact to save their kingdom from an ancient evil.',
+    starterPrompt:
+      'Create a fantasy quest where a young hero must retrieve a magical artifact to save their kingdom from an ancient evil.',
     outline: [
       'The Call to Adventure: Learn about the threat',
       'Gathering Allies: Meet your companions',
@@ -77,11 +85,11 @@ export const storyTemplates: StoryTemplate[] = [
       'The Guardian: Prove your worth',
       'Betrayal: An ally shows their true colors',
       'The Final Battle: Confront the evil',
-      'Return Home: The kingdom is saved'
+      'Return Home: The kingdom is saved',
     ],
     characters: ['Hero', 'Wise Mentor', 'Rogue Thief', 'Powerful Mage', 'Dark Villain'],
     settings: ['Village', 'Enchanted Forest', 'Ancient Ruins', 'Dark Castle'],
-    themes: ['Courage', 'Friendship', 'Sacrifice', 'Good vs Evil']
+    themes: ['Courage', 'Friendship', 'Sacrifice', 'Good vs Evil'],
   },
   {
     id: 'romance-modern',
@@ -94,9 +102,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 12,
       choicesPerChapter: 3,
-      averageLength: 'short'
+      averageLength: 'short',
     },
-    starterPrompt: 'Write a modern romance about two people who meet by chance and must decide if love is worth the risk.',
+    starterPrompt:
+      'Write a modern romance about two people who meet by chance and must decide if love is worth the risk.',
     outline: [
       'The Meet-Cute: An unexpected encounter',
       'First Impressions: Getting to know each other',
@@ -109,11 +118,11 @@ export const storyTemplates: StoryTemplate[] = [
       'Reconciliation: Honest conversations',
       'The Choice: Together or apart?',
       'New Beginning: Building a future',
-      'Happily Ever After: Love prevails'
+      'Happily Ever After: Love prevails',
     ],
     characters: ['Protagonist', 'Love Interest', 'Best Friend', 'Ex-Partner', 'Supportive Parent'],
     settings: ['Coffee Shop', 'Park', 'Workplace', 'Home', 'Restaurant'],
-    themes: ['Love', 'Trust', 'Vulnerability', 'Second Chances']
+    themes: ['Love', 'Trust', 'Vulnerability', 'Second Chances'],
   },
   {
     id: 'scifi-space',
@@ -126,9 +135,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 12,
       choicesPerChapter: 4,
-      averageLength: 'long'
+      averageLength: 'long',
     },
-    starterPrompt: 'Create a sci-fi story about a space crew discovering an alien signal from an uncharted planet.',
+    starterPrompt:
+      'Create a sci-fi story about a space crew discovering an alien signal from an uncharted planet.',
     outline: [
       'The Signal: Mysterious transmission detected',
       'Mission Briefing: Assemble the crew',
@@ -141,11 +151,11 @@ export const storyTemplates: StoryTemplate[] = [
       'Crisis: System malfunction or alien threat',
       'Sacrifice: Someone must make a hard choice',
       'Resolution: Solve the crisis',
-      'Return Journey: Changed forever'
+      'Return Journey: Changed forever',
     ],
     characters: ['Captain', 'Scientist', 'Engineer', 'Pilot', 'Alien Entity'],
     settings: ['Spaceship', 'Alien Planet', 'Space Station', 'Ancient Ruins'],
-    themes: ['Exploration', 'Discovery', 'Ethics', 'Survival']
+    themes: ['Exploration', 'Discovery', 'Ethics', 'Survival'],
   },
   {
     id: 'horror-survival',
@@ -158,9 +168,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 10,
       choicesPerChapter: 3,
-      averageLength: 'medium'
+      averageLength: 'medium',
     },
-    starterPrompt: 'Write a horror story where a group of people must survive a night in a haunted location.',
+    starterPrompt:
+      'Write a horror story where a group of people must survive a night in a haunted location.',
     outline: [
       'The Setup: Arrive at the haunted location',
       'First Signs: Something is wrong',
@@ -171,11 +182,11 @@ export const storyTemplates: StoryTemplate[] = [
       'Casualties: Not everyone will survive',
       'The Ritual: Find a way to fight back',
       'Final Confrontation: Face the horror',
-      'Escape or Doom: Will anyone survive?'
+      'Escape or Doom: Will anyone survive?',
     ],
     characters: ['Survivor', 'Skeptic', 'Believer', 'The Entity', 'Victim'],
     settings: ['Abandoned House', 'Dark Forest', 'Basement', 'Attic'],
-    themes: ['Fear', 'Survival', 'Regret', 'Supernatural']
+    themes: ['Fear', 'Survival', 'Regret', 'Supernatural'],
   },
   {
     id: 'thriller-espionage',
@@ -188,9 +199,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 15,
       choicesPerChapter: 4,
-      averageLength: 'long'
+      averageLength: 'long',
     },
-    starterPrompt: 'Create a spy thriller where an agent must prevent a global catastrophe while dealing with betrayal within their own agency.',
+    starterPrompt:
+      'Create a spy thriller where an agent must prevent a global catastrophe while dealing with betrayal within their own agency.',
     outline: [
       'The Mission: Assignment briefing',
       'Infiltration: Go undercover',
@@ -206,11 +218,11 @@ export const storyTemplates: StoryTemplate[] = [
       'Double Cross: Another twist',
       'Final Showdown: Stop the villain',
       'Escape: Get out alive',
-      'Aftermath: The cost of victory'
+      'Aftermath: The cost of victory',
     ],
     characters: ['Agent', 'Handler', 'Villain', 'Double Agent', 'Informant'],
     settings: ['Embassy', 'Safe House', 'Foreign City', 'Secret Facility'],
-    themes: ['Loyalty', 'Deception', 'Sacrifice', 'Justice']
+    themes: ['Loyalty', 'Deception', 'Sacrifice', 'Justice'],
   },
   {
     id: 'adventure-treasure',
@@ -223,9 +235,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 10,
       choicesPerChapter: 4,
-      averageLength: 'medium'
+      averageLength: 'medium',
     },
-    starterPrompt: 'Write an adventure about treasure hunters racing to find a legendary artifact before rivals do.',
+    starterPrompt:
+      'Write an adventure about treasure hunters racing to find a legendary artifact before rivals do.',
     outline: [
       'The Map: Discover the first clue',
       'The Team: Assemble your crew',
@@ -236,11 +249,11 @@ export const storyTemplates: StoryTemplate[] = [
       'Betrayal: Someone wants it all',
       'Lost City: Find the hidden location',
       'The Treasure: It was real all along',
-      'The Choice: Keep it or preserve history?'
+      'The Choice: Keep it or preserve history?',
     ],
     characters: ['Treasure Hunter', 'Historian', 'Rival Hunter', 'Local Guide', 'Funder'],
     settings: ['Jungle', 'Desert', 'Ruins', 'Cave', 'Museum'],
-    themes: ['Adventure', 'Greed', 'History', 'Friendship']
+    themes: ['Adventure', 'Greed', 'History', 'Friendship'],
   },
   {
     id: 'drama-family',
@@ -253,9 +266,10 @@ export const storyTemplates: StoryTemplate[] = [
     structure: {
       chapters: 8,
       choicesPerChapter: 3,
-      averageLength: 'medium'
+      averageLength: 'medium',
     },
-    starterPrompt: 'Create a family drama about siblings dealing with a difficult family secret that comes to light.',
+    starterPrompt:
+      'Create a family drama about siblings dealing with a difficult family secret that comes to light.',
     outline: [
       'The Secret: Something is revealed',
       'Shock and Denial: Initial reactions',
@@ -264,33 +278,35 @@ export const storyTemplates: StoryTemplate[] = [
       'Past Revealed: Flashbacks to understand',
       'Difficult Choices: What to do now?',
       'Reconciliation Attempts: Can they forgive?',
-      'Resolution: Find a way forward together'
+      'Resolution: Find a way forward together',
     ],
     characters: ['Eldest Sibling', 'Middle Child', 'Youngest', 'Parent', 'Extended Family'],
     settings: ['Family Home', 'Hospital', 'Restaurant', 'Childhood Place'],
-    themes: ['Forgiveness', 'Truth', 'Family', 'Healing']
-  }
+    themes: ['Forgiveness', 'Truth', 'Family', 'Healing'],
+  },
 ];
 
 /**
  * Get template by ID
  */
 export function getTemplateById(id: string): StoryTemplate | undefined {
-  return storyTemplates.find(t => t.id === id);
+  return storyTemplates.find((t) => t.id === id);
 }
 
 /**
  * Get templates by genre
  */
 export function getTemplatesByGenre(genre: string): StoryTemplate[] {
-  return storyTemplates.filter(t => t.genre.toLowerCase() === genre.toLowerCase());
+  return storyTemplates.filter((t) => t.genre.toLowerCase() === genre.toLowerCase());
 }
 
 /**
  * Get templates by difficulty
  */
-export function getTemplatesByDifficulty(difficulty: 'beginner' | 'intermediate' | 'advanced'): StoryTemplate[] {
-  return storyTemplates.filter(t => t.difficulty === difficulty);
+export function getTemplatesByDifficulty(
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+): StoryTemplate[] {
+  return storyTemplates.filter((t) => t.difficulty === difficulty);
 }
 
 /**
@@ -303,16 +319,16 @@ export function generateStoryFromTemplate(template: StoryTemplate, customTitle?:
     description: template.description,
     tags: template.themes,
     outline: template.outline,
-    characters: template.characters.map(name => ({
+    characters: template.characters.map((name) => ({
       name,
       description: '',
-      traits: []
+      traits: [],
     })),
-    settings: template.settings.map(location => ({
+    settings: template.settings.map((location) => ({
       name: location,
-      description: ''
+      description: '',
     })),
     estimatedChapters: template.structure.chapters,
-    aiPrompt: template.starterPrompt
+    aiPrompt: template.starterPrompt,
   };
 }

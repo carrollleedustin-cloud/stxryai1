@@ -19,7 +19,7 @@ function initializeSupabase() {
   const isValidConfig = supabaseUrl?.startsWith('http') && supabaseAnonKey?.length > 0;
   isConfigured = isValidConfig;
 
-    if (isValidConfig) {
+  if (isValidConfig) {
     try {
       supabaseClient = createBrowserClient(supabaseUrl, supabaseAnonKey);
     } catch (error) {
@@ -58,10 +58,12 @@ export const supabase = new Proxy({} as SupabaseClient, {
   get(_target, prop) {
     const client = getSupabaseClient();
     if (client === null) {
-      throw new Error('Supabase client is not configured. Please check your environment variables.');
+      throw new Error(
+        'Supabase client is not configured. Please check your environment variables.'
+      );
     }
     return client[prop as keyof SupabaseClient];
-  }
+  },
 });
 
 export const isSupabaseConfigured = getIsSupabaseConfigured();

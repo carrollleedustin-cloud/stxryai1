@@ -94,7 +94,11 @@ export default function EnhancedProfileCard({
         <div className="mb-4 flex justify-center">
           <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/10 shadow-xl">
             {profile.avatar ? (
-              <img src={profile.avatar} alt={profile.displayName} className="w-full h-full object-cover" />
+              <img
+                src={profile.avatar}
+                alt={profile.displayName}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-4xl text-white">
                 {profile.displayName.charAt(0).toUpperCase()}
@@ -111,7 +115,9 @@ export default function EnhancedProfileCard({
         <div className="mb-4 px-8">
           <div className="flex items-center justify-between text-xs text-gray-400 mb-1">
             <span>Level {profile.level}</span>
-            <span>{profile.xp} / {profile.xpToNextLevel} XP</span>
+            <span>
+              {profile.xp} / {profile.xpToNextLevel} XP
+            </span>
           </div>
           <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
             <motion.div
@@ -124,9 +130,7 @@ export default function EnhancedProfileCard({
 
         {/* Bio */}
         {profile.bio && (
-          <p className="text-gray-300 text-sm mb-4 max-w-md mx-auto">
-            {profile.bio}
-          </p>
+          <p className="text-gray-300 text-sm mb-4 max-w-md mx-auto">{profile.bio}</p>
         )}
 
         {/* Badges */}
@@ -151,21 +155,9 @@ export default function EnhancedProfileCard({
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <StatItem
-            icon="📚"
-            label="Stories Read"
-            value={profile.stats.storiesRead}
-          />
-          <StatItem
-            icon="✍️"
-            label="Created"
-            value={profile.stats.storiesCreated}
-          />
-          <StatItem
-            icon="🏆"
-            label="Achievements"
-            value={profile.stats.achievements}
-          />
+          <StatItem icon="📚" label="Stories Read" value={profile.stats.storiesRead} />
+          <StatItem icon="✍️" label="Created" value={profile.stats.storiesCreated} />
+          <StatItem icon="🏆" label="Achievements" value={profile.stats.achievements} />
         </div>
 
         {/* Social Stats */}
@@ -277,7 +269,11 @@ function CompactProfileCard({
         {/* Avatar */}
         <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 flex-shrink-0">
           {profile.avatar ? (
-            <img src={profile.avatar} alt={profile.displayName} className="w-full h-full object-cover" />
+            <img
+              src={profile.avatar}
+              alt={profile.displayName}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold">
               {profile.displayName.charAt(0)}
@@ -316,7 +312,11 @@ function MiniProfileCard({ profile }: { profile: UserProfile }) {
       <div className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
         <div className="w-6 h-6 rounded-full overflow-hidden border border-white/10">
           {profile.avatar ? (
-            <img src={profile.avatar} alt={profile.displayName} className="w-full h-full object-cover" />
+            <img
+              src={profile.avatar}
+              alt={profile.displayName}
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white text-xs font-bold">
               {profile.displayName.charAt(0)}

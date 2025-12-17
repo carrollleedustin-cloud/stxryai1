@@ -29,7 +29,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎯',
     rarity: 'common',
     xpReward: 50,
-    requirement: { type: 'stories_completed', count: 1 }
+    requirement: { type: 'stories_completed', count: 1 },
   },
   {
     id: 'story_enthusiast',
@@ -39,7 +39,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📚',
     rarity: 'uncommon',
     xpReward: 100,
-    requirement: { type: 'stories_completed', count: 10 }
+    requirement: { type: 'stories_completed', count: 10 },
   },
   {
     id: 'voracious_reader',
@@ -49,7 +49,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📖',
     rarity: 'rare',
     xpReward: 250,
-    requirement: { type: 'stories_completed', count: 50 }
+    requirement: { type: 'stories_completed', count: 50 },
   },
   {
     id: 'library_master',
@@ -59,7 +59,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🏛️',
     rarity: 'epic',
     xpReward: 500,
-    requirement: { type: 'stories_completed', count: 100 }
+    requirement: { type: 'stories_completed', count: 100 },
   },
   {
     id: 'choice_maker',
@@ -69,7 +69,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎲',
     rarity: 'common',
     xpReward: 75,
-    requirement: { type: 'choices_made', count: 100 }
+    requirement: { type: 'choices_made', count: 100 },
   },
   {
     id: 'decision_expert',
@@ -79,7 +79,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '⚡',
     rarity: 'uncommon',
     xpReward: 150,
-    requirement: { type: 'choices_made', count: 500 }
+    requirement: { type: 'choices_made', count: 500 },
   },
   {
     id: 'path_weaver',
@@ -89,7 +89,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌟',
     rarity: 'rare',
     xpReward: 300,
-    requirement: { type: 'choices_made', count: 1000 }
+    requirement: { type: 'choices_made', count: 1000 },
   },
 
   // Streak Achievements
@@ -101,7 +101,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🔥',
     rarity: 'uncommon',
     xpReward: 100,
-    requirement: { type: 'reading_streak', count: 7 }
+    requirement: { type: 'reading_streak', count: 7 },
   },
   {
     id: 'unstoppable',
@@ -111,7 +111,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💪',
     rarity: 'rare',
     xpReward: 300,
-    requirement: { type: 'reading_streak', count: 30 }
+    requirement: { type: 'reading_streak', count: 30 },
   },
   {
     id: 'legendary_streak',
@@ -121,7 +121,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '👑',
     rarity: 'legendary',
     xpReward: 1000,
-    requirement: { type: 'reading_streak', count: 100 }
+    requirement: { type: 'reading_streak', count: 100 },
   },
 
   // Creating Achievements
@@ -133,7 +133,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '✍️',
     rarity: 'common',
     xpReward: 100,
-    requirement: { type: 'stories_created', count: 1 }
+    requirement: { type: 'stories_created', count: 1 },
   },
   {
     id: 'prolific_writer',
@@ -143,7 +143,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📝',
     rarity: 'uncommon',
     xpReward: 200,
-    requirement: { type: 'stories_created', count: 10 }
+    requirement: { type: 'stories_created', count: 10 },
   },
   {
     id: 'master_author',
@@ -153,7 +153,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎭',
     rarity: 'rare',
     xpReward: 500,
-    requirement: { type: 'stories_created', count: 25 }
+    requirement: { type: 'stories_created', count: 25 },
   },
 
   // Social Achievements
@@ -165,7 +165,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💬',
     rarity: 'common',
     xpReward: 25,
-    requirement: { type: 'comments_posted', count: 1 }
+    requirement: { type: 'comments_posted', count: 1 },
   },
   {
     id: 'conversationalist',
@@ -175,7 +175,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🗣️',
     rarity: 'uncommon',
     xpReward: 100,
-    requirement: { type: 'comments_posted', count: 50 }
+    requirement: { type: 'comments_posted', count: 50 },
   },
   {
     id: 'influencer',
@@ -185,7 +185,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '📢',
     rarity: 'rare',
     xpReward: 200,
-    requirement: { type: 'stories_shared', count: 25 }
+    requirement: { type: 'stories_shared', count: 25 },
   },
 
   // Special Achievements
@@ -197,7 +197,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🌅',
     rarity: 'uncommon',
     xpReward: 50,
-    requirement: { type: 'early_morning_read', count: 1 }
+    requirement: { type: 'early_morning_read', count: 1 },
   },
   {
     id: 'night_owl',
@@ -207,7 +207,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🦉',
     rarity: 'uncommon',
     xpReward: 50,
-    requirement: { type: 'late_night_read', count: 1 }
+    requirement: { type: 'late_night_read', count: 1 },
   },
   {
     id: 'genre_explorer',
@@ -217,7 +217,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '🎨',
     rarity: 'rare',
     xpReward: 150,
-    requirement: { type: 'genres_explored', count: 5 }
+    requirement: { type: 'genres_explored', count: 5 },
   },
   {
     id: 'completionist',
@@ -227,7 +227,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '💯',
     rarity: 'epic',
     xpReward: 250,
-    requirement: { type: 'perfect_completion', count: 1 }
+    requirement: { type: 'perfect_completion', count: 1 },
   },
   {
     id: 'premium_member',
@@ -237,29 +237,29 @@ export const ACHIEVEMENTS: Achievement[] = [
     icon: '⭐',
     rarity: 'rare',
     xpReward: 200,
-    requirement: { type: 'premium_subscription', count: 1 }
-  }
+    requirement: { type: 'premium_subscription', count: 1 },
+  },
 ];
 
 /**
  * Get achievement by ID
  */
 export function getAchievementById(id: string): Achievement | undefined {
-  return ACHIEVEMENTS.find(a => a.id === id);
+  return ACHIEVEMENTS.find((a) => a.id === id);
 }
 
 /**
  * Get achievements by category
  */
 export function getAchievementsByCategory(category: AchievementCategory): Achievement[] {
-  return ACHIEVEMENTS.filter(a => a.category === category);
+  return ACHIEVEMENTS.filter((a) => a.category === category);
 }
 
 /**
  * Get achievements by rarity
  */
 export function getAchievementsByRarity(rarity: Achievement['rarity']): Achievement[] {
-  return ACHIEVEMENTS.filter(a => a.rarity === rarity);
+  return ACHIEVEMENTS.filter((a) => a.rarity === rarity);
 }
 
 /**
@@ -282,7 +282,7 @@ export function checkAchievementProgress(
     unlocked: current >= required,
     progress,
     current,
-    required
+    required,
   };
 }
 
@@ -294,7 +294,7 @@ export function getNewlyUnlockedAchievements(
   newStats: Record<string, number>,
   currentAchievementIds: string[]
 ): Achievement[] {
-  return ACHIEVEMENTS.filter(achievement => {
+  return ACHIEVEMENTS.filter((achievement) => {
     // Skip if already unlocked
     if (currentAchievementIds.includes(achievement.id)) {
       return false;

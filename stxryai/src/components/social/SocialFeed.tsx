@@ -46,22 +46,23 @@ const SocialFeed: React.FC = () => {
 
   const getActivityIcon = (activityType: string): string => {
     const icons: Record<string, string> = {
-      'story_completed': '🎉',
-      'choice_made': '⭐',
-      'achievement_earned': '🏆',
-      'club_joined': '👥',
-      'review_posted': '💬',
-      'story_created': '✍️',
-      'friend_added': '🤝',
-      'event_joined': '📅',
-      'reading_list_created': '📚',
+      story_completed: '🎉',
+      choice_made: '⭐',
+      achievement_earned: '🏆',
+      club_joined: '👥',
+      review_posted: '💬',
+      story_created: '✍️',
+      friend_added: '🤝',
+      event_joined: '📅',
+      reading_list_created: '📚',
     };
     return icons[activityType] || '📌';
   };
 
   const getActivityDescription = (activity: Activity): string => {
     const { activity_type, activity_data } = activity;
-    const username = activity.user_profiles?.display_name || activity.user_profiles?.username || 'User';
+    const username =
+      activity.user_profiles?.display_name || activity.user_profiles?.username || 'User';
 
     switch (activity_type) {
       case 'story_completed':
@@ -125,22 +126,24 @@ const SocialFeed: React.FC = () => {
   return (
     <div className="space-y-4">
       {activities.map((activity) => (
-        <div 
-          key={activity.id} 
+        <div
+          key={activity.id}
           className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-4"
         >
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               {activity.user_profiles?.avatar_url ? (
-                <img 
-                  src={activity.user_profiles.avatar_url} 
+                <img
+                  src={activity.user_profiles.avatar_url}
                   alt={activity.user_profiles.display_name || 'User avatar'}
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
                   <span className="text-white text-lg font-bold">
-                    {(activity.user_profiles?.display_name || activity.user_profiles?.username || 'U')[0].toUpperCase()}
+                    {(activity.user_profiles?.display_name ||
+                      activity.user_profiles?.username ||
+                      'U')[0].toUpperCase()}
                   </span>
                 </div>
               )}

@@ -67,7 +67,7 @@ export default function EnhancedReader({
   }, [settings]);
 
   const updateSettings = (key: keyof ReadingSettings, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   // Text-to-speech functionality
@@ -93,7 +93,8 @@ export default function EnhancedReader({
 
   const baseFontSize = parseFloat(genreStyle.fontSize.base);
   const adjustedFontSize = baseFontSize * fontSizeMultipliers[settings.fontSize];
-  const adjustedLineHeight = parseFloat(genreStyle.lineHeight) * lineSpacingValues[settings.lineSpacing];
+  const adjustedLineHeight =
+    parseFloat(genreStyle.lineHeight) * lineSpacingValues[settings.lineSpacing];
 
   const containerStyle = {
     fontFamily: genreStyle.fontFamily,
@@ -125,8 +126,18 @@ export default function EnhancedReader({
             whileTap={{ scale: 0.95 }}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
           </motion.button>
         </div>
@@ -150,18 +161,25 @@ export default function EnhancedReader({
               <div className="space-y-4">
                 {/* Font Size */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: genreStyle.textColor }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: genreStyle.textColor }}
+                  >
                     Font Size
                   </label>
                   <div className="flex gap-2">
-                    {(['small', 'medium', 'large', 'xl'] as const).map(size => (
+                    {(['small', 'medium', 'large', 'xl'] as const).map((size) => (
                       <button
                         key={size}
                         onClick={() => updateSettings('fontSize', size)}
                         className="px-4 py-2 rounded-lg transition-all"
                         style={{
-                          backgroundColor: settings.fontSize === size ? genreStyle.accentColor : 'transparent',
-                          color: settings.fontSize === size ? genreStyle.backgroundColor : genreStyle.textColor,
+                          backgroundColor:
+                            settings.fontSize === size ? genreStyle.accentColor : 'transparent',
+                          color:
+                            settings.fontSize === size
+                              ? genreStyle.backgroundColor
+                              : genreStyle.textColor,
                           border: `1px solid ${genreStyle.borderColor}`,
                         }}
                       >
@@ -173,18 +191,27 @@ export default function EnhancedReader({
 
                 {/* Line Spacing */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: genreStyle.textColor }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: genreStyle.textColor }}
+                  >
                     Line Spacing
                   </label>
                   <div className="flex gap-2">
-                    {(['compact', 'normal', 'relaxed'] as const).map(spacing => (
+                    {(['compact', 'normal', 'relaxed'] as const).map((spacing) => (
                       <button
                         key={spacing}
                         onClick={() => updateSettings('lineSpacing', spacing)}
                         className="px-4 py-2 rounded-lg transition-all"
                         style={{
-                          backgroundColor: settings.lineSpacing === spacing ? genreStyle.accentColor : 'transparent',
-                          color: settings.lineSpacing === spacing ? genreStyle.backgroundColor : genreStyle.textColor,
+                          backgroundColor:
+                            settings.lineSpacing === spacing
+                              ? genreStyle.accentColor
+                              : 'transparent',
+                          color:
+                            settings.lineSpacing === spacing
+                              ? genreStyle.backgroundColor
+                              : genreStyle.textColor,
                           border: `1px solid ${genreStyle.borderColor}`,
                         }}
                       >
@@ -196,18 +223,25 @@ export default function EnhancedReader({
 
                 {/* Width */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: genreStyle.textColor }}>
+                  <label
+                    className="block text-sm font-medium mb-2"
+                    style={{ color: genreStyle.textColor }}
+                  >
                     Reading Width
                   </label>
                   <div className="flex gap-2">
-                    {(['narrow', 'medium', 'wide'] as const).map(width => (
+                    {(['narrow', 'medium', 'wide'] as const).map((width) => (
                       <button
                         key={width}
                         onClick={() => updateSettings('width', width)}
                         className="px-4 py-2 rounded-lg transition-all"
                         style={{
-                          backgroundColor: settings.width === width ? genreStyle.accentColor : 'transparent',
-                          color: settings.width === width ? genreStyle.backgroundColor : genreStyle.textColor,
+                          backgroundColor:
+                            settings.width === width ? genreStyle.accentColor : 'transparent',
+                          color:
+                            settings.width === width
+                              ? genreStyle.backgroundColor
+                              : genreStyle.textColor,
                           border: `1px solid ${genreStyle.borderColor}`,
                         }}
                       >
@@ -230,17 +264,47 @@ export default function EnhancedReader({
                   >
                     {isReading ? (
                       <>
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+                          />
                         </svg>
                         Stop Narration
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                         Listen to Narration
                       </>
@@ -325,10 +389,16 @@ export default function EnhancedReader({
           </motion.div>
 
           {/* Genre Indicator */}
-          <div className="mt-8 pt-6 border-t-2 flex items-center justify-center gap-2 text-sm opacity-60" style={{ borderColor: genreStyle.borderColor }}>
+          <div
+            className="mt-8 pt-6 border-t-2 flex items-center justify-center gap-2 text-sm opacity-60"
+            style={{ borderColor: genreStyle.borderColor }}
+          >
             <span>{genreStyle.narratorStyle.icon}</span>
             <span style={{ color: genreStyle.textColor }}>
-              {genre.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              {genre
+                .split('-')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
             </span>
           </div>
         </motion.div>

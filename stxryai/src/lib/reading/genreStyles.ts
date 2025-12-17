@@ -62,7 +62,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     accentColor: '#FF6B9D',
     borderColor: '#FFD93D',
     shadowColor: 'rgba(255, 107, 157, 0.3)',
-    backgroundPattern: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 217, 61, 0.05) 10px, rgba(255, 217, 61, 0.05) 20px)',
+    backgroundPattern:
+      'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 217, 61, 0.05) 10px, rgba(255, 217, 61, 0.05) 20px)',
     animations: {
       pageTransition: 'bounce',
       textReveal: 'fadeInUp',
@@ -93,7 +94,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     accentColor: '#4ECDC4',
     borderColor: '#95E1D3',
     shadowColor: 'rgba(78, 205, 196, 0.3)',
-    backgroundPattern: 'radial-gradient(circle at 20% 50%, rgba(149, 225, 211, 0.1) 0%, transparent 50%)',
+    backgroundPattern:
+      'radial-gradient(circle at 20% 50%, rgba(149, 225, 211, 0.1) 0%, transparent 50%)',
     animations: {
       pageTransition: 'slideIn',
       textReveal: 'fadeIn',
@@ -190,7 +192,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     borderColor: '#0EA5E9',
     shadowColor: 'rgba(0, 245, 255, 0.4)',
     textShadow: '0 0 5px rgba(0, 245, 255, 0.3)',
-    backgroundPattern: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 245, 255, 0.03) 2px, rgba(0, 245, 255, 0.03) 4px)',
+    backgroundPattern:
+      'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 245, 255, 0.03) 2px, rgba(0, 245, 255, 0.03) 4px)',
     animations: {
       pageTransition: 'glitch',
       textReveal: 'scanline',
@@ -223,7 +226,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     borderColor: '#991B1B',
     shadowColor: 'rgba(220, 38, 38, 0.5)',
     textShadow: '0 0 8px rgba(220, 38, 38, 0.2)',
-    backgroundPattern: 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.05), transparent 50%)',
+    backgroundPattern:
+      'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.05), transparent 50%)',
     animations: {
       pageTransition: 'fadeShudder',
       textReveal: 'creepIn',
@@ -287,7 +291,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     accentColor: '#EC4899',
     borderColor: '#F9A8D4',
     shadowColor: 'rgba(236, 72, 153, 0.2)',
-    backgroundPattern: 'radial-gradient(circle at 80% 20%, rgba(249, 168, 212, 0.1), transparent 40%)',
+    backgroundPattern:
+      'radial-gradient(circle at 80% 20%, rgba(249, 168, 212, 0.1), transparent 40%)',
     animations: {
       pageTransition: 'fadeIn',
       textReveal: 'softReveal',
@@ -320,7 +325,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     borderColor: '#FF00FF',
     shadowColor: 'rgba(255, 0, 255, 0.5)',
     textShadow: '0 0 10px rgba(255, 0, 255, 0.4), 0 0 20px rgba(0, 255, 255, 0.2)',
-    backgroundPattern: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 0, 255, 0.05) 1px, rgba(255, 0, 255, 0.05) 2px)',
+    backgroundPattern:
+      'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 0, 255, 0.05) 1px, rgba(255, 0, 255, 0.05) 2px)',
     animations: {
       pageTransition: 'glitchSlide',
       textReveal: 'neonFlicker',
@@ -352,7 +358,8 @@ export const genreStyles: Record<string, GenreStyle> = {
     accentColor: '#B8860B',
     borderColor: '#8B6914',
     shadowColor: 'rgba(184, 134, 11, 0.3)',
-    backgroundPattern: 'repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(184, 134, 11, 0.05) 20px, rgba(184, 134, 11, 0.05) 40px)',
+    backgroundPattern:
+      'repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(184, 134, 11, 0.05) 20px, rgba(184, 134, 11, 0.05) 40px)',
     animations: {
       pageTransition: 'steamFade',
       textReveal: 'mechanicalType',

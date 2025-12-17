@@ -77,9 +77,7 @@ const ReadingProgressIndicator = ({
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-2">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border-2 border-primary/30">
-                  <span className="text-sm font-bold text-primary">
-                    {progressPercentage}%
-                  </span>
+                  <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
                 </div>
               </div>
 
@@ -102,15 +100,11 @@ const ReadingProgressIndicator = ({
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50 border border-border opacity-50 cursor-not-allowed"
                   >
                     <Icon name="LockClosedIcon" size={18} />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      Story Map
-                    </span>
+                    <span className="hidden sm:inline text-sm font-medium">Story Map</span>
                   </button>
                   <div className="absolute bottom-full right-0 mb-2 hidden group-hover:block">
                     <div className="bg-card border border-border rounded-lg shadow-elevation-2 px-3 py-2 whitespace-nowrap">
-                      <p className="text-xs text-muted-foreground">
-                        Premium feature
-                      </p>
+                      <p className="text-xs text-muted-foreground">Premium feature</p>
                     </div>
                   </div>
                 </div>

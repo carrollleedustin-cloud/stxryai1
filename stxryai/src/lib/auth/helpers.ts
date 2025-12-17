@@ -102,7 +102,6 @@ export async function consumeEnergy(amount = 1): Promise<boolean> {
   const supabase = createClient();
 
   const { error } = await updateUserById(user.id, { energy: user.energy - amount });
-  
 
   return !error;
 }

@@ -78,7 +78,9 @@ export default function SettingsPage() {
               transition={{ duration: 0.3 }}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
             >
-              {activeTab === 'account' && <AccountSettings user={user} profile={profile} refreshProfile={refreshProfile} />}
+              {activeTab === 'account' && (
+                <AccountSettings user={user} profile={profile} refreshProfile={refreshProfile} />
+              )}
               {activeTab === 'preferences' && <PreferencesSettings />}
               {activeTab === 'subscription' && <SubscriptionSettings profile={profile} />}
               {activeTab === 'privacy' && <PrivacySettings />}
@@ -91,7 +93,15 @@ export default function SettingsPage() {
   );
 }
 
-function AccountSettings({ user, profile, refreshProfile }: { user: any; profile: UserProfile; refreshProfile: () => Promise<void> }) {
+function AccountSettings({
+  user,
+  profile,
+  refreshProfile,
+}: {
+  user: any;
+  profile: UserProfile;
+  refreshProfile: () => Promise<void>;
+}) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -125,7 +135,9 @@ function AccountSettings({ user, profile, refreshProfile }: { user: any; profile
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Account Information</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Account Information
+        </h2>
         <p className="text-gray-600 dark:text-gray-400">
           Update your account details and profile information
         </p>
@@ -331,8 +343,8 @@ function SubscriptionSettings({ profile }: { profile: any }) {
               {tier === 'creator_pro'
                 ? 'Unlimited Energy'
                 : tier === 'premium'
-                ? '100 Energy (refills 2x faster)'
-                : '20 Energy (refills slowly)'}
+                  ? '100 Energy (refills 2x faster)'
+                  : '20 Energy (refills slowly)'}
             </p>
           </div>
         </div>
@@ -367,8 +379,12 @@ function PrivacySettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Privacy & Security</h2>
-        <p className="text-gray-600 dark:text-gray-400">Control your privacy and security settings</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Privacy & Security
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">
+          Control your privacy and security settings
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -397,9 +413,7 @@ function PrivacySettings() {
         </div>
 
         <div className="py-3">
-          <button className="text-red-600 hover:text-red-700 font-medium">
-            Delete Account →
-          </button>
+          <button className="text-red-600 hover:text-red-700 font-medium">Delete Account →</button>
         </div>
       </div>
     </div>

@@ -91,9 +91,7 @@ export default function MobileReadingInterface({
           </button>
 
           <div className="flex-1 text-center px-4">
-            <div className="font-semibold text-sm line-clamp-1">
-              {currentChapterData.title}
-            </div>
+            <div className="font-semibold text-sm line-clamp-1">{currentChapterData.title}</div>
             <div className="text-xs opacity-70">
               Chapter {currentChapter + 1} of {chapters.length}
             </div>

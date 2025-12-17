@@ -58,9 +58,13 @@ const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose, contentId, c
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
-            <p className="mb-4">You are reporting {contentType} with ID: {contentId}</p>
+            <p className="mb-4">
+              You are reporting {contentType} with ID: {contentId}
+            </p>
             <div className="mb-4">
-              <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-1">Reason for reporting:</label>
+              <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-1">
+                Reason for reporting:
+              </label>
               <textarea
                 id="reason"
                 value={reason}

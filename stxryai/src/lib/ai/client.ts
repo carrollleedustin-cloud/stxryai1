@@ -39,14 +39,14 @@ async function callOpenAI(
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: options.model || config.model,
       messages: options.messages,
       temperature: options.temperature ?? config.temperature,
-      max_tokens: options.maxTokens ?? config.maxTokens
-    })
+      max_tokens: options.maxTokens ?? config.maxTokens,
+    }),
   });
 
   if (!response.ok) {
@@ -62,10 +62,10 @@ async function callOpenAI(
     usage: {
       promptTokens: data.usage.prompt_tokens,
       completionTokens: data.usage.completion_tokens,
-      totalTokens: data.usage.total_tokens
+      totalTokens: data.usage.total_tokens,
     },
     model: data.model,
-    finishReason: choice.finish_reason
+    finishReason: choice.finish_reason,
   };
 }
 
@@ -79,26 +79,26 @@ async function callAnthropic(
   const config = getAIConfig();
 
   // Convert messages to Anthropic format
-  const systemMessage = options.messages.find(m => m.role === 'system');
-  const conversationMessages = options.messages.filter(m => m.role !== 'system');
+  const systemMessage = options.messages.find((m) => m.role === 'system');
+  const conversationMessages = options.messages.filter((m) => m.role !== 'system');
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01'
+      'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
       model: options.model || config.model,
       system: systemMessage?.content,
-      messages: conversationMessages.map(m => ({
+      messages: conversationMessages.map((m) => ({
         role: m.role,
-        content: m.content
+        content: m.content,
       })),
       temperature: options.temperature ?? config.temperature,
-      max_tokens: options.maxTokens ?? config.maxTokens
-    })
+      max_tokens: options.maxTokens ?? config.maxTokens,
+    }),
   });
 
   if (!response.ok) {
@@ -113,10 +113,10 @@ async function callAnthropic(
     usage: {
       promptTokens: data.usage.input_tokens,
       completionTokens: data.usage.output_tokens,
-      totalTokens: data.usage.input_tokens + data.usage.output_tokens
+      totalTokens: data.usage.input_tokens + data.usage.output_tokens,
     },
     model: data.model,
-    finishReason: data.stop_reason
+    finishReason: data.stop_reason,
   };
 }
 
@@ -153,7 +153,7 @@ export async function generateText(
 
   const response = await generateCompletion({
     messages,
-    temperature
+    temperature,
   });
 
   return response.content;
@@ -194,15 +194,15 @@ export async function* streamCompletion(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`
+        Authorization: `Bearer ${config.apiKey}`,
       },
       body: JSON.stringify({
         model: options.model || config.model,
         messages: options.messages,
         temperature: options.temperature ?? config.temperature,
         max_tokens: options.maxTokens ?? config.maxTokens,
-        stream: true
-      })
+        stream: true,
+      }),
     });
 
     if (!response.ok) {
@@ -240,15 +240,15 @@ export async function* streamCompletion(
     }
   } else {
     // Anthropic streaming
-    const systemMessage = options.messages.find(m => m.role === 'system');
-    const conversationMessages = options.messages.filter(m => m.role !== 'system');
+    const systemMessage = options.messages.find((m) => m.role === 'system');
+    const conversationMessages = options.messages.filter((m) => m.role !== 'system');
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': config.apiKey,
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: options.model || config.model,
@@ -256,8 +256,8 @@ export async function* streamCompletion(
         messages: conversationMessages,
         temperature: options.temperature ?? config.temperature,
         max_tokens: options.maxTokens ?? config.maxTokens,
-        stream: true
-      })
+        stream: true,
+      }),
     });
 
     if (!response.ok) {

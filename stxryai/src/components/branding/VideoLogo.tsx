@@ -28,7 +28,7 @@ export default function VideoLogo({
   showOnce = true,
   skipButton = true,
   autoPlay = true,
-  className = ''
+  className = '',
 }: VideoLogoProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
@@ -128,11 +128,7 @@ export default function VideoLogo({
               Your browser does not support the video tag.
             </video>
           ) : (
-            <img
-              src={fallbackImage}
-              alt="StxryAI Logo"
-              className="w-full h-auto animate-pulse"
-            />
+            <img src={fallbackImage} alt="StxryAI Logo" className="w-full h-auto animate-pulse" />
           )}
         </motion.div>
 
@@ -175,7 +171,7 @@ export function AnimatedTextLogo({
   subtitle = 'Interactive Fiction Platform',
   duration = 2000,
   onComplete,
-  className = ''
+  className = '',
 }: {
   text?: string;
   subtitle?: string;
@@ -251,7 +247,7 @@ export function AnimatedTextLogo({
 export function LoadingLogo({
   size = 'large',
   showText = true,
-  className = ''
+  className = '',
 }: {
   size?: 'small' | 'medium' | 'large';
   showText?: boolean;
@@ -260,7 +256,7 @@ export function LoadingLogo({
   const sizeClasses = {
     small: 'w-16 h-16',
     medium: 'w-24 h-24',
-    large: 'w-32 h-32'
+    large: 'w-32 h-32',
   };
 
   return (
@@ -299,7 +295,7 @@ export function SplashScreen({
   tagline = 'Where Every Choice Tells a Story',
   minDuration = 2000,
   onComplete,
-  className = ''
+  className = '',
 }: {
   logoUrl?: string;
   appName?: string;

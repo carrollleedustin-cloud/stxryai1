@@ -16,9 +16,11 @@ export default function ContentSuggestions({
   context,
   onApplySuggestion,
   onRefresh,
-  loading = false
+  loading = false,
 }: ContentSuggestionsProps) {
-  const [selectedType, setSelectedType] = useState<'all' | 'dialogue' | 'description' | 'choice' | 'twist'>('all');
+  const [selectedType, setSelectedType] = useState<
+    'all' | 'dialogue' | 'description' | 'choice' | 'twist'
+  >('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Mock suggestions (in production, would come from AI API)
@@ -28,73 +30,84 @@ export default function ContentSuggestions({
       type: 'dialogue',
       content: `Character A: "We can't keep running forever."\nCharacter B: "Then we make our stand here."`,
       alternatives: [
-        `Character A: "How much longer can we keep this up?"\nCharacter B: "As long as it takes."`
+        `Character A: "How much longer can we keep this up?"\nCharacter B: "As long as it takes."`,
       ],
       confidence: 0.85,
-      tags: ['dialogue', 'tension', 'conflict']
+      tags: ['dialogue', 'tension', 'conflict'],
     },
     {
       id: '2',
       type: 'description',
-      content: 'The ancient temple loomed before them, its weathered stone walls covered in mysterious glyphs that seemed to pulse with an otherworldly energy.',
+      content:
+        'The ancient temple loomed before them, its weathered stone walls covered in mysterious glyphs that seemed to pulse with an otherworldly energy.',
       alternatives: [
-        'Before them stood the temple, its age evident in every crack and weathered surface, yet somehow still radiating an aura of power.'
+        'Before them stood the temple, its age evident in every crack and weathered surface, yet somehow still radiating an aura of power.',
       ],
       confidence: 0.78,
-      tags: ['description', 'setting', 'atmosphere']
+      tags: ['description', 'setting', 'atmosphere'],
     },
     {
       id: '3',
       type: 'choice',
       content: `• Enter the temple through the main entrance\n• Search for a hidden side entrance\n• Wait and observe before making a move`,
       alternatives: [
-        `• Rush in without hesitation\n• Carefully examine the entrance for traps\n• Return and gather more information`
+        `• Rush in without hesitation\n• Carefully examine the entrance for traps\n• Return and gather more information`,
       ],
       confidence: 0.82,
-      tags: ['choice', 'decision', 'strategy']
+      tags: ['choice', 'decision', 'strategy'],
     },
     {
       id: '4',
       type: 'twist',
-      content: 'The artifact they\'ve been seeking is actually a key to prevent the catastrophe, not cause it.',
+      content:
+        "The artifact they've been seeking is actually a key to prevent the catastrophe, not cause it.",
       alternatives: [
         'Their trusted mentor has been manipulating events from the beginning.',
-        'The protagonist discovers they\'re connected to the ancient civilization.'
+        "The protagonist discovers they're connected to the ancient civilization.",
       ],
-      confidence: 0.70,
-      tags: ['plot-twist', 'revelation', 'surprise']
-    }
+      confidence: 0.7,
+      tags: ['plot-twist', 'revelation', 'surprise'],
+    },
   ];
 
-  const filteredSuggestions = selectedType === 'all'
-    ? suggestions
-    : suggestions.filter(s => s.type === selectedType);
+  const filteredSuggestions =
+    selectedType === 'all' ? suggestions : suggestions.filter((s) => s.type === selectedType);
 
   const suggestionTypes = [
     { id: 'all', label: 'All', icon: 'SparklesIcon' },
     { id: 'dialogue', label: 'Dialogue', icon: 'ChatBubbleLeftRightIcon' },
     { id: 'description', label: 'Description', icon: 'DocumentTextIcon' },
     { id: 'choice', label: 'Choices', icon: 'ArrowPathIcon' },
-    { id: 'twist', label: 'Twists', icon: 'BoltIcon' }
+    { id: 'twist', label: 'Twists', icon: 'BoltIcon' },
   ];
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'dialogue': return 'from-blue-500 to-cyan-500';
-      case 'description': return 'from-purple-500 to-pink-500';
-      case 'choice': return 'from-green-500 to-emerald-500';
-      case 'twist': return 'from-orange-500 to-red-500';
-      default: return 'from-gray-500 to-slate-500';
+      case 'dialogue':
+        return 'from-blue-500 to-cyan-500';
+      case 'description':
+        return 'from-purple-500 to-pink-500';
+      case 'choice':
+        return 'from-green-500 to-emerald-500';
+      case 'twist':
+        return 'from-orange-500 to-red-500';
+      default:
+        return 'from-gray-500 to-slate-500';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'dialogue': return '💬';
-      case 'description': return '📝';
-      case 'choice': return '🔀';
-      case 'twist': return '⚡';
-      default: return '✨';
+      case 'dialogue':
+        return '💬';
+      case 'description':
+        return '📝';
+      case 'choice':
+        return '🔀';
+      case 'twist':
+        return '⚡';
+      default:
+        return '✨';
     }
   };
 
@@ -179,11 +192,15 @@ export default function ContentSuggestions({
                 <div className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getTypeColor(suggestion.type)} flex items-center justify-center text-lg`}>
+                      <div
+                        className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getTypeColor(suggestion.type)} flex items-center justify-center text-lg`}
+                      >
                         {getTypeIcon(suggestion.type)}
                       </div>
                       <div>
-                        <h4 className="font-semibold text-foreground capitalize">{suggestion.type}</h4>
+                        <h4 className="font-semibold text-foreground capitalize">
+                          {suggestion.type}
+                        </h4>
                         <div className="flex items-center gap-2 mt-0.5">
                           <div className="flex items-center gap-1">
                             <Icon name="SparklesIcon" size={12} className="text-yellow-500" />
@@ -231,7 +248,9 @@ export default function ContentSuggestions({
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => setExpandedId(expandedId === suggestion.id ? null : suggestion.id)}
+                        onClick={() =>
+                          setExpandedId(expandedId === suggestion.id ? null : suggestion.id)
+                        }
                         className="px-3 py-2 bg-muted text-foreground rounded-lg font-medium hover:bg-muted/80 transition-colors flex items-center gap-2"
                       >
                         <Icon name="ArrowsRightLeftIcon" size={16} />
@@ -250,7 +269,11 @@ export default function ContentSuggestions({
                       className="p-2 hover:bg-muted rounded-lg transition-colors"
                       aria-label="More options"
                     >
-                      <Icon name="EllipsisVerticalIcon" size={16} className="text-muted-foreground" />
+                      <Icon
+                        name="EllipsisVerticalIcon"
+                        size={16}
+                        className="text-muted-foreground"
+                      />
                     </motion.button>
                   </div>
                 </div>
@@ -270,7 +293,10 @@ export default function ContentSuggestions({
                           Alternative Versions
                         </p>
                         {suggestion.alternatives.map((alt, idx) => (
-                          <div key={idx} className="bg-muted/50 border border-border rounded-lg p-3">
+                          <div
+                            key={idx}
+                            className="bg-muted/50 border border-border rounded-lg p-3"
+                          >
                             <p className="text-sm text-foreground whitespace-pre-wrap font-mono mb-2">
                               {alt}
                             </p>

@@ -10,7 +10,7 @@ import { Variants } from 'framer-motion';
  */
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.3 } }
+  visible: { opacity: 1, transition: { duration: 0.3 } },
 };
 
 /**
@@ -18,7 +18,7 @@ export const fadeIn: Variants = {
  */
 export const slideUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 /**
@@ -26,7 +26,7 @@ export const slideUp: Variants = {
  */
 export const slideDown: Variants = {
   hidden: { opacity: 0, y: -20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 /**
@@ -34,7 +34,7 @@ export const slideDown: Variants = {
  */
 export const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } }
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.3 } },
 };
 
 /**
@@ -47,9 +47,9 @@ export const staggerContainer: Variants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.1
-    }
-  }
+      delayChildren: 0.1,
+    },
+  },
 };
 
 /**
@@ -58,13 +58,13 @@ export const staggerContainer: Variants = {
 export const cardHover: Variants = {
   rest: {
     scale: 1,
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
   },
   hover: {
     scale: 1.05,
-    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
-    transition: { duration: 0.3 }
-  }
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+    transition: { duration: 0.3 },
+  },
 };
 
 /**
@@ -75,8 +75,8 @@ export const slideFromLeft: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
 };
 
 /**
@@ -87,8 +87,8 @@ export const slideFromRight: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.5, ease: "easeOut" }
-  }
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
 };
 
 /**
@@ -99,8 +99,8 @@ export const zoomIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.4, ease: "easeOut" }
-  }
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
 };
 
 /**
@@ -111,8 +111,8 @@ export const rotateIn: Variants = {
   visible: {
     opacity: 1,
     rotate: 0,
-    transition: { duration: 0.5 }
-  }
+    transition: { duration: 0.5 },
+  },
 };
 
 /**
@@ -125,9 +125,9 @@ export const pulse: Variants = {
     transition: {
       duration: 2,
       repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
+      ease: 'easeInOut',
+    },
+  },
 };
 
 /**
@@ -140,9 +140,9 @@ export const float: Variants = {
     transition: {
       duration: 3,
       repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
+      ease: 'easeInOut',
+    },
+  },
 };
 
 /**
@@ -153,8 +153,8 @@ export const listItem: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.3 }
-  }
+    transition: { duration: 0.3 },
+  },
 };
 
 /**
@@ -164,24 +164,24 @@ export const modalVariant: Variants = {
   hidden: {
     opacity: 0,
     scale: 0.8,
-    y: 50
+    y: 50,
   },
   visible: {
     opacity: 1,
     scale: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: 'spring',
       damping: 25,
-      stiffness: 300
-    }
+      stiffness: 300,
+    },
   },
   exit: {
     opacity: 0,
     scale: 0.8,
     y: 50,
-    transition: { duration: 0.2 }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 /**
@@ -191,10 +191,10 @@ export const backdropVariant: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.3 }
+    transition: { duration: 0.3 },
   },
   exit: {
     opacity: 0,
-    transition: { duration: 0.3 }
-  }
+    transition: { duration: 0.3 },
+  },
 };

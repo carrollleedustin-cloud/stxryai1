@@ -58,7 +58,8 @@ export default function PWAInstallPrompt() {
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-white mb-2">Install StxryAI App</h3>
                 <p className="text-white/90 text-sm mb-4">
-                  Get the full experience! Install our app for offline reading, push notifications, and faster loading.
+                  Get the full experience! Install our app for offline reading, push notifications,
+                  and faster loading.
                 </p>
                 <div className="flex gap-3">
                   <button
@@ -75,10 +76,7 @@ export default function PWAInstallPrompt() {
                   </button>
                 </div>
               </div>
-              <button
-                onClick={handleDismiss}
-                className="text-white/80 hover:text-white text-xl"
-              >
+              <button onClick={handleDismiss} className="text-white/80 hover:text-white text-xl">
                 ✕
               </button>
             </div>

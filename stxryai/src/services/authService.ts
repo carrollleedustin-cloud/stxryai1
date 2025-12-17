@@ -76,7 +76,7 @@ export const authService = {
 
     // Wait a moment for the trigger to create the profile
     if (data.user) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
     return data;
@@ -152,7 +152,10 @@ export const authService = {
     }
     try {
       const supabase = getSupabase();
-      const { data: { session }, error } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
       if (error) throw error;
       return session;
     } catch (error) {
@@ -200,9 +203,9 @@ export const authService = {
       return {
         data: {
           subscription: data?.subscription || {
-            unsubscribe: () => {}
-          }
-        }
+            unsubscribe: () => {},
+          },
+        },
       };
     } catch (error) {
       console.error('Error setting up auth state listener:', error);
@@ -226,11 +229,7 @@ export const authService = {
 
     try {
       const supabase = getSupabase();
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) throw error;
       return data;
@@ -240,7 +239,10 @@ export const authService = {
     }
   },
 
-  async updateUserProfile(userId: string, updates: { display_name?: string; username?: string; bio?: string }) {
+  async updateUserProfile(
+    userId: string,
+    updates: { display_name?: string; username?: string; bio?: string }
+  ) {
     ensureSupabaseConfigured();
     const supabase = getSupabase();
 
@@ -250,7 +252,12 @@ export const authService = {
 
     const { data, error } = await updateUserById(userId, updates as any);
     if (error) {
-      if (error.message && error.message.includes('duplicate key value violates unique constraint "users_username_key"')) {
+      if (
+        error.message &&
+        error.message.includes(
+          'duplicate key value violates unique constraint "users_username_key"'
+        )
+      ) {
         throw new Error('Username already taken. Please choose another.');
       }
       throw error;
@@ -272,5 +279,5 @@ export const authService = {
       password: newPassword,
     });
     if (error) throw error;
-  }
+  },
 };

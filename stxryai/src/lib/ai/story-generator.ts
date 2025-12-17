@@ -104,7 +104,10 @@ Generate the next chapter with 3-4 meaningful choices that impact the story.
   /**
    * Get AI writing suggestions for improvement
    */
-  async getWritingSuggestions(content: string, focusAreas?: string[]): Promise<WritingSuggestion[]> {
+  async getWritingSuggestions(
+    content: string,
+    focusAreas?: string[]
+  ): Promise<WritingSuggestion[]> {
     const systemPrompt = `You are an expert writing coach specializing in interactive fiction. Analyze the text and provide constructive suggestions for improvement.`;
 
     const userPrompt = `
@@ -158,8 +161,10 @@ Return as JSON array with: description, impact
     enhancement: 'expand' | 'condense' | 'dramatize' | 'clarify'
   ): Promise<string> {
     const enhancementInstructions = {
-      expand: 'Add more detail, description, and depth to this content while maintaining the core narrative.',
-      condense: 'Make this content more concise while preserving all key information and narrative beats.',
+      expand:
+        'Add more detail, description, and depth to this content while maintaining the core narrative.',
+      condense:
+        'Make this content more concise while preserving all key information and narrative beats.',
       dramatize: 'Increase the dramatic tension and emotional impact of this content.',
       clarify: 'Improve clarity and readability while maintaining the original meaning and style.',
     };
@@ -208,7 +213,9 @@ Generate a natural dialogue response for this character in this situation.
   async generateOutline(
     concept: string,
     targetChapters: number
-  ): Promise<Array<{ chapterNumber: number; title: string; summary: string; keyEvents: string[] }>> {
+  ): Promise<
+    Array<{ chapterNumber: number; title: string; summary: string; keyEvents: string[] }>
+  > {
     const systemPrompt = `You are a story architect. Create detailed, well-structured story outlines.`;
 
     const userPrompt = `

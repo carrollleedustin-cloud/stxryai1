@@ -73,15 +73,15 @@ export interface Choice {
 }
 
 export interface Achievement {
-    id: string;
-    title: string;
-    description: string;
-    icon: string;
-    rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
-    xp_reward: number;
-    requirement_type: string;
-    requirement_value: number;
-    created_at: string;
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary' | 'mythic';
+  xp_reward: number;
+  requirement_type: string;
+  requirement_value: number;
+  created_at: string;
 }
 
 export interface UserAchievement {

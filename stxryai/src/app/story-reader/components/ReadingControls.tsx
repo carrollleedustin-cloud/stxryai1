@@ -80,7 +80,11 @@ const ReadingControls = ({
             className="p-2 rounded-lg bg-card/50 backdrop-blur-sm border border-border hover:bg-muted/50 transition-smooth"
             aria-label="Change theme"
           >
-            <Icon name={theme === 'dark' ? 'SunIcon' : 'MoonIcon'} size={20} className="text-foreground" />
+            <Icon
+              name={theme === 'dark' ? 'SunIcon' : 'MoonIcon'}
+              size={20}
+              className="text-foreground"
+            />
           </button>
           <button
             onClick={onBookmark}
@@ -100,9 +104,14 @@ const ReadingControls = ({
                 ? 'bg-primary/20 border-primary text-primary'
                 : 'bg-card/50 backdrop-blur-sm border-border text-foreground hover:bg-muted/50'
             }`}
-            aria-label={isDistractionFree ? 'Exit distraction-free mode' : 'Enter distraction-free mode'}
+            aria-label={
+              isDistractionFree ? 'Exit distraction-free mode' : 'Enter distraction-free mode'
+            }
           >
-            <Icon name={isDistractionFree ? 'ArrowsPointingInIcon' : 'ArrowsPointingOutIcon'} size={20} />
+            <Icon
+              name={isDistractionFree ? 'ArrowsPointingInIcon' : 'ArrowsPointingOutIcon'}
+              size={20}
+            />
           </button>
         </div>
       </div>

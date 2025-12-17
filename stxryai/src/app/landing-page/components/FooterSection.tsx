@@ -9,25 +9,25 @@ const FooterSection = () => {
       { label: 'Features', href: '/landing-page' },
       { label: 'Pricing', href: '/landing-page' },
       { label: 'Story Library', href: '/story-library' },
-      { label: 'Premium', href: '/landing-page' }
+      { label: 'Premium', href: '/landing-page' },
     ],
     company: [
       { label: 'About Us', href: '/landing-page' },
       { label: 'Blog', href: '/landing-page' },
       { label: 'Careers', href: '/landing-page' },
-      { label: 'Contact', href: '/landing-page' }
+      { label: 'Contact', href: '/landing-page' },
     ],
     legal: [
       { label: 'Terms of Service', href: '/landing-page' },
       { label: 'Privacy Policy', href: '/landing-page' },
       { label: 'Cookie Policy', href: '/landing-page' },
-      { label: 'Content Guidelines', href: '/landing-page' }
+      { label: 'Content Guidelines', href: '/landing-page' },
     ],
     social: [
       { icon: 'ChatBubbleLeftRightIcon', label: 'Discord', href: '#' },
       { icon: 'AtSymbolIcon', label: 'Twitter', href: '#' },
-      { icon: 'BookOpenIcon', label: 'Medium', href: '#' }
-    ]
+      { icon: 'BookOpenIcon', label: 'Medium', href: '#' },
+    ],
   };
 
   return (
@@ -49,10 +49,7 @@ const FooterSection = () => {
                   stroke="var(--color-accent)"
                   strokeWidth="1.5"
                 />
-                <path
-                  d="M20 14L14 18V26L20 30L26 26V18L20 14Z"
-                  fill="var(--color-background)"
-                />
+                <path d="M20 14L14 18V26L20 30L26 26V18L20 14Z" fill="var(--color-background)" />
                 <defs>
                   <linearGradient
                     id="footer-logo-gradient"
@@ -67,12 +64,11 @@ const FooterSection = () => {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="font-heading text-2xl font-bold text-foreground">
-                Stxryai
-              </span>
+              <span className="font-heading text-2xl font-bold text-foreground">Stxryai</span>
             </Link>
             <p className="text-muted-foreground mb-4 max-w-md">
-              AI-powered interactive fiction platform where your choices shape infinite story possibilities. Join thousands of readers exploring unique narratives.
+              AI-powered interactive fiction platform where your choices shape infinite story
+              possibilities. Join thousands of readers exploring unique narratives.
             </p>
             <div className="flex items-center space-x-4">
               {footerLinks.social.map((social, index) => (
@@ -82,7 +78,11 @@ const FooterSection = () => {
                   className="w-10 h-10 rounded-lg bg-muted/30 hover:bg-primary/20 flex items-center justify-center transition-smooth"
                   aria-label={social.label}
                 >
-                  <Icon name={social.icon as any} size={20} className="text-muted-foreground hover:text-primary" />
+                  <Icon
+                    name={social.icon as any}
+                    size={20}
+                    className="text-muted-foreground hover:text-primary"
+                  />
                 </a>
               ))}
             </div>

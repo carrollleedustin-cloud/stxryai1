@@ -52,11 +52,12 @@ const defaultStats: Stat[] = [
 
 export default function QuickStatsWidget({
   stats = defaultStats,
-  variant = 'grid'
+  variant = 'grid',
 }: QuickStatsWidgetProps) {
-  const containerClass = variant === 'grid'
-    ? 'grid grid-cols-2 lg:grid-cols-4 gap-4'
-    : 'flex overflow-x-auto gap-4 pb-2';
+  const containerClass =
+    variant === 'grid'
+      ? 'grid grid-cols-2 lg:grid-cols-4 gap-4'
+      : 'flex overflow-x-auto gap-4 pb-2';
 
   return (
     <div className={containerClass}>
@@ -78,17 +79,21 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
     >
       {/* Icon with gradient background */}
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl`}>
+        <div
+          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center text-2xl`}
+        >
           {stat.icon}
         </div>
 
         {/* Change indicator */}
         {stat.change && (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
-            stat.change.type === 'increase'
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-red-500/20 text-red-400'
-          }`}>
+          <div
+            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+              stat.change.type === 'increase'
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-red-500/20 text-red-400'
+            }`}
+          >
             {stat.change.type === 'increase' ? '↑' : '↓'}
             {stat.change.value}%
           </div>
@@ -99,9 +104,7 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
       <div className="text-sm text-gray-400 mb-1">{stat.label}</div>
 
       {/* Value */}
-      <div className="text-2xl font-bold text-white mb-2">
-        {stat.value}
-      </div>
+      <div className="text-2xl font-bold text-white mb-2">{stat.value}</div>
 
       {/* Progress indicator (if applicable) */}
       {typeof stat.value === 'string' && stat.value.includes('/') && (
@@ -110,7 +113,7 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
             <motion.div
               initial={{ width: 0 }}
               animate={{
-                width: `${(parseInt(stat.value.split('/')[0]) / parseInt(stat.value.split('/')[1])) * 100}%`
+                width: `${(parseInt(stat.value.split('/')[0]) / parseInt(stat.value.split('/')[1])) * 100}%`,
               }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               className={`h-full bg-gradient-to-r ${stat.color}`}
@@ -160,7 +163,7 @@ export function CompactStatsWidget({ stats = defaultStats }: { stats?: Stat[] })
 // Individual stat card for highlighting specific metrics
 export function HighlightStatCard({
   stat,
-  size = 'md'
+  size = 'md',
 }: {
   stat: Stat;
   size?: 'sm' | 'md' | 'lg';
@@ -190,20 +193,21 @@ export function HighlightStatCard({
       className={`bg-gradient-to-br ${stat.color} rounded-2xl ${sizeClasses[size]} shadow-2xl`}
     >
       <div className="flex items-start justify-between mb-4">
-        <div className={`${iconSizes[size]} rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center`}>
+        <div
+          className={`${iconSizes[size]} rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center`}
+        >
           {stat.icon}
         </div>
         {stat.change && (
           <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold text-white">
-            {stat.change.type === 'increase' ? '+' : '-'}{stat.change.value}%
+            {stat.change.type === 'increase' ? '+' : '-'}
+            {stat.change.value}%
           </div>
         )}
       </div>
 
       <div className="text-sm text-white/80 mb-2">{stat.label}</div>
-      <div className={`${valueSizes[size]} font-bold text-white`}>
-        {stat.value}
-      </div>
+      <div className={`${valueSizes[size]} font-bold text-white`}>{stat.value}</div>
 
       {stat.href && (
         <Link href={stat.href}>
@@ -237,7 +241,9 @@ export function AnimatedStatCounter({
       animate={{ opacity: 1 }}
       transition={{ duration, ease: 'easeOut' }}
     >
-      {prefix}{value}{suffix}
+      {prefix}
+      {value}
+      {suffix}
     </motion.span>
   );
 }

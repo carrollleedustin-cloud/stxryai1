@@ -24,7 +24,7 @@ export interface UserReadingProgress {
 export const userProgressService = {
   async getUserProgress(userId: string, storyId: string) {
     const { data, error } = await supabase
-      .from('user_reading_progress')
+      .from('user_progress')
       .select('*')
       .eq('user_id', userId)
       .eq('story_id', storyId)
@@ -36,8 +36,9 @@ export const userProgressService = {
 
   async getAllUserProgress(userId: string) {
     const { data, error } = await supabase
-      .from('user_reading_progress')
-      .select(`
+      .from('user_progress')
+      .select(
+        `
         *,
         stories:story_id (
           id,
@@ -46,7 +47,8 @@ export const userProgressService = {
           genre,
           estimated_duration
         )
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('last_read_at', { ascending: false });
 
@@ -65,10 +67,8 @@ export const userProgressService = {
     const { data, error } = await upsertUserReadingProgress({
       user_id: userId,
       story_id: storyId,
-      current_chapter_id: currentChapterId,
-      last_choice_id: lastChoiceId,
+      chapter_id: currentChapterId,
       progress_percentage: progressPercentage,
-      reading_time: readingTime,
       last_read_at: new Date().toISOString(),
     });
 
@@ -78,8 +78,8 @@ export const userProgressService = {
 
   async markStoryCompleted(userId: string, storyId: string) {
     const { data, error } = await updateUserReadingProgressByKeys(userId, storyId, {
-      is_completed: true,
       progress_percentage: 100,
+      last_read_at: new Date().toISOString(),
     });
 
     if (error) throw error;
@@ -102,7 +102,13 @@ export const userProgressService = {
     return data;
   },
 
-  async awardBadge(userId: string, badgeName: string, badgeType: string, description: string, icon: string) {
+  async awardBadge(
+    userId: string,
+    badgeName: string,
+    badgeType: string,
+    description: string,
+    icon: string
+  ) {
     const { data, error } = await insertUserBadge({
       user_id: userId,
       badge_name: badgeName,

@@ -16,50 +16,50 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: 'var(--color-border)', /* white-10 */
-        input: 'var(--color-input)', /* white-10 */
-        ring: 'var(--color-ring)', /* purple-500 */
-        background: 'var(--color-background)', /* custom-dark */
-        foreground: 'var(--color-foreground)', /* slate-50 */
+        border: 'var(--color-border)' /* white-10 */,
+        input: 'var(--color-input)' /* white-10 */,
+        ring: 'var(--color-ring)' /* purple-500 */,
+        background: 'var(--color-background)' /* custom-dark */,
+        foreground: 'var(--color-foreground)' /* slate-50 */,
         primary: {
-          DEFAULT: 'var(--color-primary)', /* purple-800 */
-          foreground: 'var(--color-primary-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-primary)' /* purple-800 */,
+          foreground: 'var(--color-primary-foreground)' /* slate-50 */,
         },
         secondary: {
-          DEFAULT: 'var(--color-secondary)', /* purple-500 */
-          foreground: 'var(--color-secondary-foreground)', /* custom-dark */
+          DEFAULT: 'var(--color-secondary)' /* purple-500 */,
+          foreground: 'var(--color-secondary-foreground)' /* custom-dark */,
         },
         accent: {
-          DEFAULT: 'var(--color-accent)', /* amber-500 */
-          foreground: 'var(--color-accent-foreground)', /* custom-dark */
+          DEFAULT: 'var(--color-accent)' /* amber-500 */,
+          foreground: 'var(--color-accent-foreground)' /* custom-dark */,
         },
         destructive: {
-          DEFAULT: 'var(--color-destructive)', /* red-500 */
-          foreground: 'var(--color-destructive-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-destructive)' /* red-500 */,
+          foreground: 'var(--color-destructive-foreground)' /* slate-50 */,
         },
         success: {
-          DEFAULT: 'var(--color-success)', /* emerald-500 */
-          foreground: 'var(--color-success-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-success)' /* emerald-500 */,
+          foreground: 'var(--color-success-foreground)' /* slate-50 */,
         },
         warning: {
-          DEFAULT: 'var(--color-warning)', /* amber-500 */
-          foreground: 'var(--color-warning-foreground)', /* custom-dark */
+          DEFAULT: 'var(--color-warning)' /* amber-500 */,
+          foreground: 'var(--color-warning-foreground)' /* custom-dark */,
         },
         error: {
-          DEFAULT: 'var(--color-error)', /* red-500 */
-          foreground: 'var(--color-error-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-error)' /* red-500 */,
+          foreground: 'var(--color-error-foreground)' /* slate-50 */,
         },
         muted: {
-          DEFAULT: 'var(--color-muted)', /* custom-surface */
-          foreground: 'var(--color-muted-foreground)', /* slate-400 */
+          DEFAULT: 'var(--color-muted)' /* custom-surface */,
+          foreground: 'var(--color-muted-foreground)' /* slate-400 */,
         },
         card: {
-          DEFAULT: 'var(--color-card)', /* custom-surface */
-          foreground: 'var(--color-card-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-card)' /* custom-surface */,
+          foreground: 'var(--color-card-foreground)' /* slate-50 */,
         },
         popover: {
-          DEFAULT: 'var(--color-popover)', /* custom-surface */
-          foreground: 'var(--color-popover-foreground)', /* slate-50 */
+          DEFAULT: 'var(--color-popover)' /* custom-surface */,
+          foreground: 'var(--color-popover-foreground)' /* slate-50 */,
         },
       },
       borderRadius: {
@@ -89,8 +89,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
 };

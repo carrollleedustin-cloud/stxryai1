@@ -29,7 +29,15 @@ export interface StoryMetadata {
   id?: string;
   title: string;
   description: string;
-  genre: 'fantasy' | 'sci-fi' | 'mystery' | 'romance' | 'horror' | 'adventure' | 'thriller' | 'historical';
+  genre:
+    | 'fantasy'
+    | 'sci-fi'
+    | 'mystery'
+    | 'romance'
+    | 'horror'
+    | 'adventure'
+    | 'thriller'
+    | 'historical';
   difficulty: 'easy' | 'medium' | 'hard';
   coverImageUrl: string;
   isPremium: boolean;
@@ -75,7 +83,7 @@ export const addChapter = async (storyId: string, chapter: Omit<StoryNode, 'id' 
     const { error: updateError } = await supabase.rpc('increment', {
       table_name: 'stories',
       row_id: storyId,
-      column_name: 'total_chapters'
+      column_name: 'total_chapters',
     });
 
     return { success: true, chapter: Array.isArray(data) ? data[0] : data };
@@ -88,17 +96,14 @@ export const addChapter = async (storyId: string, chapter: Omit<StoryNode, 'id' 
 // Add choices to a chapter
 export const addChoicesToChapter = async (chapterId: string, choices: Omit<ChoiceNode, 'id'>[]) => {
   try {
-    const choicesData = choices.map(choice => ({
+    const choicesData = choices.map((choice) => ({
       chapter_id: chapterId,
       text: choice.choiceText,
       position: choice.choiceOrder,
-      next_chapter_id: choice.nextChapterId
+      next_chapter_id: choice.nextChapterId,
     }));
 
-    const { data, error } = await supabase
-      .from('choices')
-      .insert(choicesData)
-      .select();
+    const { data, error } = await supabase.from('choices').insert(choicesData).select();
 
     if (error) throw error;
     return { success: true, choices: data };
@@ -121,10 +126,12 @@ export const getStoryForEditing = async (storyId: string) => {
 
     const { data: chapters, error: chaptersError } = await supabase
       .from('chapters')
-      .select(`
+      .select(
+        `
         *,
         choices (*)
-      `)
+      `
+      )
       .eq('story_id', storyId)
       .order('chapter_number', { ascending: true });
 

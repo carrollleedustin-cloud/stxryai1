@@ -38,10 +38,14 @@ export default function Leaderboard({
 
   const getScoreLabel = () => {
     switch (activeType) {
-      case 'readers': return 'Stories Read';
-      case 'creators': return 'Total Views';
-      case 'stories': return 'Views';
-      default: return 'Score';
+      case 'readers':
+        return 'Stories Read';
+      case 'creators':
+        return 'Total Views';
+      case 'stories':
+        return 'Views';
+      default:
+        return 'Score';
     }
   };
 
@@ -145,7 +149,9 @@ function LeaderEntry({
       }`}
     >
       {/* Rank Badge */}
-      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${rankColor} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+      <div
+        className={`w-16 h-16 rounded-xl bg-gradient-to-br ${rankColor} flex items-center justify-center flex-shrink-0 shadow-lg`}
+      >
         <span className="text-white font-bold text-xl">{rankIcon}</span>
       </div>
 
@@ -172,17 +178,18 @@ function LeaderEntry({
           )}
         </div>
         <p className="text-sm text-gray-400">
-          {scoreLabel}: <span className="font-semibold text-white">{entry.score.toLocaleString()}</span>
+          {scoreLabel}:{' '}
+          <span className="font-semibold text-white">{entry.score.toLocaleString()}</span>
         </p>
       </div>
 
       {/* Change Indicator */}
       {entry.change !== 0 && (
-        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold ${
-          entry.change > 0
-            ? 'bg-green-600/20 text-green-400'
-            : 'bg-red-600/20 text-red-400'
-        }`}>
+        <div
+          className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold ${
+            entry.change > 0 ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+          }`}
+        >
           {entry.change > 0 ? '↑' : '↓'}
           {Math.abs(entry.change)}
         </div>

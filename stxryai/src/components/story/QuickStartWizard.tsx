@@ -7,7 +7,11 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { storyTemplates, generateStoryFromTemplate, type StoryTemplate } from '@/lib/story/templates';
+import {
+  storyTemplates,
+  generateStoryFromTemplate,
+  type StoryTemplate,
+} from '@/lib/story/templates';
 
 interface QuickStartWizardProps {
   onComplete: (storyData: any) => void;
@@ -26,7 +30,7 @@ export default function QuickStartWizard({ onComplete, onCancel }: QuickStartWiz
     genre: '',
     tone: 'balanced' as 'light' | 'balanced' | 'dark',
     length: 'medium' as 'short' | 'medium' | 'long',
-    audience: 'general' as 'young-adult' | 'general' | 'mature'
+    audience: 'general' as 'young-adult' | 'general' | 'mature',
   });
 
   // Step 1: Choose creation method
@@ -154,15 +158,9 @@ export default function QuickStartWizard({ onComplete, onCancel }: QuickStartWiz
         <button className="px-3 py-1 text-sm rounded-full bg-green-500/20 text-green-600 dark:text-green-400">
           Beginner
         </button>
-        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">
-          Intermediate
-        </button>
-        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">
-          Advanced
-        </button>
-        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">
-          All
-        </button>
+        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">Intermediate</button>
+        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">Advanced</button>
+        <button className="px-3 py-1 text-sm rounded-full hover:bg-muted">All</button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -187,13 +185,15 @@ export default function QuickStartWizard({ onComplete, onCancel }: QuickStartWiz
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold">{template.name}</h3>
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    template.difficulty === 'beginner'
-                      ? 'bg-green-500/20 text-green-600 dark:text-green-400'
-                      : template.difficulty === 'intermediate'
-                      ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
-                      : 'bg-red-500/20 text-red-600 dark:text-red-400'
-                  }`}>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded ${
+                      template.difficulty === 'beginner'
+                        ? 'bg-green-500/20 text-green-600 dark:text-green-400'
+                        : template.difficulty === 'intermediate'
+                          ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                          : 'bg-red-500/20 text-red-600 dark:text-red-400'
+                    }`}
+                  >
                     {template.difficulty}
                   </span>
                 </div>
@@ -239,8 +239,8 @@ export default function QuickStartWizard({ onComplete, onCancel }: QuickStartWiz
           {method === 'template' && selectedTemplate
             ? `Personalizing: ${selectedTemplate.name}`
             : method === 'ai-prompt'
-            ? 'Tell us about your story idea'
-            : 'Set up your story basics'}
+              ? 'Tell us about your story idea'
+              : 'Set up your story basics'}
         </p>
       </div>
 
@@ -407,7 +407,7 @@ export default function QuickStartWizard({ onComplete, onCancel }: QuickStartWiz
                   tone: customization.tone,
                   length: customization.length,
                   audience: customization.audience,
-                  aiPrompt: method === 'ai-prompt' ? aiPrompt : selectedTemplate?.starterPrompt
+                  aiPrompt: method === 'ai-prompt' ? aiPrompt : selectedTemplate?.starterPrompt,
                 };
               }
               onComplete(storyData);

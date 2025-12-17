@@ -18,7 +18,6 @@ export interface FilterOptions {
   pageSize?: number;
 }
 
-
 export const storyService = {
   /**
    * @deprecated Use getFilteredStories for more advanced filtering
@@ -43,7 +42,9 @@ export const storyService = {
     }
 
     if (filters?.searchQuery) {
-      query = query.or(`title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`);
+      query = query.or(
+        `title.ilike.%${filters.searchQuery}%,description.ilike.%${filters.searchQuery}%`
+      );
     }
 
     const { data, error } = await query;
@@ -88,14 +89,14 @@ export const storyService = {
           break;
       }
     } else {
-        query = query.order('published_at', { ascending: false, nullsFirst: false });
+      query = query.order('published_at', { ascending: false, nullsFirst: false });
     }
 
     // Pagination
     if (filters.page && filters.pageSize) {
-        const from = (filters.page - 1) * filters.pageSize;
-        const to = from + filters.pageSize - 1;
-        query = query.range(from, to);
+      const from = (filters.page - 1) * filters.pageSize;
+      const to = from + filters.pageSize - 1;
+      query = query.range(from, to);
     }
 
     const { data, error } = await query;
@@ -104,11 +105,7 @@ export const storyService = {
   },
 
   async getStoryById(storyId: string) {
-    const { data, error } = await supabase
-      .from('stories')
-      .select('*')
-      .eq('id', storyId)
-      .single();
+    const { data, error } = await supabase.from('stories').select('*').eq('id', storyId).single();
 
     if (error) throw error;
     return data as Story;
@@ -142,14 +139,16 @@ export const storyService = {
 
     const { data, error } = await supabase
       .from('comments')
-      .select(`
+      .select(
+        `
         *,
         user:users!user_id (
           id,
           display_name,
           avatar_url
         )
-      `)
+      `
+      )
       .eq('story_id', storyId)
       .is('parent_id', null)
       .order('created_at', { ascending: false })
@@ -162,14 +161,16 @@ export const storyService = {
   async getCommentReplies(commentId: string) {
     const { data, error } = await supabase
       .from('comments')
-      .select(`
+      .select(
+        `
         *,
         user:users!user_id (
           id,
           display_name,
           avatar_url
         )
-      `)
+      `
+      )
       .eq('parent_id', commentId)
       .order('created_at', { ascending: true });
 

@@ -17,7 +17,7 @@ import {
   Zap,
   Star,
   Users,
-  Clock
+  Clock,
 } from 'lucide-react';
 
 interface StoryCardProps {
@@ -58,14 +58,14 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
             className="w-full h-full object-cover"
           />
         </motion.div>
-        
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
 
         {story.is_premium && (
-            <Badge variant="premium" className="absolute top-3 left-3">
-                <Zap size={14} className="mr-1" />
-                Premium
-            </Badge>
+          <Badge variant="premium" className="absolute top-3 left-3">
+            <Zap size={14} className="mr-1" />
+            Premium
+          </Badge>
         )}
 
         <motion.div
@@ -78,24 +78,27 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
         >
           <h3 className="text-lg font-bold line-clamp-1">{story.title}</h3>
           <div className="flex items-center gap-2 mt-1">
-            <AppImage src={story.author.avatar_url} alt={story.author.display_name} className="w-6 h-6 rounded-full" />
+            <AppImage
+              src={story.author.avatar_url}
+              alt={story.author.display_name}
+              className="w-6 h-6 rounded-full"
+            />
             <span className="text-xs">{story.author.display_name}</span>
           </div>
         </motion.div>
-        
-        <motion.div 
-            className="absolute inset-0 flex items-center justify-center bg-black/60"
-            variants={{
-                rest: { opacity: 0 },
-                hover: { opacity: 1 },
-            }}
-            transition={{ duration: 0.3 }}
-        >
-            <button className="px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold">
-                Read Story
-            </button>
-        </motion.div>
 
+        <motion.div
+          className="absolute inset-0 flex items-center justify-center bg-black/60"
+          variants={{
+            rest: { opacity: 0 },
+            hover: { opacity: 1 },
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <button className="px-6 py-2 bg-primary text-primary-foreground rounded-full font-semibold">
+            Read Story
+          </button>
+        </motion.div>
       </div>
 
       <div className="p-4 flex flex-col flex-grow">
@@ -109,23 +112,25 @@ export default function StoryCard({ story, onClick }: StoryCardProps) {
             {story.genre}
           </Badge>
           <Badge variant="secondary">{story.difficulty}</Badge>
-          {story.tags?.map(tag => (
-            <Badge key={tag} variant="secondary">{tag}</Badge>
+          {story.tags?.map((tag) => (
+            <Badge key={tag} variant="secondary">
+              {tag}
+            </Badge>
           ))}
         </div>
 
         <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-border pt-3 mt-auto">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1" title="Rating">
-              <Star size={14} className="text-yellow-400"/> {story.rating?.toFixed(1) || 'N/A'}
+              <Star size={14} className="text-yellow-400" /> {story.rating?.toFixed(1) || 'N/A'}
             </span>
             <span className="flex items-center gap-1" title="Views">
               <Users size={14} /> {story.view_count?.toLocaleString() || 0}
             </span>
-             {story.estimated_duration && (
-                <span className="flex items-center gap-1" title="Estimated time to read">
-                    <Clock size={14} /> {story.estimated_duration} min
-                </span>
+            {story.estimated_duration && (
+              <span className="flex items-center gap-1" title="Estimated time to read">
+                <Clock size={14} /> {story.estimated_duration} min
+              </span>
             )}
           </div>
         </div>

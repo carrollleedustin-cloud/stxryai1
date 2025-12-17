@@ -37,7 +37,7 @@ const StoryRecommendationCard = ({ story }: StoryRecommendationCardProps) => {
             NEW
           </div>
         )}
-        
+
         {story.isPremium && (
           <div className="absolute top-3 right-3 z-10 p-1.5 bg-primary/90 backdrop-blur-sm rounded-full">
             <Icon name="SparklesIcon" size={16} className="text-primary-foreground" />
@@ -73,9 +73,7 @@ const StoryRecommendationCard = ({ story }: StoryRecommendationCardProps) => {
             ))}
           </div>
 
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {story.description}
-          </p>
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{story.description}</p>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -87,9 +85,7 @@ const StoryRecommendationCard = ({ story }: StoryRecommendationCardProps) => {
               </div>
               <div className="flex items-center space-x-1">
                 <Icon name="ChatBubbleLeftIcon" size={16} className="text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  {story.totalChoices}
-                </span>
+                <span className="text-sm text-muted-foreground">{story.totalChoices}</span>
               </div>
             </div>
 
@@ -101,9 +97,7 @@ const StoryRecommendationCard = ({ story }: StoryRecommendationCardProps) => {
                     style={{ width: `${story.progress}%` }}
                   />
                 </div>
-                <span className="text-xs font-medium text-primary">
-                  {story.progress}%
-                </span>
+                <span className="text-xs font-medium text-primary">{story.progress}%</span>
               </div>
             )}
           </div>

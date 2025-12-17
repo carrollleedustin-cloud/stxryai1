@@ -29,7 +29,7 @@ export default function ScrollToTop({ showAfter = 300, className = '' }: ScrollT
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -73,10 +73,15 @@ export default function ScrollToTop({ showAfter = 300, className = '' }: ScrollT
               strokeWidth="4"
               strokeLinecap="round"
               initial={{ pathLength: 0 }}
-              animate={{ pathLength: Math.min(window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight), 1) }}
+              animate={{
+                pathLength: Math.min(
+                  window.pageYOffset / (document.documentElement.scrollHeight - window.innerHeight),
+                  1
+                ),
+              }}
               style={{
                 pathLength: 0,
-                strokeDasharray: '0 1'
+                strokeDasharray: '0 1',
               }}
             />
           </svg>

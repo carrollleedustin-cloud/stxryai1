@@ -28,10 +28,10 @@ export default function ToastProvider() {
         style: {
           background: 'var(--color-card)',
           color: 'var(--color-foreground)',
-          border: '1px solid var(--color-border)'
+          border: '1px solid var(--color-border)',
         },
         className: 'toast-custom',
-        duration: 4000
+        duration: 4000,
       }}
     />
   );

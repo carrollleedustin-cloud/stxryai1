@@ -2,7 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://lxtjkhphwihroktujzzi.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDkwNTk2MywiZXhwIjoyMDgwNDgxOTYzfQ.LZEKQq72rYYHDYz2s2B8QOtmomzbHu-muubCwv2Estw';
+const supabaseServiceKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDkwNTk2MywiZXhwIjoyMDgwNDgxOTYzfQ.LZEKQq72rYYHDYz2s2B8QOtmomzbHu-muubCwv2Estw';
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -67,7 +68,8 @@ CREATE POLICY "Allow user creation via trigger" ON users
   console.log('\nDone! Testing if profile can be read now...\n');
 
   // Test with anon key
-  const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDU5NjMsImV4cCI6MjA4MDQ4MTk2M30.KesxRh32YnfDngzXKfCIQ1Vb-jjLwQv0kI74hnwN8K0';
+  const anonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDU5NjMsImV4cCI6MjA4MDQ4MTk2M30.KesxRh32YnfDngzXKfCIQ1Vb-jjLwQv0kI74hnwN8K0';
   const anonClient = createClient(supabaseUrl, anonKey);
 
   // Sign up test user
@@ -78,8 +80,8 @@ CREATE POLICY "Allow user creation via trigger" ON users
     email: testEmail,
     password: testPassword,
     options: {
-      data: { username: `user${Date.now()}`, display_name: 'Test' }
-    }
+      data: { username: `user${Date.now()}`, display_name: 'Test' },
+    },
   });
 
   if (authError) {
@@ -90,7 +92,7 @@ CREATE POLICY "Allow user creation via trigger" ON users
   console.log('✓ Created test user:', authData.user?.id);
 
   // Wait for trigger
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise((r) => setTimeout(r, 2000));
 
   // Try to read profile
   const { data: profile, error: profileError } = await anonClient

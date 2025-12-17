@@ -34,7 +34,7 @@ export default function StoryReaderInteractive() {
     sessionStart: Date.now(),
     choiceCount: 0,
     scrollDepth: 0,
-    timeOnScene: 0
+    timeOnScene: 0,
   });
   const [fontSize, setFontSize] = useState(16);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -42,42 +42,51 @@ export default function StoryReaderInteractive() {
   const [chapterStartTime, setChapterStartTime] = useState<number | null>(null);
   const [aiGeneratedSegments, setAiGeneratedSegments] = useState<string[]>([]);
 
-  const handleScrollDepthChange = useCallback((depth: number) => {
-    setEngagementTracking(prev => ({
-      ...prev,
-      scrollDepth: depth,
-    }));
-  }, [setEngagementTracking]);
+  const handleScrollDepthChange = useCallback(
+    (depth: number) => {
+      setEngagementTracking((prev) => ({
+        ...prev,
+        scrollDepth: depth,
+      }));
+    },
+    [setEngagementTracking]
+  );
 
-  const sendEngagementMetrics = useCallback(async (
-    latestTracking: typeof engagementTracking,
-    chapterId: string | undefined,
-    currentChapterContent: string
-  ) => {
-    if (!user || !story?.id || !chapterId) return;
+  const sendEngagementMetrics = useCallback(
+    async (
+      latestTracking: typeof engagementTracking,
+      chapterId: string | undefined,
+      currentChapterContent: string
+    ) => {
+      if (!user || !story?.id || !chapterId) return;
 
-    const metricsToSend = {
-      user_id: user.id,
-      story_id: story.id,
-      chapter_id: chapterId,
-      time_on_scene: latestTracking.timeOnScene,
-      choice_frequency: latestTracking.choiceCount, // Simple proxy for now
-      choices_made_count: latestTracking.choiceCount,
-      scroll_depth: latestTracking.scrollDepth,
-    };
+      const metricsToSend = {
+        user_id: user.id,
+        story_id: story.id,
+        chapter_id: chapterId,
+        time_on_scene: latestTracking.timeOnScene,
+        choice_frequency: latestTracking.choiceCount, // Simple proxy for now
+        choices_made_count: latestTracking.choiceCount,
+        scroll_depth: latestTracking.scrollDepth,
+      };
 
-    const context = {
-      storyId: story.id,
-      userId: user.id,
-      chapterId: chapterId,
-      currentChapterContent: currentChapterContent,
-    };
+      const context = {
+        storyId: story.id,
+        userId: user.id,
+        chapterId: chapterId,
+        currentChapterContent: currentChapterContent,
+      };
 
-    const feedback = await narrativeAIService.sendEngagementMetricsAndGetFeedback(metricsToSend, context);
-    if (feedback?.feedback) {
-      setAiGeneratedSegments(feedback.feedback);
-    }
-  }, [user, story, narrativeAIService, setAiGeneratedSegments]);
+      const feedback = await narrativeAIService.sendEngagementMetricsAndGetFeedback(
+        metricsToSend,
+        context
+      );
+      if (feedback?.feedback) {
+        setAiGeneratedSegments(feedback.feedback);
+      }
+    },
+    [user, story, narrativeAIService, setAiGeneratedSegments]
+  );
 
   // Calculate current chapter (moved up to avoid reference before declaration)
   const currentChapter = chapters[currentChapterIndex];
@@ -91,7 +100,10 @@ export default function StoryReaderInteractive() {
         storyService.getStoryById(storyId),
         storyService.getStoryChapters(storyId),
         userProgressService.getUserProgress(user.id, storyId),
-        userProgressService.isChapterBookmarked(user.id, chapters.length > 0 ? chapters[currentChapterIndex].id : '')
+        userProgressService.isChapterBookmarked(
+          user.id,
+          chapters.length > 0 ? chapters[currentChapterIndex].id : ''
+        ),
       ]);
 
       setStory(storyData);
@@ -119,7 +131,9 @@ export default function StoryReaderInteractive() {
       setError('');
     } catch (err: any) {
       if (err?.message?.includes('Failed to fetch')) {
-        setError('Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.');
+        setError(
+          'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
+        );
       } else {
         setError('Failed to load story. Please try again.');
       }
@@ -144,12 +158,19 @@ export default function StoryReaderInteractive() {
         const timeSpent = Date.now() - chapterStartTime; // Time in milliseconds
         const finalEngagementTracking = {
           ...engagementTracking,
-          timeOnScene: engagementTracking.timeOnScene + Math.round(timeSpent / 1000)
+          timeOnScene: engagementTracking.timeOnScene + Math.round(timeSpent / 1000),
         };
         sendEngagementMetrics(finalEngagementTracking, currentChapter.id, currentChapter.content);
       }
     };
-  }, [currentChapterIndex, chapterStartTime, loading, currentChapter, engagementTracking, sendEngagementMetrics]);
+  }, [
+    currentChapterIndex,
+    chapterStartTime,
+    loading,
+    currentChapter,
+    engagementTracking,
+    sendEngagementMetrics,
+  ]);
 
   // ... (rest of the component is the same)
   const handleBookmark = async () => {
@@ -179,30 +200,30 @@ export default function StoryReaderInteractive() {
       return;
     }
 
-          if (user && currentStory?.id && currentChapter) {
-            // Increment choice count
-            setEngagementTracking(prev => ({
-              ...prev,
-              choiceCount: prev.choiceCount + 1
-            }));
-    
-            // Calculate time spent on current chapter
-            if (chapterStartTime) {
-              const timeSpent = Date.now() - chapterStartTime; // Time in milliseconds
-              setEngagementTracking(prev => ({
-                ...prev,
-                timeOnScene: prev.timeOnScene + Math.round(timeSpent / 1000) // Convert to seconds
-              }));
-            }
-    
-            // Send engagement metrics for the *previous* chapter before changing it
-            sendEngagementMetrics(engagementTracking, currentChapter.id, currentChapter.content);
-    
-            // Record NPC memory if choice involves NPC interaction
-            const npcs = await narrativeAIService.getStoryNPCs(currentStory.id || '');
-            const relevantNPC = (npcs || []).find((npc: any) =>
-              choice.choice_text?.toLowerCase().includes(npc.npc_name?.toLowerCase())
-            );
+    if (user && currentStory?.id && currentChapter) {
+      // Increment choice count
+      setEngagementTracking((prev) => ({
+        ...prev,
+        choiceCount: prev.choiceCount + 1,
+      }));
+
+      // Calculate time spent on current chapter
+      if (chapterStartTime) {
+        const timeSpent = Date.now() - chapterStartTime; // Time in milliseconds
+        setEngagementTracking((prev) => ({
+          ...prev,
+          timeOnScene: prev.timeOnScene + Math.round(timeSpent / 1000), // Convert to seconds
+        }));
+      }
+
+      // Send engagement metrics for the *previous* chapter before changing it
+      sendEngagementMetrics(engagementTracking, currentChapter.id, currentChapter.content);
+
+      // Record NPC memory if choice involves NPC interaction
+      const npcs = await narrativeAIService.getStoryNPCs(currentStory.id || '');
+      const relevantNPC = (npcs || []).find((npc: any) =>
+        choice.choice_text?.toLowerCase().includes(npc.npc_name?.toLowerCase())
+      );
 
       if (relevantNPC) {
         await narrativeAIService.recordNPCMemory({
@@ -214,7 +235,9 @@ export default function StoryReaderInteractive() {
           chapter_number: currentChapter?.chapter_number,
           importance_score: 0.7,
           relationship_delta: choice.choice_text?.toLowerCase().includes('help') ? 5 : 0,
-          revealed_traits: [choice.choice_text?.toLowerCase().includes('brave') ? 'brave' : 'cautious']
+          revealed_traits: [
+            choice.choice_text?.toLowerCase().includes('brave') ? 'brave' : 'cautious',
+          ],
         });
       }
     }
@@ -276,10 +299,14 @@ export default function StoryReaderInteractive() {
   }
 
   return (
-    <div className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${isDistractionFree ? 'distraction-free' : ''}`}>
+    <div
+      className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${isDistractionFree ? 'distraction-free' : ''}`}
+    >
       {/* Main Story Content */}
       <div className={`lg:col-span-2 space-y-6 ${isDistractionFree ? 'lg:col-span-3' : ''}`}>
-        <div className={`bg-gradient-to-br ${appTheme === 'dark' ? 'from-purple-900 via-indigo-900 to-blue-900' : 'from-white to-gray-50'} rounded-xl shadow-2xl`}>
+        <div
+          className={`bg-gradient-to-br ${appTheme === 'dark' ? 'from-purple-900 via-indigo-900 to-blue-900' : 'from-white to-gray-50'} rounded-xl shadow-2xl`}
+        >
           <ReadingControls
             currentTheme={appTheme}
             currentFontSize={fontSize}
@@ -287,7 +314,7 @@ export default function StoryReaderInteractive() {
             onFontSizeChange={setFontSize}
             onBookmark={handleBookmark}
             isBookmarked={isBookmarked}
-            progress={(currentChapterIndex + 1) / chapters.length * 100}
+            progress={((currentChapterIndex + 1) / chapters.length) * 100}
             onToggleDistractionFree={toggleDistractionFree}
             isDistractionFree={isDistractionFree}
           />
@@ -311,10 +338,7 @@ export default function StoryReaderInteractive() {
 
             {choices.length > 0 && (
               <div className="mt-8">
-                <ChoiceSelector
-                  choices={choices}
-                  onChoiceSelect={handleChoiceSelect}
-                />
+                <ChoiceSelector choices={choices} onChoiceSelect={handleChoiceSelect} />
               </div>
             )}
           </div>
@@ -326,14 +350,11 @@ export default function StoryReaderInteractive() {
         <div className="space-y-6">
           {currentStory?.id && currentChapter && (
             <>
-              <NPCInteractionPanel 
-                storyId={currentStory.id} 
+              <NPCInteractionPanel
+                storyId={currentStory.id}
                 currentChapter={currentChapter.chapter_number}
               />
-              <DynamicPacingIndicator 
-                storyId={currentStory.id}
-                chapterId={currentChapter.id}
-              />
+              <DynamicPacingIndicator storyId={currentStory.id} chapterId={currentChapter.id} />
             </>
           )}
           <BranchVisualization

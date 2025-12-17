@@ -54,36 +54,52 @@ export default function ReadingInsights({
   currentStreak,
   longestStreak,
   averageRating,
-  completionRate
+  completionRate,
 }: ReadingInsightsProps) {
   const getInsightIcon = (type: string) => {
     switch (type) {
-      case 'achievement': return 'TrophyIcon';
-      case 'milestone': return 'FlagIcon';
-      case 'recommendation': return 'LightBulbIcon';
-      case 'pattern': return 'ChartBarIcon';
-      case 'comparison': return 'ScaleIcon';
-      default: return 'InformationCircleIcon';
+      case 'achievement':
+        return 'TrophyIcon';
+      case 'milestone':
+        return 'FlagIcon';
+      case 'recommendation':
+        return 'LightBulbIcon';
+      case 'pattern':
+        return 'ChartBarIcon';
+      case 'comparison':
+        return 'ScaleIcon';
+      default:
+        return 'InformationCircleIcon';
     }
   };
 
   const getInsightColor = (type: string) => {
     switch (type) {
-      case 'achievement': return 'from-yellow-500 to-orange-500';
-      case 'milestone': return 'from-purple-500 to-pink-500';
-      case 'recommendation': return 'from-blue-500 to-cyan-500';
-      case 'pattern': return 'from-green-500 to-emerald-500';
-      case 'comparison': return 'from-indigo-500 to-violet-500';
-      default: return 'from-gray-500 to-slate-500';
+      case 'achievement':
+        return 'from-yellow-500 to-orange-500';
+      case 'milestone':
+        return 'from-purple-500 to-pink-500';
+      case 'recommendation':
+        return 'from-blue-500 to-cyan-500';
+      case 'pattern':
+        return 'from-green-500 to-emerald-500';
+      case 'comparison':
+        return 'from-indigo-500 to-violet-500';
+      default:
+        return 'from-gray-500 to-slate-500';
     }
   };
 
   const getTrendIcon = (trend?: 'up' | 'down' | 'stable') => {
     switch (trend) {
-      case 'up': return { icon: 'ArrowTrendingUpIcon', color: 'text-green-500' };
-      case 'down': return { icon: 'ArrowTrendingDownIcon', color: 'text-red-500' };
-      case 'stable': return { icon: 'MinusIcon', color: 'text-yellow-500' };
-      default: return null;
+      case 'up':
+        return { icon: 'ArrowTrendingUpIcon', color: 'text-green-500' };
+      case 'down':
+        return { icon: 'ArrowTrendingDownIcon', color: 'text-red-500' };
+      case 'stable':
+        return { icon: 'MinusIcon', color: 'text-yellow-500' };
+      default:
+        return null;
     }
   };
 
@@ -96,10 +112,14 @@ export default function ReadingInsights({
 
   const getPreferredLengthLabel = (length: string): string => {
     switch (length) {
-      case 'short': return 'Quick Reads (< 30min)';
-      case 'medium': return 'Medium Stories (30-60min)';
-      case 'long': return 'Epic Tales (> 60min)';
-      default: return 'Unknown';
+      case 'short':
+        return 'Quick Reads (< 30min)';
+      case 'medium':
+        return 'Medium Stories (30-60min)';
+      case 'long':
+        return 'Epic Tales (> 60min)';
+      default:
+        return 'Unknown';
     }
   };
 
@@ -113,10 +133,30 @@ export default function ReadingInsights({
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Books Read', value: totalBooks.toString(), icon: 'BookOpenIcon', color: 'text-blue-500' },
-          { label: 'Total Time', value: formatTime(totalMinutes), icon: 'ClockIcon', color: 'text-purple-500' },
-          { label: 'Current Streak', value: `${currentStreak} days`, icon: 'FireIcon', color: 'text-orange-500' },
-          { label: 'Avg Rating', value: averageRating.toFixed(1), icon: 'StarIcon', color: 'text-yellow-500' }
+          {
+            label: 'Books Read',
+            value: totalBooks.toString(),
+            icon: 'BookOpenIcon',
+            color: 'text-blue-500',
+          },
+          {
+            label: 'Total Time',
+            value: formatTime(totalMinutes),
+            icon: 'ClockIcon',
+            color: 'text-purple-500',
+          },
+          {
+            label: 'Current Streak',
+            value: `${currentStreak} days`,
+            icon: 'FireIcon',
+            color: 'text-orange-500',
+          },
+          {
+            label: 'Avg Rating',
+            value: averageRating.toFixed(1),
+            icon: 'StarIcon',
+            color: 'text-yellow-500',
+          },
         ].map((stat, index) => (
           <motion.div
             key={stat.label}
@@ -124,7 +164,9 @@ export default function ReadingInsights({
             className="bg-card border border-border rounded-xl p-4 shadow-lg"
           >
             <div className="flex items-center gap-2 mb-2">
-              <div className={`w-8 h-8 rounded-lg ${stat.color.replace('text', 'bg')}/10 flex items-center justify-center`}>
+              <div
+                className={`w-8 h-8 rounded-lg ${stat.color.replace('text', 'bg')}/10 flex items-center justify-center`}
+              >
                 <Icon name={stat.icon} size={16} className={stat.color} />
               </div>
             </div>
@@ -155,7 +197,9 @@ export default function ReadingInsights({
               >
                 <div className="flex items-start gap-3">
                   {/* Icon */}
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br ${getInsightColor(insight.type)} flex items-center justify-center`}>
+                  <div
+                    className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br ${getInsightColor(insight.type)} flex items-center justify-center`}
+                  >
                     <span className="text-2xl">{insight.icon}</span>
                   </div>
 
@@ -225,7 +269,9 @@ export default function ReadingInsights({
                 <Icon name="BookmarkIcon" size={16} className="text-green-500" />
                 <span className="text-sm text-muted-foreground">Preferred Length</span>
               </div>
-              <span className="font-bold text-foreground text-xs">{getPreferredLengthLabel(readingPattern.preferredLength)}</span>
+              <span className="font-bold text-foreground text-xs">
+                {getPreferredLengthLabel(readingPattern.preferredLength)}
+              </span>
             </div>
 
             {/* Consistency Meter */}
@@ -281,8 +327,8 @@ export default function ReadingInsights({
                 {genreDistribution.length >= 5
                   ? "Excellent! You're exploring many genres 🌟"
                   : genreDistribution.length >= 3
-                  ? "Good variety! Try exploring more genres 📚"
-                  : "Consider branching out to new genres 🚀"}
+                    ? 'Good variety! Try exploring more genres 📚'
+                    : 'Consider branching out to new genres 🚀'}
               </p>
             </div>
           </div>
@@ -339,17 +385,21 @@ export default function ReadingInsights({
             <div className="text-3xl font-bold text-foreground mb-1">{longestStreak}</div>
             <p className="text-sm font-medium text-foreground">Longest Streak</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {currentStreak === longestStreak ? "You're on fire! 🎉" : `Current: ${currentStreak} days`}
+              {currentStreak === longestStreak
+                ? "You're on fire! 🎉"
+                : `Current: ${currentStreak} days`}
             </p>
           </div>
 
           {/* Average Session */}
           <div className="text-center p-4 bg-muted/50 rounded-lg">
             <div className="text-4xl mb-2">⏱️</div>
-            <div className="text-3xl font-bold text-foreground mb-1">{formatTime(readingPattern.averageSession)}</div>
+            <div className="text-3xl font-bold text-foreground mb-1">
+              {formatTime(readingPattern.averageSession)}
+            </div>
             <p className="text-sm font-medium text-foreground">Avg Session</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {readingPattern.averageSession > 30 ? "Deep reader 📖" : "Quick sessions ⚡"}
+              {readingPattern.averageSession > 30 ? 'Deep reader 📖' : 'Quick sessions ⚡'}
             </p>
           </div>
         </div>

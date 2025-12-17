@@ -112,10 +112,19 @@ export default function StoryExportShare({
 
               {/* Tab Content */}
               {activeTab === 'share' && (
-                <ShareTab storyTitle={storyTitle} shareUrl={shareUrl} onShare={onShare} onCopyLink={handleCopyLink} />
+                <ShareTab
+                  storyTitle={storyTitle}
+                  shareUrl={shareUrl}
+                  onShare={onShare}
+                  onCopyLink={handleCopyLink}
+                />
               )}
               {activeTab === 'export' && (
-                <ExportTab options={exportOptions} setOptions={setExportOptions} onExport={handleExport} />
+                <ExportTab
+                  options={exportOptions}
+                  setOptions={setExportOptions}
+                  onExport={handleExport}
+                />
               )}
               {activeTab === 'embed' && (
                 <EmbedTab embedCode={embedCode} onCopyEmbed={handleCopyEmbed} />
@@ -141,19 +150,51 @@ function ShareTab({
   onCopyLink: () => void;
 }) {
   const platforms = [
-    { name: 'Twitter', icon: '🐦', color: 'from-blue-400 to-blue-600', url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(storyTitle)}&url=${encodeURIComponent(shareUrl)}` },
-    { name: 'Facebook', icon: '📘', color: 'from-blue-600 to-blue-800', url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}` },
-    { name: 'Reddit', icon: '🤖', color: 'from-orange-600 to-red-600', url: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(storyTitle)}` },
-    { name: 'LinkedIn', icon: '💼', color: 'from-blue-700 to-blue-900', url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}` },
-    { name: 'WhatsApp', icon: '💬', color: 'from-green-500 to-green-700', url: `https://wa.me/?text=${encodeURIComponent(storyTitle + ' ' + shareUrl)}` },
-    { name: 'Email', icon: '📧', color: 'from-gray-600 to-gray-800', url: `mailto:?subject=${encodeURIComponent(storyTitle)}&body=${encodeURIComponent(shareUrl)}` },
+    {
+      name: 'Twitter',
+      icon: '🐦',
+      color: 'from-blue-400 to-blue-600',
+      url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(storyTitle)}&url=${encodeURIComponent(shareUrl)}`,
+    },
+    {
+      name: 'Facebook',
+      icon: '📘',
+      color: 'from-blue-600 to-blue-800',
+      url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`,
+    },
+    {
+      name: 'Reddit',
+      icon: '🤖',
+      color: 'from-orange-600 to-red-600',
+      url: `https://reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(storyTitle)}`,
+    },
+    {
+      name: 'LinkedIn',
+      icon: '💼',
+      color: 'from-blue-700 to-blue-900',
+      url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`,
+    },
+    {
+      name: 'WhatsApp',
+      icon: '💬',
+      color: 'from-green-500 to-green-700',
+      url: `https://wa.me/?text=${encodeURIComponent(storyTitle + ' ' + shareUrl)}`,
+    },
+    {
+      name: 'Email',
+      icon: '📧',
+      color: 'from-gray-600 to-gray-800',
+      url: `mailto:?subject=${encodeURIComponent(storyTitle)}&body=${encodeURIComponent(shareUrl)}`,
+    },
   ];
 
   return (
     <div className="space-y-6">
       {/* Social Platforms */}
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Share on Social Media</label>
+        <label className="text-sm font-medium text-gray-300 mb-3 block">
+          Share on Social Media
+        </label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {platforms.map((platform) => (
             <motion.a

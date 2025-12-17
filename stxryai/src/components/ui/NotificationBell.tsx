@@ -30,20 +30,20 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
       {
         id: '1',
         title: 'New Achievement Unlocked!',
-        message: 'You\'ve completed your first story!',
+        message: "You've completed your first story!",
         type: 'achievement',
         timestamp: new Date(Date.now() - 3600000),
         read: false,
-        icon: 'TrophyIcon'
+        icon: 'TrophyIcon',
       },
       {
         id: '2',
         title: 'Story Updated',
-        message: 'A story you\'re reading has a new chapter.',
+        message: "A story you're reading has a new chapter.",
         type: 'info',
         timestamp: new Date(Date.now() - 7200000),
         read: false,
-        icon: 'BookOpenIcon'
+        icon: 'BookOpenIcon',
       },
       {
         id: '3',
@@ -52,27 +52,23 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
         type: 'success',
         timestamp: new Date(Date.now() - 86400000),
         read: true,
-        icon: 'GiftIcon'
-      }
+        icon: 'GiftIcon',
+      },
     ];
     setNotifications(mockNotifications);
   }, []);
 
   // Check for unread notifications
   useEffect(() => {
-    setHasUnread(notifications.some(n => !n.read));
+    setHasUnread(notifications.some((n) => !n.read));
   }, [notifications]);
 
   const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(n => ({ ...n, read: true }))
-    );
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   const clearAll = () => {
@@ -80,7 +76,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
     setIsOpen(false);
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const getNotificationColor = (type: Notification['type']) => {
     switch (type) {
@@ -163,7 +159,7 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
               variants={{
                 hidden: { opacity: 0, y: -10, scale: 0.95 },
                 visible: { opacity: 1, y: 0, scale: 1 },
-                exit: { opacity: 0, y: -10, scale: 0.95 }
+                exit: { opacity: 0, y: -10, scale: 0.95 },
               }}
               initial="hidden"
               animate="visible"
@@ -207,7 +203,11 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
                   <div className="p-8 text-center">
-                    <Icon name="BellIcon" size={48} className="text-muted-foreground mx-auto mb-3 opacity-50" />
+                    <Icon
+                      name="BellIcon"
+                      size={48}
+                      className="text-muted-foreground mx-auto mb-3 opacity-50"
+                    />
                     <p className="text-muted-foreground">No notifications</p>
                   </div>
                 ) : (
@@ -224,11 +224,10 @@ export default function NotificationBell({ className = '' }: NotificationBellPro
                       >
                         <div className="flex gap-3">
                           {/* Icon */}
-                          <div className={`p-2 rounded-lg border ${getNotificationColor(notification.type)} flex-shrink-0 h-fit`}>
-                            <Icon
-                              name={notification.icon || 'BellIcon'}
-                              size={20}
-                            />
+                          <div
+                            className={`p-2 rounded-lg border ${getNotificationColor(notification.type)} flex-shrink-0 h-fit`}
+                          >
+                            <Icon name={notification.icon || 'BellIcon'} size={20} />
                           </div>
 
                           {/* Content */}

@@ -32,7 +32,7 @@ export default function ReadingProgress({
   wordsRead,
   totalWords,
   onChapterSelect,
-  compact = false
+  compact = false,
 }: ReadingProgressProps) {
   const formatTime = (minutes: number): string => {
     if (minutes < 60) return `${minutes}m`;
@@ -48,9 +48,7 @@ export default function ReadingProgress({
           <span className="text-sm font-medium text-foreground">
             Chapter {currentChapter} of {totalChapters}
           </span>
-          <span className="text-sm font-bold text-primary">
-            {completionPercentage}%
-          </span>
+          <span className="text-sm font-bold text-primary">{completionPercentage}%</span>
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <motion.div
@@ -85,7 +83,9 @@ export default function ReadingProgress({
       {/* Main Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-muted-foreground mb-2">
-          <span>Chapter {currentChapter} of {totalChapters}</span>
+          <span>
+            Chapter {currentChapter} of {totalChapters}
+          </span>
           {estimatedTimeRemaining && (
             <span className="flex items-center gap-1">
               <Icon name="ClockIcon" size={14} />
@@ -132,9 +132,7 @@ export default function ReadingProgress({
           </div>
           <div className="text-xl font-bold text-foreground">
             {currentChapter}
-            <span className="text-sm text-muted-foreground ml-1">
-              / {totalChapters}
-            </span>
+            <span className="text-sm text-muted-foreground ml-1">/ {totalChapters}</span>
           </div>
         </div>
       </div>
@@ -157,16 +155,26 @@ export default function ReadingProgress({
                   chapter.isCurrent
                     ? 'bg-primary/10 border-2 border-primary'
                     : chapter.isCompleted
-                    ? 'bg-muted/50 border border-border hover:bg-muted'
-                    : 'bg-card border border-border hover:bg-muted/30'
+                      ? 'bg-muted/50 border border-border hover:bg-muted'
+                      : 'bg-card border border-border hover:bg-muted/30'
                 }`}
               >
                 {/* Status Icon */}
                 <div className="flex-shrink-0">
                   {chapter.isCompleted ? (
-                    <Icon name="CheckCircleIcon" size={20} variant="solid" className="text-green-500" />
+                    <Icon
+                      name="CheckCircleIcon"
+                      size={20}
+                      variant="solid"
+                      className="text-green-500"
+                    />
                   ) : chapter.isCurrent ? (
-                    <Icon name="PlayCircleIcon" size={20} variant="solid" className="text-primary" />
+                    <Icon
+                      name="PlayCircleIcon"
+                      size={20}
+                      variant="solid"
+                      className="text-primary"
+                    />
                   ) : (
                     <Icon name="CircleStackIcon" size={20} className="text-muted-foreground" />
                   )}
@@ -175,22 +183,22 @@ export default function ReadingProgress({
                 {/* Chapter Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-primary">
-                      Chapter {chapter.number}
-                    </span>
+                    <span className="text-xs font-bold text-primary">Chapter {chapter.number}</span>
                     {chapter.isCurrent && (
                       <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-bold rounded-full">
                         Reading
                       </span>
                     )}
                   </div>
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {chapter.title}
-                  </p>
+                  <p className="text-sm font-medium text-foreground truncate">{chapter.title}</p>
                 </div>
 
                 {/* Chevron */}
-                <Icon name="ChevronRightIcon" size={16} className="text-muted-foreground flex-shrink-0" />
+                <Icon
+                  name="ChevronRightIcon"
+                  size={16}
+                  className="text-muted-foreground flex-shrink-0"
+                />
               </motion.button>
             ))}
           </div>
