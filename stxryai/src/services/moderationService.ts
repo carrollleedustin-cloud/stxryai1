@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { Report, ReportStatus, ContentType } from '@/types/moderation';
+import { insertReportedContent, updateReportedContentStatus } from '@/lib/supabase/typed';
 
 interface SubmitReportPayload {
   contentType: ContentType;
@@ -33,15 +34,13 @@ export const moderationService = {
   },
 
   async updateReportStatus(reportId: string, status: ReportStatus): Promise<void> {
-    const { error } = await supabase
-      .from('reported_content')
-      .update({ status })
-      .eq('id', reportId);
+    const { data, error } = await updateReportedContentStatus(reportId, { status });
 
     if (error) {
       console.error('Error updating report status:', error);
       throw error;
     }
+    return;
   },
 
   async submitReport(payload: SubmitReportPayload): Promise<void> {
@@ -50,17 +49,18 @@ export const moderationService = {
       throw new Error('You must be logged in to report content.');
     }
   
-    const { error } = await supabase.from('reported_content').insert({
+    const { data, error } = await insertReportedContent({
       reporter_id: user.id,
       content_id: payload.contentId,
       content_type: payload.contentType,
       reason: payload.reason,
     });
-  
+
     if (error) {
       console.error('Error submitting report:', error);
       throw error;
     }
+    return;
   },
   
   // More functions for moderation actions will be added here

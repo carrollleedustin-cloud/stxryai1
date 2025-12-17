@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
+import { insertEventParticipant, insertClubMember, insertDiscussionReply } from '@/lib/supabase/typed';
 
 interface UserStats {
   stories_completed: number;
@@ -160,13 +161,11 @@ export const socialService = {
   // Join a community event
   async joinEvent(eventId: string, userId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('event_participants')
-        .insert({
-          event_id: eventId,
-          user_id: userId,
-          rsvp_status: 'attending',
-        });
+      const { data, error } = await insertEventParticipant({
+        event_id: eventId,
+        user_id: userId,
+        rsvp_status: 'attending',
+      });
 
       if (error) throw error;
 
@@ -209,13 +208,11 @@ export const socialService = {
   // Post in a discussion forum
   async postDiscussionReply(forumId: string, userId: string, content: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('discussion_replies')
-        .insert({
-          forum_id: forumId,
-          user_id: userId,
-          content: content,
-        });
+      const { data, error } = await insertDiscussionReply({
+        forum_id: forumId,
+        user_id: userId,
+        content: content,
+      });
 
       if (error) throw error;
 
@@ -286,13 +283,11 @@ export const socialService = {
   // Join a club
   async joinClub(clubId: string, userId: string): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('club_members')
-        .insert({
-          club_id: clubId,
-          user_id: userId,
-          role: 'member',
-        });
+      const { data, error } = await insertClubMember({
+        club_id: clubId,
+        user_id: userId,
+        role: 'member',
+      });
 
       if (error) throw error;
 

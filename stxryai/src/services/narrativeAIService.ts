@@ -1,4 +1,10 @@
 import { getSupabaseClient } from '@/lib/supabase/client';
+import {
+  upsertUserEngagementMetrics,
+  insertStoryNPC,
+  insertNPCMemory,
+  insertPacingAdjustment,
+} from '@/lib/supabase/typed';
 
 export interface EngagementMetrics {
   id?: string;
@@ -71,27 +77,22 @@ class NarrativeAIService {
 
   async trackEngagement(metrics: Omit<EngagementMetrics, 'id' | 'created_at' | 'updated_at'>): Promise<EngagementMetrics | null> {
     try {
-      const supabase = this.getSupabase();
-      const { data, error } = await supabase
-        .from('user_engagement_metrics')
-        .upsert({
-          user_id: metrics.user_id,
-          story_id: metrics.story_id,
-          chapter_id: metrics.chapter_id,
-          time_on_scene: metrics.time_on_scene,
-          choice_frequency: metrics.choice_frequency,
-          choices_made_count: metrics.choices_made_count,
-          scroll_depth: metrics.scroll_depth,
-        })
-        .select()
-        .single();
+      const { data, error } = await upsertUserEngagementMetrics({
+        user_id: metrics.user_id,
+        story_id: metrics.story_id,
+        chapter_id: metrics.chapter_id,
+        time_on_scene: metrics.time_on_scene,
+        choice_frequency: metrics.choice_frequency,
+        choices_made_count: metrics.choices_made_count,
+        scroll_depth: metrics.scroll_depth,
+      });
 
       if (error) {
         console.error('Error tracking engagement:', error);
         return null;
       }
 
-      return data as EngagementMetrics;
+      return Array.isArray(data) ? (data[0] as EngagementMetrics) : (data as EngagementMetrics);
     } catch (error) {
       console.error('Failed to track engagement:', error);
       return null;
@@ -213,28 +214,23 @@ class NarrativeAIService {
 
   async createNPC(npc: Omit<StoryNPC, 'id'>): Promise<StoryNPC | null> {
     try {
-      const supabase = this.getSupabase();
-      const { data, error } = await supabase
-        .from('story_npcs')
-        .insert({
-          story_id: npc.story_id,
-          npc_name: npc.npc_name,
-          npc_role: npc.npc_role,
-          personality_traits: npc.personality_traits,
-          base_dialogue_style: npc.base_dialogue_style,
-          base_knowledge: npc.base_knowledge,
-          first_appears_chapter: npc.first_appears_chapter,
-          last_appears_chapter: npc.last_appears_chapter,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertStoryNPC({
+        story_id: npc.story_id,
+        npc_name: npc.npc_name,
+        npc_role: npc.npc_role,
+        personality_traits: npc.personality_traits,
+        base_dialogue_style: npc.base_dialogue_style,
+        base_knowledge: npc.base_knowledge,
+        first_appears_chapter: npc.first_appears_chapter,
+        last_appears_chapter: npc.last_appears_chapter,
+      });
 
       if (error) {
         console.error('Error creating NPC:', error);
         return null;
       }
 
-      return data as StoryNPC;
+      return Array.isArray(data) ? (data[0] as StoryNPC) : (data as StoryNPC);
     } catch (error) {
       console.error('Failed to create NPC:', error);
       return null;
@@ -287,29 +283,24 @@ class NarrativeAIService {
 
   async recordNPCMemory(memory: Omit<NPCMemory, 'id' | 'created_at'>): Promise<NPCMemory | null> {
     try {
-      const supabase = this.getSupabase();
-      const { data, error } = await supabase
-        .from('npc_user_memories')
-        .insert({
-          npc_id: memory.npc_id,
-          user_id: memory.user_id,
-          story_id: memory.story_id,
-          memory_type: memory.memory_type,
-          memory_content: memory.memory_content,
-          chapter_number: memory.chapter_number,
-          importance_score: memory.importance_score || 0.5,
-          relationship_delta: memory.relationship_delta || 0,
-          revealed_traits: memory.revealed_traits,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertNPCMemory({
+        npc_id: memory.npc_id,
+        user_id: memory.user_id,
+        story_id: memory.story_id,
+        memory_type: memory.memory_type,
+        memory_content: memory.memory_content,
+        chapter_number: memory.chapter_number,
+        importance_score: memory.importance_score || 0.5,
+        relationship_delta: memory.relationship_delta || 0,
+        revealed_traits: memory.revealed_traits,
+      });
 
       if (error) {
         console.error('Error recording NPC memory:', error);
         return null;
       }
 
-      return data as NPCMemory;
+      return Array.isArray(data) ? (data[0] as NPCMemory) : (data as NPCMemory);
     } catch (error) {
       console.error('Failed to record NPC memory:', error);
       return null;
@@ -391,28 +382,23 @@ class NarrativeAIService {
 
   async createPacingAdjustment(adjustment: Omit<PacingAdjustment, 'id' | 'applied_at'>): Promise<PacingAdjustment | null> {
     try {
-      const supabase = this.getSupabase();
-      const { data, error } = await supabase
-        .from('narrative_pacing_adjustments')
-        .insert({
-          user_id: adjustment.user_id,
-          story_id: adjustment.story_id,
-          chapter_id: adjustment.chapter_id,
-          adjustment_type: adjustment.adjustment_type,
-          engagement_trigger: adjustment.engagement_trigger,
-          adjustment_data: adjustment.adjustment_data,
-          generated_content: adjustment.generated_content,
-          prompt_used: adjustment.prompt_used,
-        })
-        .select()
-        .single();
+      const { data, error } = await insertPacingAdjustment({
+        user_id: adjustment.user_id,
+        story_id: adjustment.story_id,
+        chapter_id: adjustment.chapter_id,
+        adjustment_type: adjustment.adjustment_type,
+        engagement_trigger: adjustment.engagement_trigger,
+        adjustment_data: adjustment.adjustment_data,
+        generated_content: adjustment.generated_content,
+        prompt_used: adjustment.prompt_used,
+      });
 
       if (error) {
         console.error('Error creating pacing adjustment:', error);
         return null;
       }
 
-      return data as PacingAdjustment;
+      return Array.isArray(data) ? (data[0] as PacingAdjustment) : (data as PacingAdjustment);
     } catch (error) {
       console.error('Failed to create pacing adjustment:', error);
       return null;

@@ -1,4 +1,5 @@
 import { getSupabaseClient, getIsSupabaseConfigured } from '@/lib/supabase/client';
+import { updateUserById } from '@/lib/supabase/typed';
 
 // Helper to check if Supabase is available
 const ensureSupabaseConfigured = () => {
@@ -247,20 +248,14 @@ export const authService = {
       throw new Error('User ID and updates are required');
     }
 
-    const { data, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('id', userId)
-      .select()
-      .single();
-
+    const { data, error } = await updateUserById(userId, updates as any);
     if (error) {
-      if (error.message.includes('duplicate key value violates unique constraint "users_username_key"')) {
+      if (error.message && error.message.includes('duplicate key value violates unique constraint "users_username_key"')) {
         throw new Error('Username already taken. Please choose another.');
       }
       throw error;
     }
-    return data;
+    return Array.isArray(data) ? data[0] : data;
   },
 
   async resetPassword(email: string) {

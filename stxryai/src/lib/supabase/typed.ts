@@ -102,6 +102,26 @@ export async function insertCollectionStory(
   return { data, error };
 }
 
+export async function insertClubMember(payload: any) {
+  const { data, error } = await (client as any).from('club_members').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertDiscussionForum(payload: any) {
+  const { data, error } = await (client as any).from('discussion_forums').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertEventParticipant(payload: any) {
+  const { data, error } = await (client as any).from('event_participants').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertDiscussionReply(payload: any) {
+  const { data, error } = await (client as any).from('discussion_replies').insert(payload).select();
+  return { data, error };
+}
+
 export default {
   updateUserById,
   upsertUserAchievement,
@@ -114,4 +134,111 @@ export default {
   upsertStoryReview,
   insertCollection,
   insertCollectionStory,
+  insertClubMember,
+  insertDiscussionForum,
+  insertEventParticipant,
+  insertDiscussionReply,
 };
+
+export async function updateReportedContentStatus(id: string, patch: any) {
+  const { data, error } = await (client as any).from('reported_content').update(patch).eq('id', id).select();
+  return { data, error };
+}
+
+// Personalization helpers
+export async function insertUserUITheme(payload: any) {
+  const { data, error } = await (client as any).from('user_ui_themes').insert(payload).select();
+  return { data, error };
+}
+
+export async function updateUserUIThemeById(id: string, patch: any) {
+  const { data, error } = await (client as any).from('user_ui_themes').update(patch).eq('id', id).select();
+  return { data, error };
+}
+
+export async function deleteUserUIThemeById(id: string) {
+  const { data, error } = await (client as any).from('user_ui_themes').delete().eq('id', id);
+  return { data, error };
+}
+
+export async function insertCharacterRelationship(payload: any) {
+  const { data, error } = await (client as any).from('character_relationships').insert(payload).select();
+  return { data, error };
+}
+
+export async function updateCharacterRelationshipById(id: string, patch: any) {
+  const { data, error } = await (client as any).from('character_relationships').update(patch).eq('id', id).select();
+  return { data, error };
+}
+
+export async function upsertDiscoveryPreferences(payload: any) {
+  const { data, error } = await (client as any).from('discovery_preferences').upsert(payload).select();
+  return { data, error };
+}
+
+export async function insertReaderFeedback(payload: any) {
+  const { data, error } = await (client as any).from('reader_feedback').insert(payload).select();
+  return { data, error };
+}
+
+// Narrative AI helpers
+export async function upsertUserEngagementMetrics(payload: any) {
+  const { data, error } = await (client as any).from('user_engagement_metrics').upsert(payload).select();
+  return { data, error };
+}
+
+export async function insertStoryNPC(payload: any) {
+  const { data, error } = await (client as any).from('story_npcs').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertNPCMemory(payload: any) {
+  const { data, error } = await (client as any).from('npc_user_memories').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertPacingAdjustment(payload: any) {
+  const { data, error } = await (client as any).from('narrative_pacing_adjustments').insert(payload).select();
+  return { data, error };
+}
+
+// User progress helpers
+export async function upsertUserReadingProgress(payload: any) {
+  const { data, error } = await (client as any).from('user_reading_progress').upsert(payload).select();
+  return { data, error };
+}
+
+export async function updateUserReadingProgressByKeys(userId: string, storyId: string, patch: any) {
+  const { data, error } = await (client as any)
+    .from('user_reading_progress')
+    .update(patch)
+    .eq('user_id', userId)
+    .eq('story_id', storyId)
+    .select();
+  return { data, error };
+}
+
+export async function insertUserBadge(payload: any) {
+  const { data, error } = await (client as any).from('user_badges').insert(payload).select();
+  return { data, error };
+}
+
+export async function insertBookmark(payload: any) {
+  const { data, error } = await (client as any).from('bookmarks').insert(payload).select();
+  return { data, error };
+}
+
+export async function deleteBookmarkByKeys(userId: string, storyId: string, chapterId: string) {
+  const { data, error } = await (client as any)
+    .from('bookmarks')
+    .delete()
+    .eq('user_id', userId)
+    .eq('story_id', storyId)
+    .eq('chapter_id', chapterId);
+  return { data, error };
+}
+
+export async function insertReportedContent(payload: any) {
+  const { data, error } = await (client as any).from('reported_content').insert(payload).select();
+  return { data, error };
+}

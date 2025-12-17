@@ -1,4 +1,13 @@
 import { supabase } from '@/lib/supabase/client';
+import {
+  insertUserUITheme,
+  updateUserUIThemeById,
+  deleteUserUIThemeById,
+  insertCharacterRelationship,
+  updateCharacterRelationshipById,
+  upsertDiscoveryPreferences,
+  insertReaderFeedback,
+} from '@/lib/supabase/typed';
 
 export interface ThemeSettings {
     [key: string]: string | number;
@@ -128,14 +137,10 @@ export async function getActiveTheme(userId: string) {
 
 export async function createTheme(theme: Partial<UserUITheme>) {
   try {
-    const { data, error } = await supabase
-      .from('user_ui_themes')
-      .insert([theme])
-      .select()
-      .single();
+    const { data, error } = await insertUserUITheme([theme]);
 
     if (error) throw error;
-    return data as UserUITheme;
+    return Array.isArray(data) ? (data[0] as UserUITheme) : (data as UserUITheme);
   } catch (error: unknown) {
     console.error('Error creating theme:', error);
     throw error;
@@ -144,15 +149,9 @@ export async function createTheme(theme: Partial<UserUITheme>) {
 
 export async function updateTheme(id: string, updates: Partial<UserUITheme>) {
   try {
-    const { data, error } = await supabase
-      .from('user_ui_themes')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
+    const { data, error } = await updateUserUIThemeById(id, updates);
     if (error) throw error;
-    return data as UserUITheme;
+    return Array.isArray(data) ? (data[0] as UserUITheme) : (data as UserUITheme);
   } catch (error: unknown) {
     console.error('Error updating theme:', error);
     throw error;
@@ -162,21 +161,13 @@ export async function updateTheme(id: string, updates: Partial<UserUITheme>) {
 export async function setActiveTheme(userId: string, themeId: string) {
   try {
     // Deactivate all themes
-    await supabase
-      .from('user_ui_themes')
-      .update({ is_active: false })
-      .eq('user_id', userId);
+    await updateUserUIThemeById(userId, { is_active: false } as any);
 
     // Activate selected theme
-    const { data, error } = await supabase
-      .from('user_ui_themes')
-      .update({ is_active: true })
-      .eq('id', themeId)
-      .select()
-      .single();
+    const { data, error } = await updateUserUIThemeById(themeId, { is_active: true } as any);
 
     if (error) throw error;
-    return data as UserUITheme;
+    return Array.isArray(data) ? (data[0] as UserUITheme) : (data as UserUITheme);
   } catch (error: unknown) {
     console.error('Error setting active theme:', error);
     throw error;
@@ -185,11 +176,7 @@ export async function setActiveTheme(userId: string, themeId: string) {
 
 export async function deleteTheme(id: string) {
   try {
-    const { error } = await supabase
-      .from('user_ui_themes')
-      .delete()
-      .eq('id', id);
-
+    const { data, error } = await deleteUserUIThemeById(id);
     if (error) throw error;
   } catch (error: unknown) {
     console.error('Error deleting theme:', error);
@@ -217,14 +204,9 @@ export async function getCharacterRelationships(userId: string, storyId: string)
 
 export async function createCharacterRelationship(relationship: Partial<CharacterRelationship>) {
   try {
-    const { data, error } = await supabase
-      .from('character_relationships')
-      .insert([relationship])
-      .select()
-      .single();
-
+    const { data, error } = await insertCharacterRelationship([relationship]);
     if (error) throw error;
-    return data as CharacterRelationship;
+    return Array.isArray(data) ? (data[0] as CharacterRelationship) : (data as CharacterRelationship);
   } catch (error: unknown) {
     console.error('Error creating character relationship:', error);
     throw error;
@@ -233,15 +215,9 @@ export async function createCharacterRelationship(relationship: Partial<Characte
 
 export async function updateCharacterRelationship(id: string, updates: Partial<CharacterRelationship>) {
   try {
-    const { data, error } = await supabase
-      .from('character_relationships')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
+    const { data, error } = await updateCharacterRelationshipById(id, updates);
     if (error) throw error;
-    return data as CharacterRelationship;
+    return Array.isArray(data) ? (data[0] as CharacterRelationship) : (data as CharacterRelationship);
   } catch (error: unknown) {
     console.error('Error updating character relationship:', error);
     throw error;
@@ -290,27 +266,10 @@ export async function getDiscoveryPreferences(userId: string) {
 export async function updateDiscoveryPreferences(userId: string, preferences: Partial<DiscoveryPreferences>) {
   try {
     // Try update first
-    let { data, error } = await supabase
-      .from('discovery_preferences')
-      .update(preferences)
-      .eq('user_id', userId)
-      .select()
-      .single();
-
-    // If no rows updated, insert new preferences
-    if (error && error.code === 'PGRST116') {
-      const insertResult = await supabase
-        .from('discovery_preferences')
-        .insert([{ ...preferences, user_id: userId }])
-        .select()
-        .single();
-      
-      data = insertResult.data;
-      error = insertResult.error;
-    }
+    const { data, error } = await upsertDiscoveryPreferences({ ...preferences, user_id: userId });
 
     if (error) throw error;
-    return data as DiscoveryPreferences;
+    return Array.isArray(data) ? (data[0] as DiscoveryPreferences) : (data as DiscoveryPreferences);
   } catch (error: unknown) {
     console.error('Error updating discovery preferences:', error);
     throw error;
@@ -336,14 +295,9 @@ export async function getReceivedFeedback(userId: string) {
 
 export async function giveFeedback(feedback: Partial<ReaderFeedback>) {
   try {
-    const { data, error } = await supabase
-      .from('reader_feedback')
-      .insert([feedback])
-      .select()
-      .single();
-
+    const { data, error } = await insertReaderFeedback([feedback]);
     if (error) throw error;
-    return data as ReaderFeedback;
+    return Array.isArray(data) ? (data[0] as ReaderFeedback) : (data as ReaderFeedback);
   } catch (error: unknown) {
     console.error('Error giving feedback:', error);
     throw error;

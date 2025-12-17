@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase/client';
 import { PostgrestError } from '@supabase/supabase-js';
+import { insertClubMember, insertDiscussionForum, insertEventParticipant } from '@/lib/supabase/typed';
 
 // ============================================
 // TYPES
@@ -138,13 +139,11 @@ export const communityService = {
 
   // Join a club
   async joinClub(clubId: string, userId: string): Promise<{ error: PostgrestError | null }> {
-    const { error } = await supabase
-      .from('club_members')
-      .insert({
-        club_id: clubId,
-        user_id: userId,
-        role: 'member'
-      });
+    const { data, error } = await insertClubMember({
+      club_id: clubId,
+      user_id: userId,
+      role: 'member',
+    });
 
     return { error };
   },
@@ -178,19 +177,15 @@ export const communityService = {
 
   // Create forum post
   async createForum(forum: Partial<DiscussionForum>): Promise<{ data: DiscussionForum | null; error: PostgrestError | null }> {
-    const { data, error } = await supabase
-      .from('discussion_forums')
-      .insert({
-        title: forum.title,
-        category: forum.category,
-        story_id: forum.story_id,
-        club_id: forum.club_id,
-        created_by: forum.created_by
-      })
-      .select()
-      .single();
+    const { data, error } = await insertDiscussionForum({
+      title: forum.title as string,
+      category: forum.category as string,
+      story_id: forum.story_id as any,
+      club_id: forum.club_id as any,
+      created_by: forum.created_by as string,
+    });
 
-    return { data: data as DiscussionForum, error };
+    return { data: Array.isArray(data) ? (data[0] as DiscussionForum) : (data as DiscussionForum), error };
   },
 
   // ============================================
@@ -210,13 +205,11 @@ export const communityService = {
 
   // RSVP to event
   async rsvpToEvent(eventId: string, userId: string): Promise<{ error: PostgrestError | null }> {
-    const { error } = await supabase
-      .from('event_participants')
-      .insert({
-        event_id: eventId,
-        user_id: userId,
-        rsvp_status: 'going'
-      });
+    const { data, error } = await insertEventParticipant({
+      event_id: eventId,
+      user_id: userId,
+      rsvp_status: 'going',
+    });
 
     return { error };
   },

@@ -26,7 +26,7 @@ export default function StoryCreationStudioPage() {
     title: '',
     description: '',
     genre: 'fantasy',
-    difficulty: 'beginner',
+    difficulty: 'easy',
     coverImageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570',
     isPremium: false,
     estimatedDuration: 30
