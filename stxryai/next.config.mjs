@@ -5,10 +5,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function name(originName) {
-  const match = originName.match(/([^/]+)\.entry\.js$/);
-  return match ? match[1] : originName;
-}
+// Detect Netlify environment
+const isNetlify = process.env.NETLIFY === 'true';
+const isProduction = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
   productionBrowserSourceMaps: false, // Disable for production performance
@@ -17,10 +16,17 @@ const nextConfig = {
   // Performance Optimizations
   compress: true,
   poweredByHeader: false,
+  reactStrictMode: true,
+
+  // Trailing slashes for Netlify compatibility
+  trailingSlash: false,
+
+  // Output configuration for Netlify
+  output: isNetlify ? 'standalone' : undefined,
 
   // Compiler Optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
+    removeConsole: isProduction ? {
       exclude: ['error', 'warn'],
     } : false,
   },
@@ -30,12 +36,26 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Image Optimization
+  // TypeScript - type checking done separately
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
+  // Logging configuration
+  logging: {
+    fetches: {
+      fullUrl: !isProduction,
+    },
+  },
+
+  // Image Optimization - Netlify handles this via plugin
   images: {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
+    // Use Netlify's image CDN when deployed
+    loader: isNetlify ? 'default' : 'default',
     remotePatterns: [
       {
         protocol: 'https',
@@ -52,6 +72,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.netlify.app',
       },
     ],
   },
@@ -132,7 +156,56 @@ const nextConfig = {
   // Experimental Features
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['framer-motion', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      'framer-motion',
+      '@radix-ui/react-icons',
+      'lucide-react',
+      'date-fns',
+      'recharts',
+      '@heroicons/react',
+    ],
+  },
+
+  // Headers for security (Netlify also handles this but good for local dev)
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, must-revalidate' },
+        ],
+      },
+    ];
+  },
+
+  // Redirects
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/authentication',
+        permanent: true,
+      },
+      {
+        source: '/signup',
+        destination: '/authentication',
+        permanent: true,
+      },
+      {
+        source: '/register',
+        destination: '/authentication',
+        permanent: true,
+      },
+    ];
   },
 };
 
