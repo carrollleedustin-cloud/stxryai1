@@ -106,11 +106,6 @@
   node_bundler = "esbuild"
   # Increase timeout for AI operations
   external_node_modules = ["sharp"]
-
-# Edge functions for faster response times
-[edge_functions]
-  path = "/.netlify/edge-functions"
-
 # Dev server settings
 [dev]
   command = "npm run dev"

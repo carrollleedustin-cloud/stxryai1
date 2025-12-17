@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import Image from 'next/image';
+import { Rocket, Swords, Search, Target, Sparkles, Star, Check } from 'lucide-react';
 
 interface StoryDemo {
   id: string;
@@ -12,6 +13,7 @@ interface StoryDemo {
   choices: string[];
   image: string;
   color: string;
+  icon: React.ElementType;
 }
 
 export default function InteractiveShowcaseSection() {
@@ -34,8 +36,9 @@ export default function InteractiveShowcaseSection() {
         'Ask Dr. Chen for more information first',
         'Check your equipment one more time',
       ],
-      image: '/images/stories/scifi.jpg',
+      image: '/1.jpg',
       color: 'from-cyan-500 to-blue-600',
+      icon: Rocket,
     },
     {
       id: '2',
@@ -48,8 +51,9 @@ export default function InteractiveShowcaseSection() {
         'Destroy the crown to break its curse',
         'Leave the crown and search for another way',
       ],
-      image: '/images/stories/fantasy.jpg',
+      image: '/2.jpg',
       color: 'from-purple-500 to-pink-600',
+      icon: Swords,
     },
     {
       id: '3',
@@ -58,8 +62,9 @@ export default function InteractiveShowcaseSection() {
       excerpt:
         "The rain hammers against the window as you nurse your whiskey. The stranger in the corner hasn't moved in an hour. Your detective instincts are screaming, but you're officially off duty.",
       choices: ['Approach the stranger casually', 'Call it in to dispatch', 'Wait and observe'],
-      image: '/images/stories/mystery.jpg',
+      image: '/3.jpg',
       color: 'from-amber-500 to-orange-600',
+      icon: Search,
     },
   ];
 
@@ -110,9 +115,16 @@ export default function InteractiveShowcaseSection() {
           >
             <div className="relative bg-card border border-border rounded-3xl overflow-hidden shadow-2xl">
               {/* Story Header */}
-              <div className={`relative h-64 bg-gradient-to-br ${story.color}`}>
-                <div className="absolute inset-0 bg-black/40" />
-                <div className="absolute inset-0 flex items-center justify-center">
+              <div className={`relative h-64`}>
+                <Image
+                  src={story.image}
+                  alt={story.title}
+                  layout="fill"
+                  objectFit="cover"
+                  className="z-0"
+                />
+                <div className="absolute inset-0 bg-black/40 z-10" />
+                <div className="absolute inset-0 flex items-center justify-center z-20">
                   <div className="text-center p-6">
                     <motion.div
                       className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4"
@@ -172,7 +184,7 @@ export default function InteractiveShowcaseSection() {
                                   : 'border-border'
                               }`}
                             >
-                              {selectedChoice === index ? '✓' : index + 1}
+                              {selectedChoice === index ? <Check aria-hidden="true" size={16} /> : index + 1}
                             </div>
                             <span className="flex-1">{choice}</span>
                           </div>
@@ -190,7 +202,7 @@ export default function InteractiveShowcaseSection() {
                           className="mt-6 p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/50 rounded-xl"
                         >
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-2xl">✨</span>
+                            <Sparkles aria-hidden="true" size={24} />
                             <span className="font-semibold">
                               AI is generating your unique path...
                             </span>
@@ -234,9 +246,7 @@ export default function InteractiveShowcaseSection() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <div className={`text-2xl mb-2`}>
-                      {index === 0 ? '🚀' : index === 1 ? '⚔️' : '🔍'}
-                    </div>
+                    <demo.icon aria-hidden="true" className="w-6 h-6 mx-auto mb-2" />
                     <div className="text-sm font-medium">{demo.genre}</div>
                   </motion.button>
                 ))}
@@ -248,17 +258,17 @@ export default function InteractiveShowcaseSection() {
               <h3 className="text-xl font-semibold mb-4">How It Works</h3>
               {[
                 {
-                  icon: '🎯',
+                  icon: Target,
                   title: 'Make Meaningful Choices',
                   description: 'Every decision creates unique story branches',
                 },
                 {
-                  icon: '✨',
+                  icon: Sparkles,
                   title: 'AI-Generated Content',
                   description: 'Stories adapt and evolve based on your choices',
                 },
                 {
-                  icon: '🌟',
+                  icon: Star,
                   title: 'Infinite Possibilities',
                   description: 'No two playthroughs are ever the same',
                 },
@@ -270,7 +280,7 @@ export default function InteractiveShowcaseSection() {
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
                 >
-                  <div className="text-3xl">{feature.icon}</div>
+                  <feature.icon aria-hidden="true" className="w-8 h-8 text-primary" />
                   <div>
                     <h4 className="font-semibold mb-1">{feature.title}</h4>
                     <p className="text-sm text-muted-foreground">{feature.description}</p>

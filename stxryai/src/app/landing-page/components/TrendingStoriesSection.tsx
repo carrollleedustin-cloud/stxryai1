@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Rocket, Crown, Building, Heart, Search, BookOpen, Star, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface TrendingStory {
   id: string;
@@ -16,6 +18,14 @@ interface TrendingStory {
   tags: string[];
   excerpt: string;
 }
+
+const genreIcons: { [key: string]: React.ElementType } = {
+  'Sci-Fi': Rocket,
+  'Fantasy': Crown,
+  'Cyberpunk': Building,
+  'Romance': Heart,
+  'Mystery': Search,
+};
 
 export default function TrendingStoriesSection() {
   const ref = useRef(null);
@@ -32,7 +42,7 @@ export default function TrendingStoriesSection() {
       genre: 'Sci-Fi',
       reads: 125000,
       rating: 4.8,
-      thumbnail: '/images/stories/scifi-1.jpg',
+      thumbnail: '/10.jpg',
       gradient: 'from-cyan-500 via-blue-500 to-purple-600',
       tags: ['Time Travel', 'AI', 'Thriller'],
       excerpt:
@@ -45,7 +55,7 @@ export default function TrendingStoriesSection() {
       genre: 'Fantasy',
       reads: 98000,
       rating: 4.9,
-      thumbnail: '/images/stories/fantasy-1.jpg',
+      thumbnail: '/11.jpg',
       gradient: 'from-orange-500 via-red-500 to-pink-600',
       tags: ['Dragons', 'Magic', 'Adventure'],
       excerpt:
@@ -58,7 +68,7 @@ export default function TrendingStoriesSection() {
       genre: 'Cyberpunk',
       reads: 156000,
       rating: 4.7,
-      thumbnail: '/images/stories/cyberpunk-1.jpg',
+      thumbnail: '/12.jpg',
       gradient: 'from-pink-500 via-purple-500 to-indigo-600',
       tags: ['Cyberpunk', 'Noir', 'Hacking'],
       excerpt:
@@ -71,7 +81,7 @@ export default function TrendingStoriesSection() {
       genre: 'Romance',
       reads: 203000,
       rating: 4.6,
-      thumbnail: '/images/stories/romance-1.jpg',
+      thumbnail: '/13.jpg',
       gradient: 'from-rose-400 via-pink-400 to-red-500',
       tags: ['Romance', 'Historical', 'Drama'],
       excerpt:
@@ -84,7 +94,7 @@ export default function TrendingStoriesSection() {
       genre: 'Mystery',
       reads: 87000,
       rating: 4.8,
-      thumbnail: '/images/stories/mystery-1.jpg',
+      thumbnail: '/14.jpg',
       gradient: 'from-gray-600 via-slate-700 to-zinc-800',
       tags: ['Mystery', 'Crime', 'Suspense'],
       excerpt:
@@ -119,6 +129,7 @@ export default function TrendingStoriesSection() {
   };
 
   const currentStory = trendingStories[currentIndex];
+  const GenreIcon = genreIcons[currentStory.genre];
 
   return (
     <section
@@ -159,26 +170,25 @@ export default function TrendingStoriesSection() {
               <div className="grid md:grid-cols-2 gap-0">
                 {/* Story Image/Gradient */}
                 <div
-                  className={`relative h-96 md:h-auto bg-gradient-to-br ${currentStory.gradient}`}
+                  className={`relative h-96 md:h-auto`}
                 >
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                  <Image
+                    src={currentStory.thumbnail}
+                    alt={currentStory.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="z-0"
+                  />
+                  <div className="absolute inset-0 bg-black/40 z-10" />
+                  <div className="absolute inset-0 flex items-center justify-center p-12 z-20">
                     <div className="text-center">
                       <motion.div
-                        className="text-8xl md:text-9xl mb-4"
+                        className="text-8xl md:text-9xl mb-4 text-white"
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ type: 'spring', duration: 0.8 }}
                       >
-                        {currentStory.genre === 'Sci-Fi'
-                          ? '🚀'
-                          : currentStory.genre === 'Fantasy'
-                            ? '🐉'
-                            : currentStory.genre === 'Cyberpunk'
-                              ? '🌃'
-                              : currentStory.genre === 'Romance'
-                                ? '💖'
-                                : '🔍'}
+                        <GenreIcon aria-hidden="true" />
                       </motion.div>
                       <motion.div
                         className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium"
@@ -248,7 +258,7 @@ export default function TrendingStoriesSection() {
                       transition={{ delay: 0.6 }}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">📖</span>
+                        <BookOpen aria-hidden="true" size={24} className="text-primary" />
                         <div>
                           <div className="text-lg font-bold">
                             {formatNumber(currentStory.reads)}
@@ -257,7 +267,7 @@ export default function TrendingStoriesSection() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">⭐</span>
+                        <Star aria-hidden="true" size={24} className="text-primary" />
                         <div>
                           <div className="text-lg font-bold">{currentStory.rating}</div>
                           <div className="text-xs text-muted-foreground">Rating</div>
@@ -274,11 +284,12 @@ export default function TrendingStoriesSection() {
                   >
                     <Link href={`/story-reader?id=${currentStory.id}`}>
                       <motion.button
-                        className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                        className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        Start Reading →
+                        <span>Start Reading</span>
+                        <ArrowRight aria-hidden="true" size={20} />
                       </motion.button>
                     </Link>
                   </motion.div>
@@ -290,49 +301,46 @@ export default function TrendingStoriesSection() {
           {/* Navigation Arrows */}
           <button
             onClick={goToPrevious}
+            aria-label="Previous story"
             className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white transition-all z-10"
           >
-            ←
+            <ArrowLeft aria-hidden="true" size={24} />
           </button>
           <button
             onClick={goToNext}
+            aria-label="Next story"
             className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-black/50 hover:bg-black/70 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center text-white transition-all z-10"
           >
-            →
+            <ArrowRight aria-hidden="true" size={24} />
           </button>
         </div>
 
         {/* Thumbnail Navigation */}
         <div className="flex justify-center gap-3 overflow-x-auto pb-4">
-          {trendingStories.map((story, index) => (
-            <motion.button
-              key={story.id}
-              onClick={() => {
-                setCurrentIndex(index);
-                setAutoPlay(false);
-              }}
-              className={`flex-shrink-0 transition-all ${
-                currentIndex === index
-                  ? 'ring-4 ring-primary scale-110'
-                  : 'opacity-50 hover:opacity-100'
-              }`}
-              whileHover={{ scale: currentIndex === index ? 1.1 : 1.05 }}
-            >
-              <div
-                className={`w-20 h-20 rounded-xl bg-gradient-to-br ${story.gradient} flex items-center justify-center text-3xl`}
+          {trendingStories.map((story, index) => {
+            const GenreIcon = genreIcons[story.genre];
+            return (
+              <motion.button
+                key={story.id}
+                onClick={() => {
+                  setCurrentIndex(index);
+                  setAutoPlay(false);
+                }}
+                className={`flex-shrink-0 transition-all rounded-xl ${
+                  currentIndex === index
+                    ? 'ring-4 ring-primary scale-110'
+                    : 'opacity-50 hover:opacity-100'
+                }`}
+                whileHover={{ scale: currentIndex === index ? 1.1 : 1.05 }}
               >
-                {story.genre === 'Sci-Fi'
-                  ? '🚀'
-                  : story.genre === 'Fantasy'
-                    ? '🐉'
-                    : story.genre === 'Cyberpunk'
-                      ? '🌃'
-                      : story.genre === 'Romance'
-                        ? '💖'
-                        : '🔍'}
-              </div>
-            </motion.button>
-          ))}
+                <div
+                  className={`w-20 h-20 rounded-xl bg-gradient-to-br ${story.gradient} flex items-center justify-center text-3xl text-white`}
+                >
+                  <GenreIcon aria-hidden="true" />
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
 
         {/* Progress Indicator */}

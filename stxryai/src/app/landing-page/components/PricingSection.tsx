@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import Icon from '@/components/ui/AppIcon';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface PricingTier {
   name: string;
-  price: string;
-  originalPrice?: string;
+  price: number;
+  originalPrice?: number;
   description: string;
   features: string[];
   isPopular?: boolean;
@@ -16,7 +16,7 @@ const PricingSection = () => {
   const pricingTiers: PricingTier[] = [
     {
       name: 'Free',
-      price: '$0',
+      price: 0,
       description: 'Perfect for casual readers exploring interactive fiction',
       features: [
         '20 Energy (refills slowly)',
@@ -32,8 +32,8 @@ const PricingSection = () => {
     },
     {
       name: 'Premium',
-      price: '$7.14',
-      originalPrice: '$12.99',
+      price: 7.14,
+      originalPrice: 12.99,
       description: 'Unlimited access for dedicated story enthusiasts',
       features: [
         '100 Energy (refills 2x faster)',
@@ -53,8 +53,8 @@ const PricingSection = () => {
     },
     {
       name: 'Creator Pro',
-      price: '$15',
-      originalPrice: '$24.99',
+      price: 15,
+      originalPrice: 24.99,
       description: 'For authors and professional storytellers',
       features: [
         'Unlimited Energy (no limits!)',
@@ -75,12 +75,17 @@ const PricingSection = () => {
     },
   ];
 
+  const calculateDiscount = (price: number, originalPrice?: number) => {
+    if (!originalPrice) return 0;
+    return Math.round(((originalPrice - price) / originalPrice) * 100);
+  };
+
   return (
     <section className="py-20 bg-gradient-to-b from-card to-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 mb-6">
-            <Icon name="SparklesIcon" size={20} className="text-accent" />
+            <Sparkles aria-hidden="true" size={20} className="text-accent" />
             <span className="text-sm font-medium text-accent">Launch Special - Limited Time</span>
           </div>
           <h2 className="font-heading text-4xl sm:text-5xl font-bold text-foreground mb-4">
@@ -116,16 +121,16 @@ const PricingSection = () => {
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-foreground mb-2">{tier.name}</h3>
                 <div className="flex items-baseline justify-center space-x-2 mb-2">
-                  <span className="text-5xl font-bold text-foreground">{tier.price}</span>
+                  <span className="text-5xl font-bold text-foreground">${tier.price}</span>
                   <span className="text-muted-foreground">/month</span>
                 </div>
                 {tier.originalPrice && (
                   <div className="flex items-center justify-center space-x-2">
                     <span className="text-sm text-muted-foreground line-through">
-                      {tier.originalPrice}
+                      ${tier.originalPrice}
                     </span>
                     <span className="px-2 py-0.5 text-xs font-bold bg-accent/20 text-accent rounded-full">
-                      33% OFF
+                      {calculateDiscount(tier.price, tier.originalPrice)}% OFF
                     </span>
                   </div>
                 )}
@@ -135,11 +140,10 @@ const PricingSection = () => {
               <ul className="space-y-4 mb-8">
                 {tier.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start space-x-3">
-                    <Icon
-                      name="CheckCircleIcon"
+                    <CheckCircle2
+                      aria-hidden="true"
                       size={20}
                       className="text-success flex-shrink-0 mt-0.5"
-                      variant="solid"
                     />
                     <span className="text-sm text-foreground">{feature}</span>
                   </li>

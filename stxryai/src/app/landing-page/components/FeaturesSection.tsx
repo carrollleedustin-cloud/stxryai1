@@ -1,7 +1,7 @@
-import Icon from '@/components/ui/AppIcon';
+import { Sparkles, Replace, Users, MessageCircle, Trophy, Pencil } from 'lucide-react';
 
 interface Feature {
-  icon: string;
+  icon: React.ElementType;
   title: string;
   description: string;
   isPremium?: boolean;
@@ -10,37 +10,37 @@ interface Feature {
 const FeaturesSection = () => {
   const features: Feature[] = [
     {
-      icon: 'SparklesIcon',
+      icon: Sparkles,
       title: 'AI-Generated Stories',
       description:
         'Experience unique narratives created in real-time by advanced AI, ensuring no two stories are ever the same.',
     },
     {
-      icon: 'ArrowPathIcon',
+      icon: Replace,
       title: 'Unlimited Branches',
       description:
         'Every choice creates new story paths with dynamic consequences that adapt to your decisions.',
       isPremium: true,
     },
     {
-      icon: 'UserGroupIcon',
+      icon: Users,
       title: 'Social Community',
       description:
         'Connect with fellow readers, join clubs, discuss stories, and share your favorite moments.',
     },
     {
-      icon: 'ChatBubbleLeftRightIcon',
+      icon: MessageCircle,
       title: 'Real-Time Chat',
       description:
         'Engage in live discussions with other readers while exploring stories together.',
     },
     {
-      icon: 'TrophyIcon',
+      icon: Trophy,
       title: 'Achievements & Stats',
       description: 'Track your reading journey, unlock achievements, and compete on leaderboards.',
     },
     {
-      icon: 'PencilSquareIcon',
+      icon: Pencil,
       title: 'Custom Choices',
       description:
         'Write your own story choices and influence the narrative direction with premium access.',
@@ -73,7 +73,7 @@ const FeaturesSection = () => {
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center border border-primary/30 group-hover:scale-110 transition-smooth">
-                    <Icon name={feature.icon as any} size={24} className="text-primary" />
+                    <feature.icon aria-hidden="true" size={24} className="text-primary" />
                   </div>
                 </div>
                 <div className="flex-1">

@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import ThemeToggle from './ThemeToggle';
 import NotificationBell from '@/components/ui/NotificationBell';
 import UserMenu from '@/components/ui/UserMenu';
+import Search from './Search';
 
 export default function GlobalNav() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -102,6 +103,13 @@ export default function GlobalNav() {
                   {link.label}
                 </Link>
               ))}
+            </div>
+
+            <div className="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-start">
+              <div className="max-w-md w-full lg:max-w-xs">
+                <label htmlFor="search" className="sr-only">Search</label>
+                <Search />
+              </div>
             </div>
 
             {/* Right Side Actions */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Icon from '@/components/ui/AppIcon';
+import { ArrowRight, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
 
 interface HeroSectionProps {
   onStartReading: () => void;
@@ -23,12 +23,14 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
     'Open the ancient book...',
   ];
 
+  const ANIMATION_INTERVAL = 3000;
+
   useEffect(() => {
     if (!isHydrated) return;
 
     const interval = setInterval(() => {
       setCurrentChoice((prev) => (prev + 1) % choices.length);
-    }, 3000);
+    }, ANIMATION_INTERVAL);
 
     return () => clearInterval(interval);
   }, [isHydrated, choices.length]);
@@ -46,7 +48,7 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 mb-8">
-            <Icon name="SparklesIcon" size={20} className="text-accent" />
+            <Sparkles aria-hidden="true" size={20} className="text-accent" />
             <span className="text-sm font-medium text-accent">AI-Powered Interactive Fiction</span>
           </div>
 
@@ -68,13 +70,13 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-semibold text-lg shadow-elevation-2 hover:shadow-elevation-1 transition-smooth flex items-center justify-center space-x-2"
             >
               <span>Start Reading Free</span>
-              <Icon name="ArrowRightIcon" size={20} />
+              <ArrowRight aria-hidden="true" size={20} />
             </button>
             <Link
               href="/story-library"
               className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-primary text-foreground rounded-lg font-semibold text-lg hover:bg-primary/10 transition-smooth flex items-center justify-center space-x-2"
             >
-              <Icon name="BookOpenIcon" size={20} />
+              <BookOpen aria-hidden="true" size={20} />
               <span>Explore Stories</span>
             </Link>
           </div>
@@ -83,7 +85,7 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
             <div className="max-w-2xl mx-auto">
               <div className="glassmorphism rounded-xl p-8 border border-border shadow-elevation-2">
                 <p className="text-sm text-muted-foreground mb-4">Live Story Preview</p>
-                <p className="text-lg text-foreground mb-6 italic">
+                <p className="text-xl text-foreground mb-6">
                   "The door creaks open, revealing a dimly lit corridor. Shadows dance on the walls
                   as you step inside..."
                 </p>
@@ -93,14 +95,14 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
                       key={index}
                       className={`w-full px-6 py-4 rounded-lg text-left transition-smooth ${
                         index === currentChoice
-                          ? 'bg-gradient-to-r from-primary/20 to-secondary/20 border-2 border-primary text-foreground'
+                          ? 'bg-gradient-to-r from-primary/30 to-secondary/30 border-2 border-primary text-foreground font-semibold'
                           : 'bg-muted/30 border border-border text-muted-foreground hover:bg-muted/50'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{choice}</span>
                         {index === currentChoice && (
-                          <Icon name="ChevronRightIcon" size={20} className="text-primary" />
+                          <ChevronRight aria-hidden="true" size={20} className="text-primary" />
                         )}
                       </div>
                     </button>

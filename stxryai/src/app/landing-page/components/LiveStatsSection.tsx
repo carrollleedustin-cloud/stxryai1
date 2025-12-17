@@ -4,12 +4,14 @@ import { useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
+import { Library, Users, Target, Sparkles } from 'lucide-react';
+
 interface LiveStat {
   label: string;
   value: number;
   target: number;
   suffix: string;
-  icon: string;
+  icon: React.ElementType;
   color: string;
 }
 
@@ -23,7 +25,7 @@ export default function LiveStatsSection() {
       value: 0,
       target: 12847,
       suffix: '+',
-      icon: '📚',
+      icon: Library,
       color: 'from-purple-500 to-pink-500',
     },
     {
@@ -31,7 +33,7 @@ export default function LiveStatsSection() {
       value: 0,
       target: 58932,
       suffix: '+',
-      icon: '👥',
+      icon: Users,
       color: 'from-blue-500 to-cyan-500',
     },
     {
@@ -39,7 +41,7 @@ export default function LiveStatsSection() {
       value: 0,
       target: 342567,
       suffix: '+',
-      icon: '🎯',
+      icon: Target,
       color: 'from-green-500 to-emerald-500',
     },
     {
@@ -47,7 +49,7 @@ export default function LiveStatsSection() {
       value: 0,
       target: 1247893,
       suffix: '+',
-      icon: '✨',
+      icon: Sparkles,
       color: 'from-orange-500 to-red-500',
     },
   ]);
@@ -165,7 +167,7 @@ export default function LiveStatsSection() {
                   animate={isInView ? { scale: 1 } : {}}
                   transition={{ duration: 0.5, delay: index * 0.1 + 0.3 }}
                 >
-                  {stat.icon}
+                  <stat.icon aria-hidden="true" className="w-12 h-12 text-white" />
                 </motion.div>
 
                 {/* Number */}
@@ -200,29 +202,3 @@ export default function LiveStatsSection() {
               </div>
             </motion.div>
           ))}
-        </div>
-
-        {/* Live Activity Indicator */}
-        <motion.div
-          className="mt-12 flex items-center justify-center gap-2 text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <motion.div
-            className="w-2 h-2 bg-green-500 rounded-full"
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [1, 0.5, 1],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-            }}
-          />
-          <span>Live stats updated in real-time</span>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
