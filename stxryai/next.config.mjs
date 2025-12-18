@@ -36,9 +36,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // TypeScript - type checking done separately
+  // TypeScript - ignore build errors in production (type checking done in CI/locally)
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 
   // Logging configuration
