@@ -2,8 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://lxtjkhphwihroktujzzi.supabase.co';
-const supabaseServiceKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDkwNTk2MywiZXhwIjoyMDgwNDgxOTYzfQ.LZEKQq72rYYHDYz2s2B8QOtmomzbHu-muubCwv2Estw';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -68,8 +67,7 @@ CREATE POLICY "Allow user creation via trigger" ON users
   console.log('\nDone! Testing if profile can be read now...\n');
 
   // Test with anon key
-  const anonKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4dGpraHBod2locm9rdHVqenppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDU5NjMsImV4cCI6MjA4MDQ4MTk2M30.KesxRh32YnfDngzXKfCIQ1Vb-jjLwQv0kI74hnwN8K0';
+  const anonKey = process.env.SUPABASE_ANON_KEY;
   const anonClient = createClient(supabaseUrl, anonKey);
 
   // Sign up test user
