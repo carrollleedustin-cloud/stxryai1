@@ -77,19 +77,29 @@ export function PulseLoader() {
 }
 
 // Full Page Loader
-export function FullPageLoader({ message = 'Loading...' }: { message?: string }) {
+export function FullPageLoader({ message = 'Loading...', progress }: { message?: string; progress?: number }) {
   return (
     <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="text-center">
+      <div className="text-center space-y-6 max-w-sm w-full px-4">
         <PulseLoader />
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-4 text-gray-700 dark:text-gray-300 font-medium"
+          className="text-gray-700 dark:text-gray-300 font-medium"
         >
           {message}
         </motion.p>
+        {progress !== undefined && (
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-purple-600 to-pink-600"
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

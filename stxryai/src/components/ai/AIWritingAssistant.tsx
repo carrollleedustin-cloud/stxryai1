@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { aiStoryGenerator } from '@/lib/ai/story-generator';
+import { AIStreamingProgress } from './AIStreamingProgress';
 
 interface AIWritingAssistantProps {
   currentContent: string;
@@ -28,18 +29,34 @@ export function AIWritingAssistant({
   const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [generatedContent, setGeneratedContent] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [lastAction, setLastAction] = useState<string | null>(null);
 
   const handleGetSuggestions = async () => {
     if (!currentContent.trim()) return;
 
     setIsLoading(true);
+    setProgress(0);
+    setLastAction('Getting suggestions...');
+    
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 10, 90));
+    }, 200);
+
     try {
       const result = await aiStoryGenerator.getWritingSuggestions(currentContent);
       setSuggestions(result);
+      setProgress(100);
     } catch (error) {
       console.error('Failed to get suggestions:', error);
     } finally {
-      setIsLoading(false);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setIsLoading(false);
+        setProgress(0);
+        setLastAction(null);
+      }, 500);
     }
   };
 
@@ -47,18 +64,38 @@ export function AIWritingAssistant({
     if (!currentContent.trim()) return;
 
     setIsLoading(true);
+    setProgress(0);
+    setLastAction(`Enhancing content (${type})...`);
+    
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 8, 90));
+    }, 200);
+
     try {
       const result = await aiStoryGenerator.enhanceContent(currentContent, type);
       setGeneratedContent(result);
+      setProgress(100);
     } catch (error) {
       console.error('Failed to enhance content:', error);
     } finally {
-      setIsLoading(false);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setIsLoading(false);
+        setProgress(0);
+        setLastAction(null);
+      }, 500);
     }
   };
 
   const handleGenerateDialogue = async (character: string, traits: string[], situation: string) => {
     setIsLoading(true);
+    setProgress(0);
+    setLastAction('Generating dialogue...');
+    
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 7, 90));
+    }, 200);
+
     try {
       const result = await aiStoryGenerator.generateDialogue(
         character,
@@ -67,10 +104,16 @@ export function AIWritingAssistant({
         'neutral'
       );
       setGeneratedContent(result);
+      setProgress(100);
     } catch (error) {
       console.error('Failed to generate dialogue:', error);
     } finally {
-      setIsLoading(false);
+      clearInterval(progressInterval);
+      setTimeout(() => {
+        setIsLoading(false);
+        setProgress(0);
+        setLastAction(null);
+      }, 500);
     }
   };
 
@@ -139,6 +182,17 @@ export function AIWritingAssistant({
 
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-6">
+              {/* Progress Indicator */}
+              {isLoading && (
+                <div className="mb-6">
+                  <AIStreamingProgress
+                    isStreaming={isLoading}
+                    progress={progress}
+                    message={lastAction || 'Processing with AI...'}
+                  />
+                </div>
+              )}
+
               {mode === 'suggestions' && (
                 <SuggestionsMode
                   currentContent={currentContent}

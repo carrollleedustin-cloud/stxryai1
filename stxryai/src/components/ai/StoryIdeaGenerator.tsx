@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { aiService } from '@/lib/api';
+import { AIStreamingProgress } from './AIStreamingProgress';
 
 interface StoryIdea {
   title: string;
@@ -30,6 +31,8 @@ export default function StoryIdeaGenerator() {
   const [idea, setIdea] = useState<StoryIdea | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [estimatedTime, setEstimatedTime] = useState<number | undefined>();
 
   const genres = [
     {
@@ -97,8 +100,19 @@ export default function StoryIdeaGenerator() {
     setIsGenerating(true);
     setError(null);
     setIdea(null);
+    setGenerationProgress(0);
+    setEstimatedTime(15); // Estimate 15 seconds
 
+    // Simulate progress updates
+    let progressInterval: NodeJS.Timeout | null = null;
+    
     try {
+      progressInterval = setInterval(() => {
+        setGenerationProgress((prev) => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 15;
+        });
+      }, 500);
       const prompt = `Generate a unique, compelling interactive story idea with the following specifications:
 
 Genre: ${options.genre}
@@ -156,7 +170,15 @@ Make it unique, engaging, and perfect for interactive storytelling!`;
       setError('An unexpected error occurred');
       console.error('Story idea generation error:', err);
     } finally {
-      setIsGenerating(false);
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
+      setGenerationProgress(100);
+      setTimeout(() => {
+        setIsGenerating(false);
+        setGenerationProgress(0);
+        setEstimatedTime(undefined);
+      }, 500);
     }
   };
 
@@ -289,6 +311,24 @@ Make it unique, engaging, and perfect for interactive storytelling!`;
           </div>
         )}
       </motion.button>
+
+      {/* AI Streaming Progress */}
+      <AnimatePresence>
+        {isGenerating && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <AIStreamingProgress
+              isStreaming={isGenerating}
+              progress={generationProgress}
+              message="Crafting your unique story idea"
+              estimatedTime={estimatedTime}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Error Message */}
       <AnimatePresence>

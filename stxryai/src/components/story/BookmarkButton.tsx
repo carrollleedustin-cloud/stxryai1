@@ -12,6 +12,8 @@ export interface Bookmark {
   chapterNumber?: number;
   chapterTitle?: string;
   note?: string;
+  choicePath?: string[]; // Path of choices made to reach this point
+  choiceId?: string; // The specific choice that led here
   createdAt: Date;
 }
 
@@ -20,9 +22,11 @@ interface BookmarkButtonProps {
   currentChapterId?: string;
   currentChapterNumber?: number;
   currentChapterTitle?: string;
+  currentChoiceId?: string;
+  choicePath?: string[];
   isBookmarked: boolean;
   bookmarkCount?: number;
-  onBookmark: (note?: string) => Promise<void>;
+  onBookmark: (data?: { note?: string; choiceId?: string; choicePath?: string[] }) => Promise<void>;
   onRemoveBookmark: () => Promise<void>;
   variant?: 'icon' | 'button';
   size?: 'sm' | 'md' | 'lg';
@@ -34,6 +38,8 @@ export default function BookmarkButton({
   currentChapterId,
   currentChapterNumber,
   currentChapterTitle,
+  currentChoiceId,
+  choicePath,
   isBookmarked,
   bookmarkCount = 0,
   onBookmark,
@@ -65,7 +71,11 @@ export default function BookmarkButton({
   const handleSaveBookmark = async () => {
     try {
       setIsSubmitting(true);
-      await onBookmark(note || undefined);
+      await onBookmark({
+        note: note || undefined,
+        choiceId: currentChoiceId,
+        choicePath: choicePath,
+      });
       setNote('');
       setIsOpen(false);
       toast.success('Bookmark saved!', 'You can find this story in your bookmarks');
@@ -194,6 +204,21 @@ export default function BookmarkButton({
                     <p className="font-semibold text-foreground">
                       Chapter {currentChapterNumber}: {currentChapterTitle}
                     </p>
+                    {choicePath && choicePath.length > 0 && (
+                      <div className="mt-2 pt-2 border-t border-border">
+                        <p className="text-xs text-muted-foreground mb-1">Choice Path:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {choicePath.map((choice, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded"
+                            >
+                              {idx + 1}. {choice}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
