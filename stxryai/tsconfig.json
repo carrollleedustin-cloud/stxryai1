@@ -43,6 +43,13 @@
     "node_modules",
     "**/*.stories.tsx",
     "**/*.stories.ts",
-    ".storybook"
+    "**/*.test.tsx",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.spec.ts",
+    ".storybook",
+    "jest.config.ts",
+    "src/utils/test-utils.tsx",
+    "src/utils/test-helpers.ts"
   ]
 }
