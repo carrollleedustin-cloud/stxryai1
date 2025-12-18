@@ -202,3 +202,8 @@ export default function LiveStatsSection() {
               </div>
             </motion.div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
