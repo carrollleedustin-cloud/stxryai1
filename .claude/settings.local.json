@@ -33,7 +33,15 @@
       "Bash(git restore:*)",
       "Bash(npx next dev:*)",
       "Bash(npm run lint:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(git lfs:*)",
+      "Bash(npm run build:netlify:*)",
+      "Bash(cmd //c \"dir /aL node_modules 2>nul\")",
+      "Bash(winget install:*)",
+      "Bash(\"C:\\Program Files\\nvm\\nvm.exe\" version)",
+      "Bash(\"C:\\Users\\dusti\\AppData\\Roaming\\nvm\\nvm.exe\" version)",
+      "Bash(/c/Users/dusti/AppData/Local/nvm/nvm.exe list:*)",
+      "Bash(/c/Users/dusti/AppData/Local/nvm/nvm.exe install:*)"
     ],
     "deny": [],
     "ask": []
