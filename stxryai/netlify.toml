@@ -16,14 +16,8 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Cache plugin for faster builds
-[[plugins]]
-  package = "netlify-plugin-cache"
-  [plugins.inputs]
-    paths = [
-      "node_modules/.cache",
-      ".next/cache"
-    ]
+# Note: netlify-plugin-cache removed due to devDependencies not installing in production
+# Netlify has built-in caching for node_modules and .next/cache
 
 # Headers for security and performance
 [[headers]]
