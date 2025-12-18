@@ -1,0 +1,35 @@
+# robots.txt for StxryAI
+# https://stxryai.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /user-dashboard/
+Disallow: /settings/
+Disallow: /authentication/
+Disallow: /reset-password/
+Disallow: /forgot-password/
+
+# Allow public pages
+Allow: /
+Allow: /landing-page
+Allow: /story-library
+Allow: /story-reader/
+Allow: /terms
+Allow: /privacy
+Allow: /cookies
+Allow: /help
+Allow: /support
+Allow: /pricing
+Allow: /community-hub
+Allow: /forums
+Allow: /leaderboards
+Allow: /reviews
+Allow: /search
+
+# Sitemap location
+Sitemap: https://stxryai.com/sitemap.xml
+

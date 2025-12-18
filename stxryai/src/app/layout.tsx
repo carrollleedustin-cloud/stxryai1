@@ -7,16 +7,14 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import AdSenseScript from '@/components/AdSenseScript';
 import ToastProvider from '@/components/ui/Toast';
 import CommandPalette from '@/components/ui/CommandPalette';
+import { defaultMetadata } from './metadata';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
 });
 
-export const metadata: Metadata = {
-  title: 'StxryAI - Interactive Fiction Platform',
-  description: 'Create and experience AI-powered interactive stories',
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,

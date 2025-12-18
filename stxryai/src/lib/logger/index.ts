@@ -119,8 +119,18 @@ class Logger {
       }
     }
 
-    // TODO: Add external logging service integration here
-    // e.g., Sentry.captureMessage(message, { level, extra: context })
+    // Send errors to error tracking service in production
+    if (level === 'error' && this.isProduction && typeof window !== 'undefined') {
+      // Dynamic import to avoid bundling error tracking in client if not configured
+      import('@/lib/error-tracking').then(({ errorTracking }) => {
+        errorTracking.captureException(error || new Error(message), {
+          level: 'error',
+          extra: context,
+        });
+      }).catch(() => {
+        // Error tracking not available, silently fail
+      });
+    }
   }
 
   /**

@@ -192,10 +192,27 @@ function logError(error: APIError, context: { service: string; operation: string
 
   console[logLevel]('[API Error]', logData);
 
-  // In production, send to error tracking service (e.g., Sentry)
+  // In production, send to error tracking service
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-    // TODO: Integrate with error tracking service
-    // Sentry.captureException(error, { contexts: { api: logData } });
+    // Dynamic import to avoid bundling error tracking in client if not configured
+    import('@/lib/error-tracking').then(({ errorTracking }) => {
+      errorTracking.captureException(error, {
+        level: logLevel === 'error' ? 'error' : 'warning',
+        tags: {
+          service: error.service || context.service,
+          operation: context.operation,
+        },
+        extra: {
+          statusCode: error.statusCode,
+          message: error.message,
+        },
+        contexts: {
+          api: logData,
+        },
+      });
+    }).catch(() => {
+      // Error tracking not available, silently fail
+    });
   }
 }
 

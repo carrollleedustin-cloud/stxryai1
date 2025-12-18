@@ -40,10 +40,25 @@ export class ErrorBoundary extends Component<Props, State> {
 
     this.props.onError?.(error, errorInfo);
 
-    // TODO: Send to error tracking service
-    // if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-    //   Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
-    // }
+    // Send to error tracking service in production
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+      // Dynamic import to avoid bundling error tracking in client if not configured
+      import('@/lib/error-tracking').then(({ errorTracking }) => {
+        errorTracking.captureException(error, {
+          level: 'error',
+          tags: {
+            component: 'ErrorBoundary',
+          },
+          contexts: {
+            react: {
+              componentStack: errorInfo.componentStack,
+            },
+          },
+        });
+      }).catch(() => {
+        // Error tracking not available, silently fail
+      });
+    }
   }
 
   resetError = () => {
