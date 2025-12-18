@@ -1,4 +1,4 @@
-import { createClient } from './server';
+import { createClient } from './client';
 import type { Database } from './database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
