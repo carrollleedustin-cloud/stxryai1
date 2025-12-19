@@ -129,7 +129,7 @@ export default function DashboardInteractive() {
     }
 
     return () => clearTimeout(maxTimeout);
-  }, [user, authLoading, router, dataLoaded, loadDashboardData, loading]);
+  }, [user, authLoading, router, dataLoaded, loadDashboardData]);
 
   const loadDashboardData = useCallback(async () => {
     if (!user || dataLoaded) {
