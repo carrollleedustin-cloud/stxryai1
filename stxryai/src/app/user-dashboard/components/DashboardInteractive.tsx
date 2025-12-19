@@ -101,36 +101,7 @@ export default function DashboardInteractive() {
   const [badges, setBadges] = useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  useEffect(() => {
-    // Maximum timeout to prevent infinite loading - always render after 10 seconds
-    const maxTimeout = setTimeout(() => {
-      if (loading && !dataLoaded) {
-        console.warn('Dashboard loading timeout - rendering anyway');
-        setLoading(false);
-        setDataLoaded(true);
-      }
-    }, 10000); // 10 second max - faster timeout
-
-    // Wait for auth to initialize
-    if (authLoading) {
-      return () => clearTimeout(maxTimeout);
-    }
-
-    // Auth finished loading
-    if (!user) {
-      // No user, redirect to login
-      router.push('/authentication');
-      return () => clearTimeout(maxTimeout);
-    }
-
-    // User exists, load dashboard data (only once)
-    if (user && !dataLoaded) {
-      loadDashboardData();
-    }
-
-    return () => clearTimeout(maxTimeout);
-  }, [user, authLoading, router, dataLoaded, loadDashboardData]);
-
+  // Define loadDashboardData BEFORE useEffect that uses it
   const loadDashboardData = useCallback(async () => {
     if (!user || dataLoaded) {
       return;
@@ -181,6 +152,36 @@ export default function DashboardInteractive() {
     }
   }, [user, dataLoaded]);
 
+  useEffect(() => {
+    // Maximum timeout to prevent infinite loading - always render after 10 seconds
+    const maxTimeout = setTimeout(() => {
+      if (loading && !dataLoaded) {
+        console.warn('Dashboard loading timeout - rendering anyway');
+        setLoading(false);
+        setDataLoaded(true);
+      }
+    }, 10000); // 10 second max - faster timeout
+
+    // Wait for auth to initialize
+    if (authLoading) {
+      return () => clearTimeout(maxTimeout);
+    }
+
+    // Auth finished loading - if no user, redirect immediately
+    if (!user) {
+      // Use window.location for more reliable redirect
+      window.location.href = '/authentication';
+      return () => clearTimeout(maxTimeout);
+    }
+
+    // User exists, load dashboard data (only once)
+    if (user && !dataLoaded) {
+      loadDashboardData();
+    }
+
+    return () => clearTimeout(maxTimeout);
+  }, [user, authLoading, router, dataLoaded, loadDashboardData, loading]);
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -189,13 +190,6 @@ export default function DashboardInteractive() {
       setError('Failed to sign out. Please try again.');
     }
   };
-
-  // Redirect effect for unauthenticated users
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/authentication');
-    }
-  }, [authLoading, user, router]);
 
   // Show loading while auth is initializing
   if (authLoading) {
