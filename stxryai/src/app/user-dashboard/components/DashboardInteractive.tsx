@@ -15,21 +15,61 @@ import UserMenu from '@/components/ui/UserMenu';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import { BookOpen, Compass, MessageSquare } from 'lucide-react';
 
-// Lazy load services to avoid circular dependencies
-let userProgressService: any = null;
-let userActivityService: any = null;
+// Lazy load services to avoid circular dependencies and initialization issues
+// Using a factory function pattern to avoid module-level state issues
+const createServiceLoader = () => {
+  let userProgressService: any = null;
+  let userActivityService: any = null;
+  let servicesPromise: Promise<{ userProgressService: any; userActivityService: any }> | null = null;
 
-const getServices = async () => {
-  if (!userProgressService) {
-    const progressModule = await import('@/services/userProgressService');
-    userProgressService = progressModule.userProgressService;
-  }
-  if (!userActivityService) {
-    const activityModule = await import('@/services/userActivityService');
-    userActivityService = activityModule.userActivityService;
-  }
-  return { userProgressService, userActivityService };
+  return async (): Promise<{ userProgressService: any; userActivityService: any }> => {
+    // If already loaded, return immediately
+    if (userProgressService && userActivityService) {
+      return { userProgressService, userActivityService };
+    }
+
+    // If already loading, wait for existing promise
+    if (servicesPromise) {
+      return servicesPromise;
+    }
+
+    // Start loading - use a function to avoid hoisting issues
+    servicesPromise = (async () => {
+      try {
+        // Load services sequentially to avoid initialization race conditions
+        // This ensures each service is fully initialized before the next one loads
+        const progressModule = await import('@/services/userProgressService');
+        if (!progressModule?.userProgressService) {
+          throw new Error('userProgressService not found in module');
+        }
+        userProgressService = progressModule.userProgressService;
+
+        // Small delay to ensure first service is fully initialized
+        await new Promise(resolve => setTimeout(resolve, 0));
+
+        const activityModule = await import('@/services/userActivityService');
+        if (!activityModule?.userActivityService) {
+          throw new Error('userActivityService not found in module');
+        }
+        userActivityService = activityModule.userActivityService;
+
+        return { userProgressService, userActivityService };
+      } catch (error) {
+        console.error('Error loading services:', error);
+        // Reset on error so we can retry
+        servicesPromise = null;
+        userProgressService = null;
+        userActivityService = null;
+        throw error;
+      }
+    })();
+
+    return servicesPromise;
+  };
 };
+
+// Create the loader function
+const getServices = createServiceLoader();
 
 const DashboardSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-pulse">
@@ -167,10 +207,17 @@ export default function DashboardInteractive() {
       return () => clearTimeout(maxTimeout);
     }
 
+<<<<<<< HEAD
     // Auth finished loading - if no user, redirect immediately
     if (!user) {
       // Use window.location for more reliable redirect
       window.location.href = '/authentication';
+=======
+    // Auth finished loading
+    if (!user) {
+      // No user, redirect to login
+      router.push('/authentication');
+>>>>>>> c43a0972bc83aab51b9ccce59c60b597fe7fbf56
       return () => clearTimeout(maxTimeout);
     }
 
