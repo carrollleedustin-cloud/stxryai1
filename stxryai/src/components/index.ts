@@ -8,6 +8,7 @@ export { StoryCollectionManager } from './collections/StoryCollectionManager';
 
 // Challenge Components
 export { ReadingChallenge } from './challenges/ReadingChallenge';
+export { EnhancedReadingChallenges } from './challenges/EnhancedReadingChallenges';
 
 // Social Components
 export { ShareStory } from './social/ShareStory';
@@ -47,6 +48,21 @@ export { StoryExport } from './premium/StoryExport';
 
 // Notification Components
 export { NotificationPreferences } from './notifications/NotificationPreferences';
+
+// Marketplace Components
+export { PremiumStoryPurchase } from './marketplace/PremiumStoryPurchase';
+export { CreatorTipButton } from './marketplace/CreatorTipButton';
+export { StoryPricingManager } from './marketplace/StoryPricingManager';
+export { CreatorEarningsDashboard } from './marketplace/CreatorEarningsDashboard';
+
+// Analytics Components
+export { CreatorAnalyticsDashboard } from './analytics/CreatorAnalyticsDashboard';
+
+// Creator Tools Components
+export { CreatorToolsDashboard } from './creator-tools/CreatorToolsDashboard';
+
+// Comments Components
+export { ChapterComments } from './comments/ChapterComments';
 
 // Referral Components
 export { ReferralDashboard } from './referrals/ReferralDashboard';
