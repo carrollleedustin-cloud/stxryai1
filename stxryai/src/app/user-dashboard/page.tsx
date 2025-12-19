@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import DashboardInteractive from './components/DashboardInteractive';
+import DashboardWrapper from './components/DashboardWrapper';
 
 export const metadata: Metadata = {
   title: 'Dashboard - Stxryai',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function UserDashboardPage() {
-  return <DashboardInteractive />;
+  return <DashboardWrapper />;
 }

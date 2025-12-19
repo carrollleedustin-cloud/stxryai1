@@ -4,8 +4,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { userProgressService } from '@/services/userProgressService';
-import { userActivityService } from '@/services/userActivityService';
 import ContinueReadingWidget from './ContinueReadingWidget';
 import ReadingStatsPanel from './ReadingStatsPanel';
 import ActivityFeedItem from './ActivityFeedItem';
@@ -16,6 +14,22 @@ import NotificationBell from '@/components/ui/NotificationBell';
 import UserMenu from '@/components/ui/UserMenu';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import { BookOpen, Compass, MessageSquare } from 'lucide-react';
+
+// Lazy load services to avoid circular dependencies
+let userProgressService: any = null;
+let userActivityService: any = null;
+
+const getServices = async () => {
+  if (!userProgressService) {
+    const progressModule = await import('@/services/userProgressService');
+    userProgressService = progressModule.userProgressService;
+  }
+  if (!userActivityService) {
+    const activityModule = await import('@/services/userActivityService');
+    userActivityService = activityModule.userActivityService;
+  }
+  return { userProgressService, userActivityService };
+};
 
 const DashboardSkeleton = () => (
   <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-pulse">
@@ -126,25 +140,32 @@ export default function DashboardInteractive() {
       setLoading(true);
       setError('');
       
-      // Load data with better error handling - don't fail completely if one fails
-      const [progressData, activitiesData, badgesData] = await Promise.all([
-        userProgressService.getAllUserProgress(user.id).catch((err) => {
+      // Get services with lazy loading
+      const services = await getServices();
+      
+      // Load data with better error handling
+      const [progressResult, activitiesResult, badgesResult] = await Promise.allSettled([
+        services.userProgressService.getAllUserProgress(user.id).catch((err: any) => {
           console.warn('Failed to load progress:', err);
           return [];
         }),
-        userActivityService.getUserActivities(user.id, 10).catch((err) => {
+        services.userActivityService.getUserActivities(user.id, 10).catch((err: any) => {
           console.warn('Failed to load activities:', err);
           return [];
         }),
-        userProgressService.getUserBadges(user.id).catch((err) => {
+        services.userProgressService.getUserBadges(user.id).catch((err: any) => {
           console.warn('Failed to load badges:', err);
           return [];
         }),
       ]);
 
-      setContinueReading(progressData?.filter((p: any) => !p.is_completed) || []);
-      setActivities(activitiesData || []);
-      setBadges(badgesData || []);
+      const progressData = progressResult.status === 'fulfilled' ? progressResult.value : [];
+      const activitiesData = activitiesResult.status === 'fulfilled' ? activitiesResult.value : [];
+      const badgesData = badgesResult.status === 'fulfilled' ? badgesResult.value : [];
+
+      setContinueReading(Array.isArray(progressData) ? progressData.filter((p: any) => !p?.is_completed) : []);
+      setActivities(Array.isArray(activitiesData) ? activitiesData : []);
+      setBadges(Array.isArray(badgesData) ? badgesData : []);
       setError('');
       setDataLoaded(true);
     } catch (err: any) {
