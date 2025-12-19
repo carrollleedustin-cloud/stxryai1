@@ -67,6 +67,15 @@ export { ChapterComments } from './comments/ChapterComments';
 // Messaging Components
 export { MessagingInterface } from './messaging/MessagingInterface';
 
+// Adaptive Storytelling Components
+export { ReadingPreferencesManager } from './adaptive/ReadingPreferencesManager';
+
+// AI Assistant Components
+export { AIStoryAssistant } from './ai-assistant/AIStoryAssistant';
+
+// Collaborative Creation Components
+export { CommunityStoryManager } from './collaborative/CommunityStoryManager';
+
 // Referral Components
 export { ReferralDashboard } from './referrals/ReferralDashboard';
 

@@ -1144,6 +1144,601 @@ CREATE TABLE IF NOT EXISTS public.message_reactions (
 );
 
 -- ============================================
+-- ADAPTIVE STORYTELLING TABLES
+-- ============================================
+
+-- User Reading Preferences Table
+CREATE TABLE IF NOT EXISTS public.user_reading_preferences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    preferred_pacing TEXT DEFAULT 'medium' CHECK (preferred_pacing IN ('slow', 'medium', 'fast')),
+    preferred_narrative_style TEXT[] DEFAULT '{}',
+    preferred_genre_tags TEXT[] DEFAULT '{}',
+    preferred_content_rating TEXT DEFAULT 'all' CHECK (preferred_content_rating IN ('all', 'pg', 'pg13', 'mature')),
+    preferred_themes TEXT[] DEFAULT '{}',
+    preferred_tone TEXT[] DEFAULT '{}',
+    preferred_choice_frequency TEXT DEFAULT 'medium' CHECK (preferred_choice_frequency IN ('low', 'medium', 'high')),
+    preferred_choice_complexity TEXT DEFAULT 'medium' CHECK (preferred_choice_complexity IN ('simple', 'medium', 'complex')),
+    preferred_branching_depth TEXT DEFAULT 'medium' CHECK (preferred_branching_depth IN ('shallow', 'medium', 'deep')),
+    ai_personality_profile JSONB DEFAULT '{}' NOT NULL,
+    reading_patterns JSONB DEFAULT '{}' NOT NULL,
+    engagement_patterns JSONB DEFAULT '{}' NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(user_id)
+);
+
+-- Story Adaptation Log Table
+CREATE TABLE IF NOT EXISTS public.story_adaptation_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    adaptation_type TEXT NOT NULL CHECK (adaptation_type IN ('pacing', 'tone', 'complexity', 'content', 'narrative_style', 'choice_prediction')),
+    original_content TEXT,
+    adapted_content TEXT,
+    adaptation_reason TEXT,
+    ai_model TEXT DEFAULT 'gpt-4',
+    confidence_score DECIMAL(3, 2) CHECK (confidence_score >= 0 AND confidence_score <= 1),
+    adaptation_parameters JSONB DEFAULT '{}' NOT NULL,
+    user_feedback TEXT CHECK (user_feedback IN ('positive', 'neutral', 'negative')),
+    user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Choice Predictions Table
+CREATE TABLE IF NOT EXISTS public.choice_predictions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID NOT NULL REFERENCES public.chapters(id) ON DELETE CASCADE,
+    choice_id UUID,
+    choice_text TEXT,
+    choice_options JSONB DEFAULT '[]' NOT NULL,
+    predicted_choice_index INTEGER,
+    predicted_choice_text TEXT,
+    prediction_confidence DECIMAL(3, 2) CHECK (prediction_confidence >= 0 AND prediction_confidence <= 1),
+    actual_choice_index INTEGER,
+    actual_choice_text TEXT,
+    was_correct BOOLEAN,
+    model_version TEXT DEFAULT 'v1',
+    prediction_features JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Personalized Narrative Paths Table
+CREATE TABLE IF NOT EXISTS public.personalized_narrative_paths (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    path_name TEXT,
+    path_description TEXT,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    personalization_factors JSONB DEFAULT '{}' NOT NULL,
+    adaptation_summary TEXT,
+    current_chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    path_progress DECIMAL(5, 2) DEFAULT 0 CHECK (path_progress >= 0 AND path_progress <= 100),
+    engagement_score DECIMAL(5, 2) DEFAULT 0,
+    completion_likelihood DECIMAL(3, 2) CHECK (completion_likelihood >= 0 AND completion_likelihood <= 1),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Dynamic Content Generation Table
+CREATE TABLE IF NOT EXISTS public.dynamic_content_generation (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    generation_type TEXT NOT NULL CHECK (generation_type IN ('dialogue', 'description', 'action', 'choice', 'narrative_branch')),
+    original_template_id UUID,
+    generated_content TEXT NOT NULL,
+    generation_context JSONB DEFAULT '{}' NOT NULL,
+    generation_prompt TEXT,
+    ai_model TEXT DEFAULT 'gpt-4',
+    generation_parameters JSONB DEFAULT '{}' NOT NULL,
+    tokens_used INTEGER,
+    generation_time_ms INTEGER,
+    quality_score DECIMAL(3, 2) CHECK (quality_score >= 0 AND quality_score <= 1),
+    coherence_score DECIMAL(3, 2) CHECK (coherence_score >= 0 AND coherence_score <= 1),
+    is_used BOOLEAN DEFAULT FALSE NOT NULL,
+    used_at TIMESTAMPTZ,
+    user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Adaptive Storytelling Analytics Table
+CREATE TABLE IF NOT EXISTS public.adaptive_storytelling_analytics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    period_start DATE NOT NULL,
+    period_end DATE NOT NULL,
+    total_adaptations INTEGER DEFAULT 0,
+    adaptations_by_type JSONB DEFAULT '{}' NOT NULL,
+    average_confidence_score DECIMAL(3, 2) DEFAULT 0,
+    total_predictions INTEGER DEFAULT 0,
+    correct_predictions INTEGER DEFAULT 0,
+    prediction_accuracy DECIMAL(5, 2) DEFAULT 0,
+    engagement_score DECIMAL(5, 2) DEFAULT 0,
+    session_duration_avg_minutes DECIMAL(10, 2) DEFAULT 0,
+    completion_rate DECIMAL(5, 2) DEFAULT 0,
+    personalization_effectiveness_score DECIMAL(3, 2) DEFAULT 0,
+    user_satisfaction_score DECIMAL(3, 2) DEFAULT 0,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- ============================================
+-- AI STORY ASSISTANT TABLES
+-- ============================================
+
+-- AI Writing Suggestions Table
+CREATE TABLE IF NOT EXISTS public.ai_writing_suggestions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    suggestion_type TEXT NOT NULL CHECK (suggestion_type IN ('plot', 'character', 'dialogue', 'description', 'pacing', 'tone', 'grammar', 'style', 'continuity', 'conflict')),
+    original_text TEXT,
+    suggested_text TEXT,
+    suggestion_context TEXT,
+    ai_model TEXT DEFAULT 'gpt-4',
+    confidence_score DECIMAL(3, 2) CHECK (confidence_score >= 0 AND confidence_score <= 1),
+    reasoning TEXT,
+    status TEXT DEFAULT 'pending' NOT NULL CHECK (status IN ('pending', 'accepted', 'rejected', 'modified', 'dismissed')),
+    user_feedback TEXT,
+    applied_at TIMESTAMPTZ,
+    start_position INTEGER,
+    end_position INTEGER,
+    selected_text TEXT,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Plot Doctor Analyses Table
+CREATE TABLE IF NOT EXISTS public.plot_doctor_analyses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    analysis_type TEXT NOT NULL CHECK (analysis_type IN ('full_story', 'act', 'chapter', 'scene', 'character_arc', 'plot_hole')),
+    analyzed_content TEXT NOT NULL,
+    issues_found JSONB DEFAULT '[]' NOT NULL,
+    issue_count INTEGER DEFAULT 0 NOT NULL,
+    severity_level TEXT CHECK (severity_level IN ('low', 'medium', 'high', 'critical')),
+    suggestions JSONB DEFAULT '[]' NOT NULL,
+    suggestion_count INTEGER DEFAULT 0 NOT NULL,
+    strengths JSONB DEFAULT '[]' NOT NULL,
+    strength_count INTEGER DEFAULT 0 NOT NULL,
+    overall_score DECIMAL(3, 2) CHECK (overall_score >= 0 AND overall_score <= 1),
+    overall_feedback TEXT,
+    ai_model TEXT DEFAULT 'gpt-4',
+    analysis_parameters JSONB DEFAULT '{}' NOT NULL,
+    tokens_used INTEGER,
+    user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+    was_helpful BOOLEAN,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- AI Idea Generations Table
+CREATE TABLE IF NOT EXISTS public.ai_idea_generations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    generation_type TEXT NOT NULL CHECK (generation_type IN ('story_concept', 'character', 'plot_twist', 'world_building', 'dialogue', 'scene', 'title', 'synopsis')),
+    prompt TEXT,
+    constraints JSONB DEFAULT '{}' NOT NULL,
+    generated_ideas JSONB DEFAULT '[]' NOT NULL,
+    idea_count INTEGER DEFAULT 0 NOT NULL,
+    selected_idea_index INTEGER,
+    selected_idea JSONB,
+    is_used BOOLEAN DEFAULT FALSE NOT NULL,
+    used_in_story_id UUID REFERENCES public.stories(id) ON DELETE SET NULL,
+    ai_model TEXT DEFAULT 'gpt-4',
+    generation_parameters JSONB DEFAULT '{}' NOT NULL,
+    tokens_used INTEGER,
+    user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Writing Assistant Sessions Table
+CREATE TABLE IF NOT EXISTS public.writing_assistant_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID REFERENCES public.stories(id) ON DELETE SET NULL,
+    session_type TEXT NOT NULL CHECK (session_type IN ('plot_doctor', 'writing_suggestions', 'idea_generation', 'general')),
+    session_name TEXT,
+    current_context TEXT,
+    conversation_history JSONB DEFAULT '[]' NOT NULL,
+    active_suggestions UUID[] DEFAULT '{}',
+    suggestions_generated INTEGER DEFAULT 0,
+    suggestions_accepted INTEGER DEFAULT 0,
+    suggestions_rejected INTEGER DEFAULT 0,
+    time_spent_minutes INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    started_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    ended_at TIMESTAMPTZ,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Writing Patterns Table
+CREATE TABLE IF NOT EXISTS public.writing_patterns (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID REFERENCES public.stories(id) ON DELETE SET NULL,
+    pattern_type TEXT NOT NULL CHECK (pattern_type IN ('repetition', 'weak_word', 'passive_voice', 'show_vs_tell', 'pacing_issue', 'dialogue_tag', 'adverb_usage')),
+    pattern_description TEXT,
+    occurrences JSONB DEFAULT '[]' NOT NULL,
+    occurrence_count INTEGER DEFAULT 0 NOT NULL,
+    context_text TEXT,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    suggested_improvements TEXT[] DEFAULT '{}',
+    is_resolved BOOLEAN DEFAULT FALSE NOT NULL,
+    resolved_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- ============================================
+-- COLLABORATIVE CREATION TABLES
+-- ============================================
+
+-- Community Stories Table
+CREATE TABLE IF NOT EXISTS public.community_stories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    story_type TEXT DEFAULT 'community' NOT NULL CHECK (story_type IN ('community', 'remix', 'fork', 'collaborative')),
+    original_story_id UUID REFERENCES public.stories(id) ON DELETE SET NULL,
+    is_open_for_contributions BOOLEAN DEFAULT TRUE NOT NULL,
+    contribution_guidelines TEXT,
+    moderation_level TEXT DEFAULT 'moderate' CHECK (moderation_level IN ('open', 'moderate', 'strict', 'curated')),
+    contributor_count INTEGER DEFAULT 0 NOT NULL,
+    chapter_count INTEGER DEFAULT 0 NOT NULL,
+    total_words INTEGER DEFAULT 0 NOT NULL,
+    status TEXT DEFAULT 'active' NOT NULL CHECK (status IN ('active', 'completed', 'archived', 'paused')),
+    completion_percentage DECIMAL(5, 2) DEFAULT 0 CHECK (completion_percentage >= 0 AND completion_percentage <= 100),
+    community_rating DECIMAL(3, 2) DEFAULT 0 CHECK (community_rating >= 0 AND community_rating <= 5),
+    community_rating_count INTEGER DEFAULT 0 NOT NULL,
+    discussion_count INTEGER DEFAULT 0 NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(story_id)
+);
+
+-- Story Contributions Table
+CREATE TABLE IF NOT EXISTS public.story_contributions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    community_story_id UUID NOT NULL REFERENCES public.community_stories(id) ON DELETE CASCADE,
+    contributor_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    contribution_type TEXT NOT NULL CHECK (contribution_type IN ('chapter', 'edit', 'suggestion', 'review', 'illustration', 'translation')),
+    contribution_content TEXT,
+    contribution_status TEXT DEFAULT 'pending' NOT NULL CHECK (contribution_status IN ('pending', 'approved', 'rejected', 'merged', 'needs_revision')),
+    reviewed_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    reviewed_at TIMESTAMPTZ,
+    review_notes TEXT,
+    quality_score DECIMAL(3, 2) CHECK (quality_score >= 0 AND quality_score <= 1),
+    community_votes INTEGER DEFAULT 0 NOT NULL,
+    community_rating DECIMAL(3, 2) CHECK (community_rating >= 0 AND community_rating <= 5),
+    words_added INTEGER DEFAULT 0,
+    characters_added INTEGER DEFAULT 0,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Story Remixes Table
+CREATE TABLE IF NOT EXISTS public.story_remixes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    original_story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    remix_story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    remixer_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    remix_type TEXT NOT NULL CHECK (remix_type IN ('alternate_ending', 'prequel', 'sequel', 'spin_off', 'genre_shift', 'perspective_shift', 'complete_remix')),
+    remix_description TEXT,
+    credits_original_author BOOLEAN DEFAULT TRUE NOT NULL,
+    remix_license TEXT DEFAULT 'remix' CHECK (remix_license IN ('remix', 'derivative', 'inspired_by')),
+    is_approved BOOLEAN DEFAULT FALSE NOT NULL,
+    approved_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    approved_at TIMESTAMPTZ,
+    similarity_score DECIMAL(3, 2) CHECK (similarity_score >= 0 AND similarity_score <= 1),
+    originality_score DECIMAL(3, 2) CHECK (originality_score >= 0 AND originality_score <= 1),
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(remix_story_id)
+);
+
+-- Story Forks Table
+CREATE TABLE IF NOT EXISTS public.story_forks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    original_story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    forked_story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    forker_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    fork_point_chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    fork_reason TEXT,
+    fork_description TEXT,
+    credits_original BOOLEAN DEFAULT TRUE NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    divergence_point INTEGER,
+    chapters_added INTEGER DEFAULT 0,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(forked_story_id)
+);
+
+-- Contribution Votes Table
+CREATE TABLE IF NOT EXISTS public.contribution_votes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    contribution_id UUID NOT NULL REFERENCES public.story_contributions(id) ON DELETE CASCADE,
+    voter_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    vote_type TEXT DEFAULT 'upvote' NOT NULL CHECK (vote_type IN ('upvote', 'downvote')),
+    vote_weight INTEGER DEFAULT 1 NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(contribution_id, voter_id)
+);
+
+-- ============================================
+-- ADVANCED TTS TABLES
+-- ============================================
+
+-- TTS Voices Table
+CREATE TABLE IF NOT EXISTS public.tts_voices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    voice_name TEXT NOT NULL,
+    voice_id TEXT NOT NULL UNIQUE,
+    provider TEXT NOT NULL CHECK (provider IN ('openai', 'elevenlabs', 'google', 'amazon', 'azure')),
+    gender TEXT CHECK (gender IN ('male', 'female', 'neutral')),
+    language_code TEXT DEFAULT 'en-US' NOT NULL,
+    accent TEXT,
+    age_range TEXT,
+    quality_tier TEXT DEFAULT 'standard' CHECK (quality_tier IN ('standard', 'premium', 'ultra')),
+    is_premium BOOLEAN DEFAULT FALSE NOT NULL,
+    is_character_voice BOOLEAN DEFAULT FALSE NOT NULL,
+    speed DECIMAL(3, 2) DEFAULT 1.0 CHECK (speed >= 0.5 AND speed <= 2.0),
+    pitch DECIMAL(3, 2) DEFAULT 1.0 CHECK (pitch >= 0.5 AND pitch <= 2.0),
+    stability DECIMAL(3, 2) DEFAULT 0.5 CHECK (stability >= 0 AND stability <= 1),
+    similarity_boost DECIMAL(3, 2) DEFAULT 0.5 CHECK (similarity_boost >= 0 AND similarity_boost <= 1),
+    sample_audio_url TEXT,
+    description TEXT,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Character Voices Table
+CREATE TABLE IF NOT EXISTS public.character_voices (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    character_name TEXT NOT NULL,
+    voice_id UUID NOT NULL REFERENCES public.tts_voices(id) ON DELETE RESTRICT,
+    custom_speed DECIMAL(3, 2) CHECK (custom_speed >= 0.5 AND custom_speed <= 2.0),
+    custom_pitch DECIMAL(3, 2) CHECK (custom_pitch >= 0.5 AND custom_pitch <= 2.0),
+    custom_stability DECIMAL(3, 2) CHECK (custom_stability >= 0 AND custom_stability <= 1),
+    custom_similarity_boost DECIMAL(3, 2) CHECK (custom_similarity_boost >= 0 AND custom_similarity_boost <= 1),
+    voice_description TEXT,
+    emotion_mappings JSONB DEFAULT '{}' NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(story_id, character_name)
+);
+
+-- Audio Generations Table
+CREATE TABLE IF NOT EXISTS public.audio_generations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    story_id UUID REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE CASCADE,
+    text_content TEXT NOT NULL,
+    voice_id UUID NOT NULL REFERENCES public.tts_voices(id) ON DELETE RESTRICT,
+    character_name TEXT,
+    audio_url TEXT,
+    audio_duration_seconds DECIMAL(10, 2),
+    audio_file_size_bytes INTEGER,
+    audio_format TEXT DEFAULT 'mp3' CHECK (audio_format IN ('mp3', 'wav', 'ogg', 'm4a')),
+    speed DECIMAL(3, 2) DEFAULT 1.0,
+    pitch DECIMAL(3, 2) DEFAULT 1.0,
+    stability DECIMAL(3, 2) DEFAULT 0.5,
+    similarity_boost DECIMAL(3, 2) DEFAULT 0.5,
+    generation_status TEXT DEFAULT 'pending' NOT NULL CHECK (generation_status IN ('pending', 'processing', 'completed', 'failed')),
+    error_message TEXT,
+    provider TEXT NOT NULL,
+    provider_job_id TEXT,
+    provider_cost DECIMAL(10, 4),
+    quality_score DECIMAL(3, 2) CHECK (quality_score >= 0 AND quality_score <= 1),
+    user_rating INTEGER CHECK (user_rating >= 1 AND user_rating <= 5),
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Audio Playback Sessions Table
+CREATE TABLE IF NOT EXISTS public.audio_playback_sessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    story_id UUID NOT NULL REFERENCES public.stories(id) ON DELETE CASCADE,
+    chapter_id UUID REFERENCES public.chapters(id) ON DELETE SET NULL,
+    current_audio_id UUID REFERENCES public.audio_generations(id) ON DELETE SET NULL,
+    playback_position_seconds DECIMAL(10, 2) DEFAULT 0,
+    is_playing BOOLEAN DEFAULT FALSE NOT NULL,
+    playback_speed DECIMAL(3, 2) DEFAULT 1.0 CHECK (playback_speed >= 0.5 AND playback_speed <= 2.0),
+    session_started_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_played_at TIMESTAMPTZ,
+    total_listen_time_seconds DECIMAL(10, 2) DEFAULT 0,
+    auto_play_next BOOLEAN DEFAULT TRUE NOT NULL,
+    background_playback BOOLEAN DEFAULT FALSE NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- User TTS Preferences Table
+CREATE TABLE IF NOT EXISTS public.user_tts_preferences (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    default_voice_id UUID REFERENCES public.tts_voices(id) ON DELETE SET NULL,
+    default_speed DECIMAL(3, 2) DEFAULT 1.0 CHECK (default_speed >= 0.5 AND default_speed <= 2.0),
+    default_pitch DECIMAL(3, 2) DEFAULT 1.0 CHECK (default_pitch >= 0.5 AND default_pitch <= 2.0),
+    auto_play_enabled BOOLEAN DEFAULT FALSE NOT NULL,
+    background_playback_enabled BOOLEAN DEFAULT FALSE NOT NULL,
+    skip_silence BOOLEAN DEFAULT TRUE NOT NULL,
+    preferred_quality_tier TEXT DEFAULT 'standard' CHECK (preferred_quality_tier IN ('standard', 'premium', 'ultra')),
+    use_character_voices BOOLEAN DEFAULT TRUE NOT NULL,
+    premium_voices_enabled BOOLEAN DEFAULT FALSE NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(user_id)
+);
+
+-- ============================================
+-- LIVE EVENTS TABLES
+-- ============================================
+
+-- Live Events Table
+CREATE TABLE IF NOT EXISTS public.live_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    host_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    event_type TEXT NOT NULL CHECK (event_type IN ('author_qa', 'writing_workshop', 'virtual_gathering', 'book_club', 'writing_contest', 'collaboration_session')),
+    title TEXT NOT NULL,
+    description TEXT,
+    scheduled_start TIMESTAMPTZ NOT NULL,
+    scheduled_end TIMESTAMPTZ NOT NULL,
+    timezone TEXT DEFAULT 'UTC',
+    duration_minutes INTEGER,
+    max_participants INTEGER,
+    is_public BOOLEAN DEFAULT TRUE NOT NULL,
+    requires_registration BOOLEAN DEFAULT TRUE NOT NULL,
+    registration_deadline TIMESTAMPTZ,
+    status TEXT DEFAULT 'scheduled' NOT NULL CHECK (status IN ('scheduled', 'live', 'ended', 'cancelled', 'postponed')),
+    started_at TIMESTAMPTZ,
+    ended_at TIMESTAMPTZ,
+    agenda JSONB DEFAULT '[]' NOT NULL,
+    resources JSONB DEFAULT '[]' NOT NULL,
+    recording_url TEXT,
+    related_story_id UUID REFERENCES public.stories(id) ON DELETE SET NULL,
+    participant_count INTEGER DEFAULT 0 NOT NULL,
+    viewer_count INTEGER DEFAULT 0 NOT NULL,
+    engagement_score DECIMAL(5, 2) DEFAULT 0,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Event Registrations Table
+CREATE TABLE IF NOT EXISTS public.event_registrations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID NOT NULL REFERENCES public.live_events(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    registration_status TEXT DEFAULT 'registered' NOT NULL CHECK (registration_status IN ('registered', 'attended', 'no_show', 'cancelled')),
+    registered_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    joined_at TIMESTAMPTZ,
+    left_at TIMESTAMPTZ,
+    attendance_duration_minutes INTEGER DEFAULT 0,
+    questions_asked INTEGER DEFAULT 0,
+    comments_made INTEGER DEFAULT 0,
+    participation_score DECIMAL(3, 2) DEFAULT 0 CHECK (participation_score >= 0 AND participation_score <= 1),
+    rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+    feedback_text TEXT,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(event_id, user_id)
+);
+
+-- Event Participants Table
+CREATE TABLE IF NOT EXISTS public.event_participants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID NOT NULL REFERENCES public.live_events(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    is_present BOOLEAN DEFAULT TRUE NOT NULL,
+    joined_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    last_active_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    role TEXT DEFAULT 'participant' NOT NULL CHECK (role IN ('host', 'moderator', 'speaker', 'participant', 'viewer')),
+    is_muted BOOLEAN DEFAULT FALSE NOT NULL,
+    is_video_enabled BOOLEAN DEFAULT FALSE NOT NULL,
+    hand_raised BOOLEAN DEFAULT FALSE NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(event_id, user_id)
+);
+
+-- Event Messages Table
+CREATE TABLE IF NOT EXISTS public.event_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID NOT NULL REFERENCES public.live_events(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    message_type TEXT DEFAULT 'chat' NOT NULL CHECK (message_type IN ('chat', 'question', 'answer', 'announcement', 'system')),
+    content TEXT NOT NULL,
+    parent_message_id UUID REFERENCES public.event_messages(id) ON DELETE SET NULL,
+    is_pinned BOOLEAN DEFAULT FALSE NOT NULL,
+    is_highlighted BOOLEAN DEFAULT FALSE NOT NULL,
+    is_moderated BOOLEAN DEFAULT FALSE NOT NULL,
+    moderated_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    moderated_at TIMESTAMPTZ,
+    reaction_count INTEGER DEFAULT 0 NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Event Questions Table
+CREATE TABLE IF NOT EXISTS public.event_questions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID NOT NULL REFERENCES public.live_events(id) ON DELETE CASCADE,
+    questioner_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    question_text TEXT NOT NULL,
+    question_status TEXT DEFAULT 'pending' NOT NULL CHECK (question_status IN ('pending', 'answered', 'dismissed', 'featured')),
+    answered_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    answer_text TEXT,
+    answered_at TIMESTAMPTZ,
+    upvote_count INTEGER DEFAULT 0 NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Event Polls Table
+CREATE TABLE IF NOT EXISTS public.event_polls (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    event_id UUID NOT NULL REFERENCES public.live_events(id) ON DELETE CASCADE,
+    created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    question TEXT NOT NULL,
+    options JSONB DEFAULT '[]' NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    is_anonymous BOOLEAN DEFAULT FALSE NOT NULL,
+    started_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    ended_at TIMESTAMPTZ,
+    duration_minutes INTEGER,
+    total_votes INTEGER DEFAULT 0 NOT NULL,
+    results JSONB DEFAULT '{}' NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Poll Responses Table
+CREATE TABLE IF NOT EXISTS public.poll_responses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    poll_id UUID NOT NULL REFERENCES public.event_polls(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    selected_option_index INTEGER NOT NULL,
+    selected_option_text TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(poll_id, user_id)
+);
+
+-- ============================================
 -- CONTENT MODERATION TABLES
 -- ============================================
 
@@ -1819,6 +2414,22 @@ CREATE INDEX IF NOT EXISTS idx_conversation_participants_user ON public.conversa
 CREATE INDEX IF NOT EXISTS idx_conversation_participants_unread ON public.conversation_participants(unread_count) WHERE unread_count > 0;
 CREATE INDEX IF NOT EXISTS idx_typing_indicators_conversation ON public.typing_indicators(conversation_id);
 CREATE INDEX IF NOT EXISTS idx_message_reactions_message ON public.message_reactions(message_id);
+
+-- Adaptive Storytelling indexes
+CREATE INDEX IF NOT EXISTS idx_user_reading_preferences_user ON public.user_reading_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_story_adaptation_log_user ON public.story_adaptation_log(user_id);
+CREATE INDEX IF NOT EXISTS idx_story_adaptation_log_story ON public.story_adaptation_log(story_id);
+CREATE INDEX IF NOT EXISTS idx_choice_predictions_user ON public.choice_predictions(user_id);
+CREATE INDEX IF NOT EXISTS idx_choice_predictions_story ON public.choice_predictions(story_id);
+CREATE INDEX IF NOT EXISTS idx_personalized_narrative_paths_user ON public.personalized_narrative_paths(user_id);
+CREATE INDEX IF NOT EXISTS idx_dynamic_content_generation_user ON public.dynamic_content_generation(user_id);
+
+-- AI Story Assistant indexes
+CREATE INDEX IF NOT EXISTS idx_ai_writing_suggestions_user ON public.ai_writing_suggestions(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_writing_suggestions_story ON public.ai_writing_suggestions(story_id);
+CREATE INDEX IF NOT EXISTS idx_plot_doctor_analyses_user ON public.plot_doctor_analyses(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_idea_generations_user ON public.ai_idea_generations(user_id);
+CREATE INDEX IF NOT EXISTS idx_writing_assistant_sessions_user ON public.writing_assistant_sessions(user_id);
 
 -- Moderation indexes
 CREATE INDEX IF NOT EXISTS idx_ai_moderation_logs_content ON public.ai_moderation_logs(content_id, content_type);
@@ -2828,6 +3439,113 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Adaptive Storytelling functions
+CREATE OR REPLACE FUNCTION public.update_prediction_accuracy()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.actual_choice_index IS NOT NULL AND NEW.predicted_choice_index IS NOT NULL THEN
+        NEW.was_correct := (NEW.actual_choice_index = NEW.predicted_choice_index);
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_prediction_accuracy_trigger
+    BEFORE INSERT OR UPDATE ON public.choice_predictions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_prediction_accuracy();
+
+CREATE OR REPLACE FUNCTION public.get_user_reading_profile(p_user_id UUID)
+RETURNS TABLE (
+    preferred_pacing TEXT,
+    preferred_narrative_style TEXT[],
+    preferred_genre_tags TEXT[],
+    preferred_themes TEXT[],
+    preferred_tone TEXT[],
+    preferred_choice_frequency TEXT,
+    ai_personality_profile JSONB,
+    reading_patterns JSONB,
+    engagement_patterns JSONB
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        urp.preferred_pacing,
+        urp.preferred_narrative_style,
+        urp.preferred_genre_tags,
+        urp.preferred_themes,
+        urp.preferred_tone,
+        urp.preferred_choice_frequency,
+        urp.ai_personality_profile,
+        urp.reading_patterns,
+        urp.engagement_patterns
+    FROM public.user_reading_preferences urp
+    WHERE urp.user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.calculate_adaptation_effectiveness(
+    p_user_id UUID,
+    p_story_id UUID,
+    p_period_days INTEGER DEFAULT 30
+)
+RETURNS DECIMAL(3, 2) AS $$
+DECLARE
+    v_effectiveness DECIMAL(3, 2);
+    v_total_adaptations INTEGER;
+    v_positive_feedback INTEGER;
+BEGIN
+    SELECT 
+        COUNT(*),
+        COUNT(*) FILTER (WHERE user_feedback = 'positive')
+    INTO v_total_adaptations, v_positive_feedback
+    FROM public.story_adaptation_log
+    WHERE user_id = p_user_id
+    AND story_id = p_story_id
+    AND created_at >= NOW() - (p_period_days || ' days')::INTERVAL
+    AND user_feedback IS NOT NULL;
+    
+    IF v_total_adaptations = 0 THEN
+        RETURN 0.5;
+    END IF;
+    
+    v_effectiveness := (v_positive_feedback::DECIMAL / v_total_adaptations);
+    RETURN LEAST(1.0, GREATEST(0.0, v_effectiveness));
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- AI Story Assistant functions
+CREATE OR REPLACE FUNCTION public.update_suggestion_stats()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'UPDATE' AND OLD.status != NEW.status THEN
+        IF NEW.status = 'accepted' THEN
+            UPDATE public.writing_assistant_sessions
+            SET suggestions_accepted = suggestions_accepted + 1
+            WHERE id IN (
+                SELECT session_id FROM public.ai_writing_suggestions
+                WHERE id = NEW.id
+            );
+        ELSIF NEW.status = 'rejected' THEN
+            UPDATE public.writing_assistant_sessions
+            SET suggestions_rejected = suggestions_rejected + 1
+            WHERE id IN (
+                SELECT session_id FROM public.ai_writing_suggestions
+                WHERE id = NEW.id
+            );
+        END IF;
+    END IF;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_suggestion_stats_trigger
+    AFTER UPDATE ON public.ai_writing_suggestions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_suggestion_stats();
+
 -- ============================================
 -- TRIGGERS
 -- ============================================
@@ -3026,6 +3744,53 @@ CREATE TRIGGER update_conversation_participants_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+-- Adaptive Storytelling triggers
+CREATE TRIGGER update_user_reading_preferences_updated_at
+    BEFORE UPDATE ON public.user_reading_preferences
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_choice_predictions_updated_at
+    BEFORE UPDATE ON public.choice_predictions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_personalized_narrative_paths_updated_at
+    BEFORE UPDATE ON public.personalized_narrative_paths
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_adaptive_storytelling_analytics_updated_at
+    BEFORE UPDATE ON public.adaptive_storytelling_analytics
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+-- AI Story Assistant triggers
+CREATE TRIGGER update_ai_writing_suggestions_updated_at
+    BEFORE UPDATE ON public.ai_writing_suggestions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_plot_doctor_analyses_updated_at
+    BEFORE UPDATE ON public.plot_doctor_analyses
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_ai_idea_generations_updated_at
+    BEFORE UPDATE ON public.ai_idea_generations
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_writing_assistant_sessions_updated_at
+    BEFORE UPDATE ON public.writing_assistant_sessions
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_writing_patterns_updated_at
+    BEFORE UPDATE ON public.writing_patterns
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
 -- Push notification triggers
 CREATE TRIGGER update_push_subscriptions_updated_at
     BEFORE UPDATE ON public.push_subscriptions
@@ -3135,6 +3900,17 @@ ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.conversation_participants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.typing_indicators ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.message_reactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_reading_preferences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.story_adaptation_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.choice_predictions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.personalized_narrative_paths ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.dynamic_content_generation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.adaptive_storytelling_analytics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ai_writing_suggestions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.plot_doctor_analyses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ai_idea_generations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.writing_assistant_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.writing_patterns ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notification_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
@@ -3511,6 +4287,69 @@ CREATE POLICY "Users can manage their own typing indicators"
 DROP POLICY IF EXISTS "Users can manage their own reactions" ON public.message_reactions;
 CREATE POLICY "Users can manage their own reactions"
     ON public.message_reactions FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+-- Adaptive Storytelling Policies
+DROP POLICY IF EXISTS "Users can manage their own reading preferences" ON public.user_reading_preferences;
+CREATE POLICY "Users can manage their own reading preferences"
+    ON public.user_reading_preferences FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own adaptation logs" ON public.story_adaptation_log;
+CREATE POLICY "Users can view their own adaptation logs"
+    ON public.story_adaptation_log FOR SELECT
+    USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own choice predictions" ON public.choice_predictions;
+CREATE POLICY "Users can view their own choice predictions"
+    ON public.choice_predictions FOR SELECT
+    USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own narrative paths" ON public.personalized_narrative_paths;
+CREATE POLICY "Users can view their own narrative paths"
+    ON public.personalized_narrative_paths FOR SELECT
+    USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own generated content" ON public.dynamic_content_generation;
+CREATE POLICY "Users can view their own generated content"
+    ON public.dynamic_content_generation FOR SELECT
+    USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can view their own analytics" ON public.adaptive_storytelling_analytics;
+CREATE POLICY "Users can view their own analytics"
+    ON public.adaptive_storytelling_analytics FOR SELECT
+    USING (auth.uid() = user_id);
+
+-- AI Story Assistant Policies
+DROP POLICY IF EXISTS "Users can manage their own writing suggestions" ON public.ai_writing_suggestions;
+CREATE POLICY "Users can manage their own writing suggestions"
+    ON public.ai_writing_suggestions FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own plot analyses" ON public.plot_doctor_analyses;
+CREATE POLICY "Users can manage their own plot analyses"
+    ON public.plot_doctor_analyses FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own idea generations" ON public.ai_idea_generations;
+CREATE POLICY "Users can manage their own idea generations"
+    ON public.ai_idea_generations FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own assistant sessions" ON public.writing_assistant_sessions;
+CREATE POLICY "Users can manage their own assistant sessions"
+    ON public.writing_assistant_sessions FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own writing patterns" ON public.writing_patterns;
+CREATE POLICY "Users can manage their own writing patterns"
+    ON public.writing_patterns FOR ALL
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 

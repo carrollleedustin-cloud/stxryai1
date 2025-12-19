@@ -79,7 +79,7 @@ const EmptyState = ({
 
 export default function DashboardInteractive() {
   const router = useRouter();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [continueReading, setContinueReading] = useState<any[]>([]);
@@ -88,41 +88,67 @@ export default function DashboardInteractive() {
 
   useEffect(() => {
     // Wait for auth to initialize
-    const timer = setTimeout(() => {
-      if (user) {
-        loadDashboardData();
-      } else if (user === null) {
-        setLoading(false);
-        router.push('/authentication');
-      }
-    }, 500);
+    if (authLoading) {
+      // Still loading auth, wait
+      return;
+    }
 
-    return () => clearTimeout(timer);
-  }, [user]);
+    // Auth finished loading
+    if (!user) {
+      // No user, redirect to login
+      router.push('/authentication');
+      return;
+    }
+
+    // User exists, load dashboard data
+    if (user && !loading) {
+      loadDashboardData();
+    }
+  }, [user, authLoading]);
 
   const loadDashboardData = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
-      const [progressData, activitiesData, badgesData] = await Promise.all([
-        userProgressService.getAllUserProgress(user.id),
-        userActivityService.getUserActivities(user.id, 10),
-        userProgressService.getUserBadges(user.id),
+      setError('');
+      
+      // Load data with timeout
+      const loadPromise = Promise.all([
+        userProgressService.getAllUserProgress(user.id).catch(() => []),
+        userActivityService.getUserActivities(user.id, 10).catch(() => []),
+        userProgressService.getUserBadges(user.id).catch(() => []),
       ]);
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+
+      const [progressData, activitiesData, badgesData] = await Promise.race([
+        loadPromise,
+        timeoutPromise,
+      ]) as [any[], any[], any[]];
 
       setContinueReading(progressData?.filter((p: any) => !p.is_completed) || []);
       setActivities(activitiesData || []);
       setBadges(badgesData || []);
       setError('');
     } catch (err: any) {
-      if (err?.message?.includes('Failed to fetch')) {
+      console.error('Dashboard load error:', err);
+      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('timeout')) {
         setError(
           'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
         );
       } else {
         setError('Failed to load dashboard data. Please try again.');
       }
+      // Set empty arrays so dashboard still renders
+      setContinueReading([]);
+      setActivities([]);
+      setBadges([]);
     } finally {
       setLoading(false);
     }
@@ -137,20 +163,24 @@ export default function DashboardInteractive() {
     }
   };
 
-  if (loading || !user) {
+  // Show loading while auth is initializing
+  if (authLoading) {
     return <DashboardSkeleton />;
   }
 
-  if (!profile) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Loading your profile...</p>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        </div>
-      </div>
-    );
+  // If no user after auth loads, redirect to login
+  if (!user && !authLoading) {
+    router.push('/authentication');
+    return <DashboardSkeleton />;
   }
+
+  // Show loading while fetching dashboard data
+  if (loading && user) {
+    return <DashboardSkeleton />;
+  }
+
+  // If user exists but no profile yet, still show dashboard (profile might be loading)
+  // Don't block the entire dashboard for missing profile
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -160,7 +190,7 @@ export default function DashboardInteractive() {
           <div className="flex items-center justify-between">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, {profile?.display_name || 'Reader'}!
+                Welcome back, {profile?.display_name || user?.display_name || user?.email || 'Reader'}!
               </h1>
               <p className="text-muted-foreground mt-1">
                 {profile?.tier === 'premium' ? '⭐ Premium Member' : '📚 Free Member'}
@@ -193,23 +223,23 @@ export default function DashboardInteractive() {
 
         <div className="space-y-8">
           {/* Daily Choice Limit */}
-          {profile && (
+          {(profile || user) && (
             <DailyChoiceLimitWidget
-              isPremium={profile.tier === 'premium'}
-              choicesUsed={profile.daily_choices_used || 0}
-              choicesLimit={profile.daily_choice_limit || 10}
+              isPremium={profile?.tier === 'premium'}
+              choicesUsed={profile?.daily_choices_used || 0}
+              choicesLimit={profile?.daily_choice_limit || 10}
               resetTime={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()}
             />
           )}
 
           {/* Reading Stats */}
-          {profile && (
+          {(profile || user) && (
             <ReadingStatsPanel
               stats={{
-                storiesCompleted: profile.stories_completed || 0,
-                choicesMade: profile.choices_made || 0,
+                storiesCompleted: profile?.stories_completed || 0,
+                choicesMade: profile?.choices_made || 0,
                 readingStreak: 0,
-                totalReadingTime: profile.total_reading_time || 0,
+                totalReadingTime: profile?.total_reading_time || 0,
                 achievements: badges.map((badge: any) => ({
                   id: badge.id,
                   name: badge.badge_name,

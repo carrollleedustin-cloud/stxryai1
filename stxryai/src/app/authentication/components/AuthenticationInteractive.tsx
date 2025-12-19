@@ -18,11 +18,29 @@ const AuthenticationInteractive = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
 
   useEffect(() => {
     setIsHydrated(true);
+    
+    // Check URL params for mode
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode');
+      if (mode === 'signup' || mode === 'register') {
+        setActiveTab('register');
+      } else if (mode === 'login' || mode === 'signin') {
+        setActiveTab('login');
+      }
+    }
   }, []);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && isHydrated) {
+      router.push('/user-dashboard');
+    }
+  }, [user, isHydrated, router]);
 
   if (!isHydrated) {
     return (

@@ -72,6 +72,14 @@ DROP FUNCTION IF EXISTS public.update_conversation_last_message() CASCADE;
 DROP FUNCTION IF EXISTS public.increment_unread_count() CASCADE;
 DROP FUNCTION IF EXISTS public.mark_messages_read(UUID, UUID, UUID) CASCADE;
 DROP FUNCTION IF EXISTS public.get_or_create_direct_conversation(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.update_prediction_accuracy() CASCADE;
+DROP FUNCTION IF EXISTS public.get_user_reading_profile(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.calculate_adaptation_effectiveness(UUID, UUID, INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS public.update_suggestion_stats() CASCADE;
+DROP FUNCTION IF EXISTS public.update_contribution_vote_count() CASCADE;
+DROP FUNCTION IF EXISTS public.update_contributor_count() CASCADE;
+DROP FUNCTION IF EXISTS public.update_event_participant_count() CASCADE;
+DROP FUNCTION IF EXISTS public.update_poll_vote_count() CASCADE;
 
 -- Drop all tables (in reverse dependency order)
 -- AI Enhancement & Personalization Tables
@@ -156,6 +164,44 @@ DROP TABLE IF EXISTS public.typing_indicators CASCADE;
 DROP TABLE IF EXISTS public.conversation_participants CASCADE;
 DROP TABLE IF EXISTS public.messages CASCADE;
 DROP TABLE IF EXISTS public.conversations CASCADE;
+
+-- Adaptive Storytelling Tables
+DROP TABLE IF EXISTS public.adaptive_storytelling_analytics CASCADE;
+DROP TABLE IF EXISTS public.dynamic_content_generation CASCADE;
+DROP TABLE IF EXISTS public.personalized_narrative_paths CASCADE;
+DROP TABLE IF EXISTS public.choice_predictions CASCADE;
+DROP TABLE IF EXISTS public.story_adaptation_log CASCADE;
+DROP TABLE IF EXISTS public.user_reading_preferences CASCADE;
+
+-- AI Story Assistant Tables
+DROP TABLE IF EXISTS public.writing_patterns CASCADE;
+DROP TABLE IF EXISTS public.writing_assistant_sessions CASCADE;
+DROP TABLE IF EXISTS public.ai_idea_generations CASCADE;
+DROP TABLE IF EXISTS public.plot_doctor_analyses CASCADE;
+DROP TABLE IF EXISTS public.ai_writing_suggestions CASCADE;
+
+-- Collaborative Creation Tables
+DROP TABLE IF EXISTS public.contribution_votes CASCADE;
+DROP TABLE IF EXISTS public.story_forks CASCADE;
+DROP TABLE IF EXISTS public.story_remixes CASCADE;
+DROP TABLE IF EXISTS public.story_contributions CASCADE;
+DROP TABLE IF EXISTS public.community_stories CASCADE;
+
+-- Advanced TTS Tables
+DROP TABLE IF EXISTS public.user_tts_preferences CASCADE;
+DROP TABLE IF EXISTS public.audio_playback_sessions CASCADE;
+DROP TABLE IF EXISTS public.audio_generations CASCADE;
+DROP TABLE IF EXISTS public.character_voices CASCADE;
+DROP TABLE IF EXISTS public.tts_voices CASCADE;
+
+-- Live Events Tables
+DROP TABLE IF EXISTS public.poll_responses CASCADE;
+DROP TABLE IF EXISTS public.event_polls CASCADE;
+DROP TABLE IF EXISTS public.event_questions CASCADE;
+DROP TABLE IF EXISTS public.event_messages CASCADE;
+DROP TABLE IF EXISTS public.event_participants CASCADE;
+DROP TABLE IF EXISTS public.event_registrations CASCADE;
+DROP TABLE IF EXISTS public.live_events CASCADE;
 
 -- Social Sharing & Referrals Tables
 DROP TABLE IF EXISTS public.share_tracking CASCADE;
