@@ -120,26 +120,42 @@ async function syncReadingProgress() {
 
 // Push notifications
 self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : {};
+  let data = {};
+  
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    console.error('Error parsing push notification data:', e);
+    data = {
+      title: 'StxryAI',
+      body: event.data ? event.data.text() : 'New notification',
+    };
+  }
 
   const options = {
     body: data.body || 'New notification from StxryAI',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/badge-72x72.png',
-    vibrate: [200, 100, 200],
+    icon: data.icon || '/favicon.ico',
+    badge: data.badge || '/favicon.ico',
+    image: data.image,
+    vibrate: data.vibrate || [200, 100, 200],
     data: {
-      url: data.url || '/'
+      url: data.url || '/',
+      ...(data.data || {}),
     },
-    actions: [
+    tag: data.tag || 'default',
+    requireInteraction: data.requireInteraction || false,
+    actions: data.actions || [
       {
         action: 'open',
-        title: 'Open'
+        title: 'Open',
+        icon: '/icons/icon-72x72.png',
       },
       {
         action: 'close',
-        title: 'Close'
-      }
-    ]
+        title: 'Close',
+      },
+    ],
+    timestamp: Date.now(),
   };
 
   event.waitUntil(
@@ -151,10 +167,39 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  if (event.action === 'open' || !event.action) {
-    const url = event.notification.data.url;
-    event.waitUntil(
-      clients.openWindow(url)
-    );
+  const url = event.notification.data?.url || '/';
+  const action = event.action;
+
+  if (action === 'close') {
+    // Just close the notification
+    return;
   }
+
+  // Default action or 'open' action
+  event.waitUntil(
+    clients
+      .matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      })
+      .then((clientList) => {
+        // Check if there's already a window/tab open with the target URL
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url === url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If no existing window, open a new one
+        if (clients.openWindow) {
+          return clients.openWindow(url);
+        }
+      })
+  );
+});
+
+// Notification close handler (optional, for analytics)
+self.addEventListener('notificationclose', (event) => {
+  // Could send analytics event here
+  console.log('Notification closed:', event.notification.tag);
 });

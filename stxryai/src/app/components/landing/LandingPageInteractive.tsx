@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import HeroSection from './HeroSection';
+import HeroSection from './EnhancedHeroSection';
 import LiveStatsSection from './LiveStatsSection';
 import InteractiveShowcaseSection from './InteractiveShowcaseSection';
 import TrendingStoriesSection from './TrendingStoriesSection';
@@ -20,7 +20,7 @@ const LandingPageInteractive = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <HeroSection onStartReading={handleStartReading} />
       <LiveStatsSection />
       <InteractiveShowcaseSection />

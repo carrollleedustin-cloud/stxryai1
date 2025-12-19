@@ -87,12 +87,17 @@ export default function DashboardInteractive() {
   const [badges, setBadges] = useState<any[]>([]);
 
   useEffect(() => {
-    if (user) {
-      loadDashboardData();
-    } else if (user === null) {
-      router.push('/authentication');
-    }
-  }, [user]);
+    // Wait a bit for auth to initialize
+    const timer = setTimeout(() => {
+      if (user) {
+        loadDashboardData();
+      } else if (user === null && !loading) {
+        router.push('/authentication');
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [user, loading]);
 
   const loadDashboardData = async () => {
     if (!user) return;

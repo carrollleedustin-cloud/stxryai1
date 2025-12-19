@@ -1,9 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
-import { toast } from '@/lib/utils/toast';
+import { toast } from 'sonner';
+import { shareCardService, type ShareCardData } from '@/services/shareCardService';
+import { referralService } from '@/services/referralService';
+import { generateShareableStoryUrl } from '@/lib/sharing';
 
 interface ShareButtonProps {
   title: string;
@@ -13,6 +17,10 @@ interface ShareButtonProps {
   onShare?: (platform: string) => void;
   variant?: 'icon' | 'button';
   size?: 'sm' | 'md' | 'lg';
+  storyId?: string;
+  shareType?: 'story' | 'achievement' | 'streak' | 'milestone';
+  shareCardData?: ShareCardData;
+  showShareCard?: boolean;
 }
 
 export default function ShareButton({
@@ -23,8 +31,46 @@ export default function ShareButton({
   onShare,
   variant = 'button',
   size = 'md',
+  storyId,
+  shareType = 'story',
+  shareCardData,
+  showShareCard = true,
 }: ShareButtonProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [shareCardUrl, setShareCardUrl] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [generatingCard, setGeneratingCard] = useState(false);
+
+  // Load referral code and generate share card
+  useEffect(() => {
+    if (!user || !showShareCard) return;
+
+    const loadData = async () => {
+      try {
+        // Get referral code
+        const code = await referralService.getReferralCode(user.id);
+        setReferralCode(code);
+
+        // Generate share card if data provided
+        if (shareCardData) {
+          setGeneratingCard(true);
+          const cardUrl = await shareCardService.generateShareCard(shareCardData);
+          setShareCardUrl(cardUrl);
+          setGeneratingCard(false);
+        }
+      } catch (error) {
+        console.error('Failed to load share data:', error);
+      }
+    };
+
+    loadData();
+  }, [user, shareCardData, showShareCard]);
+
+  // Add referral code to URL if available
+  const shareUrl = referralCode
+    ? `${url}${url.includes('?') ? '&' : '?'}ref=${referralCode}`
+    : url;
 
   const shareLinks = {
     twitter: () => {
@@ -56,20 +102,44 @@ export default function ShareButton({
     { id: 'email', name: 'Email', icon: '✉️', color: 'from-gray-600 to-gray-800' },
   ];
 
-  const handleShare = (platformId: string) => {
+  const handleShare = async (platformId: string) => {
+    // Track share
+    if (user) {
+      await referralService.trackShare(
+        user.id,
+        storyId || null,
+        platformId,
+        shareType,
+        shareUrl
+      );
+    }
+
     const link = shareLinks[platformId as keyof typeof shareLinks]();
     window.open(link, '_blank', 'width=600,height=400');
     onShare?.(platformId);
     setIsOpen(false);
+    toast.success('Shared!', `Shared to ${platformId}`);
   };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied!', 'Share link copied to clipboard');
+      await navigator.clipboard.writeText(shareUrl);
+      
+      // Track share
+      if (user) {
+        await referralService.trackShare(
+          user.id,
+          storyId || null,
+          'clipboard',
+          shareType,
+          shareUrl
+        );
+      }
+
+      toast.success('Link copied!');
       onShare?.('clipboard');
     } catch (error) {
-      toast.error('Failed to copy', 'Could not copy link to clipboard');
+      toast.error('Failed to copy link');
     }
   };
 
@@ -79,12 +149,41 @@ export default function ShareButton({
         await navigator.share({
           title,
           text: description,
-          url,
+          url: shareUrl,
+          ...(shareCardUrl && { files: [await fetch(shareCardUrl).then(r => r.blob())] }),
         });
+
+        // Track share
+        if (user) {
+          await referralService.trackShare(
+            user.id,
+            storyId || null,
+            'native',
+            shareType,
+            shareUrl
+          );
+        }
+
         onShare?.('native');
+        toast.success('Shared!');
       } catch (error) {
-        // User cancelled share
+        // User cancelled share - don't show error
       }
+    }
+  };
+
+  const handleDownloadCard = async () => {
+    if (!shareCardData) return;
+
+    try {
+      await shareCardService.downloadShareCard(
+        shareCardData,
+        `stxryai-share-${Date.now()}.png`
+      );
+      toast.success('Share card downloaded!');
+    } catch (error) {
+      console.error('Failed to download share card:', error);
+      toast.error('Failed to download share card');
     }
   };
 
@@ -147,8 +246,34 @@ export default function ShareButton({
             >
               {/* Header */}
               <div className="p-4 border-b border-border">
-                <h3 className="font-semibold text-foreground">Share this story</h3>
+                <h3 className="font-semibold text-foreground">Share this {shareType}</h3>
               </div>
+
+              {/* Share Card Preview */}
+              {showShareCard && shareCardUrl && (
+                <div className="p-4 border-b border-border bg-muted/50">
+                  <div className="relative">
+                    <img
+                      src={shareCardUrl}
+                      alt="Share card preview"
+                      className="w-full rounded-lg border border-border"
+                    />
+                    {generatingCard && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                      </div>
+                    )}
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleDownloadCard}
+                    className="mt-2 w-full px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                  >
+                    Download Share Card
+                  </motion.button>
+                </div>
+              )}
 
               {/* Native Share (if available) */}
               {typeof navigator !== 'undefined' && 'share' in navigator && (
@@ -188,7 +313,7 @@ export default function ShareButton({
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    value={url}
+                    value={shareUrl}
                     readOnly
                     className="flex-1 px-3 py-2 bg-muted border border-border rounded-lg text-sm text-foreground"
                   />
@@ -202,6 +327,11 @@ export default function ShareButton({
                     Copy
                   </motion.button>
                 </div>
+                {referralCode && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Your referral code: <code className="bg-muted px-1.5 py-0.5 rounded">{referralCode}</code>
+                  </p>
+                )}
               </div>
             </motion.div>
           </>

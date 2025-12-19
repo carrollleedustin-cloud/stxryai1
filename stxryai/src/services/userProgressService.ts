@@ -7,6 +7,7 @@ import {
   deleteBookmarkByKeys,
 } from '@/lib/supabase/typed';
 import { Story } from '@/types/database';
+import { streakService } from './streakService';
 
 export interface UserReadingProgress {
   id: string;
@@ -73,6 +74,24 @@ export const userProgressService = {
     });
 
     if (error) throw error;
+
+    // Update reading streak and calendar (non-blocking)
+    if (readingTime !== undefined && readingTime > 0) {
+      streakService
+        .updateReadingProgress(userId, Math.floor(readingTime / 60), 0, 1) // minutes, stories, chapters
+        .catch((err) => {
+          console.error('Failed to update reading streak:', err);
+          // Don't throw - streak update failure shouldn't break reading progress
+        });
+    } else {
+      // Still update streak even without reading time (just mark as read)
+      streakService
+        .updateStreak(userId)
+        .catch((err) => {
+          console.error('Failed to update reading streak:', err);
+        });
+    }
+
     return Array.isArray(data) ? data[0] : data;
   },
 
@@ -87,6 +106,14 @@ export const userProgressService = {
     await supabase.rpc('increment_stories_completed', {
       user_id: userId,
     });
+
+    // Update reading streak and calendar (non-blocking)
+    // Mark story as completed in calendar
+    streakService
+      .updateReadingProgress(userId, 0, 1, 0) // 1 story completed
+      .catch((err) => {
+        console.error('Failed to update reading streak on story completion:', err);
+      });
 
     return Array.isArray(data) ? data[0] : data;
   },

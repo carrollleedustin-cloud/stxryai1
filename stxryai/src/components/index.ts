@@ -1,5 +1,6 @@
 // Gamification Components
 export { ReadingStreak, DailyGoal } from './gamification/ReadingStreak';
+export { ReadingCalendarHeatmap } from './gamification/ReadingCalendarHeatmap';
 export { AdvancedGamification } from './gamification/AdvancedGamification';
 
 // Collection Components
@@ -43,6 +44,17 @@ export { AIStoryCritic } from './premium/AIStoryCritic';
 export { AIVoiceNarration } from './premium/AIVoiceNarration';
 export { AIStoryGenerator } from './premium/AIStoryGenerator';
 export { StoryExport } from './premium/StoryExport';
+
+// Notification Components
+export { NotificationPreferences } from './notifications/NotificationPreferences';
+
+// Referral Components
+export { ReferralDashboard } from './referrals/ReferralDashboard';
+
+// Moderation Components
+export { ModerationWarning } from './moderation/ModerationWarning';
+export { ModerationIndicator } from './moderation/ModerationIndicator';
+export { EnhancedModerationDashboard } from './admin/EnhancedModerationDashboard';
 
 // UI Components
 export { QuickActions } from './ui/QuickActions';

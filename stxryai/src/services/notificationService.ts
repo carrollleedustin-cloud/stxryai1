@@ -263,7 +263,20 @@ export const notificationService = {
     // Check preferences and send push if enabled
     const prefs = await this.getUserPreferences(userId);
     if (prefs?.push_enabled && this.shouldSendPush(type, prefs)) {
-      await this.sendPushNotification(userId, title, message, options?.actionUrl);
+      // Map notification type to push notification type
+      let pushType: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation' | undefined;
+      const storyTypes: NotificationType[] = ['story_comment', 'story_rating', 'story_featured', 'story_update'];
+      const socialTypes: NotificationType[] = ['follower_new', 'following_activity', 'club_invite', 'club_activity', 'comment_reply', 'like'];
+      const reminderTypes: NotificationType[] = ['reading_reminder', 'streak_milestone', 'goal_completed'];
+      
+      if (storyTypes.includes(type)) pushType = 'story_update';
+      else if (socialTypes.includes(type)) pushType = 'social';
+      else if (reminderTypes.includes(type)) pushType = 'engagement_reminder';
+      
+      await this.sendPushNotification(userId, title, message, options?.actionUrl, {
+        notificationType: pushType,
+        tag: type,
+      });
     }
 
     return data;
@@ -477,23 +490,44 @@ export const notificationService = {
     userId: string,
     title: string,
     body: string,
-    url?: string
+    url?: string,
+    options?: {
+      icon?: string;
+      badge?: string;
+      image?: string;
+      data?: Record<string, any>;
+      tag?: string;
+      requireInteraction?: boolean;
+      notificationType?: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation';
+    }
   ): Promise<boolean> {
-    // This would typically call a serverless function or API
-    // that uses web-push library to send the notification
     try {
-      const response = await fetch('/api/push/send', {
+      const response = await fetch('/api/notifications/push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          user_id: userId,
+          userId,
           title,
           body,
           url,
+          icon: options?.icon,
+          badge: options?.badge,
+          image: options?.image,
+          data: options?.data,
+          tag: options?.tag,
+          requireInteraction: options?.requireInteraction,
+          notificationType: options?.notificationType,
         }),
       });
 
-      return response.ok;
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Error sending push notification:', error);
+        return false;
+      }
+
+      const result = await response.json();
+      return result.sent === true;
     } catch (error) {
       console.error('Error sending push notification:', error);
       return false;
