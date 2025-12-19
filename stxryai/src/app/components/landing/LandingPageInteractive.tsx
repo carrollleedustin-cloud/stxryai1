@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import HeroSection from '@/app/components/landing/EnhancedHeroSection';
+import HeroSection from './HeroSection';
 import LiveStatsSection from './LiveStatsSection';
 import InteractiveShowcaseSection from './InteractiveShowcaseSection';
 import TrendingStoriesSection from './TrendingStoriesSection';
