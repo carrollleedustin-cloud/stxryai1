@@ -62,11 +62,11 @@ interface PushNotificationRequest {
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: PushNotificationRequest = await request.json();
+    const requestBody: PushNotificationRequest = await request.json();
     const {
       userId,
       title,
-      body,
+      body: notificationBody,
       icon,
       badge,
       image,
@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
       tag,
       requireInteraction,
       notificationType,
-    } = body;
+    } = requestBody;
 
     // Validate required fields
-    if (!userId || !title || !body) {
+    if (!userId || !title || !notificationBody) {
       return NextResponse.json(
         { error: 'Missing required fields: userId, title, body' },
         { status: 400 }
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     // Prepare notification payload
     const payload = JSON.stringify({
       title,
-      body,
+      body: notificationBody,
       icon: icon || '/favicon.ico',
       badge: badge || '/favicon.ico',
       image,
