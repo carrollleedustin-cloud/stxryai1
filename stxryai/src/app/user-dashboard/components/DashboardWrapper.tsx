@@ -18,12 +18,23 @@ class DashboardErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+  static getDerivedStateFromError(error: Error | any): State {
+    // Ensure we always have an Error object
+    const errorObj = error instanceof Error ? error : new Error(String(error || 'Unknown error'));
+    return { hasError: true, error: errorObj };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Dashboard error:', error, errorInfo);
+  componentDidCatch(error: Error | any, errorInfo: ErrorInfo) {
+    // Log comprehensive error information
+    const errorObj = error instanceof Error ? error : new Error(String(error || 'Unknown error'));
+    console.error('=== Dashboard Error Boundary Caught Error ===');
+    console.error('Error object:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error message:', errorObj.message);
+    console.error('Error stack:', errorObj.stack);
+    console.error('Component stack:', errorInfo.componentStack);
+    console.error('Error info:', errorInfo);
+    console.error('===========================================');
   }
 
   render() {
@@ -47,14 +58,14 @@ class DashboardErrorBoundary extends Component<Props, State> {
             >
               Reload Page
             </button>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="cursor-pointer text-sm text-muted-foreground">
                   Error Details
                 </summary>
                 <pre className="mt-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg text-xs overflow-auto">
-                  {this.state.error.message}
-                  {this.state.error.stack}
+                  {this.state.error.message || 'Unknown error'}
+                  {this.state.error.stack && `\n\n${this.state.error.stack}`}
                 </pre>
               </details>
             )}

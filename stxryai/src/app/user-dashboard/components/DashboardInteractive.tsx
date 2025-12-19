@@ -218,6 +218,11 @@ export default function DashboardInteractive() {
   // The 15-second timeout ensures we always render eventually
   // Show loading indicator if still loading, but render the dashboard structure
 
+  // Safety check - ensure we have valid data structures
+  const safeContinueReading = Array.isArray(continueReading) ? continueReading : [];
+  const safeActivities = Array.isArray(activities) ? activities : [];
+  const safeBadges = Array.isArray(badges) ? badges : [];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
@@ -282,14 +287,14 @@ export default function DashboardInteractive() {
                 choicesMade: profile?.choices_made || 0,
                 readingStreak: 0,
                 totalReadingTime: profile?.total_reading_time || 0,
-                achievements: badges.map((badge: any) => ({
-                  id: badge.id,
-                  name: badge.badge_name,
-                  icon: badge.badge_icon,
+                achievements: safeBadges.map((badge: any) => ({
+                  id: badge?.id || '',
+                  name: badge?.badge_name || 'Unknown',
+                  icon: badge?.badge_icon || '🏆',
                   progress: 100,
                   total: 100,
                   unlocked: true,
-                })),
+                })) : [],
               }}
             />
           )}
@@ -297,18 +302,18 @@ export default function DashboardInteractive() {
           {/* Continue Reading */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h2 className="text-2xl font-bold text-foreground mb-4">Continue Reading</h2>
-            {continueReading.length > 0 ? (
+            {safeContinueReading.length > 0 ? (
               <motion.div
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
               >
-                {continueReading.map((progress: any) => (
-                  <motion.div key={progress.id} variants={slideUp}>
+                {safeContinueReading.map((progress: any) => (
+                  <motion.div key={progress?.id || Math.random()} variants={slideUp}>
                     <ContinueReadingWidget
                       progress={progress}
-                      onClick={() => router.push(`/story-reader?storyId=${progress.story_id}`)}
+                      onClick={() => router.push(`/story-reader?storyId=${progress?.story_id || ''}`)}
                     />
                   </motion.div>
                 ))}
@@ -327,10 +332,10 @@ export default function DashboardInteractive() {
           {/* Activity Feed */}
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-4">Recent Activity</h2>
-            {activities.length > 0 ? (
+            {safeActivities.length > 0 ? (
               <div className="bg-card/50 backdrop-blur-lg border border-border rounded-xl shadow-lg p-6 space-y-4">
-                {activities.map((activity: any) => (
-                  <ActivityFeedItem key={activity.id} activity={activity} />
+                {safeActivities.map((activity: any) => (
+                  <ActivityFeedItem key={activity?.id || Math.random()} activity={activity} />
                 ))}
               </div>
             ) : (
