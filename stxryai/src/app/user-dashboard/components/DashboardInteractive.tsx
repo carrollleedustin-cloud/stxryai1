@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -85,30 +85,40 @@ export default function DashboardInteractive() {
   const [continueReading, setContinueReading] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
   const [badges, setBadges] = useState<any[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
+    // Maximum timeout to prevent infinite loading - always render after 10 seconds
+    const maxTimeout = setTimeout(() => {
+      if (loading && !dataLoaded) {
+        console.warn('Dashboard loading timeout - rendering anyway');
+        setLoading(false);
+        setDataLoaded(true);
+      }
+    }, 10000); // 10 second max - faster timeout
+
     // Wait for auth to initialize
     if (authLoading) {
-      // Still loading auth, wait
-      return;
+      return () => clearTimeout(maxTimeout);
     }
 
     // Auth finished loading
     if (!user) {
       // No user, redirect to login
       router.push('/authentication');
-      return;
+      return () => clearTimeout(maxTimeout);
     }
 
-    // User exists, load dashboard data
-    if (user && !loading) {
+    // User exists, load dashboard data (only once)
+    if (user && !dataLoaded) {
       loadDashboardData();
     }
-  }, [user, authLoading]);
 
-  const loadDashboardData = async () => {
-    if (!user) {
-      setLoading(false);
+    return () => clearTimeout(maxTimeout);
+  }, [user, authLoading, router, dataLoaded, loadDashboardData, loading]);
+
+  const loadDashboardData = useCallback(async () => {
+    if (!user || dataLoaded) {
       return;
     }
 
@@ -116,43 +126,39 @@ export default function DashboardInteractive() {
       setLoading(true);
       setError('');
       
-      // Load data with timeout
-      const loadPromise = Promise.all([
-        userProgressService.getAllUserProgress(user.id).catch(() => []),
-        userActivityService.getUserActivities(user.id, 10).catch(() => []),
-        userProgressService.getUserBadges(user.id).catch(() => []),
+      // Load data with better error handling - don't fail completely if one fails
+      const [progressData, activitiesData, badgesData] = await Promise.all([
+        userProgressService.getAllUserProgress(user.id).catch((err) => {
+          console.warn('Failed to load progress:', err);
+          return [];
+        }),
+        userActivityService.getUserActivities(user.id, 10).catch((err) => {
+          console.warn('Failed to load activities:', err);
+          return [];
+        }),
+        userProgressService.getUserBadges(user.id).catch((err) => {
+          console.warn('Failed to load badges:', err);
+          return [];
+        }),
       ]);
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
-      );
-
-      const [progressData, activitiesData, badgesData] = await Promise.race([
-        loadPromise,
-        timeoutPromise,
-      ]) as [any[], any[], any[]];
 
       setContinueReading(progressData?.filter((p: any) => !p.is_completed) || []);
       setActivities(activitiesData || []);
       setBadges(badgesData || []);
       setError('');
+      setDataLoaded(true);
     } catch (err: any) {
       console.error('Dashboard load error:', err);
-      if (err?.message?.includes('Failed to fetch') || err?.message?.includes('timeout')) {
-        setError(
-          'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
-        );
-      } else {
-        setError('Failed to load dashboard data. Please try again.');
-      }
+      setError('Some data failed to load, but you can still use the dashboard.');
       // Set empty arrays so dashboard still renders
       setContinueReading([]);
       setActivities([]);
       setBadges([]);
+      setDataLoaded(true);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, dataLoaded]);
 
   const handleSignOut = async () => {
     try {
@@ -163,24 +169,33 @@ export default function DashboardInteractive() {
     }
   };
 
+  // Redirect effect for unauthenticated users
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/authentication');
+    }
+  }, [authLoading, user, router]);
+
   // Show loading while auth is initializing
   if (authLoading) {
     return <DashboardSkeleton />;
   }
 
-  // If no user after auth loads, redirect to login
+  // If no user after auth loads, show redirect message
   if (!user && !authLoading) {
-    router.push('/authentication');
-    return <DashboardSkeleton />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Redirecting to login...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
+    );
   }
 
-  // Show loading while fetching dashboard data
-  if (loading && user) {
-    return <DashboardSkeleton />;
-  }
-
-  // If user exists but no profile yet, still show dashboard (profile might be loading)
-  // Don't block the entire dashboard for missing profile
+  // If we have a user, show dashboard (even if still loading)
+  // The 15-second timeout ensures we always render eventually
+  // Show loading indicator if still loading, but render the dashboard structure
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -215,9 +230,15 @@ export default function DashboardInteractive() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        {loading && !dataLoaded && (
+          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm text-blue-600 dark:text-blue-400">Loading your dashboard data...</p>
+          </div>
+        )}
+        
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
