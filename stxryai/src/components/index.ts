@@ -64,6 +64,9 @@ export { CreatorToolsDashboard } from './creator-tools/CreatorToolsDashboard';
 // Comments Components
 export { ChapterComments } from './comments/ChapterComments';
 
+// Messaging Components
+export { MessagingInterface } from './messaging/MessagingInterface';
+
 // Referral Components
 export { ReferralDashboard } from './referrals/ReferralDashboard';
 

@@ -68,6 +68,10 @@ DROP FUNCTION IF EXISTS public.update_comment_reply_count() CASCADE;
 DROP FUNCTION IF EXISTS public.update_comment_like_count() CASCADE;
 DROP FUNCTION IF EXISTS public.check_author_reply() CASCADE;
 DROP FUNCTION IF EXISTS public.get_chapter_comment_stats(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.update_conversation_last_message() CASCADE;
+DROP FUNCTION IF EXISTS public.increment_unread_count() CASCADE;
+DROP FUNCTION IF EXISTS public.mark_messages_read(UUID, UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.get_or_create_direct_conversation(UUID, UUID) CASCADE;
 
 -- Drop all tables (in reverse dependency order)
 -- AI Enhancement & Personalization Tables
@@ -145,6 +149,13 @@ DROP TABLE IF EXISTS public.chapter_comment_subscriptions CASCADE;
 DROP TABLE IF EXISTS public.chapter_comment_threads CASCADE;
 DROP TABLE IF EXISTS public.chapter_comment_likes CASCADE;
 DROP TABLE IF EXISTS public.chapter_comments CASCADE;
+
+-- Direct Messaging Tables
+DROP TABLE IF EXISTS public.message_reactions CASCADE;
+DROP TABLE IF EXISTS public.typing_indicators CASCADE;
+DROP TABLE IF EXISTS public.conversation_participants CASCADE;
+DROP TABLE IF EXISTS public.messages CASCADE;
+DROP TABLE IF EXISTS public.conversations CASCADE;
 
 -- Social Sharing & Referrals Tables
 DROP TABLE IF EXISTS public.share_tracking CASCADE;

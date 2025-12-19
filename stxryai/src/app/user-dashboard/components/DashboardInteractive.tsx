@@ -87,17 +87,18 @@ export default function DashboardInteractive() {
   const [badges, setBadges] = useState<any[]>([]);
 
   useEffect(() => {
-    // Wait a bit for auth to initialize
+    // Wait for auth to initialize
     const timer = setTimeout(() => {
       if (user) {
         loadDashboardData();
-      } else if (user === null && !loading) {
+      } else if (user === null) {
+        setLoading(false);
         router.push('/authentication');
       }
-    }, 100);
+    }, 500);
 
     return () => clearTimeout(timer);
-  }, [user, loading]);
+  }, [user]);
 
   const loadDashboardData = async () => {
     if (!user) return;
@@ -136,8 +137,19 @@ export default function DashboardInteractive() {
     }
   };
 
-  if (loading) {
+  if (loading || !user) {
     return <DashboardSkeleton />;
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Loading your profile...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+        </div>
+      </div>
+    );
   }
 
   return (

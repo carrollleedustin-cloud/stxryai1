@@ -1056,6 +1056,94 @@ CREATE TABLE IF NOT EXISTS public.chapter_comment_subscriptions (
 );
 
 -- ============================================
+-- DIRECT MESSAGING TABLES
+-- ============================================
+
+-- Conversations Table
+CREATE TABLE IF NOT EXISTS public.conversations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_type TEXT NOT NULL CHECK (conversation_type IN ('direct', 'group')),
+    conversation_name TEXT,
+    participants UUID[] NOT NULL DEFAULT '{}',
+    last_message_id UUID,
+    last_message_at TIMESTAMPTZ,
+    last_message_preview TEXT,
+    created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    group_avatar_url TEXT,
+    group_description TEXT,
+    is_archived BOOLEAN DEFAULT FALSE NOT NULL,
+    is_muted BOOLEAN DEFAULT FALSE NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Messages Table
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+    sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    message_type TEXT DEFAULT 'text' NOT NULL CHECK (message_type IN ('text', 'image', 'file', 'link', 'system')),
+    media_url TEXT,
+    file_name TEXT,
+    file_size INTEGER,
+    file_type TEXT,
+    reply_to_id UUID REFERENCES public.messages(id) ON DELETE SET NULL,
+    reply_preview TEXT,
+    is_edited BOOLEAN DEFAULT FALSE NOT NULL,
+    edited_at TIMESTAMPTZ,
+    is_deleted BOOLEAN DEFAULT FALSE NOT NULL,
+    deleted_at TIMESTAMPTZ,
+    read_by UUID[] DEFAULT '{}' NOT NULL,
+    read_at TIMESTAMPTZ[] DEFAULT '{}' NOT NULL,
+    metadata JSONB DEFAULT '{}' NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- Conversation Participants Table
+CREATE TABLE IF NOT EXISTS public.conversation_participants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    role TEXT DEFAULT 'member' NOT NULL CHECK (role IN ('admin', 'moderator', 'member')),
+    is_muted BOOLEAN DEFAULT FALSE NOT NULL,
+    mute_until TIMESTAMPTZ,
+    last_read_message_id UUID REFERENCES public.messages(id) ON DELETE SET NULL,
+    last_read_at TIMESTAMPTZ,
+    unread_count INTEGER DEFAULT 0 NOT NULL,
+    joined_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    left_at TIMESTAMPTZ,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(conversation_id, user_id)
+);
+
+-- Typing Indicators Table
+CREATE TABLE IF NOT EXISTS public.typing_indicators (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES public.conversations(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    is_typing BOOLEAN DEFAULT TRUE NOT NULL,
+    started_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(conversation_id, user_id)
+);
+
+-- Message Reactions Table
+CREATE TABLE IF NOT EXISTS public.message_reactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    message_id UUID NOT NULL REFERENCES public.messages(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    reaction_type TEXT DEFAULT 'like' NOT NULL CHECK (reaction_type IN ('like', 'love', 'laugh', 'wow', 'sad', 'angry', 'thumbs_up', 'thumbs_down')),
+    emoji TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    UNIQUE(message_id, user_id, reaction_type)
+);
+
+-- ============================================
 -- CONTENT MODERATION TABLES
 -- ============================================
 
@@ -1720,6 +1808,17 @@ CREATE INDEX IF NOT EXISTS idx_chapter_comments_parent ON public.chapter_comment
 CREATE INDEX IF NOT EXISTS idx_chapter_comments_created ON public.chapter_comments(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_chapter_comment_likes_comment ON public.chapter_comment_likes(comment_id);
 CREATE INDEX IF NOT EXISTS idx_chapter_comment_threads_chapter ON public.chapter_comment_threads(chapter_id);
+
+-- Messaging indexes
+CREATE INDEX IF NOT EXISTS idx_conversations_participants ON public.conversations USING GIN(participants);
+CREATE INDEX IF NOT EXISTS idx_conversations_last_message ON public.conversations(last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON public.messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON public.messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created ON public.messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_conversation_participants_user ON public.conversation_participants(user_id);
+CREATE INDEX IF NOT EXISTS idx_conversation_participants_unread ON public.conversation_participants(unread_count) WHERE unread_count > 0;
+CREATE INDEX IF NOT EXISTS idx_typing_indicators_conversation ON public.typing_indicators(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_message_reactions_message ON public.message_reactions(message_id);
 
 -- Moderation indexes
 CREATE INDEX IF NOT EXISTS idx_ai_moderation_logs_content ON public.ai_moderation_logs(content_id, content_type);
@@ -2631,6 +2730,104 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Messaging functions
+CREATE OR REPLACE FUNCTION public.update_conversation_last_message()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE public.conversations
+    SET 
+        last_message_id = NEW.id,
+        last_message_at = NEW.created_at,
+        last_message_preview = LEFT(NEW.content, 100),
+        updated_at = NOW()
+    WHERE id = NEW.conversation_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER update_conversation_last_message_trigger
+    AFTER INSERT ON public.messages
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_conversation_last_message();
+
+CREATE OR REPLACE FUNCTION public.increment_unread_count()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE public.conversation_participants
+    SET unread_count = unread_count + 1
+    WHERE conversation_id = NEW.conversation_id
+    AND user_id != NEW.sender_id
+    AND is_active = TRUE;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increment_unread_count_trigger
+    AFTER INSERT ON public.messages
+    FOR EACH ROW
+    EXECUTE FUNCTION public.increment_unread_count();
+
+CREATE OR REPLACE FUNCTION public.mark_messages_read(
+    p_conversation_id UUID,
+    p_user_id UUID,
+    p_message_id UUID
+)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE public.messages
+    SET 
+        read_by = array_append(read_by, p_user_id),
+        read_at = array_append(read_at, NOW())
+    WHERE conversation_id = p_conversation_id
+    AND id <= p_message_id
+    AND NOT (p_user_id = ANY(read_by));
+    
+    UPDATE public.conversation_participants
+    SET 
+        last_read_message_id = p_message_id,
+        last_read_at = NOW(),
+        unread_count = 0
+    WHERE conversation_id = p_conversation_id
+    AND user_id = p_user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_or_create_direct_conversation(
+    p_user1_id UUID,
+    p_user2_id UUID
+)
+RETURNS UUID AS $$
+DECLARE
+    v_conversation_id UUID;
+BEGIN
+    SELECT id INTO v_conversation_id
+    FROM public.conversations
+    WHERE conversation_type = 'direct'
+    AND participants @> ARRAY[p_user1_id]
+    AND participants @> ARRAY[p_user2_id]
+    AND array_length(participants, 1) = 2
+    LIMIT 1;
+    
+    IF v_conversation_id IS NULL THEN
+        INSERT INTO public.conversations (
+            conversation_type,
+            participants
+        ) VALUES (
+            'direct',
+            ARRAY[p_user1_id, p_user2_id]
+        )
+        RETURNING id INTO v_conversation_id;
+        
+        INSERT INTO public.conversation_participants (conversation_id, user_id)
+        VALUES (v_conversation_id, p_user1_id), (v_conversation_id, p_user2_id);
+    END IF;
+    
+    RETURN v_conversation_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================
 -- TRIGGERS
 -- ============================================
@@ -2813,6 +3010,22 @@ CREATE TRIGGER update_chapter_comment_threads_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.update_updated_at_column();
 
+-- Messaging triggers
+CREATE TRIGGER update_conversations_updated_at
+    BEFORE UPDATE ON public.conversations
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_messages_updated_at
+    BEFORE UPDATE ON public.messages
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_conversation_participants_updated_at
+    BEFORE UPDATE ON public.conversation_participants
+    FOR EACH ROW
+    EXECUTE FUNCTION public.update_updated_at_column();
+
 -- Push notification triggers
 CREATE TRIGGER update_push_subscriptions_updated_at
     BEFORE UPDATE ON public.push_subscriptions
@@ -2917,6 +3130,11 @@ ALTER TABLE public.chapter_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chapter_comment_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chapter_comment_threads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chapter_comment_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversation_participants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.typing_indicators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.message_reactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.notification_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
@@ -3257,6 +3475,42 @@ CREATE POLICY "Users can manage their own likes"
 DROP POLICY IF EXISTS "Users can manage their own subscriptions" ON public.chapter_comment_subscriptions;
 CREATE POLICY "Users can manage their own subscriptions"
     ON public.chapter_comment_subscriptions FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+-- Messaging Policies
+DROP POLICY IF EXISTS "Users can view conversations they participate in" ON public.conversations;
+CREATE POLICY "Users can view conversations they participate in"
+    ON public.conversations FOR SELECT
+    USING (auth.uid() = ANY(participants));
+
+DROP POLICY IF EXISTS "Users can create messages in their conversations" ON public.messages;
+CREATE POLICY "Users can create messages in their conversations"
+    ON public.messages FOR INSERT
+    WITH CHECK (
+        auth.uid() = sender_id AND
+        EXISTS (
+            SELECT 1 FROM public.conversations
+            WHERE conversations.id = messages.conversation_id
+            AND auth.uid() = ANY(conversations.participants)
+        )
+    );
+
+DROP POLICY IF EXISTS "Users can manage their own participant records" ON public.conversation_participants;
+CREATE POLICY "Users can manage their own participant records"
+    ON public.conversation_participants FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own typing indicators" ON public.typing_indicators;
+CREATE POLICY "Users can manage their own typing indicators"
+    ON public.typing_indicators FOR ALL
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Users can manage their own reactions" ON public.message_reactions;
+CREATE POLICY "Users can manage their own reactions"
+    ON public.message_reactions FOR ALL
     USING (auth.uid() = user_id)
     WITH CHECK (auth.uid() = user_id);
 
