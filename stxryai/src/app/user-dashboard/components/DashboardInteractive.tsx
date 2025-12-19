@@ -294,7 +294,7 @@ export default function DashboardInteractive() {
                   progress: 100,
                   total: 100,
                   unlocked: true,
-                })) : [],
+                })),
               }}
             />
           )}
