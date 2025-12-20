@@ -207,17 +207,10 @@ export default function DashboardInteractive() {
       return () => clearTimeout(maxTimeout);
     }
 
-<<<<<<< HEAD
     // Auth finished loading - if no user, redirect immediately
     if (!user) {
-      // Use window.location for more reliable redirect
+      // Use window.location for more reliable redirect (prevents getting stuck)
       window.location.href = '/authentication';
-=======
-    // Auth finished loading
-    if (!user) {
-      // No user, redirect to login
-      router.push('/authentication');
->>>>>>> c43a0972bc83aab51b9ccce59c60b597fe7fbf56
       return () => clearTimeout(maxTimeout);
     }
 
