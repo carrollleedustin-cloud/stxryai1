@@ -211,6 +211,10 @@ export default function DashboardInteractive() {
     if (!user) {
       // Use window.location for more reliable redirect (prevents getting stuck)
       window.location.href = '/authentication';
+    // Auth finished loading
+    if (!user) {
+      // No user, redirect to login
+      router.push('/authentication');
       return () => clearTimeout(maxTimeout);
     }
 
