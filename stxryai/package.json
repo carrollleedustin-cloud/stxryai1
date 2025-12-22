@@ -51,6 +51,8 @@
     "type-check": "tsc --noEmit",
     "prebuild": "node scripts/validate-env.js",
     "postbuild": "node scripts/post-build.js",
+    "check-env": "node scripts/check-env.js",
+    "prepare-netlify": "node scripts/prepare-netlify-env.js",
     "populate-db": "ts-node scripts/populate-stories.ts",
     "test": "jest",
     "test:watch": "jest --watch",

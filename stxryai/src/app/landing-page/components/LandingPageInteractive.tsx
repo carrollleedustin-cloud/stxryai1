@@ -16,12 +16,16 @@ const LandingPageInteractive = () => {
   const router = useRouter();
 
   const handleStartReading = () => {
-    router?.push('/authentication');
+    router?.push('/authentication?mode=signup');
+  };
+
+  const handleSignIn = () => {
+    router?.push('/authentication?mode=login');
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <HeroSection onStartReading={handleStartReading} />
+      <HeroSection onStartReading={handleStartReading} onSignIn={handleSignIn} />
       <LiveStatsSection />
       <InteractiveShowcaseSection />
       <TrendingStoriesSection />
