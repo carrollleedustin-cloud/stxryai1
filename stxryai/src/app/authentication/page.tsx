@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import AuthenticationInteractive from './components/AuthenticationInteractive';
+import ModernAuthPage from './components/ModernAuthPage';
 
 export const metadata: Metadata = {
   title: 'Authentication - Stxryai',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AuthenticationPage() {
-  return <AuthenticationInteractive />;
+  return <ModernAuthPage />;
 }
