@@ -76,7 +76,9 @@ const AuthenticationInteractive = () => {
     try {
       await signIn(data.email, data.password);
       toast.success('Login successful!');
-      router.push('/user-dashboard');
+      // Use window.location for full page reload to ensure auth state is fresh
+      // This prevents redirect loops where dashboard checks user before auth updates
+      window.location.href = '/user-dashboard';
     } catch (err: any) {
       setIsLoading(false);
       setError(err.message);
