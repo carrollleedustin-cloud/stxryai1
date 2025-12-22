@@ -1,17 +1,29 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { PrismButton } from '@/components/ui/prism/PrismButton';
-import { PrismText } from '@/components/ui/prism/PrismText';
-import { PrismPanel } from '@/components/ui/prism/PrismPanel';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { Sparkles, Send, Loader2 } from 'lucide-react';
 
 interface ChoiceSelectorProps {
   choices: any[];
   onChoiceSelect: (choice: any) => void;
+  // AI Infinite Story Mode props
+  storyMode?: 'static' | 'ai_choices' | 'ai_infinite';
+  canUseCustomChoice?: boolean;
+  onCustomChoice?: (customText: string) => Promise<void>;
+  isGeneratingAI?: boolean;
 }
 
-export default function ChoiceSelector({ choices, onChoiceSelect }: ChoiceSelectorProps) {
+export default function ChoiceSelector({ 
+  choices, 
+  onChoiceSelect,
+  storyMode = 'ai_choices',
+  canUseCustomChoice = false,
+  onCustomChoice,
+  isGeneratingAI = false,
+}: ChoiceSelectorProps) {
+  const [customInput, setCustomInput] = useState('');
+  const [isSubmittingCustom, setIsSubmittingCustom] = useState(false);
+
   // Keyboard rhythm: 1–9 selects a choice (when not typing in an input).
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -36,20 +48,51 @@ export default function ChoiceSelector({ choices, onChoiceSelect }: ChoiceSelect
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [choices, onChoiceSelect]);
 
+  const handleCustomSubmit = async () => {
+    if (!customInput.trim() || !onCustomChoice) return;
+    
+    setIsSubmittingCustom(true);
+    try {
+      await onCustomChoice(customInput.trim());
+      setCustomInput('');
+    } finally {
+      setIsSubmittingCustom(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleCustomSubmit();
+    }
+  };
+
   return (
     <PrismPanel tone="card" className="mt-6 overflow-visible border-none bg-transparent shadow-none">
       <div className="flex items-end justify-between gap-4 px-2 mb-6">
         <div>
-          <PrismText variant="h2" gradient="secondary" className="text-2xl md:text-3xl">
-            Choose Your Path
-          </PrismText>
-          <p className="mt-2 text-sm text-slate-400 font-mono">
-            Press <span className="text-cyan-400">[1–9]</span> to decide.
+          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Choose your reality
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {storyMode === 'ai_infinite' && canUseCustomChoice ? (
+              <>Pick an option or <span className="text-purple-400">write your own path</span></>
+            ) : (
+              <>Press <span className="font-mono text-foreground/80">1–9</span> to choose instantly.</>
+            )}
           </p>
         </div>
+        {storyMode === 'ai_infinite' && (
+          <div className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-cyan-500/20 px-3 py-1.5 border border-purple-500/30">
+            <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+            <span className="text-xs font-medium text-purple-300">Infinite Story</span>
+          </div>
+        )}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-1">
+      <div className="px-4 pb-5 pt-5 md:px-8 md:pb-8">
+        {/* Preset Choices */}
+        <div className="grid gap-3">
         {choices.map((choice, index) => (
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -57,7 +100,8 @@ export default function ChoiceSelector({ choices, onChoiceSelect }: ChoiceSelect
             transition={{ delay: index * 0.1 }}
             key={choice.id}
             onClick={() => onChoiceSelect(choice)}
-            className="group relative w-full overflow-hidden rounded-2xl border border-white/5 bg-slate-900/60 p-6 text-left transition-all duration-500 hover:border-violet-500/40 hover:bg-slate-900/80 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)]"
+            disabled={isGeneratingAI || isSubmittingCustom}
+            className="group relative w-full overflow-hidden rounded-2xl border border-border bg-background/35 p-5 text-left transition-smooth hover:bg-background/55 hover:shadow-elevation-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {/* Hover gradient sweep */}
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/5 to-transparent -translate-x-full group-hover:animate-shimmer transition-transform" />
@@ -87,6 +131,61 @@ export default function ChoiceSelector({ choices, onChoiceSelect }: ChoiceSelect
             </div>
           </motion.button>
         ))}
+        </div>
+
+        {/* Custom Choice Input for Premium Users in AI Infinite Mode */}
+        {storyMode === 'ai_infinite' && canUseCustomChoice && onCustomChoice && (
+          <div className="mt-6 pt-6 border-t border-border/50">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 via-pink-500/20 to-cyan-500/20 rounded-2xl blur-lg opacity-50" />
+              <div className="relative rounded-2xl border border-purple-500/30 bg-background/60 backdrop-blur-sm p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                  <span className="text-sm font-semibold text-purple-300">Write Your Own Path</span>
+                  <span className="ml-auto text-xs text-muted-foreground bg-purple-500/20 px-2 py-0.5 rounded-full">Premium</span>
+                </div>
+                <div className="flex gap-3">
+                  <textarea
+                    value={customInput}
+                    onChange={(e) => setCustomInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="What do you want to do? The AI will continue the story based on your choice..."
+                    disabled={isGeneratingAI || isSubmittingCustom}
+                    className="flex-1 min-h-[80px] px-4 py-3 bg-background/50 border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 resize-none disabled:opacity-50"
+                    maxLength={500}
+                  />
+                  <button
+                    onClick={handleCustomSubmit}
+                    disabled={!customInput.trim() || isGeneratingAI || isSubmittingCustom}
+                    className="self-end px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-medium transition-all hover:from-purple-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isSubmittingCustom || isGeneratingAI ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {customInput.length}/500 characters • Press Enter to submit
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* AI Generating Indicator */}
+        {isGeneratingAI && (
+          <div className="mt-4 flex items-center justify-center gap-3 py-4">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-purple-500/30 animate-ping" />
+              <Loader2 className="w-5 h-5 text-purple-400 animate-spin relative" />
+            </div>
+            <span className="text-sm text-purple-300 animate-pulse">
+              AI is crafting your unique story path...
+            </span>
+          </div>
+        )}
       </div>
     </PrismPanel>
   );

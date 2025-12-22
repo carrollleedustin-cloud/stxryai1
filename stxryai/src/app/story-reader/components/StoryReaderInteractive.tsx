@@ -7,6 +7,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { storyService } from '@/services/storyService';
 import { userProgressService } from '@/services/userProgressService';
 import { narrativeAIService } from '@/services/narrativeAIService';
+import { aiCompanionService } from '@/services/aiCompanionService';
+import type { StoryMode, CustomChoiceTier } from '@/services/storyCreationService';
 import { 
   ChevronLeft, 
   Bookmark, 
@@ -19,6 +21,9 @@ import {
   BookOpen,
   Sparkles,
   Share2,
+  Send,
+  Loader2,
+  Bot,
 } from 'lucide-react';
 
 /**
@@ -41,6 +46,15 @@ export default function StoryReaderInteractive() {
   const [choices, setChoices] = useState<any[]>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [aiSegments, setAiSegments] = useState<string[]>([]);
+  
+  // AI Story Mode State
+  const [storyMode, setStoryMode] = useState<StoryMode>('ai_choices');
+  const [canUseCustomChoice, setCanUseCustomChoice] = useState(false);
+  const [customChoiceInput, setCustomChoiceInput] = useState('');
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [companionMessage, setCompanionMessage] = useState<string | null>(null);
+  const [showCompanion, setShowCompanion] = useState(false);
   
   // Reader settings
   const [fontSize, setFontSize] = useState(20);
@@ -92,6 +106,26 @@ export default function StoryReaderInteractive() {
       setStory(storyData);
       setChapters(chaptersData || []);
       setIsBookmarked(bookmarked);
+      
+      // Set story mode from story data
+      const mode = storyData?.story_mode || 'ai_choices';
+      setStoryMode(mode as StoryMode);
+      
+      // Check custom choice access for infinite mode
+      if (mode === 'ai_infinite' && user) {
+        const canCustom = await aiCompanionService.canUseCustomChoices(storyId, user.id);
+        setCanUseCustomChoice(canCustom);
+        
+        // Initialize companion session
+        const session = await aiCompanionService.getOrCreateSession(storyId, user.id);
+        if (session) {
+          setSessionId(session.id);
+          if (session.companionEnabled && session.totalChoicesMade === 0) {
+            setCompanionMessage("Welcome, traveler. I shall be your guide through this tale...");
+            setShowCompanion(true);
+          }
+        }
+      }
       
       if (chaptersData && chaptersData.length > 0) {
         const currentChapter = progressData?.current_chapter_id
@@ -203,6 +237,15 @@ export default function StoryReaderInteractive() {
     }
     
     try {
+      // Record choice in companion memory for AI infinite mode
+      if (sessionId && storyMode === 'ai_infinite') {
+        await aiCompanionService.recordChoice(sessionId, currentChapter.id, {
+          type: 'preset',
+          text: choice.choice_text,
+          index: choices.indexOf(choice),
+        });
+      }
+      
       const nextChapterIndex = currentChapterIndex + 1;
       
       if (nextChapterIndex >= chapters.length) {
@@ -229,6 +272,63 @@ export default function StoryReaderInteractive() {
       contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError('Failed to save progress. Please try again.');
+    }
+  };
+  
+  // Handle custom choice submission (AI Infinite Mode - Premium Feature)
+  const handleCustomChoice = async () => {
+    if (!customChoiceInput.trim() || !user || !sessionId || isGeneratingAI) return;
+    
+    setIsGeneratingAI(true);
+    setShowCompanion(false);
+    
+    try {
+      // Record the custom choice
+      await aiCompanionService.recordChoice(sessionId, currentChapter.id, {
+        type: 'custom',
+        text: customChoiceInput,
+        customInput: customChoiceInput,
+      });
+      
+      // Get choice history for context
+      const history = await aiCompanionService.getChoiceHistory(sessionId, 5);
+      const previousChoices = history.map(h => h.choiceText);
+      
+      // Generate AI continuation
+      const result = await aiCompanionService.generateStoryFromCustomChoice(
+        story.id,
+        sessionId,
+        customChoiceInput,
+        {
+          currentChapterContent: currentChapter.content,
+          storyTitle: story.title,
+          genre: story.genre,
+          previousChoices,
+        }
+      );
+      
+      if (result) {
+        // Add AI-generated content as new segments
+        setAiSegments([result.content]);
+        
+        // Update choices with AI-generated options
+        const newChoices = result.choices.map((text, idx) => ({
+          id: `ai-${Date.now()}-${idx}`,
+          choice_text: text,
+          is_ai_generated: true,
+        }));
+        setChoices(newChoices);
+        
+        // Show companion reaction
+        setCompanionMessage("An interesting path you've chosen...");
+        setShowCompanion(true);
+      }
+      
+      setCustomChoiceInput('');
+    } catch (err) {
+      setError('Failed to generate story continuation. Please try again.');
+    } finally {
+      setIsGeneratingAI(false);
     }
   };
   
@@ -599,7 +699,135 @@ export default function StoryReaderInteractive() {
                   </motion.button>
                 ))}
               </div>
+              
+              {/* Custom Choice Input - Premium Feature for AI Infinite Mode */}
+              {storyMode === 'ai_infinite' && canUseCustomChoice && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mt-8 pt-8 border-t border-membrane/50"
+                >
+                  <div className="relative">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-spectral-violet/20 via-spectral-rose/10 to-spectral-cyan/20 rounded-2xl blur-lg opacity-50" />
+                    <div className={`relative rounded-2xl p-5 ${theme === 'light' ? 'bg-[#f0ebe0] border border-[#6b4423]/10' : 'bg-void-elevated/80 border border-spectral-violet/20'}`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <Sparkles className="w-4 h-4 text-spectral-violet" />
+                        <span className={`text-xs font-ui tracking-widest uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-spectral-violet'}`}>
+                          Write Your Own Path
+                        </span>
+                        <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-spectral-violet/20 text-spectral-violet">
+                          Premium
+                        </span>
+                      </div>
+                      
+                      <div className="flex gap-3">
+                        <textarea
+                          value={customChoiceInput}
+                          onChange={(e) => setCustomChoiceInput(e.target.value)}
+                          placeholder="What do you want to do? The AI will continue the story based on your choice..."
+                          disabled={isGeneratingAI}
+                          className={`flex-1 min-h-[100px] px-4 py-3 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-spectral-violet/50 ${
+                            theme === 'light' 
+                              ? 'bg-white/50 border border-[#6b4423]/10 text-[#2d2a24] placeholder:text-[#6b4423]/40'
+                              : 'bg-void-absolute/50 border border-membrane text-text-primary placeholder:text-text-ghost'
+                          }`}
+                          maxLength={500}
+                        />
+                        <button
+                          onClick={handleCustomChoice}
+                          disabled={!customChoiceInput.trim() || isGeneratingAI}
+                          className="self-end px-4 py-3 rounded-xl bg-gradient-to-r from-spectral-violet to-spectral-rose text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:shadow-lg hover:shadow-spectral-violet/20"
+                        >
+                          {isGeneratingAI ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Send className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                      
+                      <p className={`mt-2 text-xs ${theme === 'light' ? 'text-[#6b4423]/40' : 'text-text-ghost'}`}>
+                        {customChoiceInput.length}/500 characters
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* AI Generating Indicator */}
+                  {isGeneratingAI && (
+                    <div className="mt-6 flex items-center justify-center gap-3">
+                      <div className="relative">
+                        <div className="absolute inset-0 rounded-full bg-spectral-violet/30 animate-ping" />
+                        <Loader2 className="w-5 h-5 text-spectral-violet animate-spin relative" />
+                      </div>
+                      <span className="text-sm text-spectral-violet animate-pulse">
+                        Weaving your unique story thread...
+                      </span>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+              
+              {/* AI Companion Message */}
+              <AnimatePresence>
+                {showCompanion && companionMessage && storyMode === 'ai_infinite' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className="mt-8"
+                  >
+                    <div className={`relative rounded-2xl p-5 ${theme === 'light' ? 'bg-cyan-50/50 border border-cyan-200/50' : 'bg-spectral-cyan/5 border border-spectral-cyan/20'}`}>
+                      <div className="flex items-start gap-4">
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${theme === 'light' ? 'bg-cyan-100' : 'bg-spectral-cyan/10'}`}>
+                          <Bot className={`w-5 h-5 ${theme === 'light' ? 'text-cyan-600' : 'text-spectral-cyan'}`} />
+                        </div>
+                        <div className="flex-1">
+                          <p className={`text-xs font-ui tracking-wide uppercase mb-2 ${theme === 'light' ? 'text-cyan-600' : 'text-spectral-cyan'}`}>
+                            {story?.companion_name || 'Story Companion'}
+                          </p>
+                          <p className={`font-prose italic ${theme === 'light' ? 'text-cyan-900/80' : 'text-text-secondary'}`}>
+                            "{companionMessage}"
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setShowCompanion(false)}
+                          className={`text-xs ${theme === 'light' ? 'text-cyan-600/60 hover:text-cyan-600' : 'text-spectral-cyan/60 hover:text-spectral-cyan'}`}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.section>
+          )}
+          
+          {/* Static Story Mode - No Choices */}
+          {storyMode === 'static' && currentChapterIndex < chapters.length - 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-20 pt-12 border-t border-membrane text-center"
+            >
+              <button
+                onClick={() => {
+                  const nextIndex = currentChapterIndex + 1;
+                  setCurrentChapterIndex(nextIndex);
+                  contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`inline-flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all ${
+                  theme === 'light'
+                    ? 'bg-[#6b4423] text-white hover:bg-[#5a3a1e]'
+                    : 'bg-spectral-cyan/10 text-spectral-cyan border border-spectral-cyan/30 hover:bg-spectral-cyan/20'
+                }`}
+              >
+                <span>Continue to Next Chapter</span>
+                <ChevronLeft className="w-4 h-4 rotate-180" />
+              </button>
+            </motion.div>
           )}
         </article>
       </main>
