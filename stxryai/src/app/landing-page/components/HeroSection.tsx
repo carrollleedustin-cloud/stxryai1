@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronRight, Sparkles, LogIn } from 'lucide-react';
 
 interface HeroSectionProps {
   onStartReading: () => void;
+  onSignIn?: () => void;
 }
 
-const HeroSection = ({ onStartReading }: HeroSectionProps) => {
+const HeroSection = ({ onStartReading, onSignIn }: HeroSectionProps) => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [currentChoice, setCurrentChoice] = useState(0);
 
@@ -69,12 +70,21 @@ const HeroSection = ({ onStartReading }: HeroSectionProps) => {
               onClick={onStartReading}
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary to-secondary text-primary-foreground rounded-lg font-semibold text-lg shadow-elevation-2 hover:shadow-elevation-1 transition-smooth flex items-center justify-center space-x-2"
             >
-              <span>Start Reading Free</span>
+              <span>Get Started Free</span>
               <ArrowRight aria-hidden="true" size={20} />
             </button>
+            {onSignIn && (
+              <button
+                onClick={onSignIn}
+                className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-primary text-foreground rounded-lg font-semibold text-lg hover:bg-primary/10 transition-smooth flex items-center justify-center space-x-2"
+              >
+                <LogIn aria-hidden="true" size={20} />
+                <span>Sign In</span>
+              </button>
+            )}
             <Link
               href="/story-library"
-              className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-primary text-foreground rounded-lg font-semibold text-lg hover:bg-primary/10 transition-smooth flex items-center justify-center space-x-2"
+              className="w-full sm:w-auto px-8 py-4 bg-card border-2 border-border text-foreground rounded-lg font-semibold text-lg hover:bg-muted/50 transition-smooth flex items-center justify-center space-x-2"
             >
               <BookOpen aria-hidden="true" size={20} />
               <span>Explore Stories</span>
