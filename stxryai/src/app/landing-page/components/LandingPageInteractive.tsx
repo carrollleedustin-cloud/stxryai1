@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import UltraFuturisticHero from '@/app/components/landing/UltraFuturisticHero';
+import SentientHero from '@/app/components/landing/SentientHero';
 import LiveStatsSection from './LiveStatsSection';
 import InteractiveShowcaseSection from './InteractiveShowcaseSection';
 import TrendingStoriesSection from './TrendingStoriesSection';
@@ -24,8 +24,8 @@ const LandingPageInteractive = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <UltraFuturisticHero />
+    <div className="min-h-screen" style={{ background: 'var(--void-black)' }}>
+      <SentientHero />
       <LiveStatsSection />
       <InteractiveShowcaseSection />
       <TrendingStoriesSection />
