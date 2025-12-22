@@ -1,0 +1,458 @@
+/**
+ * SENTIENT DESIGN SYSTEM
+ * A clandestine network humming beneath a rain-soaked megacity
+ * Neon pulse, black glass, whispered data moving faster than thought
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Core Sentient Colors - Neon Pulse */
+  --neon-cyan: #00ffff;
+  --neon-magenta: #ff00ff;
+  --neon-yellow: #ffff00;
+  --neon-green: #00ff41;
+  --neon-blue: #0080ff;
+  --neon-red: #ff0040;
+  
+  /* Black Glass Depths */
+  --void-black: #000000;
+  --void-deep: #0a0a0a;
+  --void-surface: #111111;
+  --void-elevated: #1a1a1a;
+  --void-glass: rgba(17, 17, 17, 0.85);
+  --void-glass-heavy: rgba(10, 10, 10, 0.95);
+  
+  /* Neon Glows */
+  --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.1);
+  --glow-magenta: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3), 0 0 60px rgba(255, 0, 255, 0.1);
+  --glow-green: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.3), 0 0 60px rgba(0, 255, 65, 0.1);
+  --glow-blue: 0 0 20px rgba(0, 128, 255, 0.5), 0 0 40px rgba(0, 128, 255, 0.3), 0 0 60px rgba(0, 128, 255, 0.1);
+  
+  /* Rain-soaked Reflections */
+  --rain-streak: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  
+  /* Data Streams */
+  --data-stream: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 255, 0.03) 2px,
+    rgba(0, 255, 255, 0.03) 4px
+  );
+  
+  /* Typography - Breathing */
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+  
+  /* Motion - Ritualistic */
+  --motion-slow: 2s cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-medium: 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-fast: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  --motion-predatory: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Depth Layers */
+  --depth-1: 0 2px 8px rgba(0, 0, 0, 0.8);
+  --depth-2: 0 4px 16px rgba(0, 0, 0, 0.9);
+  --depth-3: 0 8px 32px rgba(0, 0, 0, 0.95);
+  --depth-neon: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(0, 255, 255, 0.2);
+}
+
+/* Base Sentient Styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--void-black);
+  color: var(--neon-cyan);
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--void-black);
+  color: var(--neon-cyan);
+  line-height: 1.6;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Rain-soaked Background Effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    var(--data-stream),
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: rain-drift 20s linear infinite;
+}
+
+@keyframes rain-drift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(100vh); }
+}
+
+/* Neon Text Glow */
+.neon-text {
+  color: var(--neon-cyan);
+  text-shadow: var(--glow-cyan);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+}
+
+.neon-text-magenta {
+  color: var(--neon-magenta);
+  text-shadow: var(--glow-magenta);
+}
+
+.neon-text-green {
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+}
+
+/* Breathing Typography */
+@keyframes breathe {
+  0%, 100% { 
+    letter-spacing: 0.05em;
+    opacity: 1;
+  }
+  50% { 
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+}
+
+.breathing-text {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* Black Glass Surfaces */
+.glass-void {
+  background: var(--void-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+  box-shadow: var(--depth-2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-void-heavy {
+  background: var(--void-glass-heavy);
+  backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  box-shadow: var(--depth-3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Predatory Hover States */
+.predatory-hover {
+  transition: all var(--motion-predatory);
+  position: relative;
+}
+
+.predatory-hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 1px solid var(--neon-cyan);
+  opacity: 0;
+  transition: opacity var(--motion-fast);
+}
+
+.predatory-hover:hover::before {
+  opacity: 1;
+  box-shadow: var(--glow-cyan);
+}
+
+.predatory-hover:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--depth-neon);
+}
+
+/* Data Stream Animation */
+@keyframes data-flow {
+  0% { 
+    background-position: 0 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% { 
+    background-position: 0 100vh;
+    opacity: 0.3;
+  }
+}
+
+.data-stream {
+  position: absolute;
+  inset: 0;
+  background: var(--data-stream);
+  background-size: 100% 200px;
+  animation: data-flow 10s linear infinite;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Neon Pulse */
+@keyframes neon-pulse {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.7;
+    filter: brightness(1.3);
+  }
+}
+
+.neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Fracture Effect */
+@keyframes fracture {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  50% {
+    clip-path: polygon(0 0, 95% 5%, 100% 100%, 5% 95%);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.fracture {
+  animation: fracture 0.5s ease-in-out;
+}
+
+/* Stalk Animation - Text follows cursor */
+.stalk-text {
+  transition: transform 0.1s ease-out;
+}
+
+/* Scroll Tension */
+.scroll-tension {
+  scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+.scroll-tension > * {
+  scroll-snap-align: start;
+}
+
+/* Nonlinear Grid */
+.nonlinear-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  perspective: 1000px;
+}
+
+.nonlinear-grid > * {
+  transform-style: preserve-3d;
+  transition: transform var(--motion-medium);
+}
+
+/* Ritualistic Motion */
+.ritual-motion {
+  animation: ritual-float 6s ease-in-out infinite;
+}
+
+@keyframes ritual-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  75% {
+    transform: translateY(10px) rotate(-1deg);
+  }
+}
+
+/* Watching Interface */
+.watching {
+  position: relative;
+}
+
+.watching::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--neon-cyan);
+  border-radius: 50%;
+  box-shadow: var(--glow-cyan);
+  animation: watching-pulse 3s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes watching-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Adaptive Response */
+.adaptive-response {
+  transition: all var(--motion-slow);
+  will-change: transform, opacity, filter;
+}
+
+/* Performance Engine Base */
+.performance-engine {
+  position: relative;
+  overflow: hidden;
+  background: var(--void-black);
+}
+
+/* Text Emergence */
+@keyframes text-emerge {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.text-emerge {
+  animation: text-emerge 0.8s var(--motion-medium) forwards;
+}
+
+/* Word Fracture */
+.word-fracture {
+  display: inline-block;
+  transition: all var(--motion-fast);
+}
+
+.word-fracture:hover {
+  transform: skew(-2deg, 0);
+  text-shadow: var(--glow-cyan);
+}
+
+/* Paragraph Stalk */
+.paragraph-stalk {
+  margin: 2rem 0;
+  transition: transform 0.2s ease-out;
+}
+
+/* Bleed Effect */
+.bleed-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.bleed-effect::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  opacity: 0.5;
+  animation: bleed-pulse 3s ease-in-out infinite;
+}
+
+@keyframes bleed-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Scroll Tension Indicator */
+.scroll-tension-indicator {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 200px;
+  background: rgba(0, 255, 255, 0.2);
+  z-index: 1000;
+}
+
+.scroll-tension-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  background: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+  transition: transform var(--motion-medium);
+}
+
+/* Utility Classes */
+.sentient-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.void-space {
+  padding: 4rem 0;
+}
+
+.neon-border {
+  border: 1px solid var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.neon-border-magenta {
+  border: 1px solid var(--neon-magenta);
+  box-shadow: var(--glow-magenta);
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cursor Trail */
+.cursor-trail {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--neon-cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  box-shadow: var(--glow-cyan);
+}
+
