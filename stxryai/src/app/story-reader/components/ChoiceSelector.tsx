@@ -68,8 +68,8 @@ export default function ChoiceSelector({
   };
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-border bg-card/50 backdrop-blur-glass shadow-elevation-2">
-      <div className="flex items-start justify-between gap-4 px-6 pt-6 md:px-10 md:pt-8">
+    <PrismPanel tone="card" className="mt-6 overflow-visible border-none bg-transparent shadow-none">
+      <div className="flex items-end justify-between gap-4 px-2 mb-6">
         <div>
           <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             Choose your reality
@@ -94,36 +94,42 @@ export default function ChoiceSelector({
         {/* Preset Choices */}
         <div className="grid gap-3">
         {choices.map((choice, index) => (
-          <button
+          <motion.button
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
             key={choice.id}
             onClick={() => onChoiceSelect(choice)}
             disabled={isGeneratingAI || isSubmittingCustom}
             className="group relative w-full overflow-hidden rounded-2xl border border-border bg-background/35 p-5 text-left transition-smooth hover:bg-background/55 hover:shadow-elevation-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-0 transition-smooth group-hover:opacity-100"
-              style={{
-                background:
-                  'linear-gradient(135deg, rgba(139, 92, 246, 0.18) 0%, rgba(236, 72, 153, 0.10) 45%, rgba(6, 182, 212, 0.12) 100%)',
-              }}
-            />
-            <div className="flex items-start gap-4">
-              <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-border bg-background/50">
-                <span className="font-mono text-sm font-semibold text-foreground/90">{index + 1}</span>
+            {/* Hover gradient sweep */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/5 to-transparent -translate-x-full group-hover:animate-shimmer transition-transform" />
+            
+            <div className="flex items-start gap-6 relative z-10">
+              <div className="flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-black/40 font-mono text-lg font-bold text-violet-400 group-hover:scale-110 group-hover:border-violet-500/50 transition-all duration-300">
+                {index + 1}
               </div>
-              <div className="flex-1">
-                <p className="relative z-10 text-base font-semibold text-foreground md:text-lg">
+              
+              <div className="flex-1 space-y-2">
+                <p className="text-lg font-medium text-slate-200 group-hover:text-white transition-colors">
                   {choice.choice_text}
                 </p>
                 {choice.consequence_text && (
-                  <p className="relative z-10 mt-2 text-sm italic text-muted-foreground opacity-80 transition-smooth group-hover:opacity-100">
-                    {choice.consequence_text}
+                  <p className="text-sm italic text-slate-500 group-hover:text-violet-300/70 transition-colors">
+                    Preview: {choice.consequence_text}
                   </p>
                 )}
               </div>
+
+              {/* Arrow Icon */}
+              <div className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex items-center h-full text-violet-400">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
             </div>
-          </button>
+          </motion.button>
         ))}
         </div>
 
@@ -181,6 +187,6 @@ export default function ChoiceSelector({
           </div>
         )}
       </div>
-    </section>
+    </PrismPanel>
   );
 }
