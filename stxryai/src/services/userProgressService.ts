@@ -8,6 +8,7 @@ import {
 } from '@/lib/supabase/typed';
 import { Story } from '@/types/database';
 import { streakService } from './streakService';
+import { withTimeout, isConnectionError, getConnectionErrorMessage } from '@/lib/supabase/timeout';
 
 export interface UserReadingProgress {
   id: string;
@@ -24,37 +25,71 @@ export interface UserReadingProgress {
 
 export const userProgressService = {
   async getUserProgress(userId: string, storyId: string) {
-    const { data, error } = await supabase
-      .from('user_progress')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('story_id', storyId)
-      .single();
+    try {
+      const queryPromise = supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('story_id', storyId)
+        .single();
 
-    if (error && error.code !== 'PGRST116') throw error;
-    return data;
+      const { data, error } = await withTimeout(
+        queryPromise,
+        { timeout: 8000, errorMessage: 'Request timed out while loading progress' }
+      );
+
+      if (error && error.code !== 'PGRST116') {
+        if (isConnectionError(error)) {
+          throw new Error(getConnectionErrorMessage(error));
+        }
+        throw error;
+      }
+      return data;
+    } catch (err: any) {
+      if (isConnectionError(err)) {
+        throw new Error(getConnectionErrorMessage(err));
+      }
+      throw err;
+    }
   },
 
   async getAllUserProgress(userId: string) {
-    const { data, error } = await supabase
-      .from('user_progress')
-      .select(
+    try {
+      const queryPromise = supabase
+        .from('user_progress')
+        .select(
+          `
+          *,
+          stories:story_id (
+            id,
+            title,
+            cover_image_url,
+            genre,
+            estimated_duration
+          )
         `
-        *,
-        stories:story_id (
-          id,
-          title,
-          cover_image_url,
-          genre,
-          estimated_duration
         )
-      `
-      )
-      .eq('user_id', userId)
-      .order('last_read_at', { ascending: false });
+        .eq('user_id', userId)
+        .order('last_read_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+      const { data, error } = await withTimeout(
+        queryPromise,
+        { timeout: 8000, errorMessage: 'Request timed out while loading progress' }
+      );
+
+      if (error) {
+        if (isConnectionError(error)) {
+          throw new Error(getConnectionErrorMessage(error));
+        }
+        throw error;
+      }
+      return data || [];
+    } catch (err: any) {
+      if (isConnectionError(err)) {
+        throw new Error(getConnectionErrorMessage(err));
+      }
+      throw err;
+    }
   },
 
   async updateProgress(
@@ -119,14 +154,31 @@ export const userProgressService = {
   },
 
   async getUserBadges(userId: string) {
-    const { data, error } = await supabase
-      .from('user_badges')
-      .select('*')
-      .eq('user_id', userId)
-      .order('earned_at', { ascending: false });
+    try {
+      const queryPromise = supabase
+        .from('user_badges')
+        .select('*')
+        .eq('user_id', userId)
+        .order('earned_at', { ascending: false });
 
-    if (error) throw error;
-    return data;
+      const { data, error } = await withTimeout(
+        queryPromise,
+        { timeout: 8000, errorMessage: 'Request timed out while loading badges' }
+      );
+
+      if (error) {
+        if (isConnectionError(error)) {
+          throw new Error(getConnectionErrorMessage(error));
+        }
+        throw error;
+      }
+      return data || [];
+    } catch (err: any) {
+      if (isConnectionError(err)) {
+        throw new Error(getConnectionErrorMessage(err));
+      }
+      throw err;
+    }
   },
 
   async awardBadge(

@@ -7,6 +7,7 @@ import {
   insertReadingListItem,
   deleteReadingListItemByKeys,
 } from '@/lib/supabase/typed';
+import { withTimeout, isConnectionError, getConnectionErrorMessage } from '@/lib/supabase/timeout';
 
 interface UserActivity {
   id: string;
@@ -50,17 +51,30 @@ export const userActivityService = {
   // Get user's personal activity feed
   async getUserActivities(userId: string, limit: number = 20): Promise<ActivityWithProfile[]> {
     try {
-      const { data, error } = await supabase
+      const queryPromise = supabase
         .from('user_activities')
         .select(`*,users!user_id (username,display_name,avatar_url)`)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (error) throw error;
+      const { data, error } = await withTimeout(
+        queryPromise,
+        { timeout: 8000, errorMessage: 'Request timed out while loading activities' }
+      );
+
+      if (error) {
+        if (isConnectionError(error)) {
+          throw new Error(getConnectionErrorMessage(error));
+        }
+        throw error;
+      }
       return data || [];
     } catch (error) {
       console.error('Error fetching user activities:', error);
+      if (isConnectionError(error)) {
+        throw new Error(getConnectionErrorMessage(error));
+      }
       throw error;
     }
   },

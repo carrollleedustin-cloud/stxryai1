@@ -130,9 +130,15 @@ export default function StoryReaderInteractive() {
 
       setError('');
     } catch (err: any) {
-      if (err?.message?.includes('Failed to fetch')) {
+      // Check for connection errors (handled by service layer now)
+      if (
+        err?.message?.includes('Cannot connect to database') ||
+        err?.message?.includes('Supabase project') ||
+        err?.message?.includes('Failed to fetch') ||
+        err?.message?.includes('timed out')
+      ) {
         setError(
-          'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
+          err.message || 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
         );
       } else {
         setError('Failed to load story. Please try again.');
