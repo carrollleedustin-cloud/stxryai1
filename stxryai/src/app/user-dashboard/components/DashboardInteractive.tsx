@@ -219,34 +219,11 @@ export default function DashboardInteractive() {
 
     // Only attempt redirect once, and only if auth has finished loading
     // Don't redirect if we're currently loading data (user might be loading)
-    // Give more time for auth state to settle after page reload
+    // Simplified redirect logic - let middleware handle it primarily
     if (!user && !authLoading && !redirectAttemptedRef.current && !loading) {
-      const redirectCheck = setTimeout(async () => {
-        // Double-check session directly to avoid closure issues
-        // This prevents race conditions where auth state updates after the timeout
-        try {
-          const session = await authService.getSession();
-          if (!session?.user && !redirectAttemptedRef.current) {
-            redirectAttemptedRef.current = true;
-            // Use window.location for more reliable redirect (prevents getting stuck)
-            window.location.href = '/authentication';
-          } else if (session?.user) {
-            // Session exists, reset redirect flag - user will be set by auth context
-            redirectAttemptedRef.current = false;
-          }
-        } catch (error) {
-          // If session check fails and we haven't redirected yet, redirect
-          if (!redirectAttemptedRef.current) {
-            redirectAttemptedRef.current = true;
-            window.location.href = '/authentication';
-          }
-        }
-      }, 2000); // 2 second delay to allow auth state to fully settle after page reload
-
-      return () => {
-        clearTimeout(maxTimeout);
-        clearTimeout(redirectCheck);
-      };
+      redirectAttemptedRef.current = true;
+      // Use router.push instead of window.location to work better with middleware
+      router.push('/authentication');
     }
 
     return () => clearTimeout(maxTimeout);
@@ -266,16 +243,10 @@ export default function DashboardInteractive() {
     return <DashboardSkeleton />;
   }
 
-  // If no user after auth loads, show redirect message
+  // If no user after auth loads, middleware should have redirected
+  // But if we're here, just show skeleton to prevent flash
   if (!user && !authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-muted-foreground mb-4">Redirecting to login...</p>
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   // If we have a user, show dashboard (even if still loading)

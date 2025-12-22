@@ -50,20 +50,21 @@ export async function middleware(request: NextRequest) {
   );
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
-  // Get auth status from cookies (session refresh happens in updateSession)
-  const hasAuthCookie = request.cookies.getAll().some(
-    (cookie) => cookie.name.includes('auth-token') || cookie.name.includes('sb-')
+  // Check for valid Supabase session by looking for Supabase cookies
+  // Supabase stores session in cookies with 'sb-' prefix
+  const hasValidSession = request.cookies.getAll().some(
+    (cookie) => cookie.name.startsWith('sb-') && cookie.value && cookie.value.length > 10
   );
 
   // Redirect unauthenticated users from protected routes
-  if (isProtectedRoute && !hasAuthCookie) {
+  if (isProtectedRoute && !hasValidSession) {
     const loginUrl = new URL('/authentication', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Redirect authenticated users from auth routes to dashboard
-  if (isAuthRoute && hasAuthCookie) {
+  if (isAuthRoute && hasValidSession) {
     const redirectTo = request.nextUrl.searchParams.get('redirect') || '/user-dashboard';
     return NextResponse.redirect(new URL(redirectTo, request.url));
   }

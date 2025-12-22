@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import LandingPageInteractive from './components/landing/LandingPageInteractive';
+import LandingPageInteractive from './landing-page/components/LandingPageInteractive';
 import { createMetadata } from './metadata';
 
 export const metadata: Metadata = createMetadata({

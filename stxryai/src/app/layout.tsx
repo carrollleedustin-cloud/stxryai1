@@ -7,6 +7,8 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import AdSenseScript from '@/components/AdSenseScript';
 import ToastProvider from '@/components/ui/Toast';
 import CommandPalette from '@/components/ui/CommandPalette';
+import MobileNavigation from '@/components/mobile/MobileNavigation';
+import CustomCursor from '@/components/futuristic/CustomCursor';
 import { defaultMetadata } from './metadata';
 
 const inter = Inter({
@@ -29,6 +31,8 @@ export default function RootLayout({
           <ThemeProvider>
             <ToastProvider />
             <CommandPalette />
+            <CustomCursor />
+            <MobileNavigation />
             {children}
           </ThemeProvider>
         </AuthProvider>
