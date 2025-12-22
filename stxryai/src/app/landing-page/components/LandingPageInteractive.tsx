@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -17,6 +17,12 @@ import {
   ChevronDown,
   Play,
   Crown,
+  Eye,
+  Heart,
+  Layers,
+  Compass,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 import VoidBackground, { AmbientOrbs } from '@/components/void/VoidBackground';
 import { TemporalHeading } from '@/components/void/VoidText';
@@ -25,7 +31,233 @@ import DimensionalCard from '@/components/void/DimensionalCard';
 import SpectralButton from '@/components/void/SpectralButton';
 import EtherealNav from '@/components/void/EtherealNav';
 import ParticleField, { AnimatedCounter, TypewriterText, FloatingElement, MagneticButton, GlitchText } from '@/components/void/ParticleField';
+import { 
+  HolographicCard, 
+  MorphingBlob, 
+  NeonText, 
+  ScrollProgressIndicator,
+  RevealOnScroll,
+  SplitTextAnimation,
+  MagneticElement,
+  FloatingItem,
+  RippleButton,
+} from '@/components/void/AdvancedEffects';
 import FooterSection from './FooterSection';
+
+/**
+ * INTERACTIVE STORY PREVIEW
+ * A live preview of the reading experience
+ */
+function StoryPreview() {
+  const [currentChoice, setCurrentChoice] = useState<number | null>(null);
+  const [storyProgress, setStoryProgress] = useState(0);
+  
+  const storyParts = [
+    {
+      text: "The ancient library stretched before you, its towering shelves disappearing into shadow. Dust motes danced in beams of pale moonlight filtering through stained glass windows. Something moved in the darkness ahead.",
+      choices: ["Investigate the movement", "Find another path"],
+    },
+    {
+      text: "You step forward, heart pounding. The movement resolves into a figure—a woman in flowing robes, her eyes glowing with an ethereal light. She speaks: 'I've been waiting for you. The book you seek... it knows your name.'",
+      choices: ["Ask about the book", "Demand answers"],
+    },
+  ];
+  
+  useEffect(() => {
+    if (currentChoice !== null) {
+      const timer = setTimeout(() => {
+        setStoryProgress(Math.min(storyProgress + 1, storyParts.length - 1));
+        setCurrentChoice(null);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentChoice, storyProgress, storyParts.length]);
+  
+  const currentPart = storyParts[storyProgress];
+  
+  return (
+    <div className="relative">
+      <HolographicCard className="p-8" glowColor="spectral-violet">
+        {/* Progress indicator */}
+        <div className="flex items-center gap-2 mb-6">
+          {storyParts.map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                i <= storyProgress ? 'bg-spectral-cyan' : 'bg-void-elevated'
+              }`}
+            />
+          ))}
+        </div>
+        
+        {/* Story text */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={storyProgress}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="font-literary text-xl text-white/90 leading-relaxed mb-8">
+              {currentPart.text}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+        
+        {/* Choice buttons */}
+        <div className="space-y-3">
+          {currentPart.choices.map((choice, i) => (
+            <motion.button
+              key={`${storyProgress}-${i}`}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              onClick={() => setCurrentChoice(i)}
+              disabled={currentChoice !== null}
+              className={`
+                w-full p-4 rounded-xl text-left font-prose transition-all duration-300
+                ${currentChoice === i 
+                  ? 'bg-spectral-cyan/20 border-spectral-cyan text-spectral-cyan' 
+                  : 'bg-void-elevated/50 border-white/10 text-white/70 hover:bg-void-elevated hover:border-spectral-cyan/30 hover:text-white'
+                }
+                border disabled:opacity-50
+              `}
+            >
+              <span className="flex items-center gap-3">
+                <span className="text-spectral-cyan">→</span>
+                {choice}
+              </span>
+            </motion.button>
+          ))}
+        </div>
+        
+        {/* Hint text */}
+        <p className="text-center text-xs text-ghost-500 mt-6">
+          Make a choice to see how the story unfolds
+        </p>
+      </HolographicCard>
+      
+      {/* Decorative glow */}
+      <div 
+        className="absolute -inset-8 -z-10 rounded-3xl blur-3xl opacity-20"
+        style={{ background: 'linear-gradient(135deg, var(--spectral-cyan), var(--spectral-violet))' }}
+      />
+    </div>
+  );
+}
+
+/**
+ * FLOATING FEATURE CARDS
+ * Animated feature cards with depth effect
+ */
+function FeatureOrbit({ features }: { features: Array<{ icon: React.ElementType; label: string }> }) {
+  return (
+    <div className="relative w-full h-80 flex items-center justify-center">
+      {features.map((feature, i) => {
+        const angle = (i / features.length) * Math.PI * 2;
+        const radius = 120;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        
+        return (
+          <motion.div
+            key={i}
+            className="absolute"
+            initial={{ x, y, opacity: 0 }}
+            animate={{ 
+              x, 
+              y, 
+              opacity: 1,
+              rotate: [0, 5, -5, 0],
+            }}
+            transition={{ 
+              duration: 8 + i,
+              repeat: Infinity,
+              repeatType: 'reverse',
+              delay: i * 0.2,
+            }}
+          >
+            <HolographicCard className="p-4 flex items-center gap-3" glowColor="spectral-cyan">
+              <feature.icon className="w-5 h-5 text-spectral-cyan" />
+              <span className="text-sm text-white font-ui">{feature.label}</span>
+            </HolographicCard>
+          </motion.div>
+        );
+      })}
+      
+      {/* Center orb */}
+      <motion.div
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 4, repeat: Infinity }}
+        className="w-24 h-24 rounded-full bg-gradient-to-br from-spectral-cyan/20 to-spectral-violet/20 flex items-center justify-center"
+      >
+        <BookOpen className="w-10 h-10 text-spectral-cyan" />
+      </motion.div>
+    </div>
+  );
+}
+
+/**
+ * STATS COUNTER WITH EFFECTS
+ */
+function EnhancedStatCard({ 
+  icon: Icon, 
+  value, 
+  label, 
+  suffix = '',
+  isInfinity = false,
+  gradient,
+  delay = 0,
+}: {
+  icon: React.ElementType;
+  value: number | string;
+  label: string;
+  suffix?: string;
+  isInfinity?: boolean;
+  gradient: string;
+  delay?: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, rotateX: -15 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay }}
+      whileHover={{ scale: 1.05, y: -5 }}
+      className="relative group"
+      style={{ transformStyle: 'preserve-3d' }}
+    >
+      <HolographicCard className="p-6 text-center" glowColor={gradient.split('-')[1]}>
+        <FloatingItem duration={4 + delay} distance={8}>
+          <div 
+            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl transition-shadow`}
+          >
+            <Icon className="w-5 h-5 text-void-black" />
+          </div>
+        </FloatingItem>
+        
+        <div className="font-display text-3xl text-white mb-2">
+          {isInfinity ? (
+            <NeonText color="spectral-cyan" intensity={0.5}>∞</NeonText>
+          ) : typeof value === 'number' ? (
+            <AnimatedCounter 
+              end={value} 
+              duration={2.5} 
+              suffix={suffix}
+              className="inline-block"
+            />
+          ) : (
+            value
+          )}
+        </div>
+        <div className="text-xs font-ui tracking-widest uppercase text-ghost-500">
+          {label}
+        </div>
+      </HolographicCard>
+    </motion.div>
+  );
+}
 
 /**
  * THE LANDING PAGE
@@ -38,57 +270,76 @@ const LandingPageInteractive = () => {
   const { user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMuted, setIsMuted] = useState(true);
   
   const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0]);
+  const heroScale = useTransform(smoothProgress, [0, 0.15], [1, 0.95]);
+  const heroY = useTransform(smoothProgress, [0, 0.15], [0, -50]);
   
   // Track mouse for parallax effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
-        x: (e.clientX / window.innerWidth - 0.5) * 20,
-        y: (e.clientY / window.innerHeight - 0.5) * 20,
+        x: (e.clientX / window.innerWidth - 0.5) * 30,
+        y: (e.clientY / window.innerHeight - 0.5) * 30,
       });
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Feature orbit items
+  const orbitFeatures = useMemo(() => [
+    { icon: Wand2, label: 'AI Writing' },
+    { icon: Sparkles, label: 'Dynamic' },
+    { icon: Layers, label: 'Branching' },
+    { icon: Users, label: 'Social' },
+    { icon: Heart, label: 'Emotional' },
+    { icon: Eye, label: 'Immersive' },
+  ], []);
+
   return (
-    <VoidBackground variant="aurora">
-      <ParticleField particleCount={60} color="rgba(0, 245, 212, 0.3)" />
+    <div className="bg-void-absolute min-h-screen">
+      <VoidBackground variant="aurora" />
+      <ParticleField particleCount={80} color="rgba(0, 245, 212, 0.25)" />
       <AmbientOrbs />
       <EtherealNav />
+      <ScrollProgressIndicator />
       
       {/* ════════════════════════════════════════════════════════════════════════
           HERO SECTION - The Awakening
           ════════════════════════════════════════════════════════════════════════ */}
       <motion.section 
         ref={heroRef}
-        style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
       >
-        {/* Background Orbs with Parallax */}
-        <motion.div
-          style={{
-            x: mousePosition.x * 2,
-            y: mousePosition.y * 2,
-          }}
-          className="absolute inset-0 pointer-events-none"
-        >
-          <div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-20"
-            style={{ background: 'var(--spectral-cyan)' }}
-          />
-          <div 
-            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-15"
-            style={{ background: 'var(--spectral-violet)' }}
-          />
-        </motion.div>
+        {/* Morphing Background Blobs */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            style={{
+              x: mousePosition.x * 2,
+              y: mousePosition.y * 2,
+            }}
+          >
+            <MorphingBlob 
+              color="spectral-cyan" 
+              size={600} 
+              className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 opacity-20" 
+            />
+            <MorphingBlob 
+              color="spectral-violet" 
+              size={500} 
+              speed={10}
+              className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 opacity-15" 
+            />
+          </motion.div>
+        </div>
         
         {/* Hero Content */}
-        <div className="relative z-10 container-void text-center">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
           {/* Eyebrow */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -96,109 +347,130 @@ const LandingPageInteractive = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mb-8"
           >
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-spectral-cyan/5 border border-spectral-cyan/20">
-              <span className="w-2 h-2 rounded-full bg-spectral-cyan animate-pulse" />
-              <span className="text-xs font-ui tracking-widest uppercase text-spectral-cyan">
-                AI-Powered Interactive Fiction
+            <MagneticElement strength={0.2}>
+              <span className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-spectral-cyan/10 to-spectral-violet/10 border border-white/10 backdrop-blur-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-spectral-cyan opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-spectral-cyan" />
+                </span>
+                <span className="text-xs font-ui tracking-widest uppercase text-white/80">
+                  Next-Gen Interactive Fiction
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-spectral-violet/20 text-[10px] font-ui tracking-wide text-spectral-violet">
+                  NEW
+                </span>
               </span>
-            </span>
+            </MagneticElement>
           </motion.div>
           
-          {/* Main Title */}
+          {/* Main Title with Split Animation */}
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display text-5xl md:text-7xl lg:text-8xl tracking-[0.15em] uppercase mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="font-display text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight mb-6"
           >
-            <span className="block text-text-primary">Infinite</span>
-            <span className="block mt-2 text-aurora bg-gradient-to-r from-spectral-cyan via-spectral-violet to-plasma-pink bg-clip-text text-transparent bg-[length:200%_auto] animate-[aurora-shift_8s_ease_infinite]">
-              Stories
+            <SplitTextAnimation 
+              text="INFINITE" 
+              className="block text-white"
+              delay={0.5}
+              stagger={0.04}
+            />
+            <span className="block mt-2">
+              <SplitTextAnimation 
+                text="STORIES" 
+                className="bg-gradient-to-r from-spectral-cyan via-spectral-violet to-spectral-rose bg-clip-text text-transparent"
+                delay={0.8}
+                stagger={0.04}
+              />
             </span>
           </motion.h1>
           
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="font-literary text-xl md:text-2xl text-text-tertiary italic max-w-2xl mx-auto mb-12"
+          {/* Subtitle with Typewriter Effect */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
+            className="font-literary text-xl md:text-2xl lg:text-3xl text-ghost-400 italic max-w-3xl mx-auto mb-12"
           >
-            Where every choice fractures reality into new narratives.
-            <br />
-            Your decisions shape worlds that never existed before.
-          </motion.p>
+            <TypewriterText 
+              text="Where every choice fractures reality into new narratives." 
+              speed={40}
+              className="block"
+            />
+          </motion.div>
           
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
+            transition={{ duration: 0.8, delay: 1.6 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <SpectralButton
-              onClick={() => router.push(user ? '/user-dashboard' : '/authentication?mode=signup')}
-              size="lg"
-              icon={<Zap className="w-5 h-5" />}
-            >
-              {user ? 'Enter Dashboard' : 'Begin Your Story'}
-            </SpectralButton>
+            <MagneticElement strength={0.15}>
+              <SpectralButton
+                onClick={() => router.push(user ? '/user-dashboard' : '/authentication?mode=signup')}
+                size="lg"
+                icon={<Zap className="w-5 h-5" />}
+                className="text-lg px-8 py-4"
+              >
+                {user ? 'Enter Dashboard' : 'Begin Your Story'}
+              </SpectralButton>
+            </MagneticElement>
             
             {!user && (
-              <SpectralButton
-                variant="ghost"
-                onClick={() => router.push('/story-library')}
-                size="lg"
-                icon={<BookOpen className="w-5 h-5" />}
-              >
-                Explore Library
-              </SpectralButton>
+              <MagneticElement strength={0.15}>
+                <SpectralButton
+                  variant="ghost"
+                  onClick={() => router.push('/story-library')}
+                  size="lg"
+                  icon={<Play className="w-5 h-5" />}
+                  className="text-lg"
+                >
+                  Watch Demo
+                </SpectralButton>
+              </MagneticElement>
             )}
           </motion.div>
           
-          {/* Stats - Animated Counters */}
+          {/* Stats Grid */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1.5 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 max-w-4xl mx-auto"
+            transition={{ duration: 1, delay: 2 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-20 max-w-4xl mx-auto"
           >
-            {[
-              { icon: Infinity, value: '∞', label: 'Story Branches', isInfinity: true },
-              { icon: Users, value: 50000, label: 'Readers', suffix: '+' },
-              { icon: Sparkles, value: 1000000, label: 'Choices Made', suffix: '+' },
-              { icon: Star, value: 4.9, label: 'Rating', prefix: '', isDecimal: true },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 1.6 + index * 0.1 }}
-                className="text-center group"
-              >
-                <FloatingElement duration={4 + index} distance={6} delay={index * 0.3}>
-                  <stat.icon className="w-6 h-6 mx-auto mb-3 text-spectral-cyan opacity-60 group-hover:opacity-100 transition-opacity" />
-                </FloatingElement>
-                <div className="font-display text-3xl tracking-wide text-text-primary mb-1">
-                  {stat.isInfinity ? (
-                    <GlitchText>∞</GlitchText>
-                  ) : stat.isDecimal ? (
-                    stat.value
-                  ) : (
-                    <AnimatedCounter 
-                      end={stat.value} 
-                      duration={2.5} 
-                      suffix={stat.suffix || ''} 
-                      prefix={stat.prefix || ''}
-                      className="inline-block"
-                    />
-                  )}
-                </div>
-                <div className="text-xs font-ui tracking-widest uppercase text-text-ghost">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
+            <EnhancedStatCard
+              icon={Infinity}
+              value="∞"
+              label="Story Branches"
+              isInfinity
+              gradient="from-spectral-cyan to-spectral-violet"
+              delay={0}
+            />
+            <EnhancedStatCard
+              icon={Users}
+              value={50000}
+              label="Readers"
+              suffix="+"
+              gradient="from-spectral-violet to-spectral-rose"
+              delay={0.1}
+            />
+            <EnhancedStatCard
+              icon={Sparkles}
+              value={1000000}
+              label="Choices Made"
+              suffix="+"
+              gradient="from-spectral-rose to-plasma-orange"
+              delay={0.2}
+            />
+            <EnhancedStatCard
+              icon={Star}
+              value="4.9"
+              label="Rating"
+              gradient="from-plasma-orange to-spectral-amber"
+              delay={0.3}
+            />
           </motion.div>
         </div>
         
@@ -207,36 +479,87 @@ const LandingPageInteractive = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 2.5 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
         >
-          <div
-            className="flex flex-col items-center gap-2 text-text-ghost animate-bounce"
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex flex-col items-center gap-2 text-ghost-500"
           >
             <span className="text-xs font-ui tracking-widest uppercase">Scroll to Explore</span>
             <ChevronDown className="w-5 h-5" />
-          </div>
+          </motion.div>
         </motion.div>
       </motion.section>
       
       {/* ════════════════════════════════════════════════════════════════════════
+          INTERACTIVE DEMO SECTION
+          ════════════════════════════════════════════════════════════════════════ */}
+      <section className="relative py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left: Content */}
+            <RevealOnScroll direction="left">
+              <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-cyan mb-4 block">
+                Live Preview
+              </span>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
+                Experience The
+                <span className="block text-spectral-violet">Magic</span>
+              </h2>
+              <p className="font-prose text-lg text-ghost-400 mb-8 leading-relaxed">
+                Try it yourself. Every choice you make creates a new branch in the story.
+                Watch as the AI weaves your decisions into a unique narrative experience.
+              </p>
+              
+              <div className="flex flex-wrap gap-4">
+                {[
+                  { icon: Wand2, label: 'AI-Generated' },
+                  { icon: Layers, label: 'Branching Paths' },
+                  { icon: Eye, label: 'Immersive' },
+                ].map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10"
+                  >
+                    <item.icon className="w-4 h-4 text-spectral-cyan" />
+                    <span className="text-sm text-white/80">{item.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </RevealOnScroll>
+            
+            {/* Right: Interactive Demo */}
+            <RevealOnScroll direction="right" delay={0.2}>
+              <StoryPreview />
+            </RevealOnScroll>
+          </div>
+        </div>
+      </section>
+      
+      {/* ════════════════════════════════════════════════════════════════════════
           FEATURES SECTION - The Powers
           ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative section-breathing">
-        <div className="container-void">
-          <TemporalReveal className="text-center mb-20">
-            <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-cyan mb-4 block">
+      <section className="relative py-32">
+        <div className="max-w-7xl mx-auto px-4">
+          <RevealOnScroll className="text-center mb-20">
+            <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-violet mb-4 block">
               Capabilities
             </span>
-            <h2 className="font-display text-4xl md:text-5xl tracking-wide text-text-primary mb-6">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
               Beyond Reading
             </h2>
-            <p className="font-prose text-lg text-text-tertiary max-w-2xl mx-auto">
+            <p className="font-prose text-lg text-ghost-400 max-w-2xl mx-auto">
               Experience stories that respond to your presence, adapt to your choices, 
               and evolve with each reading.
             </p>
-          </TemporalReveal>
+          </RevealOnScroll>
           
-          <StaggerContainer stagger={0.1} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: Wand2,
@@ -248,13 +571,13 @@ const LandingPageInteractive = () => {
                 icon: Sparkles,
                 title: 'Infinite Branches',
                 description: 'Every choice creates new story threads. No two readers experience the same journey.',
-                gradient: 'from-spectral-violet to-plasma-pink',
+                gradient: 'from-spectral-violet to-spectral-rose',
               },
               {
                 icon: BookOpen,
                 title: 'Immersive Reading',
                 description: 'A distraction-free environment designed for deep literary immersion and focus.',
-                gradient: 'from-plasma-pink to-plasma-orange',
+                gradient: 'from-spectral-rose to-plasma-orange',
               },
               {
                 icon: Users,
@@ -275,141 +598,43 @@ const LandingPageInteractive = () => {
                 gradient: 'from-spectral-emerald to-spectral-cyan',
               },
             ].map((feature, index) => (
-              <StaggerItem key={index}>
-                <DimensionalCard className="h-full p-8">
-                  <div 
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg`}
-                    style={{ boxShadow: '0 0 30px rgba(0, 245, 212, 0.2)' }}
+              <RevealOnScroll key={index} delay={0.1 * index}>
+                <HolographicCard 
+                  className="p-8 h-full" 
+                  glowColor={feature.gradient.split(' ')[1]?.replace('to-', '') || 'spectral-cyan'}
+                >
+                  <motion.div 
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg`}
                   >
-                    <feature.icon className="w-6 h-6 text-void-absolute" />
-                  </div>
-                  <h3 className="font-display text-xl tracking-wide text-text-primary mb-3">
+                    <feature.icon className="w-7 h-7 text-void-black" />
+                  </motion.div>
+                  <h3 className="font-display text-xl tracking-wide text-white mb-3">
                     {feature.title}
                   </h3>
-                  <p className="font-prose text-text-tertiary leading-relaxed">
+                  <p className="font-prose text-ghost-400 leading-relaxed">
                     {feature.description}
                   </p>
-                </DimensionalCard>
-              </StaggerItem>
+                </HolographicCard>
+              </RevealOnScroll>
             ))}
-          </StaggerContainer>
-        </div>
-      </section>
-      
-      {/* ════════════════════════════════════════════════════════════════════════
-          SHOWCASE SECTION - The Experience
-          ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative section-breathing overflow-hidden">
-        {/* Background accent */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div 
-            className="absolute top-1/2 left-0 w-full h-px"
-            style={{
-              background: 'linear-gradient(90deg, transparent, var(--spectral-cyan), transparent)',
-              opacity: 0.1,
-            }}
-          />
-        </div>
-        
-        <div className="container-void">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Content */}
-            <TemporalReveal direction="left">
-              <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-violet mb-4 block">
-                The Reader
-              </span>
-              <h2 className="font-display text-4xl md:text-5xl tracking-wide text-text-primary mb-6">
-                An Interface That <br />
-                <span className="text-aurora">Disappears</span>
-              </h2>
-              <p className="font-prose text-lg text-text-tertiary mb-8 leading-relaxed">
-                We designed every pixel to fade into the background. 
-                No distractions. No clutter. Just you and the story, 
-                existing in the same space.
-              </p>
-              
-              <ul className="space-y-4">
-                {[
-                  'Focus mode that dims surrounding text',
-                  'Customizable typography and themes',
-                  'Ambient soundscapes for immersion',
-                  'Gesture-based navigation',
-                ].map((item, index) => (
-                  <motion.li
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="flex items-center gap-3 text-text-secondary"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-spectral-cyan" />
-                    <span className="font-prose">{item}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </TemporalReveal>
-            
-            {/* Right: Visual */}
-            <TemporalReveal direction="right" delay={0.2}>
-              <div className="relative">
-                {/* Reader mockup */}
-                <div className="void-glass rounded-2xl p-8 relative">
-                  {/* Decorative top bar */}
-                  <div className="flex items-center gap-2 mb-8">
-                    <div className="w-3 h-3 rounded-full bg-spectral-rose/50" />
-                    <div className="w-3 h-3 rounded-full bg-spectral-amber/50" />
-                    <div className="w-3 h-3 rounded-full bg-spectral-emerald/50" />
-                  </div>
-                  
-                  {/* Mock content */}
-                  <div className="space-y-4">
-                    <p className="font-literary text-2xl text-text-primary leading-relaxed">
-                      <span className="text-4xl float-left mr-3 text-spectral-cyan font-light">T</span>
-                      he corridor stretched before her, shadows dancing 
-                      at the edges of the flickering torchlight...
-                    </p>
-                    <p className="font-prose text-text-tertiary leading-relaxed opacity-60">
-                      She knew that whatever choice she made next would 
-                      change everything. There was no going back.
-                    </p>
-                  </div>
-                  
-                  {/* Choice buttons mock */}
-                  <div className="mt-8 space-y-3">
-                    <div className="p-4 rounded-lg bg-void-mist border border-membrane hover:border-spectral-cyan/30 transition-colors cursor-pointer">
-                      <span className="text-text-secondary font-prose">→ Continue down the corridor</span>
-                    </div>
-                    <div className="p-4 rounded-lg bg-void-mist border border-membrane opacity-60">
-                      <span className="text-text-ghost font-prose">→ Turn back and find another way</span>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Glow effect */}
-                <div 
-                  className="absolute -inset-4 -z-10 rounded-3xl blur-3xl opacity-20"
-                  style={{ background: 'linear-gradient(135deg, var(--spectral-cyan), var(--spectral-violet))' }}
-                />
-              </div>
-            </TemporalReveal>
           </div>
         </div>
       </section>
       
       {/* ════════════════════════════════════════════════════════════════════════
-          TESTIMONIALS SECTION - Social Proof
+          TESTIMONIALS SECTION
           ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative section-breathing overflow-hidden">
-        <div className="container-void">
-          <TemporalReveal className="text-center mb-16">
+      <section className="relative py-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <RevealOnScroll className="text-center mb-16">
             <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-rose mb-4 block">
               Reader Stories
             </span>
-            <h2 className="font-display text-4xl md:text-5xl tracking-wide text-text-primary mb-6">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
               What Voyagers Say
             </h2>
-          </TemporalReveal>
+          </RevealOnScroll>
           
           <div className="grid md:grid-cols-3 gap-6">
             {[
@@ -418,44 +643,47 @@ const LandingPageInteractive = () => {
                 author: "Sarah M.",
                 role: "Fantasy Reader",
                 avatar: "S",
+                rating: 5,
               },
               {
                 quote: "The AI creates narratives so compelling, I forgot I was reading. I was living another life.",
                 author: "Marcus T.",
                 role: "Sci-Fi Enthusiast",
                 avatar: "M",
+                rating: 5,
               },
               {
                 quote: "Stxryai redefined what interactive fiction can be. The immersion is unparalleled.",
                 author: "Elena K.",
                 role: "Horror Aficionado",
                 avatar: "E",
+                rating: 5,
               },
             ].map((testimonial, index) => (
-              <TemporalReveal key={index} delay={0.1 * index}>
-                <DimensionalCard className="p-8 h-full relative">
-                  {/* Quote marks */}
-                  <div className="absolute top-4 right-4 text-6xl font-display text-spectral-cyan/10">
-                    "
+              <RevealOnScroll key={index} delay={0.15 * index}>
+                <HolographicCard className="p-8 h-full" glowColor="spectral-violet">
+                  {/* Rating stars */}
+                  <div className="flex gap-1 mb-4">
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 text-spectral-amber fill-spectral-amber" />
+                    ))}
                   </div>
                   
-                  <div className="flex flex-col h-full">
-                    <p className="font-literary text-lg text-text-secondary italic mb-6 leading-relaxed flex-grow">
-                      "{testimonial.quote}"
-                    </p>
-                    
-                    <div className="flex items-center gap-4 pt-4 border-t border-membrane">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center text-void-absolute font-display text-sm">
-                        {testimonial.avatar}
-                      </div>
-                      <div>
-                        <div className="font-ui text-sm text-text-primary">{testimonial.author}</div>
-                        <div className="text-xs text-text-ghost">{testimonial.role}</div>
-                      </div>
+                  <p className="font-literary text-lg text-ghost-300 italic mb-6 leading-relaxed">
+                    "{testimonial.quote}"
+                  </p>
+                  
+                  <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center text-void-black font-display text-lg">
+                      {testimonial.avatar}
+                    </div>
+                    <div>
+                      <div className="font-ui text-sm text-white">{testimonial.author}</div>
+                      <div className="text-xs text-ghost-500">{testimonial.role}</div>
                     </div>
                   </div>
-                </DimensionalCard>
-              </TemporalReveal>
+                </HolographicCard>
+              </RevealOnScroll>
             ))}
           </div>
           
@@ -467,7 +695,7 @@ const LandingPageInteractive = () => {
             className="flex flex-wrap items-center justify-center gap-8 mt-16"
           >
             {['100K+ Downloads', '4.9 App Store', 'Featured in TechCrunch', 'Top 10 Reading Apps'].map((badge, i) => (
-              <div key={i} className="flex items-center gap-2 text-text-ghost text-sm font-ui">
+              <div key={i} className="flex items-center gap-2 text-ghost-500 text-sm font-ui">
                 <Star className="w-4 h-4 text-spectral-amber" fill="currentColor" />
                 <span>{badge}</span>
               </div>
@@ -479,41 +707,41 @@ const LandingPageInteractive = () => {
       {/* ════════════════════════════════════════════════════════════════════════
           PRICING SECTION
           ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative section-breathing">
-        <div className="container-void">
-          <TemporalReveal className="text-center mb-16">
+      <section className="relative py-32">
+        <div className="max-w-5xl mx-auto px-4">
+          <RevealOnScroll className="text-center mb-16">
             <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-amber mb-4 block">
               Membership
             </span>
-            <h2 className="font-display text-4xl md:text-5xl tracking-wide text-text-primary mb-6">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
               Choose Your Path
             </h2>
-          </TemporalReveal>
+          </RevealOnScroll>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8">
             {/* Free Tier */}
-            <TemporalReveal delay={0.1}>
-              <DimensionalCard className="p-8 h-full">
+            <RevealOnScroll delay={0.1}>
+              <HolographicCard className="p-10 h-full" glowColor="spectral-emerald">
                 <div className="text-center mb-8">
-                  <h3 className="font-display text-2xl tracking-wide text-text-primary mb-2">
+                  <h3 className="font-display text-2xl tracking-wide text-white mb-3">
                     Explorer
                   </h3>
-                  <div className="font-display text-5xl text-text-primary mb-2">
+                  <div className="font-display text-6xl text-white mb-2">
                     Free
                   </div>
-                  <p className="text-sm text-text-tertiary">Forever</p>
+                  <p className="text-sm text-ghost-400">Forever</p>
                 </div>
                 
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-4 mb-10">
                   {[
                     'Access to curated stories',
                     '10 choices per day',
                     'Basic reading themes',
                     'Community access',
                   ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-text-secondary">
-                      <span className="w-1.5 h-1.5 rounded-full bg-spectral-emerald" />
-                      <span className="font-prose text-sm">{feature}</span>
+                    <li key={i} className="flex items-center gap-3 text-ghost-300">
+                      <span className="w-2 h-2 rounded-full bg-spectral-emerald" />
+                      <span className="font-prose">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -521,54 +749,53 @@ const LandingPageInteractive = () => {
                 <SpectralButton variant="secondary" fullWidth href="/authentication?mode=signup">
                   Start Free
                 </SpectralButton>
-              </DimensionalCard>
-            </TemporalReveal>
+              </HolographicCard>
+            </RevealOnScroll>
             
             {/* Premium Tier */}
-            <TemporalReveal delay={0.2}>
-              <DimensionalCard 
-                className="p-8 h-full relative"
-                glowColor="rgba(123, 44, 191, 0.2)"
-              >
+            <RevealOnScroll delay={0.2}>
+              <div className="relative">
                 {/* Premium badge */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="badge-plasma">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                  <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-spectral-violet to-spectral-rose text-white text-xs font-ui tracking-wide shadow-lg">
                     <Sparkles className="w-3 h-3" />
                     Recommended
                   </span>
                 </div>
                 
-                <div className="text-center mb-8">
-                  <h3 className="font-display text-2xl tracking-wide text-text-primary mb-2">
-                    Voyager
-                  </h3>
-                  <div className="font-display text-5xl text-spectral-violet mb-2">
-                    $9<span className="text-2xl text-text-tertiary">/mo</span>
+                <HolographicCard className="p-10 h-full" glowColor="spectral-violet">
+                  <div className="text-center mb-8">
+                    <h3 className="font-display text-2xl tracking-wide text-white mb-3">
+                      Voyager
+                    </h3>
+                    <div className="font-display text-6xl text-spectral-violet mb-2">
+                      $9<span className="text-2xl text-ghost-400">/mo</span>
+                    </div>
+                    <p className="text-sm text-ghost-400">Billed monthly</p>
                   </div>
-                  <p className="text-sm text-text-tertiary">Billed monthly</p>
-                </div>
-                
-                <ul className="space-y-4 mb-8">
-                  {[
-                    'Unlimited story access',
-                    'Unlimited choices',
-                    'Premium reading themes',
-                    'AI story generation',
-                    'Exclusive content',
-                    'Priority support',
-                  ].map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-text-secondary">
-                      <span className="w-1.5 h-1.5 rounded-full bg-spectral-violet" />
-                      <span className="font-prose text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                
-                <SpectralButton variant="plasma" fullWidth href="/pricing">
-                  Upgrade Now
-                </SpectralButton>
-              </DimensionalCard>
-            </TemporalReveal>
+                  
+                  <ul className="space-y-4 mb-10">
+                    {[
+                      'Unlimited story access',
+                      'Unlimited choices',
+                      'Premium reading themes',
+                      'AI story generation',
+                      'Exclusive content',
+                      'Priority support',
+                    ].map((feature, i) => (
+                      <li key={i} className="flex items-center gap-3 text-ghost-300">
+                        <span className="w-2 h-2 rounded-full bg-spectral-violet" />
+                        <span className="font-prose">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <SpectralButton variant="plasma" fullWidth href="/pricing">
+                    Upgrade Now
+                  </SpectralButton>
+                </HolographicCard>
+              </div>
+            </RevealOnScroll>
           </div>
         </div>
       </section>
@@ -576,55 +803,48 @@ const LandingPageInteractive = () => {
       {/* ════════════════════════════════════════════════════════════════════════
           CTA SECTION - The Invitation
           ════════════════════════════════════════════════════════════════════════ */}
-      <section className="relative section-breathing overflow-hidden">
-        {/* Background effects - using CSS animations */}
+      <section className="relative py-40 overflow-hidden">
+        {/* Background effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px]"
-            style={{ 
-              background: 'var(--spectral-cyan)',
-              animation: 'ambientOrb1 8s ease-in-out infinite',
-              opacity: 0.15,
-            }}
-          />
-          <div
-            className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px]"
-            style={{ 
-              background: 'var(--spectral-violet)',
-              animation: 'ambientOrb2 10s ease-in-out infinite 2s',
-              opacity: 0.12,
-            }}
+          <MorphingBlob 
+            color="spectral-cyan" 
+            size={800} 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10" 
           />
         </div>
         
-        <div className="container-void relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <TemporalReveal>
-              <h2 className="font-display text-4xl md:text-6xl tracking-wide text-text-primary mb-8">
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
+          <RevealOnScroll className="text-center">
+            <motion.div
+              animate={{ scale: [1, 1.02, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
+              <h2 className="font-display text-5xl md:text-6xl lg:text-7xl tracking-tight text-white mb-8">
                 Your Story Awaits
               </h2>
-              <p className="font-prose text-xl text-text-tertiary mb-12 leading-relaxed">
-                Join thousands of readers who have discovered a new way to experience fiction. 
-                Every story is a universe. Every choice is a new beginning.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <SpectralButton
-                  size="lg"
-                  icon={<ArrowRight className="w-5 h-5" />}
-                  iconPosition="right"
-                  href={user ? '/user-dashboard' : '/authentication?mode=signup'}
-                >
-                  {user ? 'Continue Reading' : 'Create Free Account'}
-                </SpectralButton>
-              </div>
-            </TemporalReveal>
-          </div>
+            </motion.div>
+            <p className="font-prose text-xl text-ghost-400 mb-12 leading-relaxed max-w-2xl mx-auto">
+              Join thousands of readers who have discovered a new way to experience fiction. 
+              Every story is a universe. Every choice is a new beginning.
+            </p>
+            
+            <MagneticElement strength={0.15}>
+              <SpectralButton
+                size="lg"
+                icon={<ArrowRight className="w-5 h-5" />}
+                iconPosition="right"
+                href={user ? '/user-dashboard' : '/authentication?mode=signup'}
+                className="text-lg px-10 py-5"
+              >
+                {user ? 'Continue Reading' : 'Create Free Account'}
+              </SpectralButton>
+            </MagneticElement>
+          </RevealOnScroll>
         </div>
       </section>
       
       <FooterSection />
-    </VoidBackground>
+    </div>
   );
 };
 
