@@ -40,6 +40,10 @@ export default function StoryCreationStudioPage() {
     coverImageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570',
     isPremium: false,
     estimatedDuration: 30,
+    // AI Autonomy Settings
+    storyMode: 'ai_choices',
+    customChoiceTier: 'none',
+    enableAICompanion: false,
   });
 
   // Chapters and choices state
@@ -248,11 +252,51 @@ export default function StoryCreationStudioPage() {
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Writer's Desk Promo Banner */}
+        <div className="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 p-1">
+          <div className="relative rounded-xl bg-gray-900/95 p-6 md:p-8">
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-indigo-500/10 rounded-xl" />
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-start gap-4">
+                <div className="hidden md:flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
+                  <span className="text-2xl">📚</span>
+                </div>
+                <div>
+                  <h2 className="text-lg md:text-xl font-bold text-white mb-1">
+                    New: Writer's Desk for Series Authors
+                  </h2>
+                  <p className="text-sm text-gray-300 max-w-xl">
+                    Building a multi-book series? The Writer's Desk offers persistent character management, 
+                    world-building archives, canon enforcement, and AI that knows your entire story universe.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push('/writers-desk')}
+                className="flex-shrink-0 px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold rounded-xl 
+                         hover:from-violet-400 hover:to-purple-500 transition-all duration-300 shadow-lg hover:shadow-xl
+                         hover:scale-105 transform flex items-center gap-2"
+              >
+                <span>Open Writer's Desk</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Studio Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Story Creation Studio</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900">Story Creation Studio</h1>
+            <span className="px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
+              Standalone Stories
+            </span>
+          </div>
           <p className="text-gray-600">
-            Create interactive fiction with AI assistance and branching narratives
+            Create interactive fiction with AI assistance and branching narratives. 
+            For multi-book series with persistent characters, use the Writer's Desk.
           </p>
         </div>
 
@@ -422,6 +466,145 @@ export default function StoryCreationStudioPage() {
                     placeholder="https://example.com/image.jpg"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                </div>
+
+                {/* AI Autonomy Settings */}
+                <div className="border-t border-gray-200 pt-6 mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span>✨</span> Story Mode & AI Settings
+                  </h3>
+                  
+                  {/* Story Mode Selection */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      How should your story work?
+                    </label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {[
+                        { 
+                          value: 'static', 
+                          label: 'Static Story', 
+                          desc: 'You write everything. Readers follow your exact narrative.',
+                          icon: '📖'
+                        },
+                        { 
+                          value: 'ai_choices', 
+                          label: 'AI Choices', 
+                          desc: 'AI generates choices at chapter ends. Readers pick from options.',
+                          icon: '🔀'
+                        },
+                        { 
+                          value: 'ai_infinite', 
+                          label: 'Infinite AI Story', 
+                          desc: 'Full AI branching with companion memory. Premium users can write custom choices.',
+                          icon: '♾️'
+                        },
+                      ].map((mode) => (
+                        <label
+                          key={mode.value}
+                          className={`flex items-start gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                            metadata.storyMode === mode.value
+                              ? 'border-blue-500 bg-blue-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="storyMode"
+                            value={mode.value}
+                            checked={metadata.storyMode === mode.value}
+                            onChange={(e) => setMetadata({ ...metadata, storyMode: e.target.value as any })}
+                            className="mt-1"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span>{mode.icon}</span>
+                              <span className="font-medium text-gray-900">{mode.label}</span>
+                            </div>
+                            <p className="text-sm text-gray-500 mt-1">{mode.desc}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Custom Choice Tier (only for ai_infinite mode) */}
+                  {metadata.storyMode === 'ai_infinite' && (
+                    <div className="mb-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-100">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Who can write custom choices?
+                      </label>
+                      <select
+                        value={metadata.customChoiceTier}
+                        onChange={(e) => setMetadata({ ...metadata, customChoiceTier: e.target.value as any })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        <option value="none">No one (preset choices only)</option>
+                        <option value="premium">Premium subscribers</option>
+                        <option value="pro">Pro subscribers</option>
+                        <option value="all">Everyone</option>
+                      </select>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Custom choices let readers type their own path instead of picking from options.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* AI Companion (only for ai_infinite mode) */}
+                  {metadata.storyMode === 'ai_infinite' && (
+                    <div className="p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl border border-cyan-100">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <label className="font-medium text-gray-900 flex items-center gap-2">
+                            <span>🤖</span> AI Story Companion
+                          </label>
+                          <p className="text-xs text-gray-500">
+                            A character that remembers reader choices and grows with the story
+                          </p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={metadata.enableAICompanion}
+                          onChange={(e) => setMetadata({ ...metadata, enableAICompanion: e.target.checked })}
+                          className="h-5 w-5 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
+                        />
+                      </div>
+                      
+                      {metadata.enableAICompanion && (
+                        <div className="space-y-3 pt-3 border-t border-cyan-200">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Companion Name
+                            </label>
+                            <input
+                              type="text"
+                              value={metadata.companionName || ''}
+                              onChange={(e) => setMetadata({ ...metadata, companionName: e.target.value })}
+                              placeholder="e.g., Luna, Sage, Echo..."
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Personality Type
+                            </label>
+                            <select
+                              value={metadata.companionPersonality || ''}
+                              onChange={(e) => setMetadata({ ...metadata, companionPersonality: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                            >
+                              <option value="">Select personality...</option>
+                              <option value="guide">Wise Guide - Offers hints and wisdom</option>
+                              <option value="friend">Friendly Companion - Supportive and encouraging</option>
+                              <option value="mentor">Mentor - Challenges reader to grow</option>
+                              <option value="trickster">Trickster - Playful and unpredictable</option>
+                              <option value="mystery">Mysterious - Cryptic and enigmatic</option>
+                            </select>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <button

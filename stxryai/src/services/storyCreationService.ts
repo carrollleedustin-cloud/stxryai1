@@ -25,6 +25,20 @@ export interface ChoiceNode {
   choiceOrder: number;
 }
 
+/**
+ * Story Mode Types:
+ * - 'static': Author writes everything, no AI generation (linear reading experience)
+ * - 'ai_choices': AI generates choices at chapter ends, readers pick from options
+ * - 'ai_infinite': Full AI-powered infinite branching with companion memory
+ */
+export type StoryMode = 'static' | 'ai_choices' | 'ai_infinite';
+
+/**
+ * Custom Choice Access Tier:
+ * Determines which subscription tier can write custom choices (type their own path)
+ */
+export type CustomChoiceTier = 'none' | 'premium' | 'pro' | 'all';
+
 export interface StoryMetadata {
   id?: string;
   title: string;
@@ -42,6 +56,15 @@ export interface StoryMetadata {
   coverImageUrl: string;
   isPremium: boolean;
   estimatedDuration?: number;
+  
+  // AI Autonomy Settings
+  storyMode: StoryMode;
+  customChoiceTier: CustomChoiceTier;
+  
+  // AI Companion Settings (for ai_infinite mode)
+  enableAICompanion: boolean;
+  companionPersonality?: string;
+  companionName?: string;
 }
 
 // Create a new story draft
@@ -57,6 +80,12 @@ export const createStoryDraft = async (metadata: StoryMetadata, authorId: string
       estimated_duration: metadata.estimatedDuration,
       user_id: authorId,
       is_published: false,
+      // AI Autonomy fields
+      story_mode: metadata.storyMode || 'ai_choices',
+      custom_choice_tier: metadata.customChoiceTier || 'none',
+      enable_ai_companion: metadata.enableAICompanion || false,
+      companion_personality: metadata.companionPersonality,
+      companion_name: metadata.companionName,
     });
 
     if (error) throw error;
@@ -171,8 +200,19 @@ export const updateStoryMetadata = async (storyId: string, metadata: Partial<Sto
       cover_image: metadata.coverImageUrl,
       is_premium: metadata.isPremium,
       estimated_duration: metadata.estimatedDuration,
+      // AI Autonomy fields
+      story_mode: metadata.storyMode,
+      custom_choice_tier: metadata.customChoiceTier,
+      enable_ai_companion: metadata.enableAICompanion,
+      companion_personality: metadata.companionPersonality,
+      companion_name: metadata.companionName,
       updated_at: new Date().toISOString(),
     } as any;
+
+    // Remove undefined values
+    Object.keys(patch).forEach(key => {
+      if (patch[key] === undefined) delete patch[key];
+    });
 
     const { data, error } = await updateStoryById(storyId, patch);
 
