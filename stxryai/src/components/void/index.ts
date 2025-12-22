@@ -49,3 +49,7 @@ export {
   RippleButton,
 } from './AdvancedEffects';
 
+// Global Components
+export { default as GlobalAnnouncementBanner } from './GlobalAnnouncementBanner';
+export { default as NotificationBell } from './NotificationBell';
+

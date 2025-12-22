@@ -51,6 +51,12 @@ export interface LeaderboardEntry {
   totalXp: number;
   achievementCount: number;
   rank: number;
+  // Weekly leaderboard fields
+  storiesRead?: number;
+  xpGained?: number;
+  // Streaks leaderboard fields
+  currentStreak?: number;
+  longestStreak?: number;
 }
 
 export interface DailyChallenge {

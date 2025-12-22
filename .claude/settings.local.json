@@ -41,7 +41,9 @@
       "Bash(\"C:\\Program Files\\nvm\\nvm.exe\" version)",
       "Bash(\"C:\\Users\\dusti\\AppData\\Roaming\\nvm\\nvm.exe\" version)",
       "Bash(/c/Users/dusti/AppData/Local/nvm/nvm.exe list:*)",
-      "Bash(/c/Users/dusti/AppData/Local/nvm/nvm.exe install:*)"
+      "Bash(/c/Users/dusti/AppData/Local/nvm/nvm.exe install:*)",
+      "Bash(git -C /l/stxryai log --oneline -20)",
+      "Bash(git -C /l/stxryai diff main..HEAD --name-only)"
     ],
     "deny": [],
     "ask": []

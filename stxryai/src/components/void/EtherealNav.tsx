@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { announcementService, Announcement } from '@/services/announcementService';
 
 /**
  * ETHEREAL NAV
@@ -17,6 +18,10 @@ export default function EtherealNav() {
   const { user, profile, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Announcement[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notificationRef = useRef<HTMLDivElement>(null);
   
   const { scrollY } = useScroll();
   const navBackground = useTransform(
@@ -33,10 +38,67 @@ export default function EtherealNav() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
+  // Fetch notifications/announcements
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (user) {
+        const announcements = await announcementService.getForUser(user.id, profile?.subscription_tier || 'free');
+        setNotifications(announcements);
+        const unread = await announcementService.getUnreadCount(user.id, profile?.subscription_tier || 'free');
+        setUnreadCount(unread);
+      }
+    };
+    fetchNotifications();
+  }, [user, profile]);
+
+  // Close notifications on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleSignOut = async () => {
     await signOut();
     router.push('/');
+  };
+
+  const handleMarkAsRead = async (id: string) => {
+    if (user) {
+      await announcementService.markAsRead(id, user.id);
+      setUnreadCount(prev => Math.max(0, prev - 1));
+      setNotifications(prev => prev.map(n => 
+        n.id === id ? { ...n, readBy: [...n.readBy, user.id] } : n
+      ));
+    }
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'feature': return '✨';
+      case 'maintenance': return '🔧';
+      case 'warning': return '⚠️';
+      case 'urgent': return '🚨';
+      case 'success': return '✅';
+      default: return 'ℹ️';
+    }
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
   };
   
   const navLinks = [
@@ -138,6 +200,134 @@ export default function EtherealNav() {
             <div className="flex items-center gap-4">
               {user ? (
                 <>
+                  {/* Messages Link */}
+                  <Link
+                    href="/messages"
+                    className="relative p-2 rounded-lg hover:bg-void-mist transition-colors"
+                    title="Messages"
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-tertiary hover:text-spectral-cyan transition-colors">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    {/* Unread indicator would go here */}
+                  </Link>
+
+                  {/* Notifications */}
+                  <div className="relative" ref={notificationRef}>
+                    <button
+                      onClick={() => setShowNotifications(!showNotifications)}
+                      className="relative p-2 rounded-lg hover:bg-void-mist transition-colors"
+                      title="Notifications"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-tertiary hover:text-spectral-cyan transition-colors">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-spectral-rose rounded-full text-xs flex items-center justify-center text-void-absolute font-bold">
+                          {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Notifications Dropdown */}
+                    <AnimatePresence>
+                      {showNotifications && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 top-full mt-2 w-96 max-h-[70vh] overflow-hidden rounded-xl z-50"
+                          style={{ 
+                            background: 'rgba(10, 10, 14, 0.98)',
+                            backdropFilter: 'blur(20px)',
+                            border: '1px solid rgba(0, 245, 212, 0.1)',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+                          }}
+                        >
+                          <div className="p-4 border-b border-membrane flex items-center justify-between">
+                            <h3 className="font-semibold text-text-primary">Notifications</h3>
+                            {unreadCount > 0 && (
+                              <span className="text-xs text-spectral-cyan">{unreadCount} unread</span>
+                            )}
+                          </div>
+                          
+                          <div className="overflow-y-auto max-h-[400px]">
+                            {notifications.length === 0 ? (
+                              <div className="p-8 text-center">
+                                <div className="text-4xl mb-3">🔔</div>
+                                <p className="text-text-secondary text-sm">No notifications yet</p>
+                              </div>
+                            ) : (
+                              notifications.map((notification) => {
+                                const isRead = notification.readBy.includes(user?.id || '');
+                                return (
+                                  <motion.div
+                                    key={notification.id}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    onClick={() => {
+                                      if (!isRead) handleMarkAsRead(notification.id);
+                                      if (notification.metadata?.linkUrl) {
+                                        router.push(notification.metadata.linkUrl);
+                                        setShowNotifications(false);
+                                      }
+                                    }}
+                                    className={`
+                                      p-4 border-b border-membrane/50 cursor-pointer transition-colors
+                                      ${isRead ? 'bg-transparent' : 'bg-spectral-cyan/5'}
+                                      hover:bg-void-mist
+                                    `}
+                                  >
+                                    <div className="flex gap-3">
+                                      <span className="text-xl flex-shrink-0">
+                                        {getNotificationIcon(notification.type)}
+                                      </span>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between gap-2">
+                                          <h4 className={`text-sm font-medium ${isRead ? 'text-text-secondary' : 'text-text-primary'}`}>
+                                            {notification.title}
+                                          </h4>
+                                          {!isRead && (
+                                            <span className="w-2 h-2 rounded-full bg-spectral-cyan flex-shrink-0 mt-1" />
+                                          )}
+                                        </div>
+                                        <p className="text-xs text-text-tertiary mt-1 line-clamp-2">
+                                          {notification.content}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          <span className="text-xs text-text-tertiary">
+                                            {formatTimeAgo(notification.createdAt)}
+                                          </span>
+                                          {notification.metadata?.linkUrl && (
+                                            <span className="text-xs text-spectral-cyan">
+                                              {notification.metadata.linkText || 'View'}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                );
+                              })
+                            )}
+                          </div>
+
+                          <div className="p-3 border-t border-membrane">
+                            <Link
+                              href="/notifications"
+                              onClick={() => setShowNotifications(false)}
+                              className="block w-full text-center py-2 text-sm text-spectral-cyan hover:text-spectral-violet transition-colors"
+                            >
+                              View All Notifications
+                            </Link>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   <Link
                     href="/user-dashboard"
                     className="hidden md:block font-ui text-xs font-medium tracking-widest uppercase text-text-tertiary hover:text-spectral-cyan transition-colors"
@@ -164,6 +354,18 @@ export default function EtherealNav() {
                           className="block px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-void-mist transition-colors"
                         >
                           Profile
+                        </Link>
+                        <Link
+                          href="/messages"
+                          className="block px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-void-mist transition-colors"
+                        >
+                          Messages
+                        </Link>
+                        <Link
+                          href="/achievements"
+                          className="block px-3 py-2 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-void-mist transition-colors"
+                        >
+                          Achievements
                         </Link>
                         <Link
                           href="/settings"
@@ -288,11 +490,25 @@ export default function EtherealNav() {
                 {user ? (
                   <div className="space-y-4">
                     <Link
+                      href="/messages"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3 py-2 text-lg text-text-secondary"
+                    >
+                      <span>💬</span> Messages
+                    </Link>
+                    <Link
                       href="/user-dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block py-2 text-lg text-text-secondary"
                     >
                       Dashboard
+                    </Link>
+                    <Link
+                      href="/achievements"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block py-2 text-lg text-text-secondary"
+                    >
+                      Achievements
                     </Link>
                     <button
                       onClick={() => {
@@ -322,4 +538,3 @@ export default function EtherealNav() {
     </>
   );
 }
-

@@ -7,6 +7,7 @@ import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCo
 import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import { getPlatformMetrics, getUserAnalytics, getStoryAnalytics, getRecentActivities, PlatformMetrics, updateStoryStatus, updateUserSubscription } from '@/services/adminService';
+import { announcementService, Announcement, CreateAnnouncementDTO } from '@/services/announcementService';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -49,7 +50,23 @@ const MOCK_REPORTS = [
   { id: '3', type: 'bug', title: 'Story progress not saving', reporter: 'techie789', status: 'resolved', created_at: '2024-12-18' },
 ];
 
-type AdminTab = 'overview' | 'users' | 'stories' | 'reports' | 'settings';
+type AdminTab = 'overview' | 'users' | 'stories' | 'announcements' | 'reports' | 'settings';
+
+const ANNOUNCEMENT_TYPES = [
+  { value: 'info', label: 'Information', icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' },
+  { value: 'feature', label: 'New Feature', icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' },
+  { value: 'success', label: 'Success', icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' },
+  { value: 'warning', label: 'Warning', icon: 'ExclamationTriangleIcon', color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
+  { value: 'urgent', label: 'Urgent', icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' },
+  { value: 'maintenance', label: 'Maintenance', icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' },
+];
+
+const TARGET_AUDIENCES = [
+  { value: 'all', label: 'All Users' },
+  { value: 'premium', label: 'Premium Members' },
+  { value: 'vip', label: 'VIP Members' },
+  { value: 'new_users', label: 'New Users (< 7 days)' },
+];
 
 const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
@@ -57,24 +74,43 @@ const AdminPage: React.FC = () => {
   const [users, setUsers] = useState(MOCK_USERS);
   const [stories, setStories] = useState(MOCK_STORIES);
   const [activities, setActivities] = useState(MOCK_ACTIVITIES);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
   const { user } = useAuth();
   const router = useRouter();
+
+  // Announcement form state
+  const [announcementForm, setAnnouncementForm] = useState<CreateAnnouncementDTO>({
+    title: '',
+    content: '',
+    type: 'info',
+    targetAudience: 'all',
+    isPinned: false,
+    expiresAt: '',
+    metadata: {
+      linkUrl: '',
+      linkText: '',
+    },
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [metricsData, usersData, storiesData, activitiesData] = await Promise.all([
+        const [metricsData, usersData, storiesData, activitiesData, announcementsData] = await Promise.all([
           getPlatformMetrics(),
           getUserAnalytics(10),
           getStoryAnalytics(10),
           getRecentActivities(20),
+          announcementService.getAll(),
         ]);
         if (metricsData) setMetrics(metricsData);
         if (usersData && usersData.length > 0) setUsers(usersData);
         if (storiesData && storiesData.length > 0) setStories(storiesData);
         if (activitiesData && activitiesData.length > 0) setActivities(activitiesData as any);
+        if (announcementsData) setAnnouncements(announcementsData);
       } catch (error) {
         console.error('Error fetching admin data:', error);
       }
@@ -88,6 +124,7 @@ const AdminPage: React.FC = () => {
     { id: 'overview' as const, label: 'Overview', icon: 'ChartBarIcon' },
     { id: 'users' as const, label: 'Users', icon: 'UsersIcon' },
     { id: 'stories' as const, label: 'Stories', icon: 'BookOpenIcon' },
+    { id: 'announcements' as const, label: 'Announcements', icon: 'MegaphoneIcon' },
     { id: 'reports' as const, label: 'Reports', icon: 'FlagIcon' },
     { id: 'settings' as const, label: 'Settings', icon: 'CogIcon' },
   ];
@@ -141,6 +178,91 @@ const AdminPage: React.FC = () => {
     return `${days}d ago`;
   };
 
+  const getAnnouncementTypeInfo = (type: string) => {
+    return ANNOUNCEMENT_TYPES.find(t => t.value === type) || ANNOUNCEMENT_TYPES[0];
+  };
+
+  const handleCreateAnnouncement = async () => {
+    if (!announcementForm.title || !announcementForm.content) return;
+
+    const result = await announcementService.create(announcementForm, user?.id || 'admin');
+    if (result) {
+      setAnnouncements(prev => [result, ...prev]);
+      setShowAnnouncementModal(false);
+      resetAnnouncementForm();
+    }
+  };
+
+  const handleUpdateAnnouncement = async () => {
+    if (!editingAnnouncement) return;
+
+    const result = await announcementService.update(editingAnnouncement.id, {
+      title: announcementForm.title,
+      content: announcementForm.content,
+      type: announcementForm.type,
+      targetAudience: announcementForm.targetAudience,
+      isPinned: announcementForm.isPinned,
+      expiresAt: announcementForm.expiresAt,
+      metadata: announcementForm.metadata,
+    });
+
+    if (result) {
+      setAnnouncements(prev => prev.map(a => a.id === result.id ? result : a));
+      setShowAnnouncementModal(false);
+      setEditingAnnouncement(null);
+      resetAnnouncementForm();
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: string) => {
+    if (confirm('Are you sure you want to delete this announcement?')) {
+      const success = await announcementService.delete(id);
+      if (success) {
+        setAnnouncements(prev => prev.filter(a => a.id !== id));
+      }
+    }
+  };
+
+  const handleTogglePin = async (id: string) => {
+    const success = await announcementService.togglePin(id);
+    if (success) {
+      setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isPinned: !a.isPinned } : a));
+    }
+  };
+
+  const handleToggleActive = async (id: string) => {
+    const success = await announcementService.toggleActive(id);
+    if (success) {
+      setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isActive: !a.isActive } : a));
+    }
+  };
+
+  const resetAnnouncementForm = () => {
+    setAnnouncementForm({
+      title: '',
+      content: '',
+      type: 'info',
+      targetAudience: 'all',
+      isPinned: false,
+      expiresAt: '',
+      metadata: { linkUrl: '', linkText: '' },
+    });
+  };
+
+  const openEditModal = (announcement: Announcement) => {
+    setEditingAnnouncement(announcement);
+    setAnnouncementForm({
+      title: announcement.title,
+      content: announcement.content,
+      type: announcement.type,
+      targetAudience: announcement.targetAudience,
+      isPinned: announcement.isPinned,
+      expiresAt: announcement.expiresAt || '',
+      metadata: announcement.metadata || { linkUrl: '', linkText: '' },
+    });
+    setShowAnnouncementModal(true);
+  };
+
   return (
     <VoidBackground variant="minimal">
       <EtherealNav />
@@ -191,6 +313,11 @@ const AdminPage: React.FC = () => {
                   {tab.id === 'reports' && (
                     <span className="ml-1 px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-xs">
                       {MOCK_REPORTS.filter(r => r.status === 'pending').length}
+                    </span>
+                  )}
+                  {tab.id === 'announcements' && (
+                    <span className="ml-1 px-2 py-0.5 rounded-full bg-spectral-cyan/20 text-spectral-cyan text-xs">
+                      {announcements.filter(a => a.isActive).length}
                     </span>
                   )}
                 </motion.button>
@@ -366,6 +493,10 @@ const AdminPage: React.FC = () => {
                     <p className="text-xs text-void-500">Moderate stories</p>
                   </motion.button>
                   <motion.button
+                    onClick={() => {
+                      setActiveTab('announcements');
+                      setShowAnnouncementModal(true);
+                    }}
                     className="p-4 rounded-xl bg-void-900/50 border border-void-800/50 hover:border-yellow-500/50 transition-all text-left"
                     whileHover={{ scale: 1.02 }}
                   >
@@ -601,6 +732,192 @@ const AdminPage: React.FC = () => {
               </motion.div>
             )}
 
+            {activeTab === 'announcements' && (
+              <motion.div
+                key="announcements"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-void-100">Announcements</h2>
+                    <p className="text-void-400">Create and manage platform-wide announcements</p>
+                  </div>
+                  <SpectralButton 
+                    variant="primary" 
+                    onClick={() => {
+                      setEditingAnnouncement(null);
+                      resetAnnouncementForm();
+                      setShowAnnouncementModal(true);
+                    }}
+                  >
+                    <Icon name="PlusIcon" size={18} className="mr-2" />
+                    New Announcement
+                  </SpectralButton>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                  <HolographicCard className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-spectral-cyan/20 flex items-center justify-center">
+                        <Icon name="MegaphoneIcon" size={20} className="text-spectral-cyan" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-void-100">{announcements.length}</p>
+                        <p className="text-sm text-void-500">Total</p>
+                      </div>
+                    </div>
+                  </HolographicCard>
+                  <HolographicCard className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                        <Icon name="CheckCircleIcon" size={20} className="text-green-400" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.isActive).length}</p>
+                        <p className="text-sm text-void-500">Active</p>
+                      </div>
+                    </div>
+                  </HolographicCard>
+                  <HolographicCard className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                        <Icon name="PinIcon" size={20} className="text-yellow-400" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.isPinned).length}</p>
+                        <p className="text-sm text-void-500">Pinned</p>
+                      </div>
+                    </div>
+                  </HolographicCard>
+                  <HolographicCard className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                        <Icon name="UsersIcon" size={20} className="text-purple-400" />
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.targetAudience !== 'all').length}</p>
+                        <p className="text-sm text-void-500">Targeted</p>
+                      </div>
+                    </div>
+                  </HolographicCard>
+                </div>
+
+                {/* Announcements List */}
+                <GradientBorder>
+                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl">
+                    {announcements.length === 0 ? (
+                      <div className="p-12 text-center">
+                        <Icon name="MegaphoneIcon" size={48} className="text-void-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-void-300 mb-2">No Announcements Yet</h3>
+                        <p className="text-void-500 mb-6">Create your first announcement to notify users about updates, features, or maintenance.</p>
+                        <SpectralButton variant="primary" onClick={() => setShowAnnouncementModal(true)}>
+                          <Icon name="PlusIcon" size={18} className="mr-2" />
+                          Create First Announcement
+                        </SpectralButton>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-void-800/50">
+                        {announcements.map((announcement) => {
+                          const typeInfo = getAnnouncementTypeInfo(announcement.type);
+                          return (
+                            <motion.div
+                              key={announcement.id}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="p-6 hover:bg-void-900/30 transition-colors"
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className={`w-12 h-12 rounded-xl ${typeInfo.bg} flex items-center justify-center flex-shrink-0`}>
+                                  <Icon name={typeInfo.icon} size={24} className={typeInfo.color} />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="text-lg font-semibold text-void-100">{announcement.title}</h3>
+                                    {announcement.isPinned && (
+                                      <span className="px-2 py-0.5 rounded text-xs bg-yellow-500/20 text-yellow-400">Pinned</span>
+                                    )}
+                                    {!announcement.isActive && (
+                                      <span className="px-2 py-0.5 rounded text-xs bg-red-500/20 text-red-400">Inactive</span>
+                                    )}
+                                  </div>
+                                  <p className="text-void-400 mb-3 line-clamp-2">{announcement.content}</p>
+                                  <div className="flex items-center gap-4 text-sm text-void-500">
+                                    <span className="flex items-center gap-1">
+                                      <Icon name="UsersIcon" size={14} />
+                                      {TARGET_AUDIENCES.find(t => t.value === announcement.targetAudience)?.label || announcement.targetAudience}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                      <Icon name="ClockIcon" size={14} />
+                                      {formatTimeAgo(announcement.createdAt)}
+                                    </span>
+                                    {announcement.expiresAt && (
+                                      <span className="flex items-center gap-1">
+                                        <Icon name="CalendarIcon" size={14} />
+                                        Expires: {new Date(announcement.expiresAt).toLocaleDateString()}
+                                      </span>
+                                    )}
+                                    {announcement.metadata?.linkUrl && (
+                                      <span className="flex items-center gap-1 text-spectral-cyan">
+                                        <Icon name="LinkIcon" size={14} />
+                                        {announcement.metadata.linkText || 'Link'}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <motion.button
+                                    onClick={() => handleTogglePin(announcement.id)}
+                                    className={`p-2 rounded-lg transition-colors ${announcement.isPinned ? 'bg-yellow-500/20 text-yellow-400' : 'bg-void-800/50 text-void-400 hover:text-yellow-400'}`}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title={announcement.isPinned ? 'Unpin' : 'Pin'}
+                                  >
+                                    <Icon name="PinIcon" size={16} />
+                                  </motion.button>
+                                  <motion.button
+                                    onClick={() => handleToggleActive(announcement.id)}
+                                    className={`p-2 rounded-lg transition-colors ${announcement.isActive ? 'bg-green-500/20 text-green-400' : 'bg-void-800/50 text-void-400 hover:text-green-400'}`}
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title={announcement.isActive ? 'Deactivate' : 'Activate'}
+                                  >
+                                    <Icon name={announcement.isActive ? 'EyeIcon' : 'EyeSlashIcon'} size={16} />
+                                  </motion.button>
+                                  <motion.button
+                                    onClick={() => openEditModal(announcement)}
+                                    className="p-2 rounded-lg bg-void-800/50 text-void-400 hover:text-spectral-cyan transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title="Edit"
+                                  >
+                                    <Icon name="PencilIcon" size={16} />
+                                  </motion.button>
+                                  <motion.button
+                                    onClick={() => handleDeleteAnnouncement(announcement.id)}
+                                    className="p-2 rounded-lg bg-void-800/50 text-void-400 hover:text-red-400 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title="Delete"
+                                  >
+                                    <Icon name="TrashIcon" size={16} />
+                                  </motion.button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </GradientBorder>
+              </motion.div>
+            )}
+
             {activeTab === 'reports' && (
               <motion.div
                 key="reports"
@@ -733,8 +1050,180 @@ const AdminPage: React.FC = () => {
               </motion.div>
             )}
           </AnimatePresence>
-    </div>
+        </div>
       </main>
+
+      {/* Announcement Modal */}
+      <AnimatePresence>
+        {showAnnouncementModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-void-950/80 backdrop-blur-sm"
+            onClick={() => setShowAnnouncementModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            >
+              <GradientBorder className="p-[1px] rounded-xl">
+                <div className="bg-void-950/95 backdrop-blur-xl rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-void-100">
+                      {editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
+                    </h2>
+                    <button 
+                      onClick={() => setShowAnnouncementModal(false)}
+                      className="p-2 hover:bg-void-800/50 rounded-lg transition-colors"
+                    >
+                      <Icon name="XMarkIcon" size={20} className="text-void-400" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Title */}
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Title</label>
+                      <input
+                        type="text"
+                        value={announcementForm.title}
+                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Enter announcement title..."
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Type */}
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Type</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {ANNOUNCEMENT_TYPES.map((type) => (
+                          <button
+                            key={type.value}
+                            onClick={() => setAnnouncementForm(prev => ({ ...prev, type: type.value as any }))}
+                            className={`
+                              p-3 rounded-lg border transition-all flex items-center gap-2
+                              ${announcementForm.type === type.value 
+                                ? `${type.bg} border-${type.color.split('-')[1]}-500/50` 
+                                : 'bg-void-900/50 border-void-700/50 hover:border-void-600/50'
+                              }
+                            `}
+                          >
+                            <Icon name={type.icon} size={18} className={type.color} />
+                            <span className={announcementForm.type === type.value ? type.color : 'text-void-300'}>{type.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Content</label>
+                      <textarea
+                        value={announcementForm.content}
+                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, content: e.target.value }))}
+                        placeholder="Write your announcement content..."
+                        rows={4}
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none resize-none"
+                      />
+                    </div>
+
+                    {/* Target Audience */}
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Target Audience</label>
+                      <select
+                        value={announcementForm.targetAudience}
+                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, targetAudience: e.target.value as any }))}
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 focus:border-spectral-cyan/50 focus:outline-none"
+                      >
+                        {TARGET_AUDIENCES.map((audience) => (
+                          <option key={audience.value} value={audience.value}>{audience.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Link */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-void-300 mb-2">Link URL (optional)</label>
+                        <input
+                          type="text"
+                          value={announcementForm.metadata?.linkUrl || ''}
+                          onChange={(e) => setAnnouncementForm(prev => ({ 
+                            ...prev, 
+                            metadata: { ...prev.metadata, linkUrl: e.target.value }
+                          }))}
+                          placeholder="/path or https://..."
+                          className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-void-300 mb-2">Link Text</label>
+                        <input
+                          type="text"
+                          value={announcementForm.metadata?.linkText || ''}
+                          onChange={(e) => setAnnouncementForm(prev => ({ 
+                            ...prev, 
+                            metadata: { ...prev.metadata, linkText: e.target.value }
+                          }))}
+                          placeholder="Learn More"
+                          className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Options */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-void-300 mb-2">Expires At (optional)</label>
+                        <input
+                          type="datetime-local"
+                          value={announcementForm.expiresAt}
+                          onChange={(e) => setAnnouncementForm(prev => ({ ...prev, expiresAt: e.target.value }))}
+                          className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 focus:border-spectral-cyan/50 focus:outline-none"
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <label className="flex items-center gap-3 p-3 rounded-lg bg-void-900/50 border border-void-700/50 cursor-pointer hover:border-void-600/50 transition-colors w-full">
+                          <input
+                            type="checkbox"
+                            checked={announcementForm.isPinned}
+                            onChange={(e) => setAnnouncementForm(prev => ({ ...prev, isPinned: e.target.checked }))}
+                            className="w-5 h-5 rounded border-void-600 bg-void-800 text-spectral-cyan focus:ring-spectral-cyan/50"
+                          />
+                          <div>
+                            <p className="text-void-200 font-medium">Pin Announcement</p>
+                            <p className="text-xs text-void-500">Always show at the top</p>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex justify-end gap-3 pt-4 border-t border-void-800/50">
+                      <SpectralButton variant="ghost" onClick={() => setShowAnnouncementModal(false)}>
+                        Cancel
+                      </SpectralButton>
+                      <SpectralButton 
+                        variant="primary" 
+                        onClick={editingAnnouncement ? handleUpdateAnnouncement : handleCreateAnnouncement}
+                        disabled={!announcementForm.title || !announcementForm.content}
+                      >
+                        <Icon name={editingAnnouncement ? 'CheckIcon' : 'PlusIcon'} size={18} className="mr-2" />
+                        {editingAnnouncement ? 'Update Announcement' : 'Create Announcement'}
+                      </SpectralButton>
+                    </div>
+                  </div>
+    </div>
+              </GradientBorder>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </VoidBackground>
   );
 };
