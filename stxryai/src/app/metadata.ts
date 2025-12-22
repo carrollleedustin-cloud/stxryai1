@@ -5,7 +5,23 @@ import type { Metadata } from 'next';
  * Provides default metadata with Open Graph and Twitter Cards
  */
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://stxryai.com';
+// Safely get base URL with validation
+function getBaseUrl(): string {
+  const url = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  // Validate URL format
+  if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+    try {
+      new URL(url); // Validate it's a proper URL
+      return url;
+    } catch {
+      // Invalid URL, use fallback
+    }
+  }
+  // Fallback to production URL
+  return 'https://stxryai.com';
+}
+
+const baseUrl = getBaseUrl();
 const siteName = 'StxryAI';
 const defaultTitle = 'StxryAI - AI-Powered Interactive Fiction Platform';
 const defaultDescription =
@@ -35,10 +51,19 @@ export function createMetadata(options: {
 
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
 
+  // Safely create URL object with fallback
+  let metadataBaseUrl: URL;
+  try {
+    metadataBaseUrl = new URL(baseUrl);
+  } catch {
+    // Fallback to production URL if baseUrl is invalid
+    metadataBaseUrl = new URL('https://stxryai.com');
+  }
+
   return {
     title: fullTitle,
     description,
-    metadataBase: new URL(baseUrl),
+    metadataBase: metadataBaseUrl,
     alternates: {
       canonical: url,
     },
