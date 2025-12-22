@@ -25,6 +25,8 @@
 .env.test.local
 .env.production.local
 netlify-env-vars.json
+**/env.local
+supabase/env.local
 
 # Log files
 npm-debug.log*
