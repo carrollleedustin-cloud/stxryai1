@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const SentientCursor = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [trail, setTrail] = useState<Array<{ x: number; y: number; id: number }>>([]);
@@ -15,6 +16,11 @@ const SentientCursor = () => {
   const springY = useSpring(cursorY, { stiffness: 500, damping: 30 });
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || typeof window === 'undefined') return;
     const updateCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
@@ -53,9 +59,9 @@ const SentientCursor = () => {
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, isMounted]);
 
-  if (!isVisible) return null;
+  if (!isMounted || !isVisible) return null;
 
   return (
     <>

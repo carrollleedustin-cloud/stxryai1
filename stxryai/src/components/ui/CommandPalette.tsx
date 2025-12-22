@@ -40,6 +40,8 @@ export default function CommandPalette() {
   const debouncedSearch = useDebounce(search, 300);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
