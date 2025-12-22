@@ -11,9 +11,8 @@ export const metadata: Metadata = {
 
 export default function StoryReaderPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen">
       <Header />
-
       <main className="container mx-auto px-4 py-8">
         <Suspense fallback={<div>Loading...</div>}>
           <StoryReaderInteractive />

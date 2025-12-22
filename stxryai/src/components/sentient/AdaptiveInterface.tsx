@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 interface AdaptiveInterfaceProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface AdaptiveInterfaceProps {
 
 const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
   const [isClient, setIsClient] = useState(false);
+  const pathname = usePathname();
   const [behavior, setBehavior] = useState({
     scrollSpeed: 0,
     mouseVelocity: 0,
@@ -25,6 +27,22 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
     setIsClient(true);
   }, []);
 
+  // Enable sentient mode primarily for the reader (flagship experience).
+  useEffect(() => {
+    if (!isClient || typeof document === 'undefined') return;
+
+    const html = document.documentElement;
+    const enableSentient =
+      pathname === '/' ||
+      (pathname?.startsWith('/landing-page') ?? false) ||
+      (pathname?.startsWith('/story-reader') ?? false);
+
+    html.classList.toggle('sentient', enableSentient);
+
+    // Cursor is intentionally opt-in; default to enabled only in the reader.
+    html.classList.toggle('sentient-cursor', enableSentient);
+  }, [isClient, pathname]);
+
   // Determine mood based on behavior - separate effect to avoid nesting
   useEffect(() => {
     if (behavior.scrollSpeed > 0.8 && behavior.mouseVelocity > 0.5) {
@@ -39,15 +57,14 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
   }, [behavior]);
 
   useEffect(() => {
-    let lastScrollTop = 0;
+    let lastScrollY = 0;
     let lastScrollTime = Date.now();
     let interactionTimer: NodeJS.Timeout;
 
     const trackScroll = () => {
-      if (!containerRef.current) return;
-      const currentScroll = containerRef.current.scrollTop;
+      const currentScroll = typeof window !== 'undefined' ? window.scrollY : 0;
       const now = Date.now();
-      const speed = Math.abs(currentScroll - lastScrollTop) / (now - lastScrollTime);
+      const speed = Math.abs(currentScroll - lastScrollY) / (now - lastScrollTime);
       
       setBehavior(prev => ({
         ...prev,
@@ -55,7 +72,7 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
         readingPace: speed > 0.5 ? 1.5 : speed < 0.1 ? 0.7 : 1,
       }));
       
-      lastScrollTop = currentScroll;
+      lastScrollY = currentScroll;
       lastScrollTime = now;
     };
 
@@ -86,19 +103,16 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
 
     if (!isClient || typeof window === 'undefined') return;
 
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('scroll', trackScroll, { passive: true });
-      window.addEventListener('mousemove', trackMouse);
-      const timeInterval = setInterval(trackTime, 1000);
-      
-      return () => {
-        container.removeEventListener('scroll', trackScroll);
-        window.removeEventListener('mousemove', trackMouse);
-        clearInterval(timeInterval);
-        clearTimeout(interactionTimer);
-      };
-    }
+    window.addEventListener('scroll', trackScroll, { passive: true });
+    window.addEventListener('mousemove', trackMouse);
+    const timeInterval = setInterval(trackTime, 1000);
+
+    return () => {
+      window.removeEventListener('scroll', trackScroll);
+      window.removeEventListener('mousemove', trackMouse);
+      clearInterval(timeInterval);
+      clearTimeout(interactionTimer);
+    };
   }, [lastMousePosition, isClient]);
 
   // Mood-based styling

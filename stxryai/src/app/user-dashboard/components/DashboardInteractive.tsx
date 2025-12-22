@@ -73,7 +73,7 @@ const createServiceLoader = () => {
 const getServices = createServiceLoader();
 
 const DashboardSkeleton = () => (
-  <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 animate-pulse">
+  <div className="min-h-screen bg-background animate-pulse">
     <header className="bg-card/50 backdrop-blur-lg shadow-sm border-b border-border">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -297,7 +297,7 @@ export default function DashboardInteractive() {
   const safeBadges = Array.isArray(badges) ? badges : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card/50 backdrop-blur-lg shadow-sm border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
@@ -315,7 +315,7 @@ export default function DashboardInteractive() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push('/story-library')}
-                className="hidden sm:flex px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                className="hidden sm:flex items-center btn-primary px-4 py-2"
               >
                 <Compass className="w-5 h-5 mr-2" />
                 Browse Stories
@@ -330,14 +330,14 @@ export default function DashboardInteractive() {
 
       <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {loading && !dataLoaded && (
-          <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <p className="text-sm text-blue-600 dark:text-blue-400">Loading your dashboard data...</p>
+          <div className="mb-6 p-4 rounded-2xl border border-secondary/25 bg-secondary/10">
+            <p className="text-sm text-secondary">Loading your dashboard data…</p>
           </div>
         )}
         
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          <div className="mb-6 p-4 rounded-2xl border border-error/25 bg-error/10">
+            <p className="text-sm text-error">{error}</p>
           </div>
         )}
 

@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface FloatingChatPanelProps {
   storyId: string;
-  currentScene: number;
+  currentScene?: string | number;
   isPremium: boolean;
 }
 

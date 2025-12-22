@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const SentientCursor = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [trail, setTrail] = useState<Array<{ x: number; y: number; id: number }>>([]);
@@ -21,7 +22,19 @@ const SentientCursor = () => {
 
   useEffect(() => {
     if (!isMounted || typeof window === 'undefined') return;
+
+    // Only render/use the custom cursor when the app explicitly opts in.
+    const updateEnabled = () => {
+      const html = document.documentElement;
+      setIsEnabled(html.classList.contains('sentient-cursor'));
+    };
+
+    updateEnabled();
+    const observer = new MutationObserver(updateEnabled);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
     const updateCursor = (e: MouseEvent) => {
+      if (!isEnabled) return;
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
       setIsVisible(true);
@@ -54,14 +67,15 @@ const SentientCursor = () => {
     document.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('mousemove', updateCursor);
       window.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY, isMounted]);
+  }, [cursorX, cursorY, isMounted, isEnabled]);
 
-  if (!isMounted || !isVisible) return null;
+  if (!isMounted || !isEnabled || !isVisible) return null;
 
   return (
     <>
@@ -102,7 +116,7 @@ const SentientCursor = () => {
       {trail.map((point, index) => (
         <motion.div
           key={point.id}
-          className="absolute pointer-events-none rounded-full"
+          className="fixed pointer-events-none rounded-full"
           style={{
             left: point.x,
             top: point.y,

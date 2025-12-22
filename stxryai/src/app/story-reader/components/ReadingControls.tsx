@@ -45,29 +45,50 @@ const ReadingControls = ({
   }
 
   return (
-    <div className="p-4 border-b border-border">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-1 bg-card/50 backdrop-blur-sm rounded-lg p-1 border border-border">
-          <button
-            onClick={() => onFontSizeChange(Math.max(14, currentFontSize - 2))}
-            className="p-2 rounded hover:bg-muted/50 transition-smooth"
-            aria-label="Decrease font size"
+    <div className="sticky top-16 z-30 border-b border-border bg-background/35 backdrop-blur-glass">
+      <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-6">
+        {/* Progress ring */}
+        <div className="flex items-center gap-3">
+          <div
+            className="relative h-10 w-10 rounded-full border border-border bg-background/40"
+            aria-label={`Progress ${Math.round(progress)}%`}
+            title={`Progress ${Math.round(progress)}%`}
+            style={{
+              background: `conic-gradient(var(--color-primary) ${progress}%, rgba(255,255,255,0.08) 0)`,
+            }}
           >
-            <Icon name="MinusIcon" size={18} className="text-foreground" />
-          </button>
-          <span className="px-3 text-sm font-medium text-foreground min-w-[3rem] text-center">
-            {currentFontSize}px
-          </span>
-          <button
-            onClick={() => onFontSizeChange(Math.min(24, currentFontSize + 2))}
-            className="p-2 rounded hover:bg-muted/50 transition-smooth"
-            aria-label="Increase font size"
-          >
-            <Icon name="PlusIcon" size={18} className="text-foreground" />
-          </button>
+            <div className="absolute inset-[3px] rounded-full bg-background/70" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="font-mono text-[10px] font-semibold text-foreground/80">
+                {Math.round(progress)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Font sizing */}
+          <div className="flex items-center gap-1 rounded-full border border-border bg-card/40 px-2 py-1">
+            <button
+              onClick={() => onFontSizeChange(Math.max(14, currentFontSize - 2))}
+              className="touch-target flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted/40 transition-micro"
+              aria-label="Decrease font size"
+            >
+              <Icon name="MinusIcon" size={18} className="text-foreground" />
+            </button>
+            <span className="min-w-[3.25rem] text-center text-xs font-semibold text-foreground/80">
+              {currentFontSize}px
+            </span>
+            <button
+              onClick={() => onFontSizeChange(Math.min(26, currentFontSize + 2))}
+              className="touch-target flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted/40 transition-micro"
+              aria-label="Increase font size"
+            >
+              <Icon name="PlusIcon" size={18} className="text-foreground" />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-2">
+        {/* Actions */}
+        <div className="flex items-center gap-2">
           <button
             onClick={() => {
               const next = theme === 'dark' ? 'light' : 'dark';
@@ -77,7 +98,7 @@ const ReadingControls = ({
                 setTheme(next);
               }
             }}
-            className="p-2 rounded-lg bg-card/50 backdrop-blur-sm border border-border hover:bg-muted/50 transition-smooth"
+            className="touch-target flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/40 hover:bg-muted/40 transition-micro"
             aria-label="Change theme"
           >
             <Icon
@@ -88,10 +109,10 @@ const ReadingControls = ({
           </button>
           <button
             onClick={onBookmark}
-            className={`p-2 rounded-lg border transition-smooth ${
+            className={`touch-target flex h-10 w-10 items-center justify-center rounded-full border transition-micro ${
               isBookmarked
-                ? 'bg-accent/20 border-accent text-accent'
-                : 'bg-card/50 backdrop-blur-sm border-border text-foreground hover:bg-muted/50'
+                ? 'bg-accent/20 border-accent/60 text-accent'
+                : 'bg-card/40 border-border text-foreground hover:bg-muted/40'
             }`}
             aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
           >
@@ -99,27 +120,20 @@ const ReadingControls = ({
           </button>
           <button
             onClick={onToggleDistractionFree}
-            className={`p-2 rounded-lg border transition-smooth ${
+            className={`touch-target flex h-10 items-center justify-center gap-2 rounded-full border px-4 text-sm font-semibold transition-micro ${
               isDistractionFree
-                ? 'bg-primary/20 border-primary text-primary'
-                : 'bg-card/50 backdrop-blur-sm border-border text-foreground hover:bg-muted/50'
+                ? 'bg-primary/18 border-primary/60 text-primary'
+                : 'bg-card/40 border-border text-foreground hover:bg-muted/40'
             }`}
-            aria-label={
-              isDistractionFree ? 'Exit distraction-free mode' : 'Enter distraction-free mode'
-            }
+            aria-label={isDistractionFree ? 'Exit focus mode' : 'Enter focus mode'}
           >
             <Icon
               name={isDistractionFree ? 'ArrowsPointingInIcon' : 'ArrowsPointingOutIcon'}
-              size={20}
+              size={18}
             />
+            <span className="hidden sm:inline">{isDistractionFree ? 'Exit focus' : 'Focus'}</span>
           </button>
         </div>
-      </div>
-      <div className="mt-4 h-1 bg-muted/50 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-primary"
-          style={{ width: `${progress}%`, transition: 'width 0.5s ease-in-out' }}
-        />
       </div>
     </div>
   );
