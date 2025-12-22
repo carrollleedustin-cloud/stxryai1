@@ -1,66 +1,58 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/services/authService';
-import ContinueReadingWidget from './ContinueReadingWidget';
-import ReadingStatsPanel from './ReadingStatsPanel';
-import ActivityFeedItem from './ActivityFeedItem';
-import DailyChoiceLimitWidget from './DailyChoiceLimitWidget';
-import ThemeToggle from '@/components/common/ThemeToggle';
-import { staggerContainer, slideUp } from '@/lib/animations/variants';
-import NotificationBell from '@/components/ui/NotificationBell';
-import UserMenu from '@/components/ui/UserMenu';
-import ScrollToTop from '@/components/ui/ScrollToTop';
-import { BookOpen, Compass, MessageSquare } from 'lucide-react';
+import EtherealNav from '@/components/void/EtherealNav';
+import VoidBackground, { AmbientOrbs } from '@/components/void/VoidBackground';
+import DimensionalCard from '@/components/void/DimensionalCard';
+import SpectralButton from '@/components/void/SpectralButton';
+import TemporalReveal, { StaggerContainer, StaggerItem } from '@/components/void/TemporalReveal';
+import ParticleField, { AnimatedCounter } from '@/components/void/ParticleField';
+import { 
+  BookOpen, 
+  Compass, 
+  Sparkles, 
+  Clock, 
+  Zap,
+  TrendingUp,
+  Library,
+  PenTool,
+  Settings,
+  ChevronRight,
+  Play,
+  Award,
+  Target,
+  Flame,
+} from 'lucide-react';
 
-// Lazy load services to avoid circular dependencies and initialization issues
-// Using a factory function pattern to avoid module-level state issues
+// Lazy load services
 const createServiceLoader = () => {
   let userProgressService: any = null;
   let userActivityService: any = null;
   let servicesPromise: Promise<{ userProgressService: any; userActivityService: any }> | null = null;
 
-  return async (): Promise<{ userProgressService: any; userActivityService: any }> => {
-    // If already loaded, return immediately
+  return async () => {
     if (userProgressService && userActivityService) {
       return { userProgressService, userActivityService };
     }
 
-    // If already loading, wait for existing promise
     if (servicesPromise) {
       return servicesPromise;
     }
 
-    // Start loading - use a function to avoid hoisting issues
     servicesPromise = (async () => {
       try {
-        // Load services sequentially to avoid initialization race conditions
-        // This ensures each service is fully initialized before the next one loads
         const progressModule = await import('@/services/userProgressService');
-        if (!progressModule?.userProgressService) {
-          throw new Error('userProgressService not found in module');
-        }
         userProgressService = progressModule.userProgressService;
-
-        // Small delay to ensure first service is fully initialized
         await new Promise(resolve => setTimeout(resolve, 0));
-
         const activityModule = await import('@/services/userActivityService');
-        if (!activityModule?.userActivityService) {
-          throw new Error('userActivityService not found in module');
-        }
         userActivityService = activityModule.userActivityService;
-
         return { userProgressService, userActivityService };
       } catch (error) {
-        console.error('Error loading services:', error);
-        // Reset on error so we can retry
         servicesPromise = null;
-        userProgressService = null;
-        userActivityService = null;
         throw error;
       }
     })();
@@ -69,361 +61,447 @@ const createServiceLoader = () => {
   };
 };
 
-// Create the loader function
 const getServices = createServiceLoader();
 
-const DashboardSkeleton = () => (
-  <div className="min-h-screen bg-background animate-pulse">
-    <header className="bg-card/50 backdrop-blur-lg shadow-sm border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-2"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-            <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-            <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-            <div className="h-9 w-9 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
-          </div>
-        </div>
-      </div>
-    </header>
-    <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-      <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-        <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-        <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-      </div>
-      <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-    </div>
-  </div>
-);
-
-const EmptyState = ({
-  icon,
-  title,
-  message,
-  buttonText,
-  onButtonClick,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  message: string;
-  buttonText: string;
-  onButtonClick: () => void;
-}) => (
-  <div className="text-center p-8 bg-card/50 backdrop-blur-lg border-2 border-dashed border-border rounded-xl">
-    <div className="mx-auto w-16 h-16 flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full text-primary mb-4">
-      {icon}
-    </div>
-    <h3 className="text-xl font-semibold text-foreground mb-2">{title}</h3>
-    <p className="text-muted-foreground mb-6 max-w-md mx-auto">{message}</p>
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onButtonClick}
-      className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg"
-    >
-      {buttonText}
-    </motion.button>
-  </div>
-);
-
+/**
+ * DASHBOARD INTERACTIVE
+ * Your personal command center in the void.
+ * Where stories converge and adventures begin.
+ */
 export default function DashboardInteractive() {
   const router = useRouter();
-  const { user, profile, signOut, loading: authLoading } = useAuth();
+  const { user, profile } = useAuth();
+  
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [continueReading, setContinueReading] = useState<any[]>([]);
-  const [activities, setActivities] = useState<any[]>([]);
-  const [badges, setBadges] = useState<any[]>([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
-  const redirectAttemptedRef = useRef(false);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    storiesRead: 0,
+    choicesMade: 0,
+    readingStreak: 0,
+    totalReadingTime: 0,
+  });
 
-  // Define loadDashboardData BEFORE useEffect that uses it
+  // Load dashboard data
   const loadDashboardData = useCallback(async () => {
-    if (!user || dataLoaded) {
-      return;
+    if (!user) return;
+
+    try {
+      setLoading(true);
+      const { userProgressService, userActivityService } = await getServices();
+
+      const [progressData, activityData] = await Promise.all([
+        userProgressService.getUserReadingList(user.id),
+        userActivityService.getRecentActivity(user.id, 5),
+      ]);
+
+      setContinueReading(progressData?.filter((p: any) => p.progress_percentage < 100).slice(0, 3) || []);
+      setRecentActivity(activityData || []);
+
+      // Mock stats - replace with real data
+      setStats({
+        storiesRead: 12,
+        choicesMade: 156,
+        readingStreak: 7,
+        totalReadingTime: 24,
+      });
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    } finally {
+      setLoading(false);
     }
-
-    // Add a timeout wrapper to prevent infinite hanging
-    const loadWithTimeout = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        
-        // Get services with lazy loading
-        const services = await getServices();
-        
-        // Load data with better error handling and individual timeouts
-        // Each service call has its own timeout, and we wrap the whole thing in a timeout too
-        const loadPromise = Promise.allSettled([
-          services.userProgressService.getAllUserProgress(user.id).catch((err: any) => {
-            console.warn('Failed to load progress:', err);
-            // Check if it's a connection error
-            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
-              throw err; // Re-throw connection errors so we can show them
-            }
-            return [];
-          }),
-          services.userActivityService.getUserActivities(user.id, 10).catch((err: any) => {
-            console.warn('Failed to load activities:', err);
-            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
-              throw err;
-            }
-            return [];
-          }),
-          services.userProgressService.getUserBadges(user.id).catch((err: any) => {
-            console.warn('Failed to load badges:', err);
-            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
-              throw err;
-            }
-            return [];
-          }),
-        ]);
-
-        // Add overall timeout of 10 seconds using Promise.race
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => {
-            reject(new Error('Dashboard loading timed out. Please check your connection.'));
-          }, 10000);
-        });
-
-        const results = await Promise.race([
-          loadPromise,
-          timeoutPromise,
-        ]);
-
-        // If we got here, loadPromise completed (timeout would have thrown)
-        const [progressResult, activitiesResult, badgesResult] = results as PromiseSettledResult<any>[];
-
-        const progressData = progressResult?.status === 'fulfilled' ? progressResult.value : [];
-        const activitiesData = activitiesResult?.status === 'fulfilled' ? activitiesResult.value : [];
-        const badgesData = badgesResult?.status === 'fulfilled' ? badgesResult.value : [];
-
-        setContinueReading(Array.isArray(progressData) ? progressData.filter((p: any) => !p?.is_completed) : []);
-        setActivities(Array.isArray(activitiesData) ? activitiesData : []);
-        setBadges(Array.isArray(badgesData) ? badgesData : []);
-        setError('');
-        setDataLoaded(true);
-      } catch (err: any) {
-        console.error('Dashboard load error:', err);
-        // Check if it's a connection error
-        if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('Supabase project')) {
-          setError(err.message || 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.');
-        } else if (err?.message?.includes('timed out')) {
-          setError('Request timed out. Please check your internet connection and try again.');
-        } else {
-          setError('Some data failed to load, but you can still use the dashboard.');
-        }
-        // Set empty arrays so dashboard still renders
-        setContinueReading([]);
-        setActivities([]);
-        setBadges([]);
-        setDataLoaded(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    await loadWithTimeout();
-  }, [user, dataLoaded]);
+  }, [user]);
 
   useEffect(() => {
-    // Maximum timeout to prevent infinite loading - always render after 10 seconds
-    const maxTimeout = setTimeout(() => {
-      if (loading && !dataLoaded) {
-        console.warn('Dashboard loading timeout - rendering anyway');
-        setLoading(false);
-        setDataLoaded(true);
-      }
-    }, 10000); // 10 second max - faster timeout
+    loadDashboardData();
+  }, [loadDashboardData]);
 
-    // Wait for auth to initialize - don't do anything while auth is loading
-    if (authLoading) {
-      return () => clearTimeout(maxTimeout);
-    }
-
-    // If user exists, load dashboard data immediately (no delay needed)
-    if (user && !dataLoaded) {
-      loadDashboardData();
-      // Reset redirect flag since we have a user
-      redirectAttemptedRef.current = false;
-      return () => clearTimeout(maxTimeout);
-    }
-
-    // Only attempt redirect once, and only if auth has finished loading
-    // Don't redirect if we're currently loading data (user might be loading)
-    // Simplified redirect logic - let middleware handle it primarily
-    if (!user && !authLoading && !redirectAttemptedRef.current && !loading) {
-      redirectAttemptedRef.current = true;
-      // Use router.push instead of window.location to work better with middleware
-      router.push('/authentication');
-    }
-
-    return () => clearTimeout(maxTimeout);
-  }, [user, authLoading, router, dataLoaded, loadDashboardData]);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      router.push('/authentication');
-    } catch (err: any) {
-      setError('Failed to sign out. Please try again.');
-    }
-  };
-
-  // Show loading while auth is initializing
-  if (authLoading) {
-    return <DashboardSkeleton />;
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-void-absolute flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 rounded-full border-2 border-membrane animate-ping opacity-20" />
+            <div className="absolute inset-0 rounded-full border-2 border-t-spectral-cyan animate-spin" />
+          </div>
+          <p className="text-sm font-ui tracking-widest uppercase text-text-ghost">
+            Loading Dashboard
+          </p>
+        </div>
+      </div>
+    );
   }
 
-  // If no user after auth loads, middleware should have redirected
-  // But if we're here, just show skeleton to prevent flash
-  if (!user && !authLoading) {
-    return <DashboardSkeleton />;
-  }
-
-  // If we have a user, show dashboard (even if still loading)
-  // The 15-second timeout ensures we always render eventually
-  // Show loading indicator if still loading, but render the dashboard structure
-
-  // Safety check - ensure we have valid data structures
-  const safeContinueReading = Array.isArray(continueReading) ? continueReading : [];
-  const safeActivities = Array.isArray(activities) ? activities : [];
-  const safeBadges = Array.isArray(badges) ? badges : [];
+  const quickActions = [
+    { icon: Library, label: 'Library', href: '/story-library', color: 'spectral-cyan' },
+    { icon: PenTool, label: 'Create', href: '/story-creation-studio', color: 'spectral-violet' },
+    { icon: Compass, label: 'Discover', href: '/community-hub', color: 'plasma-orange' },
+    { icon: Settings, label: 'Settings', href: '/settings', color: 'text-tertiary' },
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-card/50 backdrop-blur-lg shadow-sm border-b border-border sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-              <h1 className="text-3xl font-bold text-foreground">
-                Welcome back, {profile?.display_name || user?.display_name || user?.email || 'Reader'}!
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                {profile?.tier === 'premium' ? '⭐ Premium Member' : '📚 Free Member'}
-              </p>
-            </motion.div>
-            <div className="flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/story-library')}
-                className="hidden sm:flex items-center btn-primary px-4 py-2"
-              >
-                <Compass className="w-5 h-5 mr-2" />
-                Browse Stories
-              </motion.button>
-              <ThemeToggle />
-              <NotificationBell />
-              <UserMenu />
+    <VoidBackground variant="default">
+      <ParticleField particleCount={35} color="rgba(123, 44, 191, 0.25)" />
+      <AmbientOrbs />
+      <EtherealNav />
+      
+      <main className="min-h-screen pt-24 pb-16">
+        <div className="container-void">
+          {/* Welcome Header */}
+          <TemporalReveal className="mb-12">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+              <div>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs font-ui tracking-widest uppercase text-spectral-cyan mb-2"
+                >
+                  Welcome back
+                </motion.p>
+                <h1 className="font-display text-4xl md:text-5xl tracking-wide text-text-primary">
+                  {profile?.display_name || 'Traveler'}
+                </h1>
+                <p className="mt-2 font-prose text-text-tertiary">
+                  Your stories await. Where will you journey today?
+                </p>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="flex items-center gap-3">
+                {quickActions.map((action, index) => (
+                  <motion.button
+                    key={action.label}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.2 + index * 0.05 }}
+                    onClick={() => router.push(action.href)}
+                    className={`
+                      w-12 h-12 rounded-xl flex items-center justify-center
+                      bg-void-elevated border border-membrane
+                      hover:border-${action.color}/30 hover:bg-void-mist
+                      transition-all duration-300 group
+                    `}
+                    title={action.label}
+                  >
+                    <action.icon className={`w-5 h-5 text-text-tertiary group-hover:text-${action.color} transition-colors`} />
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          </TemporalReveal>
+          
+          {/* Stats Grid */}
+          <TemporalReveal delay={0.1}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+              {[
+                { icon: BookOpen, value: stats.storiesRead, label: 'Stories Read', color: 'spectral-cyan', isNumeric: true },
+                { icon: Zap, value: stats.choicesMade, label: 'Choices Made', color: 'spectral-violet', isNumeric: true },
+                { icon: Flame, value: stats.readingStreak, label: 'Reading Streak', color: 'plasma-orange', suffix: ' days' },
+                { icon: Clock, value: stats.totalReadingTime, label: 'Time Reading', color: 'spectral-emerald', suffix: 'h' },
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                >
+                  <DimensionalCard
+                    className="p-5 relative overflow-hidden group"
+                    enableTilt={false}
+                  >
+                    {/* Background glow on hover */}
+                    <div 
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ 
+                        background: `radial-gradient(circle at 50% 0%, var(--${stat.color}) 0%, transparent 70%)`,
+                        opacity: 0.05,
+                      }}
+                    />
+                    
+                    <div className="flex items-start justify-between mb-3">
+                      <div 
+                        className="w-10 h-10 rounded-lg flex items-center justify-center relative"
+                        style={{ background: `var(--${stat.color})10` }}
+                      >
+                        <stat.icon className="w-5 h-5" style={{ color: `var(--${stat.color})` }} />
+                      </div>
+                      
+                      {/* Trend indicator */}
+                      <div className="flex items-center gap-1 text-spectral-emerald text-xs">
+                        <TrendingUp className="w-3 h-3" />
+                        <span>+12%</span>
+                      </div>
+                    </div>
+                    <div className="font-display text-2xl text-text-primary mb-1">
+                      {stat.isNumeric ? (
+                        <AnimatedCounter end={stat.value as number} duration={2} suffix={stat.suffix || ''} />
+                      ) : (
+                        <>{stat.value}{stat.suffix}</>
+                      )}
+                    </div>
+                    <div className="text-xs font-ui tracking-wide uppercase text-text-ghost">
+                      {stat.label}
+                    </div>
+                    
+                    {/* Progress bar */}
+                    <div className="mt-3 h-1 bg-void-mist rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, (stat.value as number) * 5)}%` }}
+                        transition={{ delay: 0.5 + index * 0.1, duration: 1, ease: 'easeOut' }}
+                        className="h-full rounded-full"
+                        style={{ background: `var(--${stat.color})` }}
+                      />
+                    </div>
+                  </DimensionalCard>
+                </motion.div>
+              ))}
+            </div>
+          </TemporalReveal>
+          
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Content - Continue Reading */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Continue Reading Section */}
+              <TemporalReveal delay={0.2}>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-display text-xl tracking-wide text-text-primary flex items-center gap-3">
+                    <Play className="w-5 h-5 text-spectral-cyan" />
+                    Continue Reading
+                  </h2>
+                  <button 
+                    onClick={() => router.push('/story-library')}
+                    className="text-xs font-ui tracking-wide uppercase text-text-ghost hover:text-spectral-cyan transition-colors flex items-center gap-1"
+                  >
+                    View All
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                {continueReading.length > 0 ? (
+                  <div className="space-y-4">
+                    {continueReading.map((item, index) => (
+                      <DimensionalCard
+                        key={item.id || index}
+                        onClick={() => router.push(`/story-reader?storyId=${item.story_id}`)}
+                        className="p-6"
+                      >
+                        <div className="flex items-start gap-4">
+                          {/* Cover placeholder */}
+                          <div className="w-16 h-20 rounded-lg bg-void-mist flex items-center justify-center shrink-0">
+                            <BookOpen className="w-6 h-6 text-text-ghost" />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-display text-lg text-text-primary truncate mb-1">
+                              {item.story?.title || 'Untitled Story'}
+                            </h3>
+                            <p className="text-sm text-text-tertiary mb-3">
+                              Chapter {item.current_chapter_number || 1}
+                            </p>
+                            
+                            {/* Progress bar */}
+                            <div className="relative h-1.5 bg-void-mist rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${item.progress_percentage || 0}%` }}
+                                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                                className="absolute inset-y-0 left-0 rounded-full"
+                                style={{
+                                  background: 'linear-gradient(90deg, var(--spectral-cyan), var(--spectral-violet))',
+                                }}
+                              />
+                            </div>
+                            <p className="mt-2 text-xs text-text-ghost">
+                              {item.progress_percentage || 0}% complete
+                            </p>
+                          </div>
+                          
+                          <ChevronRight className="w-5 h-5 text-text-ghost shrink-0" />
+                        </div>
+                      </DimensionalCard>
+                    ))}
+                  </div>
+                ) : (
+                  <DimensionalCard className="p-8 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-void-mist flex items-center justify-center">
+                      <BookOpen className="w-8 h-8 text-text-ghost" />
+                    </div>
+                    <h3 className="font-display text-lg text-text-primary mb-2">
+                      No stories in progress
+                    </h3>
+                    <p className="text-sm text-text-tertiary mb-6">
+                      Start your first adventure and it will appear here.
+                    </p>
+                    <SpectralButton href="/story-library" icon={<Compass className="w-4 h-4" />}>
+                      Explore Library
+                    </SpectralButton>
+                  </DimensionalCard>
+                )}
+              </TemporalReveal>
+              
+              {/* Recommended Stories */}
+              <TemporalReveal delay={0.3}>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="font-display text-xl tracking-wide text-text-primary flex items-center gap-3">
+                    <Sparkles className="w-5 h-5 text-spectral-violet" />
+                    Recommended For You
+                  </h2>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[
+                    { title: 'The Last Algorithm', genre: 'Sci-Fi', reads: '12.4K' },
+                    { title: 'Whispers of the Void', genre: 'Fantasy', reads: '8.7K' },
+                  ].map((story, index) => (
+                    <DimensionalCard
+                      key={index}
+                      onClick={() => router.push('/story-library')}
+                      className="p-5"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-16 rounded-lg bg-gradient-to-br from-spectral-violet/20 to-spectral-cyan/20 flex items-center justify-center shrink-0">
+                          <BookOpen className="w-5 h-5 text-spectral-violet" />
+                        </div>
+                        <div className="flex-1">
+                          <span className="inline-block px-2 py-0.5 rounded text-[10px] font-ui tracking-wide uppercase bg-spectral-cyan/10 text-spectral-cyan mb-2">
+                            {story.genre}
+                          </span>
+                          <h3 className="font-display text-text-primary mb-1">
+                            {story.title}
+                          </h3>
+                          <p className="text-xs text-text-ghost">
+                            {story.reads} readers
+                          </p>
+                        </div>
+                      </div>
+                    </DimensionalCard>
+                  ))}
+                </div>
+              </TemporalReveal>
+            </div>
+            
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Daily Progress */}
+              <TemporalReveal delay={0.25}>
+                <DimensionalCard className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Target className="w-5 h-5 text-spectral-amber" />
+                    <h3 className="font-display text-lg text-text-primary">Daily Goal</h3>
+                  </div>
+                  
+                  <div className="text-center mb-6">
+                    <div className="relative inline-flex items-center justify-center">
+                      <svg className="w-24 h-24 transform -rotate-90">
+                        <circle
+                          cx="48"
+                          cy="48"
+                          r="40"
+                          strokeWidth="6"
+                          fill="none"
+                          className="stroke-void-mist"
+                        />
+                        <motion.circle
+                          cx="48"
+                          cy="48"
+                          r="40"
+                          strokeWidth="6"
+                          fill="none"
+                          strokeLinecap="round"
+                          className="stroke-spectral-amber"
+                          initial={{ strokeDasharray: '0 251.2' }}
+                          animate={{ strokeDasharray: `${(profile?.daily_choices_used || 0) / (profile?.daily_choice_limit || 10) * 251.2} 251.2` }}
+                          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="font-display text-2xl text-text-primary">
+                          {profile?.daily_choices_used || 0}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm text-text-tertiary">
+                      of {profile?.daily_choice_limit || 10} choices used
+                    </p>
+                  </div>
+                  
+                  {(profile?.daily_choices_used || 0) >= (profile?.daily_choice_limit || 10) && (
+                    <SpectralButton variant="plasma" fullWidth href="/pricing">
+                      Upgrade for Unlimited
+                    </SpectralButton>
+                  )}
+                </DimensionalCard>
+              </TemporalReveal>
+              
+              {/* Achievements Preview */}
+              <TemporalReveal delay={0.35}>
+                <DimensionalCard className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <Award className="w-5 h-5 text-spectral-violet" />
+                      <h3 className="font-display text-lg text-text-primary">Achievements</h3>
+                    </div>
+                    <span className="text-xs font-ui text-text-ghost">3/12</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    {[
+                      { icon: '📖', title: 'First Story' },
+                      { icon: '⚡', title: '10 Choices' },
+                      { icon: '🔥', title: '7 Day Streak' },
+                    ].map((achievement, index) => (
+                      <div
+                        key={index}
+                        className="flex-1 aspect-square rounded-lg bg-void-mist flex items-center justify-center text-2xl"
+                        title={achievement.title}
+                      >
+                        {achievement.icon}
+                      </div>
+                    ))}
+                    <div className="flex-1 aspect-square rounded-lg bg-void-mist border border-dashed border-membrane flex items-center justify-center">
+                      <span className="text-text-ghost text-lg">+9</span>
+                    </div>
+                  </div>
+                </DimensionalCard>
+              </TemporalReveal>
+              
+              {/* Recent Activity */}
+              <TemporalReveal delay={0.4}>
+                <DimensionalCard className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <TrendingUp className="w-5 h-5 text-spectral-emerald" />
+                    <h3 className="font-display text-lg text-text-primary">Recent Activity</h3>
+                  </div>
+                  
+                  {recentActivity.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentActivity.slice(0, 3).map((activity, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <div className="w-2 h-2 mt-2 rounded-full bg-spectral-cyan shrink-0" />
+                          <div>
+                            <p className="text-sm text-text-secondary">
+                              {activity.description || 'Activity recorded'}
+                            </p>
+                            <p className="text-xs text-text-ghost mt-1">
+                              {new Date(activity.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-text-ghost text-center py-4">
+                      No recent activity yet
+                    </p>
+                  )}
+                </DimensionalCard>
+              </TemporalReveal>
             </div>
           </div>
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        {loading && !dataLoaded && (
-          <div className="mb-6 p-4 rounded-2xl border border-secondary/25 bg-secondary/10">
-            <p className="text-sm text-secondary">Loading your dashboard data…</p>
-          </div>
-        )}
-        
-        {error && (
-          <div className="mb-6 p-4 rounded-2xl border border-error/25 bg-error/10">
-            <p className="text-sm text-error">{error}</p>
-          </div>
-        )}
-
-        <div className="space-y-8">
-          {/* Daily Choice Limit */}
-          {(profile || user) && (
-            <DailyChoiceLimitWidget
-              isPremium={profile?.tier === 'premium'}
-              choicesUsed={profile?.daily_choices_used || 0}
-              choicesLimit={profile?.daily_choice_limit || 10}
-              resetTime={new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()}
-            />
-          )}
-
-          {/* Reading Stats */}
-          {(profile || user) && (
-            <ReadingStatsPanel
-              stats={{
-                storiesCompleted: profile?.stories_completed || 0,
-                choicesMade: profile?.choices_made || 0,
-                readingStreak: 0,
-                totalReadingTime: profile?.total_reading_time || 0,
-                achievements: safeBadges.map((badge: any) => ({
-                  id: badge?.id || '',
-                  name: badge?.badge_name || 'Unknown',
-                  icon: badge?.badge_icon || '🏆',
-                  progress: 100,
-                  total: 100,
-                  unlocked: true,
-                })),
-              }}
-            />
-          )}
-
-          {/* Continue Reading */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h2 className="text-2xl font-bold text-foreground mb-4">Continue Reading</h2>
-            {safeContinueReading.length > 0 ? (
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                animate="visible"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
-                {safeContinueReading.map((progress: any) => (
-                  <motion.div key={progress?.id || Math.random()} variants={slideUp}>
-                    <ContinueReadingWidget
-                      progress={progress}
-                      onClick={() => router.push(`/story-reader?storyId=${progress?.story_id || ''}`)}
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <EmptyState
-                icon={<BookOpen size={32} />}
-                title="Your Adventure Awaits"
-                message="You haven't started any stories yet. Dive into the library and begin a new journey!"
-                buttonText="Explore Stories"
-                onButtonClick={() => router.push('/story-library')}
-              />
-            )}
-          </motion.div>
-
-          {/* Activity Feed */}
-          <div>
-            <h2 className="text-2xl font-bold text-foreground mb-4">Recent Activity</h2>
-            {safeActivities.length > 0 ? (
-              <div className="bg-card/50 backdrop-blur-lg border border-border rounded-xl shadow-lg p-6 space-y-4">
-                {safeActivities.map((activity: any) => (
-                  <ActivityFeedItem key={activity?.id || Math.random()} activity={activity} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                icon={<MessageSquare size={32} />}
-                title="A Quiet Beginning"
-                message="Your activity feed is empty. As you read, make choices, and interact with the community, your epic saga will be written here."
-                buttonText="Find a Story to Start"
-                onButtonClick={() => router.push('/story-library')}
-              />
-            )}
-          </div>
-        </div>
       </main>
-      <ScrollToTop />
-    </div>
+    </VoidBackground>
   );
 }

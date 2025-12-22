@@ -1,101 +1,118 @@
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
-import Icon from '@/components/ui/AppIcon';
+import { motion } from 'framer-motion';
+import { Twitter, Github, MessageCircle, Mail } from 'lucide-react';
 
-const FooterSection = () => {
+/**
+ * FOOTER SECTION
+ * The quiet ending to every journey.
+ * Minimal, respectful, ever-present.
+ */
+export default function FooterSection() {
   const currentYear = new Date().getFullYear();
-
+  
   const footerLinks = {
     product: [
-      { label: 'Features', href: '/landing-page' },
-      { label: 'Pricing', href: '/landing-page' },
-      { label: 'Story Library', href: '/story-library' },
-      { label: 'Premium', href: '/landing-page' },
+      { label: 'Library', href: '/story-library' },
+      { label: 'Create', href: '/story-creation-studio' },
+      { label: 'Pricing', href: '/pricing' },
+      { label: 'Community', href: '/community-hub' },
     ],
     company: [
-      { label: 'About Us', href: '/landing-page' },
-      { label: 'Blog', href: '/landing-page' },
-      { label: 'Careers', href: '/landing-page' },
-      { label: 'Contact', href: '/landing-page' },
+      { label: 'About', href: '/about' },
+      { label: 'Help', href: '/help' },
+      { label: 'Support', href: '/support' },
     ],
     legal: [
-      { label: 'Terms of Service', href: '/landing-page' },
-      { label: 'Privacy Policy', href: '/landing-page' },
-      { label: 'Cookie Policy', href: '/landing-page' },
-      { label: 'Content Guidelines', href: '/landing-page' },
-    ],
-    social: [
-      { icon: 'ChatBubbleLeftRightIcon', label: 'Discord', href: '#' },
-      { icon: 'AtSymbolIcon', label: 'Twitter', href: '#' },
-      { icon: 'BookOpenIcon', label: 'Medium', href: '#' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
+      { label: 'Cookies', href: '/cookies' },
     ],
   };
-
+  
+  const socialLinks = [
+    { icon: Twitter, href: 'https://twitter.com/stxryai', label: 'Twitter' },
+    { icon: Github, href: 'https://github.com/stxryai', label: 'GitHub' },
+    { icon: MessageCircle, href: 'https://discord.gg/stxryai', label: 'Discord' },
+  ];
+  
   return (
-    <footer className="bg-card border-t border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
-          <div className="lg:col-span-2">
-            <Link href="/landing-page" className="flex items-center space-x-2 mb-4">
+    <footer className="relative border-t border-membrane">
+      {/* Top gradient line */}
+      <div 
+        className="absolute inset-x-0 top-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(0, 245, 212, 0.2), transparent)',
+        }}
+      />
+      
+      <div className="container-void py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12">
+          {/* Brand Column */}
+          <div className="col-span-2 lg:col-span-2">
+            <Link href="/" className="inline-flex items-center gap-3 mb-6">
               <svg
-                width="40"
-                height="40"
-                viewBox="0 0 40 40"
+                width="32"
+                height="32"
+                viewBox="0 0 36 36"
                 fill="none"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M20 4L8 12V28L20 36L32 28V12L20 4Z"
+                  d="M18 2L4 10v16l14 8 14-8V10L18 2z"
                   fill="url(#footer-logo-gradient)"
-                  stroke="var(--color-accent)"
-                  strokeWidth="1.5"
                 />
-                <path d="M20 14L14 18V26L20 30L26 26V18L20 14Z" fill="var(--color-background)" />
+                <path
+                  d="M18 10l-8 5v10l8 5 8-5V15l-8-5z"
+                  fill="var(--void-absolute)"
+                />
                 <defs>
-                  <linearGradient
-                    id="footer-logo-gradient"
-                    x1="8"
-                    y1="4"
-                    x2="32"
-                    y2="36"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stopColor="var(--color-primary)" />
-                    <stop offset="1" stopColor="var(--color-secondary)" />
+                  <linearGradient id="footer-logo-gradient" x1="4" y1="2" x2="32" y2="34">
+                    <stop stopColor="var(--spectral-cyan)" />
+                    <stop offset="1" stopColor="var(--spectral-violet)" />
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="font-heading text-2xl font-bold text-foreground">Stxryai</span>
+              <span className="font-display text-lg tracking-widest text-text-primary">
+                STXRY
+              </span>
             </Link>
-            <p className="text-muted-foreground mb-4 max-w-md">
-              AI-powered interactive fiction platform where your choices shape infinite story
-              possibilities. Join thousands of readers exploring unique narratives.
+            
+            <p className="font-prose text-sm text-text-tertiary max-w-xs mb-8 leading-relaxed">
+              Where infinite stories await. AI-powered interactive fiction that adapts to your choices.
             </p>
-            <div className="flex items-center space-x-4">
-              {footerLinks.social.map((social, index) => (
-                <a
-                  key={index}
+            
+            {/* Social Links */}
+            <div className="flex items-center gap-4">
+              {socialLinks.map((social) => (
+                <motion.a
+                  key={social.label}
                   href={social.href}
-                  className="w-10 h-10 rounded-lg bg-muted/30 hover:bg-primary/20 flex items-center justify-center transition-smooth"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 rounded-lg bg-void-mist flex items-center justify-center text-text-tertiary hover:text-spectral-cyan hover:bg-void-whisper transition-colors"
                   aria-label={social.label}
                 >
-                  <Icon
-                    name={social.icon as any}
-                    size={20}
-                    className="text-muted-foreground hover:text-primary"
-                  />
-                </a>
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
               ))}
             </div>
           </div>
-
+          
+          {/* Product Links */}
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-4">Product</h4>
-            <ul className="space-y-2">
-              {footerLinks.product.map((link, index) => (
-                <li key={index}>
-                  <Link
+            <h4 className="font-ui text-xs tracking-widest uppercase text-text-ghost mb-6">
+              Product
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.product.map((link) => (
+                <li key={link.label}>
+                  <Link 
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-smooth"
+                    className="font-prose text-sm text-text-tertiary hover:text-spectral-cyan transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -103,15 +120,18 @@ const FooterSection = () => {
               ))}
             </ul>
           </div>
-
+          
+          {/* Company Links */}
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-4">Company</h4>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link, index) => (
-                <li key={index}>
-                  <Link
+            <h4 className="font-ui text-xs tracking-widest uppercase text-text-ghost mb-6">
+              Company
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.company.map((link) => (
+                <li key={link.label}>
+                  <Link 
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-smooth"
+                    className="font-prose text-sm text-text-tertiary hover:text-spectral-cyan transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -119,15 +139,18 @@ const FooterSection = () => {
               ))}
             </ul>
           </div>
-
+          
+          {/* Legal Links */}
           <div>
-            <h4 className="text-sm font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2">
-              {footerLinks.legal.map((link, index) => (
-                <li key={index}>
-                  <Link
+            <h4 className="font-ui text-xs tracking-widest uppercase text-text-ghost mb-6">
+              Legal
+            </h4>
+            <ul className="space-y-3">
+              {footerLinks.legal.map((link) => (
+                <li key={link.label}>
+                  <Link 
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-smooth"
+                    className="font-prose text-sm text-text-tertiary hover:text-spectral-cyan transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -136,27 +159,37 @@ const FooterSection = () => {
             </ul>
           </div>
         </div>
-
-        <div className="pt-8 border-t border-border">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <p className="text-sm text-muted-foreground">
-              &copy; {currentYear} Stxryai. All rights reserved.
-            </p>
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Icon name="ShieldCheckIcon" size={16} className="text-success" />
-                <span className="text-xs text-muted-foreground">SSL Secured</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Icon name="LockClosedIcon" size={16} className="text-success" />
-                <span className="text-xs text-muted-foreground">Stripe Verified</span>
-              </div>
-            </div>
+        
+        {/* Bottom Bar */}
+        <div className="mt-16 pt-8 border-t border-membrane flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-text-ghost">
+            © {currentYear} Stxryai. All rights reserved.
+          </p>
+          
+          <div className="flex items-center gap-6">
+            <Link 
+              href="/accessibility"
+              className="text-xs text-text-ghost hover:text-text-tertiary transition-colors"
+            >
+              Accessibility
+            </Link>
+            <Link 
+              href="/sitemap"
+              className="text-xs text-text-ghost hover:text-text-tertiary transition-colors"
+            >
+              Sitemap
+            </Link>
           </div>
         </div>
       </div>
+      
+      {/* Ambient glow at bottom */}
+      <div 
+        className="absolute inset-x-0 bottom-0 h-48 pointer-events-none opacity-30"
+        style={{
+          background: 'radial-gradient(ellipse at center bottom, rgba(0, 245, 212, 0.05) 0%, transparent 70%)',
+        }}
+      />
     </footer>
   );
-};
-
-export default FooterSection;
+}

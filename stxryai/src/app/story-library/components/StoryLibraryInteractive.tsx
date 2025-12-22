@@ -2,24 +2,47 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import SearchBar from './SearchBar';
-import FilterPanel from './FilterPanel';
-import type { FilterOptions } from './FilterPanel';
-import StoryCard from './StoryCard';
+import { motion, AnimatePresence } from 'framer-motion';
 import { storyService } from '@/services/storyService';
 import { useAuth } from '@/contexts/AuthContext';
-import { StoryGridSkeleton } from '@/components/ui/Skeleton';
-import { staggerContainer, slideUp } from '@/lib/animations/variants';
-import { toast } from 'sonner';
-import ThemeToggle from '@/components/common/ThemeToggle';
-import NotificationBell from '@/components/ui/NotificationBell';
-import UserMenu from '@/components/ui/UserMenu';
-import ScrollToTop from '@/components/ui/ScrollToTop';
+import VoidBackground from '@/components/void/VoidBackground';
+import EtherealNav from '@/components/void/EtherealNav';
+import DimensionalCard from '@/components/void/DimensionalCard';
+import SpectralButton from '@/components/void/SpectralButton';
+import TemporalReveal, { StaggerContainer, StaggerItem } from '@/components/void/TemporalReveal';
+import ParticleField from '@/components/void/ParticleField';
 import { Story } from '@/types/database';
+import { 
+  Search, 
+  Filter, 
+  BookOpen, 
+  Clock, 
+  Star, 
+  Users,
+  Sparkles,
+  ChevronDown,
+  X,
+  Loader2,
+} from 'lucide-react';
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 12;
 
+const GENRES = [
+  'All',
+  'Fantasy',
+  'Sci-Fi',
+  'Horror',
+  'Romance',
+  'Mystery',
+  'Adventure',
+  'Thriller',
+];
+
+/**
+ * STORY LIBRARY
+ * The infinite archive of narratives.
+ * Where every story awaits its reader.
+ */
 export default function StoryLibraryInteractive() {
   const router = useRouter();
   const { profile } = useAuth();
@@ -28,170 +51,331 @@ export default function StoryLibraryInteractive() {
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
-  const [filters, setFilters] = useState<FilterOptions>({
-    genres: [],
-    completionStatus: ['All'],
-    minRating: 0,
-    contentMaturity: [],
-    sortBy: 'relevance',
-  });
+  const [loadingMore, setLoadingMore] = useState(false);
+  
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('All');
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState<'popular' | 'newest' | 'rating'>('popular');
 
-  const loadStories = useCallback(
-    async (reset = false) => {
+  const loadStories = useCallback(async (reset = false) => {
+    if (reset) {
       setLoading(true);
-      try {
-        const newStories = await storyService.getFilteredStories({
-          ...filters,
-          searchQuery,
-          page: reset ? 1 : page,
-          pageSize: PAGE_SIZE,
-        });
+    } else {
+      setLoadingMore(true);
+    }
+    
+    try {
+      const filters = {
+        genres: selectedGenre !== 'All' ? [selectedGenre] : [],
+        searchQuery,
+        page: reset ? 1 : page,
+        pageSize: PAGE_SIZE,
+        sortBy,
+        completionStatus: ['All'],
+        minRating: 0,
+        contentMaturity: [],
+      };
+      
+      const newStories = await storyService.getFilteredStories(filters);
 
-        if (reset) {
-          setStories(newStories);
-        } else {
-          setStories((prev) => [...prev, ...newStories]);
-        }
-
-        setHasMore(newStories.length === PAGE_SIZE);
-        setError('');
-      } catch (err: any) {
-        // Check for connection errors (handled by service layer now)
-        if (
-          err?.message?.includes('Cannot connect to database') ||
-          err?.message?.includes('Supabase project') ||
-          err?.message?.includes('Failed to fetch') ||
-          err?.message?.includes('timed out')
-        ) {
-          setError(
-            err.message || 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.'
-          );
-        } else {
-          setError('Failed to load stories. Please try again.');
-        }
-        setStories([]);
-      } finally {
-        setLoading(false);
+      if (reset) {
+        setStories(newStories);
+      } else {
+        setStories((prev) => [...prev, ...newStories]);
       }
-    },
-    [filters, searchQuery, page]
-  );
+
+      setHasMore(newStories.length === PAGE_SIZE);
+      setError('');
+    } catch (err: any) {
+      setError('Failed to load stories. Please try again.');
+      if (reset) setStories([]);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [selectedGenre, searchQuery, page, sortBy]);
 
   useEffect(() => {
+    setPage(1);
     loadStories(true);
-  }, [filters, searchQuery]);
+  }, [selectedGenre, searchQuery, sortBy]);
 
-  const handleLoadMore = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setPage(1);
-  };
-
-  const handleFilterChange = (newFilters: FilterOptions) => {
-    setFilters(newFilters);
-    setPage(1);
-  };
+  useEffect(() => {
+    if (page > 1) {
+      loadStories(false);
+    }
+  }, [page]);
 
   const handleStoryClick = (storyId: string, isPremium: boolean) => {
-    if (isPremium && profile?.tier === 'free') {
-      toast.warning('This is a premium story. Please upgrade to read.');
+    if (isPremium && profile?.subscription_tier !== 'premium') {
       router.push('/pricing');
-      return;
+    } else {
+      router.push(`/story-reader?storyId=${storyId}`);
     }
-    router.push(`/story-reader/${storyId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Header */}
-      <header className="bg-card/80 backdrop-blur-lg shadow-sm border-b border-border sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <motion.h1
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-3xl font-bold text-foreground"
-            >
+    <VoidBackground variant="default">
+      <ParticleField particleCount={30} color="rgba(0, 245, 212, 0.2)" />
+      <EtherealNav />
+      
+      <main className="min-h-screen pt-24 pb-16">
+        <div className="container-void">
+          {/* Header */}
+          <TemporalReveal className="text-center mb-12">
+            <span className="text-xs font-ui tracking-[0.3em] uppercase text-spectral-cyan mb-4 block">
+              The Archive
+            </span>
+            <h1 className="font-display text-4xl md:text-6xl tracking-wide text-text-primary mb-4">
               Story Library
-            </motion.h1>
-            <div className="flex items-center gap-3">
-              <ThemeToggle />
-              <NotificationBell />
-              <UserMenu />
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <SearchBar onSearch={handleSearch} isPremium={profile?.tier === 'premium'} />
-
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1">
-            <FilterPanel filters={filters} onFilterChange={handleFilterChange} />
-          </div>
-
-          <div className="lg:col-span-3">
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+            </h1>
+            <p className="font-prose text-lg text-text-tertiary max-w-2xl mx-auto">
+              Discover infinite narratives waiting to be explored. Every story branches into countless possibilities.
+            </p>
+          </TemporalReveal>
+          
+          {/* Search & Filters */}
+          <TemporalReveal delay={0.1} className="mb-12">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              {/* Search */}
+              <div className="relative w-full md:w-96">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-ghost" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search stories..."
+                  className="input-temporal pl-12 w-full"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-text-ghost hover:text-text-tertiary"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </div>
-            )}
-
-            {loading && page === 1 ? (
-              <StoryGridSkeleton count={6} />
-            ) : stories.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-20 bg-card/50 rounded-xl"
-              >
-                <h3 className="text-xl font-semibold text-foreground">No Stories Found</h3>
-                <p className="text-muted-foreground text-lg mt-2">
-                  Try adjusting your search or filters.
-                </p>
-              </motion.div>
-            ) : (
-              <>
-                <motion.div
-                  variants={staggerContainer}
-                  initial="hidden"
-                  animate="visible"
-                  className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+              
+              {/* Genre Tabs */}
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                {GENRES.map((genre) => (
+                  <button
+                    key={genre}
+                    onClick={() => setSelectedGenre(genre)}
+                    className={`
+                      px-4 py-2 rounded-lg text-xs font-ui tracking-wide uppercase whitespace-nowrap
+                      transition-all duration-200
+                      ${selectedGenre === genre 
+                        ? 'bg-spectral-cyan text-void-absolute' 
+                        : 'bg-void-mist text-text-tertiary hover:text-text-primary hover:bg-void-whisper'
+                      }
+                    `}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Sort */}
+              <div className="relative">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="appearance-none bg-void-mist border border-membrane rounded-lg px-4 py-2.5 pr-10 text-sm text-text-secondary focus:outline-none focus:border-spectral-cyan cursor-pointer"
                 >
-                  {stories.map((story) => (
-                    <motion.div key={story.id} variants={slideUp}>
-                      <StoryCard
-                        story={story}
-                        onClick={() => handleStoryClick(story.id, story.is_premium)}
-                      />
+                  <option value="popular">Most Popular</option>
+                  <option value="newest">Newest</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-ghost pointer-events-none" />
+              </div>
+            </div>
+          </TemporalReveal>
+          
+          {/* Error State */}
+          {error && (
+            <TemporalReveal>
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-spectral-rose/10 flex items-center justify-center">
+                  <X className="w-8 h-8 text-spectral-rose" />
+                </div>
+                <p className="text-text-tertiary mb-4">{error}</p>
+                <SpectralButton onClick={() => loadStories(true)}>
+                  Try Again
+                </SpectralButton>
+              </div>
+            </TemporalReveal>
+          )}
+          
+          {/* Loading State */}
+          {loading && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <motion.div 
+                  key={i} 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="group"
+                >
+                  <div className="void-glass rounded-2xl overflow-hidden h-[320px] relative">
+                    {/* Cover skeleton */}
+                    <div className="h-40 bg-void-mist relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                    </div>
+                    
+                    {/* Content skeleton */}
+                    <div className="p-5 space-y-3">
+                      <div className="h-5 bg-void-mist rounded w-3/4 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                      </div>
+                      <div className="h-3 bg-void-mist rounded w-1/2 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                      </div>
+                      <div className="h-3 bg-void-mist rounded w-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                      </div>
+                      <div className="h-3 bg-void-mist rounded w-2/3 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                      </div>
+                      <div className="flex gap-4 mt-4">
+                        <div className="h-3 bg-void-mist rounded w-12 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                        </div>
+                        <div className="h-3 bg-void-mist rounded w-12 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                        </div>
+                        <div className="h-3 bg-void-mist rounded w-12 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+          
+          {/* Stories Grid */}
+          {!loading && !error && (
+            <>
+              {stories.length > 0 ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {stories.map((story, index) => (
+                    <motion.div
+                      key={story.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05, duration: 0.5 }}
+                    >
+                      <DimensionalCard
+                        onClick={() => handleStoryClick(story.id, story.is_premium || false)}
+                        className="h-full group"
+                      >
+                        {/* Cover Image */}
+                        <div className="relative h-40 overflow-hidden rounded-t-2xl -mx-px -mt-px">
+                          {story.cover_image_url ? (
+                            <img
+                              src={story.cover_image_url}
+                              alt={story.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-spectral-cyan/20 to-spectral-violet/20 flex items-center justify-center">
+                              <BookOpen className="w-10 h-10 text-text-ghost" />
+                            </div>
+                          )}
+                          
+                          <div className="absolute inset-0 bg-gradient-to-t from-void-elevated via-transparent to-transparent" />
+                          
+                          {/* Badges */}
+                          <div className="absolute top-3 left-3 flex items-center gap-2">
+                            {story.genre && (
+                              <span className="px-2 py-1 rounded text-[10px] font-ui tracking-wide uppercase bg-void-glass-heavy text-spectral-cyan">
+                                {story.genre}
+                              </span>
+                            )}
+                            {story.is_premium && (
+                              <span className="px-2 py-1 rounded text-[10px] font-ui tracking-wide uppercase bg-spectral-amber/20 text-spectral-amber flex items-center gap-1">
+                                <Sparkles className="w-3 h-3" />
+                                Premium
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Content */}
+                        <div className="p-5">
+                          <h3 className="font-display text-lg tracking-wide text-text-primary mb-2 line-clamp-1 group-hover:text-spectral-cyan transition-colors">
+                            {story.title}
+                          </h3>
+                          
+                          <p className="text-sm text-text-tertiary mb-1">
+                            by <span className="text-spectral-cyan">{story.author?.display_name || 'Unknown'}</span>
+                          </p>
+                          
+                          {story.description && (
+                            <p className="font-prose text-xs text-text-ghost line-clamp-2 mb-4">
+                              {story.description}
+                            </p>
+                          )}
+                          
+                          {/* Meta */}
+                          <div className="flex items-center gap-4 text-xs text-text-ghost">
+                            <span className="flex items-center gap-1">
+                              <Star className="w-3.5 h-3.5 text-spectral-amber" />
+                              {story.average_rating?.toFixed(1) || '—'}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="w-3.5 h-3.5" />
+                              {story.read_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5" />
+                              {story.estimated_read_time || '?'} min
+                            </span>
+                          </div>
+                        </div>
+                      </DimensionalCard>
                     </motion.div>
                   ))}
-                </motion.div>
-                {hasMore && (
-                  <div className="mt-8 text-center">
-                    <motion.button
-                      onClick={handleLoadMore}
-                      disabled={loading}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors shadow-lg disabled:opacity-50"
-                    >
-                      {loading ? 'Loading...' : 'Load More Stories'}
-                    </motion.button>
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-void-mist flex items-center justify-center">
+                    <BookOpen className="w-10 h-10 text-text-ghost" />
                   </div>
-                )}
-              </>
-            )}
-          </div>
+                  <h3 className="font-display text-xl text-text-primary mb-2">No stories found</h3>
+                  <p className="text-text-tertiary mb-6">
+                    {searchQuery ? 'Try adjusting your search terms' : 'Check back later for new stories'}
+                  </p>
+                  {searchQuery && (
+                    <SpectralButton variant="secondary" onClick={() => setSearchQuery('')}>
+                      Clear Search
+                    </SpectralButton>
+                  )}
+                </div>
+              )}
+              
+              {/* Load More */}
+              {hasMore && stories.length > 0 && (
+                <div className="text-center mt-12">
+                  <SpectralButton
+                    variant="secondary"
+                    onClick={() => setPage(p => p + 1)}
+                    loading={loadingMore}
+                    icon={loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : undefined}
+                  >
+                    Load More Stories
+                  </SpectralButton>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </main>
-      <ScrollToTop />
-    </div>
+    </VoidBackground>
   );
 }

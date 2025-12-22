@@ -1,23 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-
-import '@/styles/index.css';
+import '@/styles/tailwind.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import AdSenseScript from '@/components/AdSenseScript';
 import ToastProvider from '@/components/ui/Toast';
-import CommandPalette from '@/components/ui/CommandPalette';
-import MobileNavigation from '@/components/mobile/MobileNavigation';
-import SentientCursor from '@/components/sentient/SentientCursor';
-import AdaptiveInterface from '@/components/sentient/AdaptiveInterface';
-import NonlinearNavigation from '@/components/sentient/NonlinearNavigation';
 import { defaultMetadata } from './metadata';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-});
-
+/**
+ * ROOT LAYOUT
+ * The foundation upon which all pages rest.
+ * Minimal providers, maximum performance.
+ */
 export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
@@ -27,27 +19,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <AdSenseScript />
+      <head>
+        {/* Preconnect to font sources for performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
+      <body className="font-ui antialiased bg-void-absolute text-text-primary min-h-screen">
         <AuthProvider>
           <ThemeProvider>
-            <AdaptiveInterface>
-              <ToastProvider />
-              <CommandPalette />
-              <SentientCursor />
-              <NonlinearNavigation />
-              <MobileNavigation />
-              {children}
-            </AdaptiveInterface>
+            <ToastProvider />
+            {children}
           </ThemeProvider>
         </AuthProvider>
-
-        <script
-          type="module"
-          async
-          src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fstxryai2284back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.10"
-        />
-        <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.1" />
       </body>
     </html>
   );
