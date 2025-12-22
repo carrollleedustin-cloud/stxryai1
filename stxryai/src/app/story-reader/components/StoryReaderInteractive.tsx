@@ -14,6 +14,7 @@ import BranchVisualization from './BranchVisualization';
 import FloatingChatPanel from './FloatingChatPanel';
 import NPCInteractionPanel from './NPCInteractionPanel';
 import DynamicPacingIndicator from './DynamicPacingIndicator';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StoryReaderInteractive() {
   const router = useRouter();
@@ -36,11 +37,14 @@ export default function StoryReaderInteractive() {
     scrollDepth: 0,
     timeOnScene: 0,
   });
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(18); // Increased default font size
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isDistractionFree, setIsDistractionFree] = useState(false);
   const [chapterStartTime, setChapterStartTime] = useState<number | null>(null);
   const [aiGeneratedSegments, setAiGeneratedSegments] = useState<string[]>([]);
+  
+  // Sidecar visibility state
+  const [isSidecarOpen, setIsSidecarOpen] = useState(false);
 
   const handleScrollDepthChange = useCallback(
     (depth: number) => {
@@ -195,6 +199,7 @@ export default function StoryReaderInteractive() {
 
   const toggleDistractionFree = () => {
     setIsDistractionFree(!isDistractionFree);
+    setIsSidecarOpen(false); // Close sidecar when focusing
   };
 
   const handleChoiceSelect = async (choice: any) => {
@@ -282,10 +287,12 @@ export default function StoryReaderInteractive() {
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
-          <span className="text-sm font-medium">Syncing story…</span>
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="relative">
+          <div className="h-16 w-16 animate-spin rounded-full border-2 border-violet-500/20 border-t-violet-500" />
+          <div className="absolute inset-0 flex items-center justify-center">
+             <div className="h-8 w-8 animate-ping rounded-full bg-violet-500/10" />
+          </div>
         </div>
       </div>
     );
@@ -293,17 +300,19 @@ export default function StoryReaderInteractive() {
 
   if (!story || chapters.length === 0) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="max-w-md text-center">
-          <p className="text-xl font-semibold text-foreground">Story not found.</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            This link may be expired, or the story has no readable chapters yet.
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="max-w-md text-center space-y-4">
+          <p className="text-2xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
+            Reality Fracture
+          </p>
+          <p className="text-muted-foreground">
+            The narrative thread you seek cannot be found.
           </p>
           <button
             onClick={() => router.push('/story-library')}
-            className="mt-6 btn-primary"
+            className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
           >
-            Back to Library
+            Return to Library
           </button>
         </div>
       </div>
@@ -311,10 +320,12 @@ export default function StoryReaderInteractive() {
   }
 
   return (
-    <div className={`grid grid-cols-1 gap-6 ${isDistractionFree ? '' : 'lg:grid-cols-[minmax(0,1fr)_380px]'}`}>
-      {/* Main reading lane */}
-      <div className="space-y-6">
-        <ReadingControls
+    <div className="relative min-h-screen pb-32">
+       {/* Background Grid */}
+       <div className="fixed inset-0 pointer-events-none z-[-1] holographic-grid opacity-30" />
+       
+       {/* Controls */}
+       <ReadingControls
           currentTheme={appTheme}
           currentFontSize={fontSize}
           onThemeChange={setAppTheme}
@@ -326,41 +337,68 @@ export default function StoryReaderInteractive() {
           isDistractionFree={isDistractionFree}
         />
 
-        {error && (
-          <div className="rounded-2xl border border-error/30 bg-error/10 p-4">
-            <p className="text-sm text-error">{error}</p>
+        <main className={`relative transition-all duration-700 ease-out mx-auto px-4 ${isDistractionFree ? 'max-w-3xl' : 'max-w-6xl grid lg:grid-cols-[1fr_350px] gap-8'}`}>
+          
+          {/* Main Content Lane */}
+          <div className="space-y-12">
+            {error && (
+              <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-300">
+                {error}
+              </div>
+            )}
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentChapter?.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+              >
+                <StoryContent
+                  chapter={currentChapter}
+                  chapterNumber={currentChapterIndex + 1}
+                  fontSize={fontSize}
+                  onScrollDepthChange={handleScrollDepthChange}
+                  aiSegments={aiGeneratedSegments}
+                />
+              </motion.div>
+            </AnimatePresence>
+
+            {choices.length > 0 && (
+               <ChoiceSelector choices={choices} onChoiceSelect={handleChoiceSelect} />
+            )}
           </div>
-        )}
 
-        <StoryContent
-          chapter={currentChapter}
-          chapterNumber={currentChapterIndex + 1}
-          fontSize={fontSize}
-          onScrollDepthChange={handleScrollDepthChange}
-          aiSegments={aiGeneratedSegments}
-        />
+          {/* Sidecar (Collapsible/Floating in mobile, sticky in desktop) */}
+          <AnimatePresence>
+            {!isDistractionFree && (
+              <motion.aside
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                className="hidden lg:block space-y-6 sticky top-28 h-fit"
+              >
+                {currentStory?.id && currentChapter && (
+                  <>
+                    <DynamicPacingIndicator storyId={currentStory.id} chapterId={currentChapter.id} />
+                    <NPCInteractionPanel storyId={currentStory.id} currentChapter={currentChapter.chapter_number} />
+                  </>
+                )}
 
-        {choices.length > 0 && <ChoiceSelector choices={choices} onChoiceSelect={handleChoiceSelect} />}
-      </div>
+                <BranchVisualization storyNodes={[]} currentNodeId="" isPremium={profile?.subscription_tier === 'premium'} />
+                <FloatingChatPanel
+                  storyId={currentStory?.id || ''}
+                  currentScene={currentChapter?.id}
+                  isPremium={profile?.subscription_tier === 'premium'}
+                />
+              </motion.aside>
+            )}
+          </AnimatePresence>
 
-      {/* Sidecar (AI + meta) */}
-      {!isDistractionFree && (
-        <aside className="space-y-6 lg:sticky lg:top-24 h-fit">
-          {currentStory?.id && currentChapter && (
-            <>
-              <NPCInteractionPanel storyId={currentStory.id} currentChapter={currentChapter.chapter_number} />
-              <DynamicPacingIndicator storyId={currentStory.id} chapterId={currentChapter.id} />
-            </>
-          )}
-
-          <BranchVisualization storyNodes={[]} currentNodeId="" isPremium={profile?.subscription_tier === 'premium'} />
-          <FloatingChatPanel
-            storyId={currentStory?.id || ''}
-            currentScene={currentChapter?.id}
-            isPremium={profile?.subscription_tier === 'premium'}
-          />
-        </aside>
-      )}
+        </main>
+        
+        {/* Mobile Toggle for Sidecar (if needed) - can add later */}
     </div>
   );
 }

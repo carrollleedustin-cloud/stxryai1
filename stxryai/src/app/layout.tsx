@@ -11,6 +11,7 @@ import MobileNavigation from '@/components/mobile/MobileNavigation';
 import SentientCursor from '@/components/sentient/SentientCursor';
 import AdaptiveInterface from '@/components/sentient/AdaptiveInterface';
 import NonlinearNavigation from '@/components/sentient/NonlinearNavigation';
+import PrismLayout from '@/components/layout/PrismLayout'; // Import PrismLayout
 import { defaultMetadata } from './metadata';
 
 const inter = Inter({
@@ -32,12 +33,14 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider>
             <AdaptiveInterface>
-              <ToastProvider />
-              <CommandPalette />
-              <SentientCursor />
-              <NonlinearNavigation />
-              <MobileNavigation />
-              {children}
+              <PrismLayout>
+                <ToastProvider />
+                <CommandPalette />
+                <SentientCursor />
+                <NonlinearNavigation />
+                <MobileNavigation />
+                {children}
+              </PrismLayout>
             </AdaptiveInterface>
           </ThemeProvider>
         </AuthProvider>

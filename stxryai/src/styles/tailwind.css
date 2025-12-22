@@ -131,6 +131,10 @@
     letter-spacing: -0.02em;
   }
   
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
   h1 {
     @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl;
   }
@@ -342,6 +346,7 @@
   
   .scrollbar-modern::-webkit-scrollbar-thumb:hover {
     background: var(--gradient-accent);
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
   }
   
   /* Gradient Backgrounds */
@@ -368,6 +373,27 @@
       linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
       linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
     background-size: 50px 50px;
+  }
+  
+  /* Additional Prism Animations */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes gradient-x {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 3s ease infinite;
   }
 }
 
