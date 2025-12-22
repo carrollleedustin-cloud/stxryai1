@@ -149,49 +149,87 @@ export default function DashboardInteractive() {
       return;
     }
 
-    try {
-      setLoading(true);
-      setError('');
-      
-      // Get services with lazy loading
-      const services = await getServices();
-      
-      // Load data with better error handling
-      const [progressResult, activitiesResult, badgesResult] = await Promise.allSettled([
-        services.userProgressService.getAllUserProgress(user.id).catch((err: any) => {
-          console.warn('Failed to load progress:', err);
-          return [];
-        }),
-        services.userActivityService.getUserActivities(user.id, 10).catch((err: any) => {
-          console.warn('Failed to load activities:', err);
-          return [];
-        }),
-        services.userProgressService.getUserBadges(user.id).catch((err: any) => {
-          console.warn('Failed to load badges:', err);
-          return [];
-        }),
-      ]);
+    // Add a timeout wrapper to prevent infinite hanging
+    const loadWithTimeout = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        
+        // Get services with lazy loading
+        const services = await getServices();
+        
+        // Load data with better error handling and individual timeouts
+        // Each service call has its own timeout, and we wrap the whole thing in a timeout too
+        const loadPromise = Promise.allSettled([
+          services.userProgressService.getAllUserProgress(user.id).catch((err: any) => {
+            console.warn('Failed to load progress:', err);
+            // Check if it's a connection error
+            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
+              throw err; // Re-throw connection errors so we can show them
+            }
+            return [];
+          }),
+          services.userActivityService.getUserActivities(user.id, 10).catch((err: any) => {
+            console.warn('Failed to load activities:', err);
+            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
+              throw err;
+            }
+            return [];
+          }),
+          services.userProgressService.getUserBadges(user.id).catch((err: any) => {
+            console.warn('Failed to load badges:', err);
+            if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('timed out')) {
+              throw err;
+            }
+            return [];
+          }),
+        ]);
 
-      const progressData = progressResult.status === 'fulfilled' ? progressResult.value : [];
-      const activitiesData = activitiesResult.status === 'fulfilled' ? activitiesResult.value : [];
-      const badgesData = badgesResult.status === 'fulfilled' ? badgesResult.value : [];
+        // Add overall timeout of 10 seconds using Promise.race
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('Dashboard loading timed out. Please check your connection.'));
+          }, 10000);
+        });
 
-      setContinueReading(Array.isArray(progressData) ? progressData.filter((p: any) => !p?.is_completed) : []);
-      setActivities(Array.isArray(activitiesData) ? activitiesData : []);
-      setBadges(Array.isArray(badgesData) ? badgesData : []);
-      setError('');
-      setDataLoaded(true);
-    } catch (err: any) {
-      console.error('Dashboard load error:', err);
-      setError('Some data failed to load, but you can still use the dashboard.');
-      // Set empty arrays so dashboard still renders
-      setContinueReading([]);
-      setActivities([]);
-      setBadges([]);
-      setDataLoaded(true);
-    } finally {
-      setLoading(false);
-    }
+        const results = await Promise.race([
+          loadPromise,
+          timeoutPromise,
+        ]);
+
+        // If we got here, loadPromise completed (timeout would have thrown)
+        const [progressResult, activitiesResult, badgesResult] = results as PromiseSettledResult<any>[];
+
+        const progressData = progressResult?.status === 'fulfilled' ? progressResult.value : [];
+        const activitiesData = activitiesResult?.status === 'fulfilled' ? activitiesResult.value : [];
+        const badgesData = badgesResult?.status === 'fulfilled' ? badgesResult.value : [];
+
+        setContinueReading(Array.isArray(progressData) ? progressData.filter((p: any) => !p?.is_completed) : []);
+        setActivities(Array.isArray(activitiesData) ? activitiesData : []);
+        setBadges(Array.isArray(badgesData) ? badgesData : []);
+        setError('');
+        setDataLoaded(true);
+      } catch (err: any) {
+        console.error('Dashboard load error:', err);
+        // Check if it's a connection error
+        if (err?.message?.includes('Cannot connect to database') || err?.message?.includes('Supabase project')) {
+          setError(err.message || 'Cannot connect to database. Your Supabase project may be paused or deleted. Please visit your Supabase dashboard to check project status.');
+        } else if (err?.message?.includes('timed out')) {
+          setError('Request timed out. Please check your internet connection and try again.');
+        } else {
+          setError('Some data failed to load, but you can still use the dashboard.');
+        }
+        // Set empty arrays so dashboard still renders
+        setContinueReading([]);
+        setActivities([]);
+        setBadges([]);
+        setDataLoaded(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    await loadWithTimeout();
   }, [user, dataLoaded]);
 
   useEffect(() => {

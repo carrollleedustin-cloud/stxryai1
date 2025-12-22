@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase/client';
 import { upsertStoryReview } from '@/lib/supabase/typed';
 import { Story } from '@/types/database';
+import { withTimeout, isConnectionError, getConnectionErrorMessage } from '@/lib/supabase/timeout';
 
 export interface StoryFilters {
   genre?: string;
@@ -53,55 +54,71 @@ export const storyService = {
   },
 
   async getFilteredStories(filters: FilterOptions = {}): Promise<Story[]> {
-    let query = supabase
-      .from('stories')
-      .select('*, author:users!user_id(display_name, avatar_url)')
-      .eq('is_published', true);
+    try {
+      let query = supabase
+        .from('stories')
+        .select('*, author:users!user_id(display_name, avatar_url)')
+        .eq('is_published', true);
 
-    // Search
-    if (filters.searchQuery) {
-      query = query.textSearch('title', filters.searchQuery, { type: 'websearch' });
-    }
-
-    // Filters
-    if (filters.genres && filters.genres.length > 0) {
-      query = query.in('genre', filters.genres);
-    }
-    if (filters.minRating && filters.minRating > 0) {
-      query = query.gte('rating', filters.minRating);
-    }
-
-    // Sorting
-    if (filters.sortBy) {
-      switch (filters.sortBy) {
-        case 'popular':
-          query = query.order('view_count', { ascending: false });
-          break;
-        case 'newest':
-          query = query.order('published_at', { ascending: false, nullsFirst: false });
-          break;
-
-        case 'rating':
-          query = query.order('rating', { ascending: false });
-          break;
-        default: // relevance
-          // default order is fine for now
-          break;
+      // Search
+      if (filters.searchQuery) {
+        query = query.textSearch('title', filters.searchQuery, { type: 'websearch' });
       }
-    } else {
-      query = query.order('published_at', { ascending: false, nullsFirst: false });
-    }
 
-    // Pagination
-    if (filters.page && filters.pageSize) {
-      const from = (filters.page - 1) * filters.pageSize;
-      const to = from + filters.pageSize - 1;
-      query = query.range(from, to);
-    }
+      // Filters
+      if (filters.genres && filters.genres.length > 0) {
+        query = query.in('genre', filters.genres);
+      }
+      if (filters.minRating && filters.minRating > 0) {
+        query = query.gte('rating', filters.minRating);
+      }
 
-    const { data, error } = await query;
-    if (error) throw error;
-    return data as Story[];
+      // Sorting
+      if (filters.sortBy) {
+        switch (filters.sortBy) {
+          case 'popular':
+            query = query.order('view_count', { ascending: false });
+            break;
+          case 'newest':
+            query = query.order('published_at', { ascending: false, nullsFirst: false });
+            break;
+
+          case 'rating':
+            query = query.order('rating', { ascending: false });
+            break;
+          default: // relevance
+            // default order is fine for now
+            break;
+        }
+      } else {
+        query = query.order('published_at', { ascending: false, nullsFirst: false });
+      }
+
+      // Pagination
+      if (filters.page && filters.pageSize) {
+        const from = (filters.page - 1) * filters.pageSize;
+        const to = from + filters.pageSize - 1;
+        query = query.range(from, to);
+      }
+
+      const { data, error } = await withTimeout(
+        query as Promise<any>,
+        { timeout: 8000, errorMessage: 'Request timed out while loading stories' }
+      );
+
+      if (error) {
+        if (isConnectionError(error)) {
+          throw new Error(getConnectionErrorMessage(error));
+        }
+        throw error;
+      }
+      return (data || []) as Story[];
+    } catch (err: any) {
+      if (isConnectionError(err)) {
+        throw new Error(getConnectionErrorMessage(err));
+      }
+      throw err;
+    }
   },
 
   async getStoryById(storyId: string) {
