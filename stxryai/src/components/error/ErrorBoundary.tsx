@@ -41,8 +41,9 @@ export class ErrorBoundary extends Component<Props, State> {
     this.props.onError?.(error, errorInfo);
 
     // Send to error tracking service in production
-    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-      // Dynamic import to avoid bundling error tracking in client if not configured
+    // ErrorBoundary only runs on client, but keeping consistent with other error tracking
+    if (process.env.NODE_ENV === 'production') {
+      // Dynamic import to avoid bundling error tracking if not configured
       import('@/lib/error-tracking').then(({ errorTracking }) => {
         errorTracking.captureException(error, {
           level: 'error',
