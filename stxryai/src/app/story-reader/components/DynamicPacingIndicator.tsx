@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { narrativeAIService } from '@/services/narrativeAIService';
 import { useAuth } from '@/contexts/AuthContext';
+import { PrismPanel } from '@/components/ui/prism/PrismPanel';
 
 interface DynamicPacingIndicatorProps {
   storyId: string;
@@ -39,20 +40,20 @@ export default function DynamicPacingIndicator({
 
   const getPacingColor = (pacing: string) => {
     const colors: Record<string, string> = {
-      slow: 'bg-blue-500',
-      balanced: 'bg-green-500',
-      fast: 'bg-orange-500',
+      slow: 'bg-secondary',
+      balanced: 'bg-success',
+      fast: 'bg-warning',
     };
     return colors[pacing] || colors.balanced;
   };
 
   const getEngagementColor = (level: string) => {
     const colors: Record<string, string> = {
-      very_low: 'text-red-600',
-      low: 'text-orange-600',
-      medium: 'text-yellow-600',
-      high: 'text-green-600',
-      very_high: 'text-blue-600',
+      very_low: 'text-error',
+      low: 'text-warning',
+      medium: 'text-accent',
+      high: 'text-success',
+      very_high: 'text-secondary',
     };
     return colors[level] || colors.medium;
   };
@@ -76,85 +77,68 @@ export default function DynamicPacingIndicator({
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-40">
-      {/* Compact View */}
-      {!showDetails && (
+    <PrismPanel className="p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h4 className="font-heading text-lg font-bold tracking-tight text-foreground">Pacing</h4>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {getPacingDescription(pacingInfo.recommendedPacing, pacingInfo.adjustmentFactor)}
+          </p>
+        </div>
         <button
-          onClick={() => setShowDetails(true)}
-          className={`${getPacingColor(pacingInfo.recommendedPacing)} text-white rounded-full p-4 shadow-lg hover:scale-110 transition-transform`}
-          title="Show pacing details"
+          onClick={() => setShowDetails((s) => !s)}
+          className="rounded-full border border-border bg-background/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-background/50 transition-smooth"
+          aria-expanded={showDetails}
         >
-          <span className="text-2xl">{getPacingIcon(pacingInfo.recommendedPacing)}</span>
+          {showDetails ? 'Hide' : 'Details'}
         </button>
-      )}
+      </div>
 
-      {/* Detailed View */}
+      <div className="mt-4 flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">Current</span>
+        <span
+          className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold text-white ${getPacingColor(
+            pacingInfo.recommendedPacing
+          )}`}
+        >
+          <span aria-hidden="true">{getPacingIcon(pacingInfo.recommendedPacing)}</span>
+          <span className="capitalize">{pacingInfo.recommendedPacing}</span>
+        </span>
+      </div>
+
       {showDetails && (
-        <div className="bg-white rounded-lg shadow-xl p-4 w-80 border border-gray-200">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold text-gray-900">Story Pacing</h4>
-            <button
-              onClick={() => setShowDetails(false)}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Pacing Status */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">Current Pacing</span>
-              <span
-                className={`${getPacingColor(pacingInfo.recommendedPacing)} text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1`}
-              >
-                {getPacingIcon(pacingInfo.recommendedPacing)}
-                {pacingInfo.recommendedPacing}
-              </span>
-            </div>
-            <p className="text-xs text-gray-500">
-              {getPacingDescription(pacingInfo.recommendedPacing, pacingInfo.adjustmentFactor)}
-            </p>
-          </div>
-
-          {/* Engagement Level */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">Your Engagement</span>
-              <span
-                className={`${getEngagementColor(pacingInfo.engagementLevel)} font-medium text-sm capitalize`}
-              >
+        <div className="mt-4 space-y-4">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Engagement</span>
+              <span className={`${getEngagementColor(pacingInfo.engagementLevel)} text-sm font-semibold capitalize`}>
                 {pacingInfo.engagementLevel.replace('_', ' ')}
               </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="mt-2 h-2 w-full rounded-full bg-muted/30 overflow-hidden">
               <div
-                className={`${getPacingColor(pacingInfo.recommendedPacing)} h-2 rounded-full transition-all`}
-                style={{ width: `${pacingInfo.adjustmentFactor * 50}%` }}
-              ></div>
+                className={`h-full rounded-full ${getPacingColor(pacingInfo.recommendedPacing)} transition-smooth`}
+                style={{ width: `${Math.min(100, pacingInfo.adjustmentFactor * 50)}%` }}
+              />
             </div>
           </div>
 
-          {/* Adjustment Factor */}
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-3">
-            <p className="text-xs text-gray-600 mb-1">AI Pacing Adjustment</p>
-            <p className="text-sm font-medium text-gray-900">
+          <div className="rounded-2xl border border-border bg-background/25 p-3">
+            <p className="text-xs font-semibold text-muted-foreground">AI adjustment</p>
+            <p className="mt-1 text-sm text-foreground/85">
               {pacingInfo.adjustmentFactor < 1.0
-                ? 'Story will move faster based on your engagement'
+                ? 'The story will quicken—more momentum, tighter cuts.'
                 : pacingInfo.adjustmentFactor > 1.0
-                  ? 'Story will slow down for richer details'
-                  : 'Perfect pacing balance maintained'}
+                  ? 'The story will linger—richer texture, longer beats.'
+                  : 'Balance is stable—no correction needed.'}
             </p>
           </div>
 
-          {/* Info Note */}
-          <div className="mt-3 pt-3 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
-              🤖 AI adapts the story pacing based on your reading patterns
-            </p>
-          </div>
+          <p className="text-[11px] text-muted-foreground">
+            🤖 AI adapts pacing from your reading patterns and choices.
+          </p>
         </div>
       )}
-    </div>
+    </PrismPanel>
   );
 }

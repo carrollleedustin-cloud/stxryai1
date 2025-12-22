@@ -58,48 +58,72 @@ export default function StoryContent({
 
   return (
     <>
-      <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 md:p-12">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <span className="inline-block px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold mb-4">
-              Chapter {chapterNumber}
-            </span>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {chapter?.title || 'Untitled Chapter'}
-            </h1>
-          </div>
-          <button
-            onClick={() => setIsReportModalOpen(true)}
-            className="text-sm text-gray-500 hover:text-red-600"
-          >
-            Report
-          </button>
-        </div>
+      <section className="relative overflow-hidden rounded-3xl border border-border bg-card/60 backdrop-blur-glass shadow-elevation-2">
+        {/* subtle aurora wash */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{
+            background:
+              'radial-gradient(1200px circle at 20% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 55%), radial-gradient(900px circle at 80% 20%, rgba(6, 182, 212, 0.18) 0%, transparent 55%), radial-gradient(1000px circle at 50% 90%, rgba(236, 72, 153, 0.14) 0%, transparent 60%)',
+          }}
+        />
 
-        <div ref={contentRef} className="prose prose-lg max-w-none overflow-y-auto max-h-[70vh]">
-          <p
-            className="text-gray-700 leading-relaxed whitespace-pre-wrap"
-            style={{ fontSize: `${fontSize}px` }}
-          >
-            {chapter?.content || 'No content available.'}
-          </p>
-
-          {/* Render AI-generated segments */}
-          {aiSegments && aiSegments.length > 0 && (
-            <div className="mt-8 pt-4 border-t border-gray-200">
-              {aiSegments.map((segment, index) => (
-                <p
-                  key={index}
-                  className="text-gray-500 leading-relaxed italic mb-2"
-                  style={{ fontSize: `${fontSize * 0.9}px` }}
-                >
-                  {segment}
-                </p>
-              ))}
+        <header className="relative px-6 pt-6 pb-4 md:px-10 md:pt-10 md:pb-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/40 px-3 py-1 text-xs font-semibold tracking-wide text-foreground/80">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent shadow-glow" />
+                <span>Chapter {chapterNumber}</span>
+              </div>
+              <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                {chapter?.title || 'Untitled Chapter'}
+              </h1>
             </div>
-          )}
+
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="shrink-0 rounded-full border border-border bg-background/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-background/50 hover:text-error transition-smooth"
+            >
+              Report
+            </button>
+          </div>
+        </header>
+
+        <div className="relative px-6 pb-6 md:px-10 md:pb-10">
+          <div
+            ref={contentRef}
+            className="scrollbar-modern max-h-[70vh] md:max-h-[calc(100vh-18rem)] overflow-y-auto pr-2"
+          >
+            <div className="prose max-w-none dark:prose-invert prose-headings:font-heading prose-headings:tracking-tight prose-p:leading-[1.9]">
+              <p className="whitespace-pre-wrap text-foreground/90" style={{ fontSize: `${fontSize}px` }}>
+                {chapter?.content || 'No content available.'}
+              </p>
+
+              {/* AI-generated segments (whisper channel) */}
+              {aiSegments && aiSegments.length > 0 && (
+                <aside className="mt-10 rounded-2xl border border-border bg-background/30 p-5">
+                  <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-secondary" />
+                    <span>AI resonance</span>
+                  </div>
+                  <div className="space-y-3">
+                    {aiSegments.map((segment, index) => (
+                      <p
+                        key={index}
+                        className="m-0 text-foreground/70 italic"
+                        style={{ fontSize: `${Math.max(12, fontSize * 0.92)}px` }}
+                      >
+                        {segment}
+                      </p>
+                    ))}
+                  </div>
+                </aside>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
       {chapter && (
         <ReportModal
           isOpen={isReportModalOpen}

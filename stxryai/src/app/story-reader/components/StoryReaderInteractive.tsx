@@ -282,20 +282,26 @@ export default function StoryReaderInteractive() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-indigo-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-primary" />
+          <span className="text-sm font-medium">Syncing story…</span>
+        </div>
       </div>
     );
   }
 
   if (!story || chapters.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-indigo-900">
-        <div className="text-center text-white">
-          <p className="text-xl">Story not found or no chapters available.</p>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="max-w-md text-center">
+          <p className="text-xl font-semibold text-foreground">Story not found.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            This link may be expired, or the story has no readable chapters yet.
+          </p>
           <button
             onClick={() => router.push('/story-library')}
-            className="mt-4 px-6 py-2 bg-white text-purple-900 rounded-lg hover:bg-gray-100"
+            className="mt-6 btn-primary"
           >
             Back to Library
           </button>
@@ -305,75 +311,55 @@ export default function StoryReaderInteractive() {
   }
 
   return (
-    <div
-      className={`grid grid-cols-1 lg:grid-cols-3 gap-6 ${isDistractionFree ? 'distraction-free' : ''}`}
-    >
-      {/* Main Story Content */}
-      <div className={`lg:col-span-2 space-y-6 ${isDistractionFree ? 'lg:col-span-3' : ''}`}>
-        <div
-          className={`bg-gradient-to-br ${appTheme === 'dark' ? 'from-purple-900 via-indigo-900 to-blue-900' : 'from-white to-gray-50'} rounded-xl shadow-2xl`}
-        >
-          <ReadingControls
-            currentTheme={appTheme}
-            currentFontSize={fontSize}
-            onThemeChange={setAppTheme}
-            onFontSizeChange={setFontSize}
-            onBookmark={handleBookmark}
-            isBookmarked={isBookmarked}
-            progress={((currentChapterIndex + 1) / chapters.length) * 100}
-            onToggleDistractionFree={toggleDistractionFree}
-            isDistractionFree={isDistractionFree}
-          />
+    <div className={`grid grid-cols-1 gap-6 ${isDistractionFree ? '' : 'lg:grid-cols-[minmax(0,1fr)_380px]'}`}>
+      {/* Main reading lane */}
+      <div className="space-y-6">
+        <ReadingControls
+          currentTheme={appTheme}
+          currentFontSize={fontSize}
+          onThemeChange={setAppTheme}
+          onFontSizeChange={setFontSize}
+          onBookmark={handleBookmark}
+          isBookmarked={isBookmarked}
+          progress={((currentChapterIndex + 1) / chapters.length) * 100}
+          onToggleDistractionFree={toggleDistractionFree}
+          isDistractionFree={isDistractionFree}
+        />
 
-          {error && (
-            <div className="px-4 py-4">
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            </div>
-          )}
-
-          <div className="px-4 py-8">
-            <StoryContent
-              chapter={currentChapter}
-              chapterNumber={currentChapterIndex + 1}
-              fontSize={fontSize}
-              onScrollDepthChange={handleScrollDepthChange}
-              aiSegments={aiGeneratedSegments}
-            />
-
-            {choices.length > 0 && (
-              <div className="mt-8">
-                <ChoiceSelector choices={choices} onChoiceSelect={handleChoiceSelect} />
-              </div>
-            )}
+        {error && (
+          <div className="rounded-2xl border border-error/30 bg-error/10 p-4">
+            <p className="text-sm text-error">{error}</p>
           </div>
-        </div>
+        )}
+
+        <StoryContent
+          chapter={currentChapter}
+          chapterNumber={currentChapterIndex + 1}
+          fontSize={fontSize}
+          onScrollDepthChange={handleScrollDepthChange}
+          aiSegments={aiGeneratedSegments}
+        />
+
+        {choices.length > 0 && <ChoiceSelector choices={choices} onChoiceSelect={handleChoiceSelect} />}
       </div>
 
-      {/* Sidebar with AI Features */}
+      {/* Sidecar (AI + meta) */}
       {!isDistractionFree && (
-        <div className="space-y-6">
+        <aside className="space-y-6 lg:sticky lg:top-24 h-fit">
           {currentStory?.id && currentChapter && (
             <>
-              <NPCInteractionPanel
-                storyId={currentStory.id}
-                currentChapter={currentChapter.chapter_number}
-              />
+              <NPCInteractionPanel storyId={currentStory.id} currentChapter={currentChapter.chapter_number} />
               <DynamicPacingIndicator storyId={currentStory.id} chapterId={currentChapter.id} />
             </>
           )}
-          <BranchVisualization
-            storyNodes={[]}
-            currentNodeId=""
-            isPremium={profile?.subscription_tier === 'premium'}
-          />
+
+          <BranchVisualization storyNodes={[]} currentNodeId="" isPremium={profile?.subscription_tier === 'premium'} />
           <FloatingChatPanel
             storyId={currentStory?.id || ''}
-            currentScene={currentChapter?.id || ''}
+            currentScene={currentChapter?.id}
             isPremium={profile?.subscription_tier === 'premium'}
           />
-        </div>
+        </aside>
       )}
     </div>
   );

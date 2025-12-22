@@ -63,34 +63,22 @@
   --depth-neon: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(0, 255, 255, 0.2);
 }
 
-/* Base Sentient Styling */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* =========================================================
+   OPT-IN SENTIENT MODE
+   - Enabled by adding `sentient` class to `<html>`
+   - Keeps Tailwind/base theme intact outside that mode
+   ========================================================= */
+
+html.sentient {
+  --sentient-ink: var(--void-black);
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: var(--void-black);
-  color: var(--neon-cyan);
-  overflow-x: hidden;
-}
-
-body {
-  font-family: var(--font-sans);
-  background: var(--void-black);
-  color: var(--neon-cyan);
-  line-height: 1.6;
+html.sentient body {
   position: relative;
-  min-height: 100vh;
-  overflow-x: hidden;
 }
 
-/* Rain-soaked Background Effect */
-body::before {
+/* Rain-soaked Background Effect (sentient mode only) */
+html.sentient body::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -454,5 +442,12 @@ body::before {
   z-index: 9999;
   mix-blend-mode: difference;
   box-shadow: var(--glow-cyan);
+}
+
+/* Custom Cursor Styles (opt-in) */
+@media (pointer: fine) {
+  html.sentient.sentient-cursor * {
+    cursor: none !important;
+  }
 }
 

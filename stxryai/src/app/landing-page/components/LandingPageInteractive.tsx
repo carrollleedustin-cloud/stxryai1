@@ -24,7 +24,7 @@ const LandingPageInteractive = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--void-black)' }}>
+    <div className="min-h-screen bg-background">
       <SentientHero />
       <LiveStatsSection />
       <InteractiveShowcaseSection />
