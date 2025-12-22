@@ -35,10 +35,14 @@ const AuthenticationInteractive = () => {
     }
   }, []);
 
-  // Redirect if already logged in
+  // Redirect if already logged in (but only once to prevent loops)
   useEffect(() => {
     if (user && isHydrated) {
-      router.push('/user-dashboard');
+      // Small delay to prevent redirect loops
+      const redirectTimer = setTimeout(() => {
+        router.push('/user-dashboard');
+      }, 200);
+      return () => clearTimeout(redirectTimer);
     }
   }, [user, isHydrated, router]);
 
@@ -76,9 +80,11 @@ const AuthenticationInteractive = () => {
     try {
       await signIn(data.email, data.password);
       toast.success('Login successful!');
-      // Use window.location for full page reload to ensure auth state is fresh
-      // This prevents redirect loops where dashboard checks user before auth updates
-      window.location.href = '/user-dashboard';
+      // Wait a moment for auth state to propagate, then redirect
+      // Using router.push instead of window.location to avoid full page reload flicker
+      setTimeout(() => {
+        router.push('/user-dashboard');
+      }, 100);
     } catch (err: any) {
       setIsLoading(false);
       setError(err.message);

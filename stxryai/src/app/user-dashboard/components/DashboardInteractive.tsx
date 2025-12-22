@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { authService } from '@/services/authService';
 import ContinueReadingWidget from './ContinueReadingWidget';
 import ReadingStatsPanel from './ReadingStatsPanel';
 import ActivityFeedItem from './ActivityFeedItem';
@@ -140,6 +141,7 @@ export default function DashboardInteractive() {
   const [activities, setActivities] = useState<any[]>([]);
   const [badges, setBadges] = useState<any[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const redirectAttemptedRef = useRef(false);
 
   // Define loadDashboardData BEFORE useEffect that uses it
   const loadDashboardData = useCallback(async () => {
@@ -202,7 +204,7 @@ export default function DashboardInteractive() {
       }
     }, 10000); // 10 second max - faster timeout
 
-    // Wait for auth to initialize
+    // Wait for auth to initialize - don't do anything while auth is loading
     if (authLoading) {
       return () => clearTimeout(maxTimeout);
     }
@@ -210,22 +212,44 @@ export default function DashboardInteractive() {
     // If user exists, load dashboard data immediately (no delay needed)
     if (user && !dataLoaded) {
       loadDashboardData();
+      // Reset redirect flag since we have a user
+      redirectAttemptedRef.current = false;
+      return () => clearTimeout(maxTimeout);
     }
 
-    // Small delay to allow auth state to propagate after redirect from login
-    // Only check for redirect if user is still null after delay
-    // This prevents redirect loops when coming from login page
-    const redirectCheck = setTimeout(() => {
-      if (!user) {
-        // Use window.location for more reliable redirect (prevents getting stuck)
-        window.location.href = '/authentication';
-      }
-    }, 500); // 500ms delay to allow auth state to update after page reload
+    // Only attempt redirect once, and only if auth has finished loading
+    // Don't redirect if we're currently loading data (user might be loading)
+    // Give more time for auth state to settle after page reload
+    if (!user && !authLoading && !redirectAttemptedRef.current && !loading) {
+      const redirectCheck = setTimeout(async () => {
+        // Double-check session directly to avoid closure issues
+        // This prevents race conditions where auth state updates after the timeout
+        try {
+          const session = await authService.getSession();
+          if (!session?.user && !redirectAttemptedRef.current) {
+            redirectAttemptedRef.current = true;
+            // Use window.location for more reliable redirect (prevents getting stuck)
+            window.location.href = '/authentication';
+          } else if (session?.user) {
+            // Session exists, reset redirect flag - user will be set by auth context
+            redirectAttemptedRef.current = false;
+          }
+        } catch (error) {
+          // If session check fails and we haven't redirected yet, redirect
+          if (!redirectAttemptedRef.current) {
+            redirectAttemptedRef.current = true;
+            window.location.href = '/authentication';
+          }
+        }
+      }, 2000); // 2 second delay to allow auth state to fully settle after page reload
 
-    return () => {
-      clearTimeout(maxTimeout);
-      clearTimeout(redirectCheck);
-    };
+      return () => {
+        clearTimeout(maxTimeout);
+        clearTimeout(redirectCheck);
+      };
+    }
+
+    return () => clearTimeout(maxTimeout);
   }, [user, authLoading, router, dataLoaded, loadDashboardData]);
 
   const handleSignOut = async () => {
