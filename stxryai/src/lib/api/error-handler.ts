@@ -193,8 +193,10 @@ function logError(error: APIError, context: { service: string; operation: string
   console[logLevel]('[API Error]', logData);
 
   // In production, send to error tracking service
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-    // Dynamic import to avoid bundling error tracking in client if not configured
+  // Works on both server and client - error tracking service handles environment detection
+  if (process.env.NODE_ENV === 'production') {
+    // Dynamic import to avoid bundling error tracking if not configured
+    // This works on both server and client - the error tracking service handles the environment
     import('@/lib/error-tracking').then(({ errorTracking }) => {
       errorTracking.captureException(error, {
         level: logLevel === 'error' ? 'error' : 'warning',

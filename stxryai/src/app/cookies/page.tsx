@@ -14,7 +14,7 @@ export default function CookiesPage() {
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <h1 className="text-4xl font-bold mb-6">Cookie Policy</h1>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
-          Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          Last updated: January 1, 2024
         </p>
 
         <section className="mb-8">

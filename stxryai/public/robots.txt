@@ -2,9 +2,8 @@
 # https://stxryai.com/robots.txt
 
 User-agent: *
-Allow: /
 
-# Disallow admin and private areas
+# Disallow admin and private areas (must come before Allow rules)
 Disallow: /admin/
 Disallow: /api/
 Disallow: /user-dashboard/
@@ -13,7 +12,7 @@ Disallow: /authentication/
 Disallow: /reset-password/
 Disallow: /forgot-password/
 
-# Allow public pages
+# Allow public pages (after Disallow rules)
 Allow: /
 Allow: /landing-page
 Allow: /story-library
