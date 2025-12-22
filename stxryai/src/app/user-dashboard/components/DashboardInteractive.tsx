@@ -207,24 +207,26 @@ export default function DashboardInteractive() {
       return () => clearTimeout(maxTimeout);
     }
 
-    // Auth finished loading - if no user, redirect immediately
-    if (!user) {
-      // Use window.location for more reliable redirect (prevents getting stuck)
-      window.location.href = '/authentication';
-    // Auth finished loading
-    if (!user) {
-      // No user, redirect to login
-      router.push('/authentication');
-      return () => clearTimeout(maxTimeout);
-    }
-
-    // User exists, load dashboard data (only once)
+    // If user exists, load dashboard data immediately (no delay needed)
     if (user && !dataLoaded) {
       loadDashboardData();
     }
 
-    return () => clearTimeout(maxTimeout);
-  }, [user, authLoading, router, dataLoaded, loadDashboardData, loading]);
+    // Small delay to allow auth state to propagate after redirect from login
+    // Only check for redirect if user is still null after delay
+    // This prevents redirect loops when coming from login page
+    const redirectCheck = setTimeout(() => {
+      if (!user) {
+        // Use window.location for more reliable redirect (prevents getting stuck)
+        window.location.href = '/authentication';
+      }
+    }, 500); // 500ms delay to allow auth state to update after page reload
+
+    return () => {
+      clearTimeout(maxTimeout);
+      clearTimeout(redirectCheck);
+    };
+  }, [user, authLoading, router, dataLoaded, loadDashboardData]);
 
   const handleSignOut = async () => {
     try {
