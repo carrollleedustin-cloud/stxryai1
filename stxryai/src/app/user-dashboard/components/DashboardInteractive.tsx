@@ -207,6 +207,10 @@ export default function DashboardInteractive() {
       return () => clearTimeout(maxTimeout);
     }
 
+    // Auth finished loading - if no user, redirect immediately
+    if (!user) {
+      // Use window.location for more reliable redirect (prevents getting stuck)
+      window.location.href = '/authentication';
     // Auth finished loading
     if (!user) {
       // No user, redirect to login
@@ -230,13 +234,6 @@ export default function DashboardInteractive() {
       setError('Failed to sign out. Please try again.');
     }
   };
-
-  // Redirect effect for unauthenticated users
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/authentication');
-    }
-  }, [authLoading, user, router]);
 
   // Show loading while auth is initializing
   if (authLoading) {
