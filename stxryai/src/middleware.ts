@@ -31,18 +31,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Rate limiting for API routes
+  // Update Supabase session and get response with user info
+  const { response, user } = await updateSession(request);
+
+  // Rate limiting for API routes (early return, API routes handle their own auth)
   if (pathname.startsWith('/api/')) {
-    // Add rate limit headers
-    const response = await updateSession(request);
     response.headers.set('X-RateLimit-Limit', String(RATE_LIMIT.maxRequests));
     response.headers.set('X-RateLimit-Window', String(RATE_LIMIT.windowMs));
-
     return response;
   }
-
-  // Update Supabase session and get response
-  const response = await updateSession(request);
 
   // Check authentication for protected routes
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
@@ -50,11 +47,8 @@ export async function middleware(request: NextRequest) {
   );
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
-  // Check for valid Supabase session by looking for Supabase cookies
-  // Supabase stores session in cookies with 'sb-' prefix
-  const hasValidSession = request.cookies.getAll().some(
-    (cookie) => cookie.name.startsWith('sb-') && cookie.value && cookie.value.length > 10
-  );
+  // Check if user is authenticated
+  const hasValidSession = !!user;
 
   // Redirect unauthenticated users from protected routes
   if (isProtectedRoute && !hasValidSession) {
