@@ -45,7 +45,7 @@ export const userProgressService = {
         throw error;
       }
       return data;
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isConnectionError(err)) {
         throw new Error(getConnectionErrorMessage(err));
       }
@@ -84,7 +84,7 @@ export const userProgressService = {
         throw error;
       }
       return data || [];
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isConnectionError(err)) {
         throw new Error(getConnectionErrorMessage(err));
       }
@@ -173,7 +173,7 @@ export const userProgressService = {
         throw error;
       }
       return data || [];
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isConnectionError(err)) {
         throw new Error(getConnectionErrorMessage(err));
       }

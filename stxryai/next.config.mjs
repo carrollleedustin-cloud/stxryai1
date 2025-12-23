@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 // Detect Netlify environment
 const isNetlify = process.env.NETLIFY === 'true';
 const isProduction = process.env.NODE_ENV === 'production';
+const shouldAnalyze = process.env.ANALYZE === 'true';
 
 const nextConfig = {
   productionBrowserSourceMaps: false, // Disable for production performance
@@ -156,6 +157,7 @@ const nextConfig = {
   // Experimental Features
   experimental: {
     optimizeCss: true,
+    // Tree-shake imports from large packages
     optimizePackageImports: [
       'framer-motion',
       '@radix-ui/react-icons',
@@ -163,8 +165,18 @@ const nextConfig = {
       'date-fns',
       'recharts',
       '@heroicons/react',
+      '@supabase/supabase-js',
+      'cmdk',
     ],
   },
+
+  // Module IDs for better caching
+  ...(isProduction && {
+    generateBuildId: async () => {
+      // Use git commit hash for consistent build IDs across deployments
+      return process.env.COMMIT_REF || `build-${Date.now()}`;
+    },
+  }),
 
   // Headers for security (Netlify also handles this but good for local dev)
   async headers() {

@@ -2,6 +2,11 @@
   "name": "stxryai",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "./src/lib/monitoring/index.ts"
+  ],
   "rocketCritical": {
     "dependencies": [
       "next",

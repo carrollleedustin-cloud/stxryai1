@@ -192,7 +192,7 @@ export const updateChapter = async (chapterId: string, updates: Partial<StoryNod
 // Update story metadata
 export const updateStoryMetadata = async (storyId: string, metadata: Partial<StoryMetadata>) => {
   try {
-    const patch = {
+    const patch: Record<string, string | boolean | number | null | undefined> = {
       title: metadata.title,
       description: metadata.description,
       genre: metadata.genre,
@@ -207,7 +207,7 @@ export const updateStoryMetadata = async (storyId: string, metadata: Partial<Sto
       companion_personality: metadata.companionPersonality,
       companion_name: metadata.companionName,
       updated_at: new Date().toISOString(),
-    } as any;
+    };
 
     // Remove undefined values
     Object.keys(patch).forEach(key => {
