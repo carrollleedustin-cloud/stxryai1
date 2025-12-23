@@ -17,8 +17,21 @@ export interface StreakData {
   lastReadDate: string;
   streakRecoveryUsed: number;
   streakRecoveryResetDate: string | null;
+  // Streak freeze additions
+  streakFreezesAvailable: number;
+  streakFreezesUsedThisMonth: number;
+  lastFreezeUsedDate: string | null;
+  isFrozen: boolean;
+  freezeExpiresAt: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface StreakFreezeResult {
+  success: boolean;
+  message: string;
+  freezesRemaining: number;
+  freezeExpiresAt?: string;
 }
 
 export interface DailyGoal {
@@ -188,6 +201,160 @@ class StreakService {
     }
 
     return true;
+  }
+
+  // ==================== STREAK FREEZES ====================
+
+  /**
+   * Get available streak freezes for user (based on subscription tier)
+   */
+  async getStreakFreezeAllowance(userId: string): Promise<{ available: number; usedThisMonth: number; tier: string }> {
+    const supabase = this.getSupabase();
+    
+    // Get user tier
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('tier')
+      .eq('id', userId)
+      .single();
+
+    if (userError) {
+      console.error('Error fetching user tier:', userError);
+      return { available: 0, usedThisMonth: 0, tier: 'free' };
+    }
+
+    // Define freeze allowance per tier
+    const freezeAllowance: Record<string, number> = {
+      'free': 1,        // 1 freeze per month
+      'premium': 3,     // 3 freezes per month
+      'creator_pro': 5, // 5 freezes per month (unlimited would be -1)
+    };
+
+    const streakData = await this.getStreakData(userId);
+    const usedThisMonth = streakData?.streakFreezesUsedThisMonth || 0;
+    const totalAllowed = freezeAllowance[user.tier] || 1;
+    
+    return {
+      available: Math.max(0, totalAllowed - usedThisMonth),
+      usedThisMonth,
+      tier: user.tier,
+    };
+  }
+
+  /**
+   * Activate a streak freeze (protects streak for 24-48 hours)
+   */
+  async activateStreakFreeze(userId: string): Promise<StreakFreezeResult> {
+    const supabase = this.getSupabase();
+    
+    // Check allowance
+    const allowance = await this.getStreakFreezeAllowance(userId);
+    
+    if (allowance.available <= 0) {
+      return {
+        success: false,
+        message: allowance.tier === 'free' 
+          ? 'Upgrade to Premium for more streak freezes!' 
+          : 'No streak freezes available this month.',
+        freezesRemaining: 0,
+      };
+    }
+
+    // Get current streak
+    const streakData = await this.getStreakData(userId);
+    if (!streakData) {
+      return {
+        success: false,
+        message: 'No active streak to freeze.',
+        freezesRemaining: allowance.available,
+      };
+    }
+
+    if (streakData.isFrozen) {
+      return {
+        success: false,
+        message: 'Streak is already frozen.',
+        freezesRemaining: allowance.available,
+        freezeExpiresAt: streakData.freezeExpiresAt || undefined,
+      };
+    }
+
+    // Calculate freeze expiration (24 hours for free, 48 hours for premium+)
+    const freezeDuration = allowance.tier === 'free' ? 24 : 48;
+    const freezeExpires = new Date();
+    freezeExpires.setHours(freezeExpires.getHours() + freezeDuration);
+
+    const { error } = await supabase
+      .from('reading_streaks')
+      .update({
+        is_frozen: true,
+        freeze_expires_at: freezeExpires.toISOString(),
+        streak_freezes_used_this_month: (streakData.streakFreezesUsedThisMonth || 0) + 1,
+        last_freeze_used_date: new Date().toISOString().split('T')[0],
+      })
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error activating streak freeze:', error);
+      return {
+        success: false,
+        message: 'Failed to activate streak freeze.',
+        freezesRemaining: allowance.available,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Streak frozen for ${freezeDuration} hours!`,
+      freezesRemaining: allowance.available - 1,
+      freezeExpiresAt: freezeExpires.toISOString(),
+    };
+  }
+
+  /**
+   * Check if streak is currently protected by a freeze
+   */
+  async isStreakProtected(userId: string): Promise<{ protected: boolean; expiresAt?: string }> {
+    const streakData = await this.getStreakData(userId);
+    
+    if (!streakData || !streakData.isFrozen || !streakData.freezeExpiresAt) {
+      return { protected: false };
+    }
+
+    const expiresAt = new Date(streakData.freezeExpiresAt);
+    if (new Date() > expiresAt) {
+      // Freeze expired, update database
+      const supabase = this.getSupabase();
+      await supabase
+        .from('reading_streaks')
+        .update({
+          is_frozen: false,
+          freeze_expires_at: null,
+        })
+        .eq('user_id', userId);
+      
+      return { protected: false };
+    }
+
+    return { 
+      protected: true, 
+      expiresAt: streakData.freezeExpiresAt 
+    };
+  }
+
+  /**
+   * Deactivate streak freeze (when user reads or freeze expires)
+   */
+  async deactivateStreakFreeze(userId: string): Promise<void> {
+    const supabase = this.getSupabase();
+    
+    await supabase
+      .from('reading_streaks')
+      .update({
+        is_frozen: false,
+        freeze_expires_at: null,
+      })
+      .eq('user_id', userId);
   }
 
   // ==================== DAILY GOALS ====================
@@ -534,6 +701,12 @@ class StreakService {
       lastReadDate: data.last_read_date,
       streakRecoveryUsed: data.streak_recovery_used || 0,
       streakRecoveryResetDate: data.streak_recovery_reset_date,
+      // Streak freeze fields
+      streakFreezesAvailable: data.streak_freezes_available || 0,
+      streakFreezesUsedThisMonth: data.streak_freezes_used_this_month || 0,
+      lastFreezeUsedDate: data.last_freeze_used_date,
+      isFrozen: data.is_frozen || false,
+      freezeExpiresAt: data.freeze_expires_at,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };

@@ -102,7 +102,7 @@ export const storyService = {
       }
 
       const { data, error } = await withTimeout(
-        query as Promise<any>,
+        query as PromiseLike<{ data: Story[] | null; error: Error | null }>,
         { timeout: 8000, errorMessage: 'Request timed out while loading stories' }
       );
 
@@ -113,7 +113,7 @@ export const storyService = {
         throw error;
       }
       return (data || []) as Story[];
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (isConnectionError(err)) {
         throw new Error(getConnectionErrorMessage(err));
       }
