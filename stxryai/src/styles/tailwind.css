@@ -200,6 +200,10 @@
     color: var(--text-primary);
   }
   
+  .font-display {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
   h1 {
     font-size: clamp(2.5rem, 8vw, 5rem);
     letter-spacing: 0.1em;
