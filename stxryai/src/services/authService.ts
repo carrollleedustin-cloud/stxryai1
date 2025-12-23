@@ -29,8 +29,15 @@ export const authService = {
     username: string;
     displayName: string;
   }) {
-    ensureSupabaseConfigured();
+    // Check Supabase configuration first
+    if (!getIsSupabaseConfigured()) {
+      throw new Error('Authentication service is not configured. Please check your environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY).');
+    }
+
     const supabase = getSupabase();
+    if (!supabase) {
+      throw new Error('Unable to initialize authentication client. Please check your Supabase configuration.');
+    }
 
     // Validate inputs
     if (!email || !password || !username || !displayName) {
@@ -41,15 +48,32 @@ export const authService = {
       throw new Error('Password must be at least 6 characters');
     }
 
-    // Check if username already exists
-    const { data: existingUsername } = await supabase
-      .from('users')
-      .select('username')
-      .eq('username', username.toLowerCase())
-      .single();
+    // Check if username already exists (with error handling)
+    try {
+      const { data: existingUsername, error: usernameError } = await supabase
+        .from('users')
+        .select('username')
+        .eq('username', username.toLowerCase())
+        .maybeSingle();
 
-    if (existingUsername) {
-      throw new Error('Username already taken. Please choose another.');
+      // If query succeeds and username exists, throw error
+      if (existingUsername) {
+        throw new Error('Username already taken. Please choose another.');
+      }
+
+      // If there's a query error (other than "not found"), log it but continue
+      // The signup will fail at Supabase level if there's a real issue
+      if (usernameError && usernameError.code !== 'PGRST116') {
+        console.warn('Username check failed, proceeding with signup:', usernameError.message);
+      }
+    } catch (err: any) {
+      // If it's our "username taken" error, re-throw it
+      if (err.message && err.message.includes('already taken')) {
+        throw err;
+      }
+      // For other errors (like network issues), log and continue
+      // Supabase auth will handle validation
+      console.warn('Username availability check failed, proceeding with signup:', err.message);
     }
 
     const { data, error } = await supabase.auth.signUp({
@@ -65,13 +89,17 @@ export const authService = {
 
     if (error) {
       // Provide more specific error messages
-      if (error.message.includes('User already registered')) {
+      if (error.message.includes('User already registered') || error.message.includes('already registered')) {
         throw new Error('This email is already registered. Please sign in instead.');
       }
       if (error.message.includes('invalid email')) {
         throw new Error('Please provide a valid email address.');
       }
-      throw error;
+      if (error.message.includes('Failed to fetch') || error.message.includes('AuthRetryableFetchError')) {
+        throw new Error('Cannot connect to authentication service. Please check your internet connection and try again. If the problem persists, your Supabase project may be paused.');
+      }
+      // Re-throw the error with its original message
+      throw new Error(error.message || 'Failed to create account. Please try again.');
     }
 
     // Wait a moment for the trigger to create the profile
