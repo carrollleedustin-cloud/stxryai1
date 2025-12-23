@@ -1,0 +1,937 @@
+/**
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║  N E B U L A  •  T H E  N E X T  E V O L U T I O N  O F  S T O R Y T E L L I N G║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  Where consciousness meets narrative. Where reality bends to imagination.     ║
+ * ║  This is not a design system. This is a portal to infinite worlds.           ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
+ * 
+ * Design Philosophy: "Stories don't exist on screens - they exist in dimensions"
+ * 
+ * REVOLUTIONARY PRINCIPLES:
+ * 1. Every element breathes with sentient awareness
+ * 2. Colors shift based on emotional context
+ * 3. Typography has personality and mood
+ * 4. Interactions feel like magic, not mechanics
+ * 5. Accessibility is woven into the fabric, not bolted on
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY - The Voice of Worlds
+   We use unique fonts that feel like they're from another dimension
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   THE NEBULA PALETTE - Colors that exist between wavelengths
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* DIMENSIONAL BLACKS - Each level is a different dimension */
+  --nebula-abyss: #000000;
+  --nebula-void: #03030a;
+  --nebula-deep: #070714;
+  --nebula-space: #0c0c1e;
+  --nebula-twilight: #121228;
+  --nebula-dusk: #1a1a38;
+  --nebula-mist: #252548;
+  
+  /* STARLIGHT - The essence of consciousness */
+  --star-core: #ffffff;
+  --star-bright: #f0f0ff;
+  --star-glow: #d0d0e8;
+  --star-dim: #9090b0;
+  --star-fade: #606088;
+  --star-ghost: #404060;
+  --star-whisper: #252540;
+  
+  /* AURORA SPECTRUM - Living energy colors */
+  --aurora-cyan: #00ffd5;
+  --aurora-teal: #00d4aa;
+  --aurora-mint: #40ffb0;
+  --aurora-electric: #00c8ff;
+  --aurora-blue: #4080ff;
+  --aurora-indigo: #6040ff;
+  --aurora-violet: #8020ff;
+  --aurora-magenta: #c020ff;
+  --aurora-pink: #ff40c0;
+  --aurora-rose: #ff4080;
+  --aurora-coral: #ff6060;
+  --aurora-orange: #ff8040;
+  --aurora-gold: #ffc040;
+  --aurora-yellow: #ffff40;
+  --aurora-lime: #c0ff40;
+  --aurora-green: #40ff80;
+  
+  /* PLASMA CORES - Intense energy states */
+  --plasma-hot: #ff3366;
+  --plasma-fire: #ff6600;
+  --plasma-sun: #ffcc00;
+  --plasma-nova: #ff00ff;
+  --plasma-surge: #00ffff;
+  
+  /* KIDS ZONE PALETTE - Magical and playful */
+  --magic-purple: #9b5de5;
+  --magic-pink: #f15bb5;
+  --magic-coral: #fee440;
+  --magic-mint: #00f5d4;
+  --magic-blue: #00bbf9;
+  --magic-lavender: #c8b6ff;
+  --magic-peach: #ffadad;
+  --magic-sky: #9bf6ff;
+  --magic-butter: #fdffb6;
+  --magic-grass: #caffbf;
+  
+  /* GRADIENTS - Dimensional transitions */
+  --gradient-nebula: linear-gradient(135deg, var(--aurora-violet) 0%, var(--aurora-cyan) 50%, var(--aurora-pink) 100%);
+  --gradient-cosmos: linear-gradient(180deg, var(--nebula-abyss) 0%, var(--nebula-space) 50%, var(--aurora-indigo) 100%);
+  --gradient-stardust: linear-gradient(45deg, var(--aurora-cyan) 0%, var(--aurora-violet) 100%);
+  --gradient-sunset: linear-gradient(135deg, var(--aurora-orange) 0%, var(--aurora-pink) 50%, var(--aurora-violet) 100%);
+  --gradient-northern: linear-gradient(180deg, var(--aurora-green) 0%, var(--aurora-cyan) 50%, var(--aurora-violet) 100%);
+  --gradient-magic: linear-gradient(135deg, var(--magic-purple) 0%, var(--magic-pink) 50%, var(--magic-mint) 100%);
+  --gradient-rainbow: linear-gradient(90deg, var(--aurora-rose), var(--aurora-orange), var(--aurora-gold), var(--aurora-green), var(--aurora-cyan), var(--aurora-indigo), var(--aurora-violet));
+  
+  /* SHADOWS - Dimensional depth */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.5);
+  --shadow-sm: 0 4px 8px rgba(0,0,0,0.5);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.7);
+  --shadow-xl: 0 32px 64px rgba(0,0,0,0.8);
+  --shadow-glow-cyan: 0 0 40px rgba(0,255,213,0.4), 0 0 80px rgba(0,255,213,0.2);
+  --shadow-glow-violet: 0 0 40px rgba(128,32,255,0.4), 0 0 80px rgba(128,32,255,0.2);
+  --shadow-glow-pink: 0 0 40px rgba(255,64,192,0.4), 0 0 80px rgba(255,64,192,0.2);
+  --shadow-glow-magic: 0 0 40px rgba(155,93,229,0.5), 0 0 80px rgba(241,91,181,0.3);
+  
+  /* TYPOGRAPHY */
+  --font-display: 'Dela Gothic One', system-ui, sans-serif;
+  --font-heading: 'Bricolage Grotesque', sans-serif;
+  --font-body: 'Sora', sans-serif;
+  --font-story: 'Instrument Serif', Georgia, serif;
+  --font-code: 'Space Mono', monospace;
+  --font-kids: 'Bricolage Grotesque', 'Comic Neue', sans-serif;
+  
+  /* RADII - Organic shapes */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-2xl: 48px;
+  --radius-blob: 40% 60% 60% 40% / 60% 40% 60% 40%;
+  --radius-organic: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  
+  /* MOTION - Sentient timing */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-snap: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --ease-flow: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-power: cubic-bezier(0.7, 0, 0.3, 1);
+  
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 400ms;
+  --duration-slow: 600ms;
+  --duration-slower: 1000ms;
+  --duration-slowest: 2000ms;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BASE RESET & FOUNDATION
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body.nebula-theme {
+  font-family: var(--font-body);
+  background: var(--nebula-abyss);
+  color: var(--star-bright);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Living Background - Particles of consciousness */
+body.nebula-theme::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(0,255,213,0.03) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(128,32,255,0.03) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(255,64,192,0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Grain texture for depth */
+body.nebula-theme::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   KIDS ZONE THEME - A Whole New World
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+body.kids-theme {
+  font-family: var(--font-kids);
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: var(--star-bright);
+  overflow-x: hidden;
+}
+
+body.kids-theme::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(155,93,229,0.15) 0%, transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(241,91,181,0.15) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(0,245,212,0.1) 0%, transparent 40%);
+  pointer-events: none;
+  animation: kidsBackground 20s ease-in-out infinite;
+}
+
+@keyframes kidsBackground {
+  0%, 100% { 
+    filter: hue-rotate(0deg); 
+  }
+  50% { 
+    filter: hue-rotate(30deg); 
+  }
+}
+
+/* Floating stars for kids */
+body.kids-theme .floating-stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+body.kids-theme .floating-stars::before {
+  content: '✨ ⭐ 🌟 ✨ ⭐ 🌟 ✨ ⭐';
+  position: absolute;
+  font-size: 2rem;
+  animation: floatStars 30s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes floatStars {
+  0% { transform: translateX(-100%) translateY(100vh); }
+  100% { transform: translateX(100vw) translateY(-100%); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   REVOLUTIONARY COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Sentient Card - Responds to presence */
+.nebula-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(12,12,30,0.9) 0%, rgba(18,18,40,0.8) 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-smooth);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.nebula-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, 
+    rgba(0,255,213,0.2) 0%, 
+    transparent 50%, 
+    rgba(128,32,255,0.2) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--duration-normal) var(--ease-smooth);
+}
+
+.nebula-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+  transition: left var(--duration-slow) var(--ease-flow);
+}
+
+.nebula-card:hover {
+  transform: translateY(-8px) rotateX(2deg);
+  border-color: rgba(0,255,213,0.2);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-cyan);
+}
+
+.nebula-card:hover::before {
+  opacity: 1;
+}
+
+.nebula-card:hover::after {
+  left: 100%;
+}
+
+/* Magic Card for Kids */
+.magic-card {
+  position: relative;
+  background: linear-gradient(135deg, 
+    rgba(155,93,229,0.2) 0%, 
+    rgba(241,91,181,0.15) 50%,
+    rgba(0,245,212,0.1) 100%
+  );
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-bounce);
+}
+
+.magic-card::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg,
+    var(--magic-purple),
+    var(--magic-pink),
+    var(--magic-mint),
+    var(--magic-blue),
+    var(--magic-purple)
+  );
+  animation: spinGlow 6s linear infinite;
+  opacity: 0;
+  transition: opacity var(--duration-normal);
+}
+
+.magic-card::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: linear-gradient(135deg, rgba(26,26,46,0.95), rgba(22,33,62,0.95));
+  border-radius: calc(var(--radius-2xl) - 2px);
+  z-index: 0;
+}
+
+.magic-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.magic-card:hover {
+  transform: scale(1.02) rotate(1deg);
+  box-shadow: var(--shadow-glow-magic);
+}
+
+.magic-card:hover::before {
+  opacity: 0.3;
+}
+
+@keyframes spinGlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   BUTTON SYSTEM - Clickable Portals
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.nebula-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--nebula-abyss);
+  background: var(--aurora-cyan);
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--duration-fast) var(--ease-bounce);
+  box-shadow: var(--shadow-sm), var(--shadow-glow-cyan);
+}
+
+.nebula-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.nebula-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width var(--duration-normal), height var(--duration-normal);
+}
+
+.nebula-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-md), 
+    0 0 60px rgba(0,255,213,0.5),
+    0 0 100px rgba(0,255,213,0.3);
+}
+
+.nebula-btn:hover::before {
+  opacity: 1;
+}
+
+.nebula-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.nebula-btn:active::after {
+  width: 200%;
+  height: 200%;
+}
+
+/* Variant: Plasma */
+.nebula-btn.plasma {
+  background: var(--gradient-sunset);
+  box-shadow: var(--shadow-sm), var(--shadow-glow-pink);
+}
+
+.nebula-btn.plasma:hover {
+  box-shadow: var(--shadow-md),
+    0 0 60px rgba(255,64,192,0.5),
+    0 0 100px rgba(255,64,192,0.3);
+}
+
+/* Variant: Ghost */
+.nebula-btn.ghost {
+  background: transparent;
+  color: var(--star-bright);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: none;
+}
+
+.nebula-btn.ghost:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: var(--aurora-cyan);
+  color: var(--aurora-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+/* Kids Button - Bouncy and Fun */
+.magic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem 2.5rem;
+  font-family: var(--font-kids);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: white;
+  background: var(--gradient-magic);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all var(--duration-fast) var(--ease-bounce);
+  box-shadow: 
+    0 8px 0 rgba(0,0,0,0.2),
+    var(--shadow-glow-magic);
+}
+
+.magic-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 0 rgba(0,0,0,0.2),
+    0 0 80px rgba(155,93,229,0.6);
+}
+
+.magic-btn:active {
+  transform: translateY(2px);
+  box-shadow: 
+    0 4px 0 rgba(0,0,0,0.2),
+    var(--shadow-glow-magic);
+}
+
+/* Add sparkle effect to kids buttons */
+.magic-btn::before {
+  content: '✨';
+  position: absolute;
+  font-size: 1.5rem;
+  animation: sparkle 2s ease-in-out infinite;
+  opacity: 0;
+}
+
+.magic-btn:hover::before {
+  opacity: 1;
+}
+
+@keyframes sparkle {
+  0%, 100% { 
+    transform: translateX(-100%) rotate(0deg) scale(0);
+    opacity: 0;
+  }
+  50% { 
+    transform: translateX(200%) rotate(180deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   INPUT SYSTEM - Portals for Thought
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.nebula-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--star-bright);
+  background: rgba(12,12,30,0.6);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.nebula-input::placeholder {
+  color: var(--star-ghost);
+}
+
+.nebula-input:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(18,18,40,0.8);
+}
+
+.nebula-input:focus {
+  border-color: var(--aurora-cyan);
+  background: rgba(18,18,40,0.9);
+  box-shadow: 
+    0 0 0 4px rgba(0,255,213,0.1),
+    var(--shadow-glow-cyan);
+}
+
+/* Kids Input - Friendly and Rounded */
+.magic-input {
+  width: 100%;
+  padding: 1.25rem 1.75rem;
+  font-family: var(--font-kids);
+  font-size: 1.1rem;
+  color: white;
+  background: rgba(255,255,255,0.1);
+  border: 3px solid rgba(255,255,255,0.2);
+  border-radius: 100px;
+  outline: none;
+  transition: all var(--duration-fast) var(--ease-bounce);
+}
+
+.magic-input:focus {
+  border-color: var(--magic-purple);
+  background: rgba(255,255,255,0.15);
+  box-shadow: var(--shadow-glow-magic);
+  transform: scale(1.02);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY COMPONENTS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.nebula-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  background: var(--gradient-nebula);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.nebula-subtitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--star-glow);
+}
+
+.nebula-prose {
+  font-family: var(--font-story);
+  font-size: 1.25rem;
+  line-height: 2;
+  color: var(--star-dim);
+  font-style: italic;
+}
+
+/* Kids Typography - Big and Bold */
+.magic-title {
+  font-family: var(--font-kids);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  background: var(--gradient-rainbow);
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowSlide 6s linear infinite;
+  text-shadow: 0 0 40px rgba(155,93,229,0.5);
+}
+
+@keyframes rainbowSlide {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 400% 50%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION - Floating Through Dimensions
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.nebula-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.5rem 3rem;
+  background: linear-gradient(180deg, 
+    rgba(3,3,10,0.95) 0%, 
+    rgba(3,3,10,0.8) 70%,
+    transparent 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.nebula-nav.scrolled {
+  padding: 1rem 3rem;
+  background: rgba(3,3,10,0.98);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  box-shadow: var(--shadow-md);
+}
+
+.nebula-nav-link {
+  position: relative;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--star-dim);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  transition: color var(--duration-fast) var(--ease-smooth);
+}
+
+.nebula-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--aurora-cyan);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width var(--duration-fast) var(--ease-bounce);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.nebula-nav-link:hover {
+  color: var(--aurora-cyan);
+}
+
+.nebula-nav-link:hover::after {
+  width: 100%;
+}
+
+/* Kids Navigation - Playful and Rounded */
+.magic-nav {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(26,26,46,0.95);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-magic);
+}
+
+.magic-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  color: var(--star-dim);
+  font-size: 1.5rem;
+  transition: all var(--duration-fast) var(--ease-bounce);
+}
+
+.magic-nav-item:hover,
+.magic-nav-item.active {
+  background: var(--gradient-magic);
+  color: white;
+  transform: scale(1.15) translateY(-4px);
+  box-shadow: var(--shadow-glow-magic);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   REVOLUTIONARY ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Dimensional Portal Effect */
+@keyframes portalSpin {
+  from { transform: rotate(0deg) scale(1); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+.portal-effect {
+  position: relative;
+}
+
+.portal-effect::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(from 0deg, 
+    transparent 0deg,
+    var(--aurora-cyan) 60deg,
+    transparent 120deg,
+    var(--aurora-violet) 180deg,
+    transparent 240deg,
+    var(--aurora-pink) 300deg,
+    transparent 360deg
+  );
+  border-radius: 50%;
+  animation: portalSpin 10s linear infinite;
+  opacity: 0.3;
+  filter: blur(40px);
+}
+
+/* Constellation Lines */
+@keyframes constellationDraw {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.constellation-line {
+  stroke: var(--aurora-cyan);
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 1000;
+  animation: constellationDraw 3s ease-out forwards;
+}
+
+/* Particle Field */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0.5;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) scale(1.2);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-5px) scale(0.8);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translateY(-20px) translateX(-10px) scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--aurora-cyan);
+  border-radius: 50%;
+  animation: particleFloat 8s ease-in-out infinite;
+  box-shadow: 0 0 10px var(--aurora-cyan);
+}
+
+/* Text Reveal Animation */
+@keyframes textReveal {
+  0% {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+.text-reveal {
+  animation: textReveal 1s var(--ease-power) forwards;
+}
+
+/* Morphing Background */
+@keyframes morphBackground {
+  0%, 100% {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+  25% {
+    border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+  }
+  50% {
+    border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+  }
+  75% {
+    border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+  }
+}
+
+.morph-shape {
+  animation: morphBackground 15s ease-in-out infinite;
+}
+
+/* Kids Bounce Animation */
+@keyframes kidsBounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(-5deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.kids-bounce {
+  animation: kidsBounce 3s ease-in-out infinite;
+}
+
+/* Wiggle for Kids */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .nebula-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+  }
+  
+  .nebula-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .nebula-nav {
+    padding: 1rem 1.5rem;
+  }
+  
+  .magic-nav {
+    bottom: 1rem;
+    gap: 0.25rem;
+    padding: 0.75rem;
+  }
+  
+  .magic-nav-item {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--aurora-cyan);
+  outline-offset: 4px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --nebula-abyss: #000000;
+    --star-bright: #ffffff;
+    --aurora-cyan: #00ffff;
+    --aurora-violet: #ff00ff;
+  }
+}
+
+
