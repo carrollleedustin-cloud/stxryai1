@@ -385,7 +385,7 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                       value={createForm.height}
                       onChange={(e) => setCreateForm({ ...createForm, height: e.target.value })}
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
-                      placeholder="tall, 6'2\""
+                      placeholder="tall, 6 feet 2 inches"
                     />
                   </div>
                   <div>
