@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { performanceMonitor, errorTracker, userAnalytics } from './index';
 
@@ -109,7 +109,7 @@ export function withErrorMonitoring<P extends object>(
       performanceMonitor.recordMetric(`${componentName}_render`, performance.now() - startTime, 'ms');
     });
 
-    return <WrappedComponent {...props} />;
+    return React.createElement(WrappedComponent, props);
   };
 }
 
