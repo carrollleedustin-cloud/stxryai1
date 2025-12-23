@@ -16,9 +16,9 @@ interface EnvConfig {
   STRIPE_PREMIUM_PRICE_ID?: string;
   STRIPE_CREATOR_PRO_PRICE_ID?: string;
 
-  // OpenAI
-  OPEN_AI_SECRET_KEY?: string;
-  OPEN_AI_SERVICE_KEY?: string;
+  // AI Services
+  OPENAI_API_KEY?: string;
+  ANTHROPIC_API_KEY?: string;
 
   // Email
   RESEND_API_KEY?: string;
@@ -82,9 +82,9 @@ function getEnv(): EnvConfig {
     STRIPE_PREMIUM_PRICE_ID: process.env.STRIPE_PREMIUM_PRICE_ID,
     STRIPE_CREATOR_PRO_PRICE_ID: process.env.STRIPE_CREATOR_PRO_PRICE_ID,
 
-    // OpenAI
-    OPEN_AI_SECRET_KEY: process.env.OPEN_AI_SECRET_KEY,
-    OPEN_AI_SERVICE_KEY: process.env.OPEN_AI_SERVICE_KEY,
+    // AI Services
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
 
     // Email
     RESEND_API_KEY: process.env.RESEND_API_KEY,
@@ -125,7 +125,9 @@ export const isTest = () => env.NODE_ENV === 'test';
 
 // Feature availability checks
 export const hasStripe = () => Boolean(env.STRIPE_SECRET_KEY && env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-export const hasOpenAI = () => Boolean(env.OPEN_AI_SECRET_KEY || env.OPEN_AI_SERVICE_KEY);
+export const hasAI = () => Boolean(env.OPENAI_API_KEY || env.ANTHROPIC_API_KEY);
+export const hasOpenAI = () => Boolean(env.OPENAI_API_KEY);
+export const hasAnthropic = () => Boolean(env.ANTHROPIC_API_KEY);
 export const hasEmail = () => Boolean(env.RESEND_API_KEY);
 export const hasAnalytics = () => Boolean(env.NEXT_PUBLIC_POSTHOG_KEY || env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 export const hasAds = () => Boolean(env.NEXT_PUBLIC_ADSENSE_CLIENT);
