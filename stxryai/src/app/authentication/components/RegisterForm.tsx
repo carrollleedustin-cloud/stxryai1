@@ -129,11 +129,19 @@ export default function RegisterForm({
     } catch (err: unknown) {
       const error = err as Error;
       if (
-        error?.message?.includes('Failed to fetch') ||
-        error?.message?.includes('AuthRetryableFetchError')
+        error?.message?.includes('not configured') ||
+        error?.message?.includes('environment variables')
       ) {
         setError(
-          'Cannot connect to authentication service. Your Supabase project may be paused or inactive. Please check your Supabase dashboard and resume your project if needed.'
+          'Authentication service is not properly configured. Please check that NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set correctly.'
+        );
+      } else if (
+        error?.message?.includes('Failed to fetch') ||
+        error?.message?.includes('AuthRetryableFetchError') ||
+        error?.message?.includes('Cannot connect')
+      ) {
+        setError(
+          'Cannot connect to authentication service. Please check your internet connection. If the problem persists, your Supabase project may be paused - please check your Supabase dashboard and resume it if needed.'
         );
       } else if (
         error?.message?.includes('already registered') ||
