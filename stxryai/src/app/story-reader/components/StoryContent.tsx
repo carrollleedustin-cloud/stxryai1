@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import ReportModal from '@/components/moderation/ReportModal';
+import { PrismPanel } from '@/components/ui/prism/PrismPanel';
+import { PrismText } from '@/components/ui/prism/PrismText';
+import { motion } from 'framer-motion';
 
 interface StoryContentProps {
   chapter: any;
@@ -58,72 +61,94 @@ export default function StoryContent({
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card/60 backdrop-blur-glass shadow-elevation-2">
-        {/* subtle aurora wash */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-60"
-          style={{
-            background:
-              'radial-gradient(1200px circle at 20% 10%, rgba(139, 92, 246, 0.25) 0%, transparent 55%), radial-gradient(900px circle at 80% 20%, rgba(6, 182, 212, 0.18) 0%, transparent 55%), radial-gradient(1000px circle at 50% 90%, rgba(236, 72, 153, 0.14) 0%, transparent 60%)',
-          }}
-        />
+      <PrismPanel tone="glass" className="relative overflow-hidden shadow-elevation-3 group">
+        {/* Holographic background effect */}
+        <div className="holographic-wrapper absolute inset-0 opacity-20 pointer-events-none">
+           <div className="holographic-shimmer" style={{ '--speed': '8s' } as any} />
+        </div>
+        
+        {/* Particle field for atmosphere */}
+        <div className="particle-field bg-[url('/particles.png')] bg-repeat opacity-10 animate-float" />
 
-        <header className="relative px-6 pt-6 pb-4 md:px-10 md:pt-10 md:pb-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background/40 px-3 py-1 text-xs font-semibold tracking-wide text-foreground/80">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent shadow-glow" />
+        <header className="relative px-6 pt-8 pb-6 md:px-12 md:pt-12 md:pb-8 z-10">
+          <div className="flex items-start justify-between gap-6">
+            <div className="min-w-0 space-y-4">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-black/40 px-4 py-1.5 text-xs font-bold tracking-widest uppercase text-white/60 backdrop-blur-md">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fuchsia-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-fuchsia-500"></span>
+                </span>
                 <span>Chapter {chapterNumber}</span>
               </div>
-              <h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+              
+              <PrismText variant="h1" gradient="silver" className="leading-tight drop-shadow-lg">
                 {chapter?.title || 'Untitled Chapter'}
-              </h1>
+              </PrismText>
             </div>
 
             <button
               onClick={() => setIsReportModalOpen(true)}
-              className="shrink-0 rounded-full border border-border bg-background/30 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-background/50 hover:text-error transition-smooth"
+              className="shrink-0 rounded-full border border-white/5 bg-white/5 px-4 py-2 text-xs font-semibold text-white/40 hover:bg-white/10 hover:text-red-400 transition-all duration-300"
             >
               Report
             </button>
           </div>
         </header>
 
-        <div className="relative px-6 pb-6 md:px-10 md:pb-10">
+        <div className="relative px-6 pb-8 md:px-12 md:pb-12 z-10">
           <div
             ref={contentRef}
-            className="scrollbar-modern max-h-[70vh] md:max-h-[calc(100vh-18rem)] overflow-y-auto pr-2"
+            className="scrollbar-modern max-h-[70vh] md:max-h-[calc(100vh-20rem)] overflow-y-auto pr-4"
           >
-            <div className="prose max-w-none dark:prose-invert prose-headings:font-heading prose-headings:tracking-tight prose-p:leading-[1.9]">
-              <p className="whitespace-pre-wrap text-foreground/90" style={{ fontSize: `${fontSize}px` }}>
-                {chapter?.content || 'No content available.'}
-              </p>
+            <div className="prose prose-invert max-w-none prose-lg prose-p:leading-loose prose-headings:font-display prose-headings:tracking-tight">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+              >
+                <p 
+                  className="whitespace-pre-wrap text-slate-200 drop-shadow-sm" 
+                  style={{ fontSize: `${fontSize}px`, lineHeight: 1.8 }}
+                >
+                  {chapter?.content || 'No content available.'}
+                </p>
+              </motion.div>
 
               {/* AI-generated segments (whisper channel) */}
               {aiSegments && aiSegments.length > 0 && (
-                <aside className="mt-10 rounded-2xl border border-border bg-background/30 p-5">
-                  <div className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-wide text-muted-foreground">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-secondary" />
-                    <span>AI resonance</span>
+                <motion.aside 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-12 relative overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-fuchsia-900/10 p-6"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-500/5 to-purple-600/5 animate-pulse" />
+                  <div className="relative z-10">
+                    <div className="mb-4 flex items-center gap-2 text-xs font-bold tracking-widest text-fuchsia-400 uppercase">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-fuchsia-400 shadow-[0_0_10px_currentColor]" />
+                      <span>AI Resonance</span>
+                    </div>
+                    <div className="space-y-4 border-l-2 border-fuchsia-500/30 pl-4">
+                      {aiSegments.map((segment, index) => (
+                        <p
+                          key={index}
+                          className="m-0 text-fuchsia-100/80 italic font-medium"
+                          style={{ fontSize: `${Math.max(14, fontSize * 0.92)}px` }}
+                        >
+                          "{segment}"
+                        </p>
+                      ))}
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    {aiSegments.map((segment, index) => (
-                      <p
-                        key={index}
-                        className="m-0 text-foreground/70 italic"
-                        style={{ fontSize: `${Math.max(12, fontSize * 0.92)}px` }}
-                      >
-                        {segment}
-                      </p>
-                    ))}
-                  </div>
-                </aside>
+                </motion.aside>
               )}
             </div>
           </div>
         </div>
-      </section>
+        
+        {/* Bottom fade for scroll indication */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-20" />
+      </PrismPanel>
       {chapter && (
         <ReportModal
           isOpen={isReportModalOpen}
