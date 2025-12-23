@@ -14,7 +14,7 @@ const optionalEnvVars = [
   { name: 'STRIPE_SECRET_KEY', feature: 'Stripe payments' },
   { name: 'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', feature: 'Stripe checkout' },
   { name: 'OPEN_AI_SECRET_KEY', feature: 'AI story generation' },
-  { name: 'RESEND_API_KEY', feature: 'Email notifications' },
+  { name: 'SENDGRID_API_KEY', feature: 'Email notifications (SendGrid)' },
   { name: 'NEXT_PUBLIC_POSTHOG_KEY', feature: 'Analytics' },
   { name: 'NEXT_PUBLIC_GA_MEASUREMENT_ID', feature: 'Google Analytics' },
 ];

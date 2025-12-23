@@ -1,6 +1,9 @@
-import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize SendGrid with API key
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'noreply@stxryai.com';
 
@@ -14,20 +17,17 @@ export interface SendEmailOptions {
 // Send email
 export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
+    const msg = {
       to,
+      from: FROM_EMAIL,
       subject,
       html,
-      text,
-    });
+      text: text || html.replace(/<[^>]*>/g, ''), // Strip HTML for plain text version
+    };
 
-    if (error) {
-      console.error('Email send error:', error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
+    const response = await sgMail.send(msg);
+    
+    return { success: true, data: response };
   } catch (error) {
     console.error('Email send error:', error);
     return { success: false, error };
@@ -161,3 +161,4 @@ export const emailTemplates = {
     `,
   }),
 };
+

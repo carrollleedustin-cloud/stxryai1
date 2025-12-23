@@ -20,8 +20,8 @@ interface EnvConfig {
   OPENAI_API_KEY?: string;
   ANTHROPIC_API_KEY?: string;
 
-  // Email
-  RESEND_API_KEY?: string;
+  // Email (SendGrid)
+  SENDGRID_API_KEY?: string;
   EMAIL_FROM?: string;
 
   // Analytics
@@ -86,8 +86,8 @@ function getEnv(): EnvConfig {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
 
-    // Email
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    // Email (SendGrid)
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
 
     // Analytics
@@ -128,7 +128,7 @@ export const hasStripe = () => Boolean(env.STRIPE_SECRET_KEY && env.NEXT_PUBLIC_
 export const hasAI = () => Boolean(env.OPENAI_API_KEY || env.ANTHROPIC_API_KEY);
 export const hasOpenAI = () => Boolean(env.OPENAI_API_KEY);
 export const hasAnthropic = () => Boolean(env.ANTHROPIC_API_KEY);
-export const hasEmail = () => Boolean(env.RESEND_API_KEY);
+export const hasEmail = () => Boolean(env.SENDGRID_API_KEY);
 export const hasAnalytics = () => Boolean(env.NEXT_PUBLIC_POSTHOG_KEY || env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 export const hasAds = () => Boolean(env.NEXT_PUBLIC_ADSENSE_CLIENT);
 
