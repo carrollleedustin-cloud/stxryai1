@@ -11,6 +11,7 @@ import { ReadingClub } from '@/services/communityService';
 import { userProgressService } from '@/services/userProgressService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
+import { CharacterSheet, getZodiacEmoji } from '@/types/character-sheet';
 
 // Define specific interfaces for props
 export interface UserStats {
@@ -54,9 +55,21 @@ const UserProfileInteractive = ({
   const [isHydrated, setIsHydrated] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'achievements' | 'history' | 'social'>('overview');
   const [readingHistory, setReadingHistory] = useState<any[]>([]);
+  const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
+    
+    // Load character sheet from localStorage
+    const savedSheet = localStorage.getItem('stxryai_character_sheet');
+    if (savedSheet) {
+      try {
+        setCharacterSheet(JSON.parse(savedSheet));
+      } catch (e) {
+        console.error('Failed to parse character sheet:', e);
+      }
+    }
+    
     const fetchReadingHistory = async () => {
       try {
       const history = await userProgressService.getAllUserProgress(initialUser.id);
@@ -373,6 +386,81 @@ const UserProfileInteractive = ({
 
                 {/* Right Column - Social */}
                 <div className="space-y-8">
+                  {/* Character Sheet */}
+                  <HolographicCard className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-void-100 flex items-center gap-2">
+                        <Icon name="SparklesIcon" size={20} className="text-spectral-pink" />
+                        Character Sheet
+                      </h3>
+                    </div>
+                    {characterSheet ? (
+                      <div className="space-y-4">
+                        {/* Core Signs */}
+                        <div className="text-center">
+                          <div className="flex justify-center gap-2 mb-3">
+                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.sunSign)}</span>
+                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.moonSign)}</span>
+                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.risingSign)}</span>
+                          </div>
+                          <h4 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-spectral-cyan to-spectral-violet">
+                            {characterSheet.personalityArchetype.title}
+                          </h4>
+                          <p className="text-sm text-void-500 italic mt-1">"{characterSheet.coreAlignment.tagline}"</p>
+                        </div>
+
+                        {/* Core Signs Grid */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="text-center p-2 rounded-lg bg-void-900/50">
+                            <p className="text-xs text-void-500">Sun</p>
+                            <p className="text-sm font-bold text-yellow-400">{characterSheet.coreAlignment.sunSign}</p>
+                          </div>
+                          <div className="text-center p-2 rounded-lg bg-void-900/50">
+                            <p className="text-xs text-void-500">Moon</p>
+                            <p className="text-sm font-bold text-blue-300">{characterSheet.coreAlignment.moonSign}</p>
+                          </div>
+                          <div className="text-center p-2 rounded-lg bg-void-900/50">
+                            <p className="text-xs text-void-500">Rising</p>
+                            <p className="text-sm font-bold text-purple-400">{characterSheet.coreAlignment.risingSign}</p>
+                          </div>
+                        </div>
+
+                        {/* Signature Quote */}
+                        <div className="p-3 rounded-lg bg-gradient-to-br from-spectral-cyan/10 to-spectral-violet/10 border border-spectral-cyan/20">
+                          <p className="text-sm text-void-300 italic text-center">{characterSheet.signatureQuote}</p>
+                        </div>
+
+                        <Link href="/profile/character-sheet" className="block">
+                          <SpectralButton variant="ghost" size="sm" className="w-full">
+                            View Full Character Sheet →
+                          </SpectralButton>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <motion.div
+                          className="text-5xl mb-4"
+                          animate={{ 
+                            scale: [1, 1.1, 1],
+                            rotate: [0, 5, -5, 0],
+                          }}
+                          transition={{ duration: 3, repeat: Infinity }}
+                        >
+                          🌟
+                        </motion.div>
+                        <p className="text-void-400 mb-4">
+                          Discover your cosmic blueprint with a personalized Character Sheet based on your birth chart.
+                        </p>
+                        <Link href="/profile/character-sheet">
+                          <SpectralButton variant="primary" size="sm" className="w-full">
+                            <Icon name="SparklesIcon" size={16} className="mr-2" />
+                            Create Character Sheet
+                          </SpectralButton>
+                        </Link>
+                      </div>
+                    )}
+                  </HolographicCard>
+
                   {/* Friends */}
                   <HolographicCard className="p-6">
                     <div className="flex items-center justify-between mb-6">
