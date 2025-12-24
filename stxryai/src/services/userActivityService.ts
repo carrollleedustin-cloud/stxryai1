@@ -53,7 +53,7 @@ export const userActivityService = {
     try {
       const queryPromise = supabase
         .from('user_activities')
-        .select(`*,users!user_id (username,display_name,avatar_url)`)
+        .select(`*,users (username,display_name,avatar_url)`)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -99,7 +99,7 @@ export const userActivityService = {
       // Get activities from friends and user
       const { data, error } = await supabase
         .from('user_activities')
-        .select(`*,users!user_id (username,display_name,avatar_url)`)
+        .select(`*,users (username,display_name,avatar_url)`)
         .in('user_id', friendIds)
         .order('created_at', { ascending: false })
         .limit(limit);

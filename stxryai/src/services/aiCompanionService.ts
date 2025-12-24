@@ -453,8 +453,8 @@ Format:
 
       const userTier = profile?.subscription_tier || 'free';
 
-      if (tier === 'premium' && ['premium', 'pro', 'enterprise'].includes(userTier)) return true;
-      if (tier === 'pro' && ['pro', 'enterprise'].includes(userTier)) return true;
+      if (tier === 'premium' && ['premium', 'creator_pro', 'enterprise'].includes(userTier)) return true;
+      if (tier === 'creator_pro' && ['creator_pro', 'enterprise'].includes(userTier)) return true;
 
       return false;
     } catch (error) {

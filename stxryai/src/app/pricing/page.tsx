@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import VoidBackground, { AmbientOrbs } from '@/components/void/VoidBackground';
@@ -8,6 +8,8 @@ import EtherealNav from '@/components/void/EtherealNav';
 import SpectralButton from '@/components/void/SpectralButton';
 import { TemporalHeading } from '@/components/void/VoidText';
 import { StaggerContainer, StaggerItem } from '@/components/void/TemporalReveal';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface PricingTier {
   name: string;
@@ -22,6 +24,46 @@ interface PricingTier {
 }
 
 const PricingPage: React.FC = () => {
+  const { user, profile } = useAuth();
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+
+  const handleSubscribe = async (tier: 'premium' | 'pro') => {
+    if (!user) {
+      window.location.href = `/authentication?redirect=/pricing&tier=${tier}`;
+      return;
+    }
+
+    setIsLoading(tier);
+    try {
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          tier,
+          period: 'monthly',
+          successUrl: `${window.location.origin}/settings?subscription=success`,
+          cancelUrl: `${window.location.origin}/pricing?subscription=canceled`,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast.error('Failed to start subscription. Please try again.');
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
   const pricingTiers: PricingTier[] = [
     {
       name: 'Free',
@@ -190,14 +232,27 @@ const PricingPage: React.FC = () => {
                     </ul>
 
                     {/* CTA Button */}
-                    <Link href={tier.ctaLink}>
+                    {tier.name === 'Free' ? (
+                      <Link href={tier.ctaLink}>
+                        <SpectralButton
+                          variant="secondary"
+                          className="w-full justify-center"
+                        >
+                          {tier.ctaText}
+                        </SpectralButton>
+                      </Link>
+                    ) : (
                       <SpectralButton
                         variant={tier.isPopular ? 'primary' : 'secondary'}
                         className="w-full justify-center"
+                        onClick={() => handleSubscribe(tier.name === 'Premium' ? 'premium' : 'pro')}
+                        disabled={isLoading !== null}
                       >
-                        {tier.ctaText}
+                        {isLoading === (tier.name === 'Premium' ? 'premium' : 'pro')
+                          ? 'Loading...'
+                          : tier.ctaText}
                       </SpectralButton>
-                    </Link>
+                    )}
                   </div>
                 </motion.div>
               </StaggerItem>

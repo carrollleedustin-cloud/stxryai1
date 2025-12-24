@@ -5,10 +5,14 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   typescript: true,
 });
 
-// Subscription tiers and prices
+// Database tier type (matches database.types.ts)
+export type DatabaseTier = 'free' | 'premium' | 'creator_pro' | 'enterprise';
+
+// Subscription tiers and prices (Stripe uses camelCase internally)
 export const SUBSCRIPTION_TIERS = {
   premium: {
     name: 'Premium',
+    dbTier: 'premium' as DatabaseTier,
     price: 7.14,
     priceId: process.env.STRIPE_PREMIUM_PRICE_ID!,
     features: [
@@ -21,6 +25,7 @@ export const SUBSCRIPTION_TIERS = {
   },
   creatorPro: {
     name: 'Creator Pro',
+    dbTier: 'creator_pro' as DatabaseTier,
     price: 15.0,
     priceId: process.env.STRIPE_CREATOR_PRO_PRICE_ID!,
     features: [
@@ -34,7 +39,35 @@ export const SUBSCRIPTION_TIERS = {
   },
 } as const;
 
-export type SubscriptionTier = keyof typeof SUBSCRIPTION_TIERS;
+export type StripeTier = keyof typeof SUBSCRIPTION_TIERS;
+
+/**
+ * Convert database tier to Stripe tier key
+ */
+export function dbTierToStripeTier(dbTier: DatabaseTier): StripeTier | null {
+  if (dbTier === 'premium') return 'premium';
+  if (dbTier === 'creator_pro') return 'creatorPro';
+  return null; // free and enterprise don't have Stripe tiers
+}
+
+/**
+ * Convert Stripe tier key to database tier
+ */
+export function stripeTierToDbTier(stripeTier: StripeTier): DatabaseTier {
+  return SUBSCRIPTION_TIERS[stripeTier].dbTier;
+}
+
+/**
+ * Get tier from Stripe price ID
+ */
+export function getTierFromPriceId(priceId: string): DatabaseTier | null {
+  if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) return 'premium';
+  if (priceId === process.env.STRIPE_CREATOR_PRO_PRICE_ID) return 'creator_pro';
+  return null;
+}
+
+// Legacy export for backward compatibility
+export type SubscriptionTier = StripeTier;
 
 // Create checkout session
 export async function createCheckoutSession({

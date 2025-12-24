@@ -284,7 +284,7 @@ export const authService = {
 
   async updateUserProfile(
     userId: string,
-    updates: { display_name?: string; username?: string; bio?: string }
+    updates: { display_name?: string; username?: string; bio?: string; avatar_url?: string }
   ) {
     ensureSupabaseConfigured();
     const supabase = getSupabase();
@@ -306,6 +306,57 @@ export const authService = {
       throw error;
     }
     return Array.isArray(data) ? data[0] : data;
+  },
+
+  async uploadAvatar(userId: string, file: File) {
+    ensureSupabaseConfigured();
+    const supabase = getSupabase();
+
+    if (!userId || !file) {
+      throw new Error('User ID and file are required');
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      throw new Error('Invalid file type. Please upload a JPG, PNG, GIF, or WebP image.');
+    }
+
+    // Validate file size (2MB max)
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      throw new Error('File is too large. Maximum size is 2MB.');
+    }
+
+    // Create unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${userId}-${Date.now()}.${fileExt}`;
+    const filePath = `avatars/${fileName}`;
+
+    // Upload to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw new Error('Failed to upload image. Please try again.');
+    }
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    const avatarUrl = urlData.publicUrl;
+
+    // Update user profile with new avatar URL
+    await this.updateUserProfile(userId, { avatar_url: avatarUrl });
+
+    return avatarUrl;
   },
 
   async resetPassword(email: string) {
