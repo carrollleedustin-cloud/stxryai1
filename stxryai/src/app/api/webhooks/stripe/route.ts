@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { stripe, verifyWebhookSignature } from '@/lib/stripe/server';
+import { stripe, verifyWebhookSignature, getTierFromPriceId } from '@/lib/stripe/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { updateUserById, insertNotification } from '@/lib/supabase/typed';
 import type { Stripe } from 'stripe';
@@ -43,11 +43,7 @@ export async function POST(req: NextRequest) {
 
         // Determine tier from subscription
         const priceId = subscription.items.data[0].price.id;
-        let tier: 'premium' | 'creator_pro' = 'premium';
-
-        if (priceId === process.env.STRIPE_CREATOR_PRO_PRICE_ID) {
-          tier = 'creator_pro';
-        }
+        const tier = getTierFromPriceId(priceId) || 'premium';
 
         // Update user subscription
         const updateData = {

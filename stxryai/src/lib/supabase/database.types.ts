@@ -11,7 +11,9 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           bio: string | null;
-          tier: 'free' | 'premium' | 'creator_pro';
+          tier: 'free' | 'premium' | 'creator_pro' | 'enterprise';
+          role: 'user' | 'moderator' | 'admin';
+          is_admin: boolean;
           xp: number;
           level: number;
           energy: number;
@@ -31,6 +33,8 @@ export interface Database {
           avatar_url?: string | null;
           bio?: string | null;
           tier?: 'free' | 'premium' | 'creator_pro';
+          role?: 'user' | 'moderator' | 'admin';
+          is_admin?: boolean;
           xp?: number;
           level?: number;
           energy?: number;
@@ -50,6 +54,8 @@ export interface Database {
           avatar_url?: string | null;
           bio?: string | null;
           tier?: 'free' | 'premium' | 'creator_pro';
+          role?: 'user' | 'moderator' | 'admin';
+          is_admin?: boolean;
           xp?: number;
           level?: number;
           energy?: number;

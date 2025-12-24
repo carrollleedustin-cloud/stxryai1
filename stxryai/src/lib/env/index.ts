@@ -28,6 +28,10 @@ interface EnvConfig {
   NEXT_PUBLIC_POSTHOG_KEY?: string;
   NEXT_PUBLIC_GA_MEASUREMENT_ID?: string;
 
+  // Error Tracking (Sentry)
+  NEXT_PUBLIC_SENTRY_DSN?: string;
+  SENTRY_DSN?: string;
+
   // Ads
   NEXT_PUBLIC_ADSENSE_CLIENT?: string;
   NEXT_PUBLIC_ADSENSE_ID?: string;
@@ -94,6 +98,10 @@ function getEnv(): EnvConfig {
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
 
+    // Error Tracking (Sentry)
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    SENTRY_DSN: process.env.SENTRY_DSN,
+
     // Ads
     NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
     NEXT_PUBLIC_ADSENSE_ID: process.env.NEXT_PUBLIC_ADSENSE_ID,
@@ -130,6 +138,8 @@ export const hasOpenAI = () => Boolean(env.OPENAI_API_KEY);
 export const hasAnthropic = () => Boolean(env.ANTHROPIC_API_KEY);
 export const hasEmail = () => Boolean(env.SENDGRID_API_KEY);
 export const hasAnalytics = () => Boolean(env.NEXT_PUBLIC_POSTHOG_KEY || env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+export const hasSentry = () => Boolean(env.NEXT_PUBLIC_SENTRY_DSN || env.SENTRY_DSN);
+export const hasErrorTracking = hasSentry;
 export const hasAds = () => Boolean(env.NEXT_PUBLIC_ADSENSE_CLIENT);
 
 export type { EnvConfig };

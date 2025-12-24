@@ -1,5 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 import { updateSession } from './lib/supabase/middleware';
+import { 
+  rateLimiter, 
+  getRateLimitKey, 
+  getClientIdentifier, 
+  getIPFromHeaders,
+  RateLimiter
+} from './lib/api/rate-limiter';
 
 // Routes that require authentication
 const PROTECTED_ROUTES = [
@@ -10,13 +18,20 @@ const PROTECTED_ROUTES = [
   '/personalization-studio',
 ];
 
+// Routes that require admin/moderator role
+const ADMIN_ROUTES = ['/admin'];
+
 // Routes that should redirect to dashboard if already authenticated
 const AUTH_ROUTES = ['/authentication', '/auth'];
 
-// API rate limiting config
-const RATE_LIMIT = {
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 100, // requests per window
+// API endpoints with custom rate limits
+const API_RATE_LIMITS: Record<string, keyof typeof RateLimiter.CONFIGS> = {
+  '/api/auth': 'auth',
+  '/api/ai': 'ai',
+  '/api/narrative-engine': 'ai',
+  '/api/character-sheet': 'ai',
+  '/api/webhooks': 'webhook',
+  '/api/share/card': 'strict',
 };
 
 export async function middleware(request: NextRequest) {
@@ -34,10 +49,53 @@ export async function middleware(request: NextRequest) {
   // Update Supabase session and get response with user info
   const { response, user } = await updateSession(request);
 
-  // Rate limiting for API routes (early return, API routes handle their own auth)
+  // Rate limiting for API routes
   if (pathname.startsWith('/api/')) {
-    response.headers.set('X-RateLimit-Limit', String(RATE_LIMIT.maxRequests));
-    response.headers.set('X-RateLimit-Window', String(RATE_LIMIT.windowMs));
+    // Skip rate limiting for webhooks from trusted sources (they have their own signature verification)
+    const isWebhook = pathname.startsWith('/api/webhooks/');
+    
+    // Determine rate limit config based on endpoint
+    let rateLimitConfig = RateLimiter.CONFIGS.default;
+    for (const [prefix, configKey] of Object.entries(API_RATE_LIMITS)) {
+      if (pathname.startsWith(prefix)) {
+        rateLimitConfig = RateLimiter.CONFIGS[configKey];
+        break;
+      }
+    }
+
+    // Get client identifier
+    const ip = getIPFromHeaders(request.headers);
+    const clientId = getClientIdentifier(user?.id, ip);
+    const rateLimitKey = getRateLimitKey(clientId, pathname.split('/').slice(0, 4).join('/'));
+
+    // Check rate limit
+    const result = rateLimiter.check(rateLimitKey, rateLimitConfig);
+
+    // Set rate limit headers
+    response.headers.set('X-RateLimit-Limit', String(rateLimitConfig.maxRequests));
+    response.headers.set('X-RateLimit-Remaining', String(result.remaining));
+    response.headers.set('X-RateLimit-Reset', String(Math.floor(result.resetAt / 1000)));
+
+    // Block if rate limited (except webhooks which have their own protection)
+    if (!result.allowed && !isWebhook) {
+      return NextResponse.json(
+        { 
+          error: 'Too many requests',
+          message: `Rate limit exceeded. Try again in ${result.retryAfter} seconds.`,
+          retryAfter: result.retryAfter,
+        },
+        { 
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(rateLimitConfig.maxRequests),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': String(Math.floor(result.resetAt / 1000)),
+            'Retry-After': String(result.retryAfter),
+          },
+        }
+      );
+    }
+
     return response;
   }
 
@@ -45,6 +103,7 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
+  const isAdminRoute = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
   // Check if user is authenticated
@@ -55,6 +114,45 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/authentication', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Check admin routes - requires authenticated admin/moderator
+  if (isAdminRoute) {
+    if (!hasValidSession) {
+      return NextResponse.redirect(new URL('/authentication', request.url));
+    }
+
+    // Check admin status by querying user_profiles
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set() {},
+          remove() {},
+        },
+      }
+    );
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role, is_admin')
+      .eq('id', user.id)
+      .single();
+
+    const isAdmin = profile?.is_admin === true || 
+                    profile?.role === 'admin' || 
+                    profile?.role === 'moderator';
+
+    if (!isAdmin) {
+      // Not an admin - redirect to home with error message
+      const homeUrl = new URL('/', request.url);
+      homeUrl.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(homeUrl);
+    }
   }
 
   // Redirect authenticated users from auth routes to dashboard

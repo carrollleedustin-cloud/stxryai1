@@ -1,196 +1,243 @@
 /**
- * Error Tracking Service Abstraction
- * Provides a unified interface for error tracking services (Sentry, LogRocket, etc.)
+ * Error Tracking Service
  * 
- * Setup Instructions:
+ * Lightweight error tracking abstraction that can be configured with Sentry
+ * or fall back to console/API logging when Sentry is not configured.
  * 
- * 1. Install Sentry (recommended):
- *    npm install @sentry/nextjs
- * 
- * 2. Initialize Sentry in your app:
- *    npx @sentry/wizard@latest -i nextjs
- * 
- * 3. Add environment variables:
- *    NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn
- *    SENTRY_AUTH_TOKEN=your_auth_token (for source maps)
- * 
- * 4. Uncomment the Sentry integration below and configure
+ * Setup instructions for Sentry:
+ * 1. Install: npm install @sentry/nextjs
+ * 2. Run: npx @sentry/wizard@latest -i nextjs
+ * 3. Set SENTRY_DSN in environment variables
+ * 4. The wizard will create sentry.client.config.ts and sentry.server.config.ts
  */
 
-interface ErrorTrackingContext {
+export interface ErrorContext {
   userId?: string;
   email?: string;
-  username?: string;
-  [key: string]: unknown;
+  extra?: Record<string, unknown>;
+  tags?: Record<string, string>;
+  level?: 'fatal' | 'error' | 'warning' | 'info' | 'debug';
 }
 
-interface ErrorTrackingOptions {
-  level?: 'error' | 'warning' | 'info';
-  tags?: Record<string, string>;
-  extra?: Record<string, unknown>;
-  contexts?: Record<string, unknown>;
+interface BreadcrumbData {
+  category: string;
+  message: string;
+  level?: 'debug' | 'info' | 'warning' | 'error';
+  data?: Record<string, unknown>;
 }
 
 class ErrorTrackingService {
-  private isEnabled: boolean;
-  private isProduction: boolean;
+  private isInitialized = false;
+  private userId: string | null = null;
+  private userEmail: string | null = null;
+  private breadcrumbs: BreadcrumbData[] = [];
+  private readonly MAX_BREADCRUMBS = 50;
 
-  constructor() {
-    this.isProduction = process.env.NODE_ENV === 'production';
-    // Enable if Sentry DSN is configured
-    this.isEnabled = this.isProduction && Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
+  /**
+   * Initialize the error tracking service
+   * Call this once at app startup
+   */
+  init() {
+    if (this.isInitialized) return;
+
+    // Check if Sentry is configured
+    const hasSentry = !!process.env.NEXT_PUBLIC_SENTRY_DSN || !!process.env.SENTRY_DSN;
+
+    if (hasSentry) {
+      console.info('[ErrorTracking] Sentry DSN detected - using Sentry for error tracking');
+      // Sentry initialization is handled by @sentry/nextjs automatically
+      // when sentry.client.config.ts and sentry.server.config.ts are present
+    } else {
+      console.info('[ErrorTracking] No Sentry DSN - using fallback error tracking');
+    }
+
+    this.isInitialized = true;
+
+    // Set up global error handlers for uncaught errors
+    if (typeof window !== 'undefined') {
+      window.addEventListener('unhandledrejection', (event) => {
+        this.captureException(event.reason || new Error('Unhandled Promise Rejection'), {
+          tags: { type: 'unhandledrejection' },
+        });
+      });
+    }
   }
 
   /**
-   * Initialize error tracking service
-   * Call this in your app initialization
+   * Set the current user for error context
    */
-  init(): void {
-    if (!this.isEnabled) {
-      if (this.isProduction) {
-        console.warn(
-          '[Error Tracking] Error tracking is disabled. Set NEXT_PUBLIC_SENTRY_DSN to enable.'
-        );
-      }
+  setUser(userId: string | null, email?: string | null) {
+    this.userId = userId;
+    this.userEmail = email || null;
+
+    // If Sentry is available, set user there too
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.setUser(userId ? { id: userId, email: email || undefined } : null);
+    }
+  }
+
+  /**
+   * Capture an exception
+   */
+  captureException(error: Error | unknown, context?: ErrorContext) {
+    const errorObj = error instanceof Error ? error : new Error(String(error));
+    const level = context?.level || 'error';
+
+    // Try Sentry first
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.captureException(errorObj, {
+        level,
+        user: context?.userId ? { id: context.userId, email: context.email } : undefined,
+        extra: context?.extra,
+        tags: context?.tags,
+      });
       return;
     }
 
-    // TODO: Initialize Sentry here
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.init({
-    //   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    //   environment: process.env.NODE_ENV,
-    //   tracesSampleRate: 0.1, // Adjust based on traffic
-    //   beforeSend(event) {
-    //     // Filter sensitive data
-    //     return event;
-    //   },
-    // });
+    // Fallback: Log to console and send to our API
+    console.error('[ErrorTracking]', errorObj.message, {
+      stack: errorObj.stack,
+      context,
+      userId: this.userId,
+    });
+
+    // Send to our analytics error endpoint
+    this.sendToAPI('error', {
+      message: errorObj.message,
+      stack: errorObj.stack,
+      type: level,
+      source: typeof window !== 'undefined' ? 'client' : 'server',
+      userId: context?.userId || this.userId || undefined,
+      metadata: { ...context?.extra, tags: context?.tags },
+    });
   }
 
   /**
-   * Capture an exception/error
+   * Capture a message (non-error event)
    */
-  captureException(error: Error | unknown, options?: ErrorTrackingOptions): void {
-    if (!this.isEnabled) {
-      // In development, still log to console
-      if (!this.isProduction) {
-        console.error('[Error Tracking]', error, options);
-      }
+  captureMessage(message: string, context?: ErrorContext) {
+    const level = context?.level || 'info';
+
+    // Try Sentry first
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.captureMessage(message, {
+        level,
+        extra: context?.extra,
+        tags: context?.tags,
+      });
       return;
     }
 
-    // TODO: Send to Sentry
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.captureException(error, {
-    //   level: options?.level || 'error',
-    //   tags: options?.tags,
-    //   extra: options?.extra,
-    //   contexts: options?.contexts,
-    // });
+    // Fallback: Log and send to API
+    console.log('[ErrorTracking]', message, context);
+
+    this.sendToAPI('info', {
+      message,
+      type: level,
+      source: typeof window !== 'undefined' ? 'client' : 'server',
+      userId: context?.userId || this.userId || undefined,
+      metadata: context?.extra,
+    });
   }
 
   /**
-   * Capture a message (non-error)
+   * Add a breadcrumb for debugging
    */
-  captureMessage(message: string, options?: ErrorTrackingOptions): void {
-    if (!this.isEnabled) {
-      if (!this.isProduction) {
-        console.log('[Error Tracking]', message, options);
-      }
-      return;
+  addBreadcrumb(data: BreadcrumbData) {
+    this.breadcrumbs.push({
+      ...data,
+      level: data.level || 'info',
+    });
+
+    // Keep breadcrumbs manageable
+    if (this.breadcrumbs.length > this.MAX_BREADCRUMBS) {
+      this.breadcrumbs.shift();
     }
 
-    // TODO: Send to Sentry
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.captureMessage(message, {
-    //   level: options?.level || 'info',
-    //   tags: options?.tags,
-    //   extra: options?.extra,
-    // });
-  }
-
-  /**
-   * Set user context for error tracking
-   */
-  setUser(context: ErrorTrackingContext): void {
-    if (!this.isEnabled) return;
-
-    // TODO: Set Sentry user context
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.setUser({
-    //   id: context.userId,
-    //   email: context.email,
-    //   username: context.username,
-    // });
-  }
-
-  /**
-   * Clear user context
-   */
-  clearUser(): void {
-    if (!this.isEnabled) return;
-
-    // TODO: Clear Sentry user context
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.setUser(null);
-  }
-
-  /**
-   * Add breadcrumb for debugging
-   */
-  addBreadcrumb(message: string, category?: string, level?: 'error' | 'warning' | 'info'): void {
-    if (!this.isEnabled) {
-      if (!this.isProduction) {
-        console.debug('[Breadcrumb]', { message, category, level });
-      }
-      return;
+    // Try Sentry
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.addBreadcrumb({
+        category: data.category,
+        message: data.message,
+        level: data.level || 'info',
+        data: data.data,
+      });
     }
-
-    // TODO: Add Sentry breadcrumb
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.addBreadcrumb({
-    //   message,
-    //   category: category || 'default',
-    //   level: level || 'info',
-    //   timestamp: Date.now() / 1000,
-    // });
   }
 
   /**
-   * Set additional context/tags
+   * Get current breadcrumbs (for debugging)
    */
-  setContext(name: string, context: Record<string, unknown>): void {
-    if (!this.isEnabled) return;
-
-    // TODO: Set Sentry context
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.setContext(name, context);
+  getBreadcrumbs(): BreadcrumbData[] {
+    return [...this.breadcrumbs];
   }
 
   /**
-   * Set tag for filtering
+   * Set extra context that will be attached to all errors
    */
-  setTag(key: string, value: string): void {
-    if (!this.isEnabled) return;
+  setContext(name: string, context: Record<string, unknown>) {
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.setContext(name, context);
+    }
+  }
 
-    // TODO: Set Sentry tag
-    // Example:
-    // import * as Sentry from '@sentry/nextjs';
-    // Sentry.setTag(key, value);
+  /**
+   * Set a tag that will be attached to all errors
+   */
+  setTag(key: string, value: string) {
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.setTag(key, value);
+    }
+  }
+
+  /**
+   * Send error to our analytics API
+   */
+  private async sendToAPI(type: string, data: Record<string, unknown>) {
+    if (typeof window === 'undefined') return;
+
+    try {
+      // Use sendBeacon for reliability
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/analytics/errors', JSON.stringify({
+          ...data,
+          timestamp: Date.now(),
+        }));
+      } else {
+        // Fallback to fetch
+        fetch('/api/analytics/errors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            timestamp: Date.now(),
+          }),
+          keepalive: true,
+        }).catch(() => {
+          // Silently fail - we don't want error tracking to cause errors
+        });
+      }
+    } catch {
+      // Silently fail
+    }
   }
 }
 
 // Export singleton instance
 export const errorTracking = new ErrorTrackingService();
 
-// Export types
-export type { ErrorTrackingContext, ErrorTrackingOptions };
+// Export type for use in components
+export type { BreadcrumbData };
 
+// Convenience functions
+export const captureException = (error: Error | unknown, context?: ErrorContext) => 
+  errorTracking.captureException(error, context);
+
+export const captureMessage = (message: string, context?: ErrorContext) =>
+  errorTracking.captureMessage(message, context);
+
+export const setUser = (userId: string | null, email?: string | null) =>
+  errorTracking.setUser(userId, email);
+
+export const addBreadcrumb = (data: BreadcrumbData) =>
+  errorTracking.addBreadcrumb(data);

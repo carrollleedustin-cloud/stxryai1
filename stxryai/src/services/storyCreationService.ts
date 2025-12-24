@@ -37,7 +37,7 @@ export type StoryMode = 'static' | 'ai_choices' | 'ai_infinite';
  * Custom Choice Access Tier:
  * Determines which subscription tier can write custom choices (type their own path)
  */
-export type CustomChoiceTier = 'none' | 'premium' | 'pro' | 'all';
+export type CustomChoiceTier = 'none' | 'premium' | 'creator_pro' | 'all';
 
 export interface StoryMetadata {
   id?: string;

@@ -1,4 +1,4 @@
-export type Tier = 'free' | 'premium' | 'creator_pro';
+export type Tier = 'free' | 'premium' | 'creator_pro' | 'pro' | 'enterprise';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type UserRole = 'user' | 'moderator' | 'admin';
 

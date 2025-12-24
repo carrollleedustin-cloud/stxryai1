@@ -9,8 +9,22 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 // TYPES
 // ========================================
 
-export type SubscriptionTier = 'free' | 'premium' | 'pro' | 'enterprise';
+/**
+ * Subscription tier types - aligned with database schema
+ * - free: Default tier for new users
+ * - premium: Standard paid tier for readers
+ * - creator_pro: Professional tier for story creators
+ * - enterprise: Custom tier for organizations (future)
+ */
+export type SubscriptionTier = 'free' | 'premium' | 'creator_pro' | 'enterprise';
 export type BillingPeriod = 'monthly' | 'yearly';
+
+// Alias for backward compatibility
+export type LegacyTier = 'pro';
+export function normalizeTier(tier: string): SubscriptionTier {
+  if (tier === 'pro') return 'creator_pro';
+  return tier as SubscriptionTier;
+}
 
 export interface TierConfig {
   id: SubscriptionTier;
@@ -141,9 +155,9 @@ export const TIER_CONFIGS: Record<SubscriptionTier, TierConfig> = {
     badge: '⭐',
     color: 'blue',
   },
-  pro: {
-    id: 'pro',
-    name: 'Pro',
+  creator_pro: {
+    id: 'creator_pro',
+    name: 'Creator Pro',
     description: 'For power users & creators',
     monthlyPrice: 14.99,
     yearlyPrice: 119.99, // $10/mo - 33% off
@@ -358,7 +372,7 @@ class SubscriptionService {
    * Compare tiers
    */
   compareTiers(tier1: SubscriptionTier, tier2: SubscriptionTier): -1 | 0 | 1 {
-    const order = ['free', 'premium', 'pro', 'enterprise'];
+    const order = ['free', 'premium', 'creator_pro', 'enterprise'];
     const idx1 = order.indexOf(tier1);
     const idx2 = order.indexOf(tier2);
     
@@ -371,7 +385,7 @@ class SubscriptionService {
    * Get upgrade options for a tier
    */
   getUpgradeOptions(currentTier: SubscriptionTier): TierConfig[] {
-    const order: SubscriptionTier[] = ['free', 'premium', 'pro'];
+    const order: SubscriptionTier[] = ['free', 'premium', 'creator_pro'];
     const currentIndex = order.indexOf(currentTier);
     
     return order

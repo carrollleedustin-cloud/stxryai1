@@ -374,7 +374,107 @@ function PreferencesSettings() {
 }
 
 function SubscriptionSettings({ profile }: { profile: any }) {
-  const tier = profile?.subscription_tier || 'free';
+  const [isLoading, setIsLoading] = useState(false);
+  const tier = profile?.subscription_tier || profile?.tier || 'free';
+  const userId = profile?.id;
+
+  const handleUpgrade = async (targetTier: 'premium' | 'pro') => {
+    if (!userId) {
+      toast.error('Please log in to upgrade');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          tier: targetTier,
+          period: 'monthly',
+          successUrl: `${window.location.origin}/settings?subscription=success`,
+          cancelUrl: `${window.location.origin}/settings?subscription=canceled`,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
+      toast.error('Failed to start upgrade. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!userId) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          returnUrl: `${window.location.origin}/settings`,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Portal error:', error);
+      toast.error('Failed to open subscription portal.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getTierDisplayName = (t: string) => {
+    switch (t) {
+      case 'creator_pro':
+      case 'pro':
+        return 'Creator Pro';
+      case 'premium':
+        return 'Premium';
+      case 'enterprise':
+        return 'Enterprise';
+      default:
+        return 'Free';
+    }
+  };
+
+  const getTierPrice = (t: string) => {
+    switch (t) {
+      case 'creator_pro':
+      case 'pro':
+        return '$15';
+      case 'premium':
+        return '$7.14';
+      case 'enterprise':
+        return 'Custom';
+      default:
+        return '$0';
+    }
+  };
+
+  const isPaidTier = tier !== 'free';
 
   return (
     <div className="space-y-6">
@@ -388,17 +488,27 @@ function SubscriptionSettings({ profile }: { profile: any }) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600 dark:text-gray-400">Current Plan</p>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white capitalize mt-1">
-              {tier === 'creator_pro' ? 'Creator Pro' : tier}
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">
+              {getTierDisplayName(tier)}
             </h3>
           </div>
           <div className="text-right">
             <p className="text-3xl font-bold text-purple-600">
-              {tier === 'free' ? '$0' : tier === 'premium' ? '$7.14' : '$15'}
+              {getTierPrice(tier)}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">/month</p>
           </div>
         </div>
+        
+        {isPaidTier && (
+          <button
+            onClick={handleManageSubscription}
+            disabled={isLoading}
+            className="mt-4 text-sm text-purple-600 hover:text-purple-700 font-medium disabled:opacity-50"
+          >
+            {isLoading ? 'Loading...' : 'Manage Subscription →'}
+          </button>
+        )}
       </div>
 
       {/* Energy Status */}
@@ -407,7 +517,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
           <div>
             <p className="font-medium text-gray-900 dark:text-white">⚡ Energy Status</p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {tier === 'creator_pro'
+              {['creator_pro', 'pro', 'enterprise'].includes(tier)
                 ? 'Unlimited Energy'
                 : tier === 'premium'
                   ? '100 Energy (refills 2x faster)'
@@ -418,22 +528,34 @@ function SubscriptionSettings({ profile }: { profile: any }) {
       </div>
 
       {/* Upgrade Options */}
-      {tier !== 'creator_pro' && (
+      {!['creator_pro', 'pro', 'enterprise'].includes(tier) && (
         <div className="space-y-3">
           <p className="font-medium text-gray-900 dark:text-white">Upgrade Your Plan</p>
           {tier === 'free' && (
             <>
-              <button className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
-                Upgrade to Premium - $7.14/month
+              <button 
+                onClick={() => handleUpgrade('premium')}
+                disabled={isLoading}
+                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
+              >
+                {isLoading ? 'Loading...' : 'Upgrade to Premium - $7.14/month'}
               </button>
-              <button className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all">
-                Upgrade to Creator Pro - $15/month
+              <button 
+                onClick={() => handleUpgrade('pro')}
+                disabled={isLoading}
+                className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50"
+              >
+                {isLoading ? 'Loading...' : 'Upgrade to Creator Pro - $15/month'}
               </button>
             </>
           )}
           {tier === 'premium' && (
-            <button className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all">
-              Upgrade to Creator Pro - $15/month
+            <button 
+              onClick={() => handleUpgrade('pro')}
+              disabled={isLoading}
+              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50"
+            >
+              {isLoading ? 'Loading...' : 'Upgrade to Creator Pro - $15/month'}
             </button>
           )}
         </div>
