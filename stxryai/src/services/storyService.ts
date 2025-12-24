@@ -57,7 +57,7 @@ export const storyService = {
     try {
       let query = supabase
         .from('stories')
-        .select('*, author:users!user_id(display_name, avatar_url)')
+        .select('*')
         .eq('is_published', true);
 
       // Search
@@ -159,7 +159,7 @@ export const storyService = {
       .select(
         `
         *,
-        user:users!user_id (
+        user:users (
           id,
           display_name,
           avatar_url
@@ -181,7 +181,7 @@ export const storyService = {
       .select(
         `
         *,
-        user:users!user_id (
+        user:users (
           id,
           display_name,
           avatar_url

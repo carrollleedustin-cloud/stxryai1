@@ -5,19 +5,21 @@
  * Account, Preferences, Subscription, Privacy, Notifications
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import GlobalNav from '@/components/common/GlobalNav';
 import { authService } from '@/services/authService';
 import { UserProfile } from '@/types/database';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type SettingsTab = 'account' | 'preferences' | 'subscription' | 'privacy' | 'notifications';
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile, loading } = useAuth();
 
   const tabs = [
     { id: 'account', label: 'Account', icon: '👤' },
@@ -27,10 +29,19 @@ export default function SettingsPage() {
     { id: 'notifications', label: 'Notifications', icon: '🔔' },
   ];
 
-  if (!profile) {
+  // Redirect to login if not authenticated
+  if (!loading && !user) {
+    router.push('/authentication?redirect=/settings');
+    return null;
+  }
+
+  if (loading || !profile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-pink-50/30 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
-        <p>Loading profile...</p>
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">Loading profile...</p>
+        </div>
       </div>
     );
   }
@@ -104,6 +115,8 @@ function AccountSettings({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     display_name: profile?.display_name || '',
     username: profile?.username || '',
@@ -132,6 +145,34 @@ function AccountSettings({
     }
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setIsUploadingAvatar(true);
+    toast.loading('Uploading photo...');
+
+    try {
+      await authService.uploadAvatar(user.id, file);
+      await refreshProfile();
+      toast.dismiss();
+      toast.success('Profile photo updated!');
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(error.message || 'Failed to upload photo.');
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -145,15 +186,41 @@ function AccountSettings({
 
       {/* Profile Picture */}
       <div className="flex items-center space-x-4">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white text-2xl font-bold">
-          {formData.display_name?.charAt(0)?.toUpperCase() || '?'}
+        <div className="relative">
+          {profile?.avatar_url ? (
+            <img 
+              src={profile.avatar_url} 
+              alt={formData.display_name || 'Profile'} 
+              className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white text-2xl font-bold">
+              {formData.display_name?.charAt(0)?.toUpperCase() || '?'}
+            </div>
+          )}
+          {isUploadingAvatar && (
+            <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
         </div>
         <div>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-            Change Photo
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            onChange={handleAvatarChange}
+            className="hidden"
+          />
+          <button 
+            onClick={handleAvatarClick}
+            disabled={isUploadingAvatar}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+          >
+            {isUploadingAvatar ? 'Uploading...' : 'Change Photo'}
           </button>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            JPG, GIF or PNG. Max size 2MB.
+            JPG, GIF, PNG or WebP. Max size 2MB.
           </p>
         </div>
       </div>
