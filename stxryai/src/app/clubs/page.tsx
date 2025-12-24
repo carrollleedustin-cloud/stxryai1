@@ -6,15 +6,31 @@ import VoidBackground from '@/components/void/VoidBackground';
 import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, ParticleField } from '@/components/void';
 import { HolographicCard, RevealOnScroll, GradientBorder } from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
-import { socialService } from '@/services/socialService';
+import { enhancedSocialService } from '@/services/enhancedSocialService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
-// Mock data for clubs
-const MOCK_CLUBS = [
+// Club data type
+interface Club {
+  id: string;
+  name: string;
+  description: string;
+  cover_image_url?: string;
+  member_count: number;
+  category: string;
+  activity?: string;
+  is_private?: boolean;
+  tags?: string[];
+  online?: number;
+  featured?: boolean;
+  recentActivity?: string;
+}
+
+// Mock data for clubs (fallback)
+const MOCK_CLUBS: Club[] = [
   { 
     id: '1', 
     name: 'Dark Fiction Society', 
@@ -143,6 +159,28 @@ const ClubsPage: React.FC = () => {
   const [clubDescription, setClubDescription] = useState('');
   const [clubCategory, setClubCategory] = useState('Horror');
   const [isPrivate, setIsPrivate] = useState(false);
+  const [clubs, setClubs] = useState<Club[]>(MOCK_CLUBS);
+
+  useEffect(() => {
+    loadClubs();
+  }, [selectedCategory, searchQuery]);
+
+  const loadClubs = async () => {
+    try {
+      const result = await enhancedSocialService.getClubs({
+        category: selectedCategory === 'All' ? undefined : selectedCategory,
+        search: searchQuery || undefined,
+        limit: 50,
+      });
+      if (result.clubs) {
+        setClubs(result.clubs);
+      }
+    } catch (error) {
+      console.error('Failed to load clubs:', error);
+      // Fall back to mock data
+      setClubs(MOCK_CLUBS);
+    }
+  };
 
   const handleCreateClub = () => {
     if (!user) {
@@ -153,13 +191,19 @@ const ClubsPage: React.FC = () => {
     setShowCreateModal(true);
   };
 
-  const handleJoinClub = (clubId: string) => {
+  const handleJoinClub = async (clubId: string) => {
     if (!user) {
       toast.error('Please sign in to join a club');
       router.push('/authentication?redirect=/clubs');
       return;
     }
-    toast.success('Successfully joined the club!');
+    try {
+      await enhancedSocialService.joinClub(clubId);
+      toast.success('Successfully joined the club!');
+      await loadClubs();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to join club');
+    }
   };
 
   const handleSubmitClub = async () => {
@@ -169,32 +213,35 @@ const ClubsPage: React.FC = () => {
     }
     setIsLoading(true);
     try {
-      // In a real implementation, this would call the API
+      await enhancedSocialService.createClub({
+        name: clubName,
+        description: clubDescription,
+        category: clubCategory,
+        is_private: isPrivate,
+        tags: [clubCategory],
+        created_by: user?.id || '',
+      });
       toast.success('Club created successfully!');
       setShowCreateModal(false);
       setClubName('');
       setClubDescription('');
       setClubCategory('Horror');
       setIsPrivate(false);
+      await loadClubs();
     } catch (error) {
-      toast.error('Failed to create club');
+      toast.error(error instanceof Error ? error.message : 'Failed to create club');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredClubs = MOCK_CLUBS.filter(club => {
-    const matchesSearch = club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         club.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || club.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  }).sort((a, b) => {
-    if (sortBy === 'members') return b.members - a.members;
-    if (sortBy === 'activity') return b.online - a.online;
+  const filteredClubs = clubs.sort((a, b) => {
+    if (sortBy === 'members') return (b.member_count || 0) - (a.member_count || 0);
+    if (sortBy === 'activity') return (b.online || 0) - (a.online || 0);
     return 0;
   });
 
-  const featuredClubs = MOCK_CLUBS.filter(club => club.featured);
+  const featuredClubs = clubs.filter(club => club.featured);
 
   const getActivityColor = (activity: string) => {
     switch (activity) {
