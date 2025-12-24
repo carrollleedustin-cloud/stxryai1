@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import VoidBackground from '@/components/void/VoidBackground';
 import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCounter, ParticleField } from '@/components/void';
 import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
@@ -12,6 +13,7 @@ import { userProgressService } from '@/services/userProgressService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
 import { CharacterSheet, getZodiacEmoji } from '@/types/character-sheet';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Define specific interfaces for props
 export interface UserStats {
@@ -52,10 +54,25 @@ const UserProfileInteractive = ({
   initialClubs,
   initialLists,
 }: UserProfileInteractiveProps) => {
+  const router = useRouter();
+  const { user, profile, loading } = useAuth();
   const [isHydrated, setIsHydrated] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'achievements' | 'history' | 'social'>('overview');
   const [readingHistory, setReadingHistory] = useState<any[]>([]);
   const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
+
+  // Use real user data if logged in, otherwise use mock data
+  const currentUser = user && profile ? {
+    id: user.id,
+    name: profile.display_name || profile.username || 'User',
+    username: profile.username || 'user',
+    avatar: profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+    bio: profile.bio || 'No bio yet. Edit your profile to add one!',
+    isPremium: profile.subscription_tier !== 'free',
+    joinDate: new Date(profile.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+    location: profile.location || null,
+    website: profile.website || null,
+  } : initialUser;
 
   useEffect(() => {
     setIsHydrated(true);
@@ -72,16 +89,17 @@ const UserProfileInteractive = ({
     
     const fetchReadingHistory = async () => {
       try {
-      const history = await userProgressService.getAllUserProgress(initialUser.id);
+        const userId = user?.id || initialUser.id;
+        const history = await userProgressService.getAllUserProgress(userId);
         setReadingHistory(history || initialStories);
       } catch {
         setReadingHistory(initialStories);
       }
     };
     fetchReadingHistory();
-  }, [initialUser.id, initialStories]);
+  }, [user?.id, initialUser.id, initialStories]);
 
-  if (!isHydrated) {
+  if (!isHydrated || loading) {
     return (
       <VoidBackground variant="minimal">
         <div className="min-h-screen flex items-center justify-center">
@@ -90,6 +108,31 @@ const UserProfileInteractive = ({
             <p className="text-void-400">Loading Profile...</p>
           </div>
         </div>
+      </VoidBackground>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!user) {
+    return (
+      <VoidBackground variant="aurora">
+        <ParticleField color="rgba(0, 245, 212, 0.5)" particleCount={50} />
+        <EtherealNav />
+        <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen flex items-center justify-center">
+          <GradientBorder className="max-w-md w-full">
+            <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-8 text-center">
+              <Icon name="UserCircleIcon" size={64} className="text-spectral-cyan mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-void-100 mb-2">Sign In Required</h2>
+              <p className="text-void-400 mb-6">Please sign in to view your profile and access all features.</p>
+              <Link href="/authentication?redirect=/user-profile">
+                <SpectralButton variant="primary" size="lg" className="w-full">
+                  <Icon name="ArrowRightOnRectangleIcon" size={20} className="mr-2" />
+                  Sign In
+                </SpectralButton>
+              </Link>
+            </div>
+          </GradientBorder>
+        </main>
       </VoidBackground>
     );
   }
@@ -137,11 +180,11 @@ const UserProfileInteractive = ({
                     >
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-spectral-cyan via-spectral-violet to-spectral-pink animate-spin-slow" style={{ animationDuration: '8s' }} />
                       <img
-                        src={initialUser.avatar}
-                        alt={initialUser.name}
+                        src={currentUser.avatar}
+                        alt={currentUser.name}
                         className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover border-2 border-void-900"
                       />
-                      {initialUser.isPremium && (
+                      {currentUser.isPremium && (
                         <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center border-2 border-void-950 shadow-lg shadow-yellow-500/30">
                           <Icon name="SparklesIcon" size={20} className="text-void-950" />
                         </div>
@@ -152,29 +195,29 @@ const UserProfileInteractive = ({
                   {/* Info */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                      <h1 className="text-3xl md:text-4xl font-bold text-void-100">{initialUser.name}</h1>
-                      {initialUser.isPremium && (
+                      <h1 className="text-3xl md:text-4xl font-bold text-void-100">{currentUser.name}</h1>
+                      {currentUser.isPremium && (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 text-sm font-medium">
                           <Icon name="CrownIcon" size={14} />
                           Premium
                         </span>
                       )}
                     </div>
-                    <p className="text-spectral-cyan text-lg mb-3">@{initialUser.username}</p>
-                    <p className="text-void-400 max-w-xl mb-4">{initialUser.bio}</p>
+                    <p className="text-spectral-cyan text-lg mb-3">@{currentUser.username}</p>
+                    <p className="text-void-400 max-w-xl mb-4">{currentUser.bio}</p>
                     <div className="flex flex-wrap gap-4 text-sm text-void-500 justify-center md:justify-start">
                       <span className="flex items-center gap-1">
                         <Icon name="CalendarIcon" size={14} />
-                        Joined {initialUser.joinDate}
+                        Joined {currentUser.joinDate}
                       </span>
-                      {initialUser.location && (
+                      {currentUser.location && (
                         <span className="flex items-center gap-1">
                           <Icon name="MapPinIcon" size={14} />
-                          {initialUser.location}
+                          {currentUser.location}
                         </span>
                       )}
-                      {initialUser.website && (
-                        <a href={initialUser.website} className="flex items-center gap-1 text-spectral-cyan hover:underline">
+                      {currentUser.website && (
+                        <a href={currentUser.website} className="flex items-center gap-1 text-spectral-cyan hover:underline">
                           <Icon name="LinkIcon" size={14} />
                           Website
                         </a>
@@ -184,11 +227,28 @@ const UserProfileInteractive = ({
 
                   {/* Actions */}
                   <div className="flex flex-col gap-3">
-                    <SpectralButton variant="primary" size="md">
-                      <Icon name="PencilIcon" size={16} className="mr-2" />
-                      Edit Profile
-                    </SpectralButton>
-                    <SpectralButton variant="ghost" size="md">
+                    <Link href="/settings">
+                      <SpectralButton variant="primary" size="md">
+                        <Icon name="PencilIcon" size={16} className="mr-2" />
+                        Edit Profile
+                      </SpectralButton>
+                    </Link>
+                    <SpectralButton 
+                      variant="ghost" 
+                      size="md"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: `${currentUser.name}'s Profile`,
+                            text: `Check out ${currentUser.name}'s profile on StxryAI`,
+                            url: window.location.href
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Profile link copied to clipboard!');
+                        }
+                      }}
+                    >
                       <Icon name="ShareIcon" size={16} className="mr-2" />
                       Share
                     </SpectralButton>
