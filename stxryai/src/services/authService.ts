@@ -157,6 +157,21 @@ export const authService = {
     return data;
   },
 
+  async signInWithGitHub() {
+    ensureSupabaseConfigured();
+    const supabase = getSupabase();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/authentication/callback`,
+      },
+    });
+
+    if (error) throw error;
+    return data;
+  },
+
   async signOut() {
     ensureSupabaseConfigured();
     const supabase = getSupabase();

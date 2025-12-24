@@ -9,6 +9,9 @@ import SpectralButton from '@/components/void/SpectralButton';
 import { socialService } from '@/services/socialService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 // Mock data
 const MOCK_TRENDING_DISCUSSIONS = [
@@ -41,10 +44,21 @@ const MOCK_ACTIVE_USERS = [
 ];
 
 const CommunityHubPage: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [discussions, setDiscussions] = useState(MOCK_TRENDING_DISCUSSIONS);
   const [events, setEvents] = useState(MOCK_UPCOMING_EVENTS);
   const [clubs, setClubs] = useState(MOCK_FEATURED_CLUBS);
+
+  const handleCreatePost = () => {
+    if (!user) {
+      toast.error('Please sign in to create a post');
+      router.push('/authentication?redirect=/forums');
+      return;
+    }
+    router.push('/forums?create=true');
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -380,7 +394,7 @@ const CommunityHubPage: React.FC = () => {
                   <p className="text-sm text-void-400 mb-4">
                     Share your thoughts, ask questions, or start a discussion with the community.
                   </p>
-                  <SpectralButton variant="primary" size="md" className="w-full">
+                  <SpectralButton variant="primary" size="md" className="w-full" onClick={handleCreatePost}>
                     <Icon name="PlusIcon" size={16} className="mr-2" />
                     Create Post
                   </SpectralButton>
