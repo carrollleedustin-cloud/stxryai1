@@ -4,12 +4,14 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePet } from '@/contexts/PetContext';
 import EtherealNav from '@/components/void/EtherealNav';
 import VoidBackground, { AmbientOrbs } from '@/components/void/VoidBackground';
 import DimensionalCard from '@/components/void/DimensionalCard';
 import SpectralButton from '@/components/void/SpectralButton';
 import TemporalReveal, { StaggerContainer, StaggerItem } from '@/components/void/TemporalReveal';
 import ParticleField, { AnimatedCounter, TypewriterText } from '@/components/void/ParticleField';
+import StoryPetDisplay from '@/components/pet/StoryPetDisplay';
 import { 
   BookOpen, 
   Compass, 
@@ -32,6 +34,7 @@ import {
   Calendar,
   BarChart3,
   MessageSquare,
+  PawPrint,
 } from 'lucide-react';
 
 /**
@@ -139,6 +142,7 @@ function ActivityGraph({ data }: { data: number[] }) {
 export default function DashboardInteractive() {
   const router = useRouter();
   const { user, profile, loading: authLoading } = useAuth();
+  const { pet, hasPet, setShowPetPanel, showPetPanel } = usePet();
   
   const [dataLoading, setDataLoading] = useState(true);
   const [continueReading, setContinueReading] = useState<any[]>([]);
@@ -316,6 +320,7 @@ export default function DashboardInteractive() {
     { icon: Library, label: 'Library', href: '/story-library', color: 'spectral-cyan' },
     { icon: PenTool, label: 'Create', href: '/story-creation-studio', color: 'spectral-violet' },
     { icon: Compass, label: 'Discover', href: '/community-hub', color: 'spectral-rose' },
+    { icon: PawPrint, label: 'Pet', action: () => setShowPetPanel(!showPetPanel), color: hasPet ? 'spectral-rose' : 'ghost-400', isButton: true },
     { icon: Settings, label: 'Settings', href: '/settings', color: 'ghost-400' },
   ];
 
@@ -367,7 +372,7 @@ export default function DashboardInteractive() {
                     transition={{ delay: 0.3 + index * 0.05 }}
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => router.push(action.href)}
+                    onClick={() => (action as any).isButton ? (action as any).action?.() : router.push((action as any).href)}
                     className="w-14 h-14 rounded-xl flex items-center justify-center bg-void-black/60 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 group relative overflow-hidden"
                     title={action.label}
                   >
@@ -586,6 +591,72 @@ export default function DashboardInteractive() {
             
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Pet Companion Card */}
+              {hasPet && pet && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.42 }}
+                >
+                  <HolographicCard 
+                    className="p-6 cursor-pointer" 
+                    glowColor={pet.traits.primaryColor.replace('#', '')}
+                  >
+                    <div 
+                      className="flex flex-col items-center"
+                      onClick={() => setShowPetPanel(true)}
+                    >
+                      <div className="mb-3">
+                        <StoryPetDisplay size="sm" showInteractions={false} showStats={false} />
+                      </div>
+                      <h3 className="font-display text-lg text-white mb-1">{pet.name}</h3>
+                      <p className="text-xs text-ghost-400 capitalize mb-3">
+                        Lv.{pet.stats.level} {pet.evolutionStage} {pet.baseType}
+                      </p>
+                      
+                      {/* Mini stats */}
+                      <div className="w-full space-y-2">
+                        {/* XP bar */}
+                        <div className="flex items-center gap-2">
+                          <Star className="w-3 h-3 text-amber-400" />
+                          <div className="flex-1 h-1.5 bg-void-elevated rounded-full overflow-hidden">
+                            <motion.div
+                              className="h-full bg-gradient-to-r from-amber-400 to-orange-500"
+                              initial={{ width: 0 }}
+                              animate={{ width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-ghost-500">{pet.stats.experience}/{pet.stats.experienceToNextLevel}</span>
+                        </div>
+                        
+                        {/* Happiness */}
+                        <div className="flex items-center gap-2">
+                          <Heart className="w-3 h-3 text-pink-400" />
+                          <div className="flex-1 h-1.5 bg-void-elevated rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-pink-400 to-rose-500"
+                              style={{ width: `${pet.stats.happiness}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-ghost-500">{pet.stats.happiness}%</span>
+                        </div>
+                      </div>
+                      
+                      <button 
+                        className="mt-4 text-xs font-ui tracking-wide uppercase text-spectral-cyan hover:text-spectral-violet transition-colors flex items-center gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowPetPanel(true);
+                        }}
+                      >
+                        <PawPrint className="w-3 h-3" />
+                        View Companion
+                      </button>
+                    </div>
+                  </HolographicCard>
+                </motion.div>
+              )}
+              
               {/* Weekly Activity */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
