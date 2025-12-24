@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import '@/styles/tailwind.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { PetProvider } from '@/contexts/PetContext';
 import ToastProvider from '@/components/ui/Toast';
+import { PetPanel, EvolutionCelebration } from '@/components/pet';
 import { defaultMetadata } from './metadata';
 
 /**
@@ -27,8 +29,14 @@ export default function RootLayout({
       <body className="font-ui antialiased bg-void-absolute text-text-primary min-h-screen">
         <AuthProvider>
           <ThemeProvider>
-            <ToastProvider />
-            {children}
+            <PetProvider>
+              <ToastProvider />
+              {children}
+              {/* Global Pet Companion Panel */}
+              <PetPanel position="bottom-right" />
+              {/* Evolution Celebration Modal */}
+              <EvolutionCelebration />
+            </PetProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>
