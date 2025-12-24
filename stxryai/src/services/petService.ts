@@ -538,10 +538,10 @@ Keep it under 100 characters.`;
         playful: '*makes silly faces while listening*',
         wise: '*nods sagely* Wisdom speaks.',
         mischievous: '*whispers secrets back*',
-        shy: '*listens quietly* That''s nice...',
+        shy: "*listens quietly* That's nice...",
         brave: 'A tale of adventure!',
         dreamy: '*drifts off imagining*',
-        loyal: 'I''ll always listen to you!',
+        loyal: "I'll always listen to you!",
       },
       gift: {
         energetic: 'A PRESENT?! *explodes with joy*',
@@ -553,7 +553,7 @@ Keep it under 100 characters.`;
         shy: '*blushes deeply* For... for me?',
         brave: 'A token of friendship!',
         dreamy: '*gazes at it in wonder*',
-        loyal: 'I''ll never let it go!',
+        loyal: "I'll never let it go!",
       },
     };
     
