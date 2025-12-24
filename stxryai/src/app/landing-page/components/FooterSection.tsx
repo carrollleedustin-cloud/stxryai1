@@ -174,7 +174,7 @@ export default function FooterSection() {
               Accessibility
             </Link>
             <Link 
-              href="/sitemap"
+              href="/sitemap-page"
               className="text-xs text-text-ghost hover:text-text-tertiary transition-colors"
             >
               Sitemap

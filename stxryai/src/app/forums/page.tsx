@@ -9,6 +9,9 @@ import SpectralButton from '@/components/void/SpectralButton';
 import { socialService } from '@/services/socialService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 // Mock data for forums
 const MOCK_CATEGORIES = [
@@ -32,10 +35,56 @@ const MOCK_RECENT_THREADS = [
 ];
 
 const ForumsPage: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter();
   const [activeView, setActiveView] = useState<'categories' | 'recent'>('recent');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showNewThreadModal, setShowNewThreadModal] = useState(false);
+  const [newThreadTitle, setNewThreadTitle] = useState('');
+  const [newThreadContent, setNewThreadContent] = useState('');
+  const [newThreadCategory, setNewThreadCategory] = useState('');
+
+  // Check for create parameter in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('create') === 'true' && user) {
+      setShowNewThreadModal(true);
+      // Clean up URL
+      window.history.replaceState({}, '', '/forums');
+    }
+  }, [user]);
+
+  const handleNewThread = () => {
+    if (!user) {
+      toast.error('Please sign in to create a thread');
+      router.push('/authentication?redirect=/forums');
+      return;
+    }
+    setShowNewThreadModal(true);
+  };
+
+  const handleSubmitThread = async () => {
+    if (!newThreadTitle.trim() || !newThreadContent.trim() || !newThreadCategory) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // In a real implementation, this would call the API
+      toast.success('Thread created successfully!');
+      setShowNewThreadModal(false);
+      setNewThreadTitle('');
+      setNewThreadContent('');
+      setNewThreadCategory('');
+    } catch (error) {
+      toast.error('Failed to create thread');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredThreads = MOCK_RECENT_THREADS.filter(thread => {
     const matchesSearch = thread.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -59,7 +108,7 @@ const ForumsPage: React.FC = () => {
                 <p className="text-void-400">Join the conversation with fellow readers and writers</p>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
-                <SpectralButton variant="primary" size="md">
+                <SpectralButton variant="primary" size="md" onClick={handleNewThread}>
                   <Icon name="PlusIcon" size={16} className="mr-2" />
                   New Thread
                 </SpectralButton>
@@ -290,6 +339,99 @@ const ForumsPage: React.FC = () => {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* New Thread Modal */}
+      <AnimatePresence>
+        {showNewThreadModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          >
+            <div 
+              className="absolute inset-0 bg-void-950/80 backdrop-blur-sm"
+              onClick={() => setShowNewThreadModal(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl"
+            >
+              <GradientBorder>
+                <div className="bg-void-950/95 backdrop-blur-xl rounded-2xl p-6 md:p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-void-100">Create New Thread</h2>
+                    <button
+                      onClick={() => setShowNewThreadModal(false)}
+                      className="p-2 rounded-lg hover:bg-void-800/50 text-void-400 hover:text-void-200 transition-colors"
+                    >
+                      <Icon name="XMarkIcon" size={20} />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Category</label>
+                      <select
+                        value={newThreadCategory}
+                        onChange={(e) => setNewThreadCategory(e.target.value)}
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-xl text-void-200 focus:border-spectral-cyan/50 focus:outline-none transition-colors"
+                      >
+                        <option value="">Select a category</option>
+                        {MOCK_CATEGORIES.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Title</label>
+                      <input
+                        type="text"
+                        value={newThreadTitle}
+                        onChange={(e) => setNewThreadTitle(e.target.value)}
+                        placeholder="Enter a descriptive title..."
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-xl text-void-200 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-void-300 mb-2">Content</label>
+                      <textarea
+                        value={newThreadContent}
+                        onChange={(e) => setNewThreadContent(e.target.value)}
+                        placeholder="Write your post..."
+                        rows={6}
+                        className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-xl text-void-200 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none transition-colors resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 mt-6">
+                    <SpectralButton
+                      variant="ghost"
+                      onClick={() => setShowNewThreadModal(false)}
+                    >
+                      Cancel
+                    </SpectralButton>
+                    <SpectralButton
+                      variant="primary"
+                      onClick={handleSubmitThread}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Creating...' : 'Create Thread'}
+                    </SpectralButton>
+                  </div>
+                </div>
+              </GradientBorder>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </VoidBackground>
   );
 };

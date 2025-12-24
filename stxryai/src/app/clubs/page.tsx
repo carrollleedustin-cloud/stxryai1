@@ -9,6 +9,9 @@ import SpectralButton from '@/components/void/SpectralButton';
 import { socialService } from '@/services/socialService';
 import Icon from '@/components/ui/AppIcon';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 // Mock data for clubs
 const MOCK_CLUBS = [
@@ -129,11 +132,56 @@ const MOCK_CLUBS = [
 const CATEGORIES = ['All', 'Horror', 'Sci-Fi', 'Fantasy', 'Mystery', 'Romance', 'Writing', 'Adventure', 'Historical'];
 
 const ClubsPage: React.FC = () => {
+  const { user } = useAuth();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState<'members' | 'activity' | 'recent'>('members');
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [clubName, setClubName] = useState('');
+  const [clubDescription, setClubDescription] = useState('');
+  const [clubCategory, setClubCategory] = useState('Horror');
+  const [isPrivate, setIsPrivate] = useState(false);
+
+  const handleCreateClub = () => {
+    if (!user) {
+      toast.error('Please sign in to create a club');
+      router.push('/authentication?redirect=/clubs');
+      return;
+    }
+    setShowCreateModal(true);
+  };
+
+  const handleJoinClub = (clubId: string) => {
+    if (!user) {
+      toast.error('Please sign in to join a club');
+      router.push('/authentication?redirect=/clubs');
+      return;
+    }
+    toast.success('Successfully joined the club!');
+  };
+
+  const handleSubmitClub = async () => {
+    if (!clubName.trim() || !clubDescription.trim()) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      // In a real implementation, this would call the API
+      toast.success('Club created successfully!');
+      setShowCreateModal(false);
+      setClubName('');
+      setClubDescription('');
+      setClubCategory('Horror');
+      setIsPrivate(false);
+    } catch (error) {
+      toast.error('Failed to create club');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredClubs = MOCK_CLUBS.filter(club => {
     const matchesSearch = club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -174,7 +222,7 @@ const ClubsPage: React.FC = () => {
                 <p className="text-void-400">Find your tribe and read together</p>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
-                <SpectralButton variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
+                <SpectralButton variant="primary" size="md" onClick={handleCreateClub}>
                   <Icon name="PlusIcon" size={16} className="mr-2" />
                   Create Club
                 </SpectralButton>
@@ -229,7 +277,7 @@ const ClubsPage: React.FC = () => {
                             <span className="text-sm text-void-500">
                               {club.members.toLocaleString()} members
                             </span>
-                            <SpectralButton variant="ghost" size="sm">
+                            <SpectralButton variant="ghost" size="sm" onClick={() => handleJoinClub(club.id)}>
                               Join
                               <Icon name="ArrowRightIcon" size={14} className="ml-1" />
                             </SpectralButton>
@@ -360,7 +408,7 @@ const ClubsPage: React.FC = () => {
               <div className="py-16 text-center">
                 <Icon name="UserGroupIcon" size={48} className="text-void-600 mx-auto mb-4" />
                 <p className="text-void-400 mb-4">No clubs found matching your criteria.</p>
-                <SpectralButton variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
+                <SpectralButton variant="primary" size="md" onClick={handleCreateClub}>
                   Create a Club
                 </SpectralButton>
               </div>
@@ -376,7 +424,7 @@ const ClubsPage: React.FC = () => {
                 <p className="text-void-400 mb-6">
                   Can't find the perfect club? Create your own and build a community around your favorite genres and stories.
                 </p>
-                <SpectralButton variant="primary" size="lg" onClick={() => setShowCreateModal(true)}>
+                <SpectralButton variant="primary" size="lg" onClick={handleCreateClub}>
                   <Icon name="PlusIcon" size={20} className="mr-2" />
                   Create Club
                 </SpectralButton>
@@ -415,6 +463,8 @@ const ClubsPage: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Enter club name..."
+                    value={clubName}
+                    onChange={(e) => setClubName(e.target.value)}
                     className="w-full px-4 py-3 bg-void-950/50 border border-void-700/50 rounded-lg text-void-200 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
                   />
                 </div>
@@ -423,30 +473,48 @@ const ClubsPage: React.FC = () => {
                   <textarea
                     placeholder="Describe your club..."
                     rows={3}
+                    value={clubDescription}
+                    onChange={(e) => setClubDescription(e.target.value)}
                     className="w-full px-4 py-3 bg-void-950/50 border border-void-700/50 rounded-lg text-void-200 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none resize-none"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-void-300 mb-2">Category</label>
-                  <select className="w-full px-4 py-3 bg-void-950/50 border border-void-700/50 rounded-lg text-void-200 focus:outline-none">
+                  <select 
+                    value={clubCategory}
+                    onChange={(e) => setClubCategory(e.target.value)}
+                    className="w-full px-4 py-3 bg-void-950/50 border border-void-700/50 rounded-lg text-void-200 focus:outline-none"
+                  >
                     {CATEGORIES.filter(c => c !== 'All').map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input type="checkbox" id="private" className="w-4 h-4 rounded bg-void-800 border-void-700" />
+                  <input 
+                    type="checkbox" 
+                    id="private" 
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    className="w-4 h-4 rounded bg-void-800 border-void-700" 
+                  />
                   <label htmlFor="private" className="text-sm text-void-300">Make this club private (invite only)</label>
                 </div>
                 <div className="flex gap-3 mt-6">
                   <SpectralButton variant="ghost" size="md" className="flex-1" onClick={() => setShowCreateModal(false)}>
                     Cancel
                   </SpectralButton>
-                  <SpectralButton variant="primary" size="md" className="flex-1">
-                    Create Club
+                  <SpectralButton 
+                    variant="primary" 
+                    size="md" 
+                    className="flex-1" 
+                    onClick={handleSubmitClub}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creating...' : 'Create Club'}
                   </SpectralButton>
                 </div>
-    </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
