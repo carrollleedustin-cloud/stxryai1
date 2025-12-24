@@ -10,10 +10,10 @@ export interface AIConfig {
   temperature: number;
 }
 
-// Default configuration
+// Default configuration (forced to OpenAI)
 export const DEFAULT_AI_CONFIG: Omit<AIConfig, 'apiKey'> = {
-  provider: 'anthropic',
-  model: 'claude-3-5-sonnet-20241022',
+  provider: 'openai',
+  model: 'gpt-4-turbo-preview',
   maxTokens: 4000,
   temperature: 0.7,
 };
@@ -47,9 +47,11 @@ export function isAIConfigured(): boolean {
 
 // Get active AI provider
 export function getActiveProvider(): AIProvider {
-  if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
+  // Force OpenAI as the active provider when available
   if (process.env.OPENAI_API_KEY) return 'openai';
-  throw new Error('No AI provider configured');
+  if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
+  // As a fallback, default to OpenAI to honor product decision
+  return 'openai';
 }
 
 // Get full AI configuration
@@ -59,6 +61,7 @@ export function getAIConfig(): AIConfig {
     ...DEFAULT_AI_CONFIG,
     provider,
     apiKey: getAIApiKey(provider),
-    model: provider === 'anthropic' ? 'claude-3-5-sonnet-20241022' : 'gpt-4-turbo-preview',
+    // Force OpenAI model selection when provider is OpenAI
+    model: provider === 'openai' ? 'gpt-4-turbo-preview' : 'gpt-4-turbo-preview',
   };
 }
