@@ -4,10 +4,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePet } from '@/contexts/PetContext';
 import { storyService } from '@/services/storyService';
 import { userProgressService } from '@/services/userProgressService';
 import { narrativeAIService } from '@/services/narrativeAIService';
 import { aiCompanionService } from '@/services/aiCompanionService';
+import usePetRewards from '@/hooks/usePetRewards';
+import { PetGreeting } from '@/components/pet';
 import type { StoryMode, CustomChoiceTier } from '@/services/storyCreationService';
 import { 
   ChevronLeft, 
@@ -24,6 +27,7 @@ import {
   Send,
   Loader2,
   Bot,
+  PawPrint,
 } from 'lucide-react';
 
 /**
@@ -35,6 +39,8 @@ export default function StoryReaderInteractive() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, profile } = useAuth();
+  const { pet, hasPet, getDialogue, setShowPetPanel } = usePet();
+  const { onChoiceMade, onChapterComplete, onStoryRead } = usePetRewards();
   const storyId = searchParams?.get('storyId');
   
   // State
@@ -246,15 +252,29 @@ export default function StoryReaderInteractive() {
         });
       }
       
+      // Award pet XP for making a choice
+      if (storyId) {
+        await onChoiceMade(storyId);
+      }
+      
       const nextChapterIndex = currentChapterIndex + 1;
       
       if (nextChapterIndex >= chapters.length) {
+        // Story completed - award extra XP!
+        if (storyId) {
+          await onStoryRead(storyId, story?.genre);
+        }
         await userProgressService.markStoryCompleted(user.id, story.id);
         router.push('/user-dashboard?completed=true');
         return;
       }
       
       const nextChapter = chapters[nextChapterIndex];
+      
+      // Award XP for chapter completion
+      if (storyId) {
+        await onChapterComplete(storyId);
+      }
       
       await userProgressService.updateProgress(
         user.id,
@@ -430,6 +450,22 @@ export default function StoryReaderInteractive() {
               </div>
               
               <div className="flex items-center gap-2">
+                {/* Pet Companion Toggle */}
+                {hasPet && (
+                  <button
+                    onClick={() => setShowPetPanel(true)}
+                    className={`p-2 rounded-lg transition-colors relative ${
+                      theme === 'light' 
+                        ? 'text-spectral-rose hover:bg-spectral-rose/10' 
+                        : 'text-spectral-rose hover:bg-spectral-rose/10'
+                    }`}
+                    title={`${pet?.name} is here!`}
+                  >
+                    <PawPrint className="w-5 h-5" />
+                    {/* Pulse indicator */}
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-spectral-rose rounded-full animate-pulse" />
+                  </button>
+                )}
                 <button
                   onClick={handleBookmark}
                   className={`p-2 rounded-lg transition-colors ${
