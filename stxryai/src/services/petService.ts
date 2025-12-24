@@ -1,10 +1,11 @@
 /**
- * StoryPet Service
- * Manages the unique Tamagotchi-like companion system.
- * Each pet is procedurally generated and evolves with user activity.
+ * Enhanced Pet Service with AI Integration
+ * Manages the unique Tamagotchi-like companion system with improved AI dialogue
  */
 
 import { supabase } from '@/lib/supabase/client';
+import { generateText } from '@/lib/ai/client';
+import { getTaskConfig } from '@/lib/ai/config';
 import {
   StoryPet,
   PetBaseType,
@@ -29,10 +30,8 @@ import {
 
 /**
  * Generate a unique genetic seed from user data
- * This ensures every user gets a completely unique pet
  */
 function generateGeneticSeed(userId: string, email: string, createdAt: string): string {
-  // Combine user data into a unique hash-like seed
   const combined = `${userId}-${email}-${createdAt}-${Date.now()}`;
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
@@ -44,7 +43,7 @@ function generateGeneticSeed(userId: string, email: string, createdAt: string): 
 }
 
 /**
- * Seeded random number generator for consistent pet generation
+ * Seeded random number generator
  */
 function seededRandom(seed: string, index: number = 0): number {
   const seedValue = seed.split('').reduce((acc, char, i) => 
@@ -61,18 +60,9 @@ function seededPick<T>(array: T[], seed: string, index: number): T {
 }
 
 /**
- * Generate a color from seed
- */
-function generateColor(seed: string, index: number, saturation: number = 70, lightness: number = 50): string {
-  const hue = Math.floor(seededRandom(seed, index) * 360);
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
-/**
  * Generate unique pet traits from seed
  */
 function generateTraits(seed: string, element: PetElement, baseType: PetBaseType): PetTraits {
-  // Element-based color palettes
   const elementColors: Record<PetElement, { primary: string; secondary: string; accent: string }> = {
     fire: { primary: '#ff6b35', secondary: '#f7c59f', accent: '#ffd700' },
     water: { primary: '#00b4d8', secondary: '#90e0ef', accent: '#48cae4' },
@@ -89,14 +79,11 @@ function generateTraits(seed: string, element: PetElement, baseType: PetBaseType
 
   const colors = elementColors[element];
   
-  // Add variation to colors based on seed
-  const hueShift = (seededRandom(seed, 100) - 0.5) * 30;
-  
   return {
     fluffiness: Math.floor(seededRandom(seed, 1) * 100),
     sparkle: Math.floor(seededRandom(seed, 2) * 100),
     glow: Math.floor(seededRandom(seed, 3) * 100),
-    size: 40 + Math.floor(seededRandom(seed, 4) * 60), // 40-100
+    size: 40 + Math.floor(seededRandom(seed, 4) * 60),
     roundness: Math.floor(seededRandom(seed, 5) * 100),
     
     hasWings: seededRandom(seed, 6) > 0.6 || baseType === 'dragon' || baseType === 'phoenix',
@@ -108,7 +95,7 @@ function generateTraits(seed: string, element: PetElement, baseType: PetBaseType
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     accentColor: colors.accent,
-    eyeColor: generateColor(seed, 11, 80, 60),
+    eyeColor: `hsl(${Math.floor(seededRandom(seed, 11) * 360)}, 80%, 60%)`,
     
     pattern: seededPick(['solid', 'gradient', 'spotted', 'striped', 'galaxy', 'iridescent'], seed, 12),
     particleType: seededPick(['none', 'sparkles', 'flames', 'bubbles', 'leaves', 'snow', 'stars', 'hearts', 'lightning'], seed, 13),
@@ -155,10 +142,10 @@ function generateBirthMemory(): PetMemory {
 }
 
 // =============================================================================
-// PET SERVICE CLASS
+// ENHANCED PET SERVICE WITH AI
 // =============================================================================
 
-class PetService {
+class EnhancedPetService {
   /**
    * Create a new pet for a user
    */
@@ -169,10 +156,8 @@ class PetService {
     petName: string
   ): Promise<StoryPet | null> {
     try {
-      // Generate unique genetic seed
       const geneticSeed = generateGeneticSeed(userId, email, userCreatedAt);
       
-      // Generate pet attributes from seed
       const baseTypes: PetBaseType[] = ['wisp', 'sprite', 'dragon', 'phoenix', 'wolf', 'cat', 'owl', 'fox', 'bunny', 'slime', 'crystal', 'shadow'];
       const elements: PetElement[] = ['fire', 'water', 'earth', 'air', 'lightning', 'ice', 'nature', 'shadow', 'light', 'cosmic', 'void'];
       const personalities: PetPersonality[] = ['energetic', 'calm', 'curious', 'playful', 'wise', 'mischievous', 'shy', 'brave', 'dreamy', 'loyal'];
@@ -232,8 +217,7 @@ class PetService {
         });
       
       if (error) {
-        console.error('Error creating pet:', error);
-        // Return pet anyway for local state (database might not have table yet)
+        console.error('Error creating pet in database:', error);
         return pet;
       }
       
@@ -267,7 +251,7 @@ class PetService {
   }
   
   /**
-   * Award experience to pet
+   * Award experience to pet with AI-generated feedback
    */
   async awardExperience(
     userId: string,
@@ -300,15 +284,12 @@ class PetService {
           break;
       }
       
-      // Update genre exploration
       if (additionalData?.genre && !newStats.genresExplored.includes(additionalData.genre)) {
         newStats.genresExplored.push(additionalData.genre);
       }
       
-      // Increase happiness
       newStats.happiness = Math.min(100, newStats.happiness + 5);
       
-      // Check for level up
       let leveledUp = false;
       while (newStats.experience >= newStats.experienceToNextLevel) {
         newStats.experience -= newStats.experienceToNextLevel;
@@ -317,14 +298,11 @@ class PetService {
         leveledUp = true;
       }
       
-      // Check for evolution
       const newEvolutionStage = getEvolutionStage(newStats.level);
       const evolved = newEvolutionStage !== pet.evolutionStage;
       
-      // Update mood based on activity
       const newMood = this.calculateMood(newStats);
       
-      // Create memory if evolved
       const newMemories = [...pet.memories];
       if (evolved) {
         newMemories.push({
@@ -337,7 +315,6 @@ class PetService {
         });
       }
       
-      // Update evolution history
       const evolutionHistory = [...pet.evolutionHistory];
       if (evolved) {
         evolutionHistory.push({
@@ -347,7 +324,6 @@ class PetService {
         });
       }
       
-      // Save to database
       await supabase
         .from('user_pets')
         .update({
@@ -380,7 +356,7 @@ class PetService {
   }
   
   /**
-   * Interact with pet
+   * Interact with pet with AI-generated response
    */
   async interactWithPet(
     userId: string,
@@ -390,38 +366,36 @@ class PetService {
       const pet = await this.getUserPet(userId);
       if (!pet) return null;
       
-      const interactions: Record<PetInteraction['type'], PetInteraction> = {
+      // Get AI-generated response
+      const aiResponse = await this.generatePetResponse(pet, interactionType);
+      
+      const interactions: Record<PetInteraction['type'], Omit<PetInteraction, 'response'>> = {
         pet: {
           type: 'pet',
-          response: this.getInteractionResponse(pet, 'pet'),
           happinessChange: 10,
           energyChange: 5,
           experienceGained: 2,
         },
         feed: {
           type: 'feed',
-          response: this.getInteractionResponse(pet, 'feed'),
           happinessChange: 15,
           energyChange: 20,
           experienceGained: 5,
         },
         play: {
           type: 'play',
-          response: this.getInteractionResponse(pet, 'play'),
           happinessChange: 20,
           energyChange: -10,
           experienceGained: 10,
         },
         talk: {
           type: 'talk',
-          response: this.getInteractionResponse(pet, 'talk'),
           happinessChange: 8,
           energyChange: 0,
           experienceGained: 3,
         },
         gift: {
           type: 'gift',
-          response: this.getInteractionResponse(pet, 'gift'),
           happinessChange: 25,
           energyChange: 10,
           experienceGained: 15,
@@ -430,14 +404,12 @@ class PetService {
       
       const interaction = interactions[interactionType];
       
-      // Update pet stats
       const newStats = { ...pet.stats };
       newStats.happiness = Math.max(0, Math.min(100, newStats.happiness + interaction.happinessChange));
       newStats.energy = Math.max(0, Math.min(100, newStats.energy + interaction.energyChange));
       newStats.experience += interaction.experienceGained;
       newStats.totalExperience += interaction.experienceGained;
       
-      // Check for level up
       while (newStats.experience >= newStats.experienceToNextLevel) {
         newStats.experience -= newStats.experienceToNextLevel;
         newStats.level++;
@@ -456,11 +428,136 @@ class PetService {
         })
         .eq('user_id', userId);
       
-      return interaction;
+      // Store interaction in database
+      await supabase
+        .from('pet_interactions')
+        .insert({
+          user_id: userId,
+          pet_id: pet.id,
+          interaction_type: interactionType,
+          response: aiResponse,
+          happiness_change: interaction.happinessChange,
+          energy_change: interaction.energyChange,
+          experience_gained: interaction.experienceGained,
+        });
+      
+      return {
+        ...interaction,
+        response: aiResponse,
+      };
     } catch (error) {
       console.error('Error interacting with pet:', error);
       return null;
     }
+  }
+  
+  /**
+   * Generate AI response for pet interaction
+   */
+  private async generatePetResponse(pet: StoryPet, interactionType: PetInteraction['type']): Promise<string> {
+    try {
+      const config = getTaskConfig('petDialogue');
+      
+      const prompt = `You are a ${pet.personality} ${pet.baseType} companion with ${pet.element} element. 
+Your name is ${pet.name}. You are at level ${pet.stats.level} and in ${pet.evolutionStage} stage.
+Your current mood is ${pet.currentMood} and happiness is ${pet.stats.happiness}%.
+
+The user just ${this.getInteractionDescription(interactionType)}.
+
+Generate a short, personality-appropriate response (1-2 sentences max). Be playful and engaging.
+Keep it under 100 characters.`;
+
+      const response = await generateText(prompt, undefined, config.temperature);
+      return response.trim();
+    } catch (error) {
+      console.error('Error generating pet response:', error);
+      // Fallback to hardcoded response
+      return this.getFallbackResponse(pet, interactionType);
+    }
+  }
+  
+  /**
+   * Get interaction description for AI prompt
+   */
+  private getInteractionDescription(type: PetInteraction['type']): string {
+    const descriptions: Record<PetInteraction['type'], string> = {
+      pet: 'petted me gently',
+      feed: 'gave me food',
+      play: 'wanted to play',
+      talk: 'talked to me',
+      gift: 'gave me a gift',
+    };
+    return descriptions[type];
+  }
+  
+  /**
+   * Fallback response if AI generation fails
+   */
+  private getFallbackResponse(pet: StoryPet, type: PetInteraction['type']): string {
+    const responses: Record<PetInteraction['type'], Record<PetPersonality, string>> = {
+      pet: {
+        energetic: '*bounces happily* That tickles!',
+        calm: '*purrs softly* That feels nice...',
+        curious: '*tilts head* What is that feeling?',
+        playful: '*giggles* Hehe!',
+        wise: '*nods appreciatively* Thank you, friend.',
+        mischievous: '*pretends to bite* Gotcha!',
+        shy: '*blushes* Oh my...',
+        brave: '*stands proud* I appreciate this!',
+        dreamy: '*floats contentedly* Like clouds...',
+        loyal: '*nuzzles* I love you!',
+      },
+      feed: {
+        energetic: 'FOOD! *chomps excitedly*',
+        calm: '*gracefully eats* Delicious.',
+        curious: '*sniffs* What flavor is this?',
+        playful: '*plays with food first* Wheee!',
+        wise: 'A thoughtful meal. Thank you.',
+        mischievous: '*pretends to share, eats all*',
+        shy: '*quietly eats* Thank you...',
+        brave: '*eats heroically* Fuel for adventure!',
+        dreamy: '*eats slowly* Like star dust...',
+        loyal: 'You always take care of me!',
+      },
+      play: {
+        energetic: 'YES! PLAYTIME! *zooms around*',
+        calm: '*gentle play* This is fun.',
+        curious: 'What game is this?',
+        playful: '*laughs* This is the BEST!',
+        wise: 'Strategy time! *thinks*',
+        mischievous: '*cheats a little* Oops!',
+        shy: '*nervously plays* Am I doing it right?',
+        brave: 'A worthy opponent!',
+        dreamy: '*plays in slow motion*',
+        loyal: 'Playing with you is the best!',
+      },
+      talk: {
+        energetic: 'Tell me EVERYTHING! So exciting!',
+        calm: '*listens attentively* I understand.',
+        curious: 'Really? Tell me more!',
+        playful: '*makes silly faces while listening*',
+        wise: '*nods sagely* Wisdom speaks.',
+        mischievous: '*whispers secrets back*',
+        shy: '*listens quietly* That''s nice...',
+        brave: 'A tale of adventure!',
+        dreamy: '*drifts off imagining*',
+        loyal: 'I''ll always listen to you!',
+      },
+      gift: {
+        energetic: 'A PRESENT?! *explodes with joy*',
+        calm: '*receives gracefully* How kind.',
+        curious: '*examines gift carefully* What is it?',
+        playful: '*plays with wrapping* The box is fun too!',
+        wise: 'A meaningful gift. I am honored.',
+        mischievous: '*already planning what to do with it*',
+        shy: '*blushes deeply* For... for me?',
+        brave: 'A token of friendship!',
+        dreamy: '*gazes at it in wonder*',
+        loyal: 'I''ll never let it go!',
+      },
+    };
+    
+    return responses[type][pet.personality] || 'Thank you!';
   }
   
   /**
@@ -469,44 +566,6 @@ class PetService {
   getDialogue(pet: StoryPet, trigger: PetDialogue['trigger']): string {
     const dialogues = this.getDialogueOptions(pet, trigger);
     return dialogues[Math.floor(Math.random() * dialogues.length)];
-  }
-  
-  /**
-   * Update pet's daily stats (called once per day)
-   */
-  async updateDailyStats(userId: string, isActive: boolean): Promise<void> {
-    try {
-      const pet = await this.getUserPet(userId);
-      if (!pet) return;
-      
-      const newStats = { ...pet.stats };
-      
-      if (isActive) {
-        newStats.daysActive++;
-        newStats.currentStreak++;
-        newStats.longestStreak = Math.max(newStats.longestStreak, newStats.currentStreak);
-        
-        // Award streak XP
-        await this.awardExperience(userId, 'streakDay');
-      } else {
-        // Break streak
-        newStats.currentStreak = 0;
-        
-        // Decrease happiness over time if inactive
-        newStats.happiness = Math.max(0, newStats.happiness - 10);
-        newStats.energy = Math.max(0, newStats.energy - 5);
-      }
-      
-      await supabase
-        .from('user_pets')
-        .update({
-          stats: newStats,
-          current_mood: this.calculateMood(newStats),
-        })
-        .eq('user_id', userId);
-    } catch (error) {
-      console.error('Error updating daily stats:', error);
-    }
   }
   
   /**
@@ -522,61 +581,6 @@ class PetService {
       return !error;
     } catch (error) {
       console.error('Error renaming pet:', error);
-      return false;
-    }
-  }
-  
-  /**
-   * Unlock an accessory
-   */
-  async unlockAccessory(
-    userId: string,
-    accessory: Omit<PetAccessory, 'unlockedAt' | 'equipped'>
-  ): Promise<boolean> {
-    try {
-      const pet = await this.getUserPet(userId);
-      if (!pet) return false;
-      
-      const newAccessory: PetAccessory = {
-        ...accessory,
-        unlockedAt: new Date().toISOString(),
-        equipped: false,
-      };
-      
-      const accessories = [...pet.accessories, newAccessory];
-      
-      await supabase
-        .from('user_pets')
-        .update({ accessories })
-        .eq('user_id', userId);
-      
-      return true;
-    } catch (error) {
-      console.error('Error unlocking accessory:', error);
-      return false;
-    }
-  }
-  
-  /**
-   * Equip/unequip an accessory
-   */
-  async toggleAccessory(userId: string, accessoryId: string): Promise<boolean> {
-    try {
-      const pet = await this.getUserPet(userId);
-      if (!pet) return false;
-      
-      const accessories = pet.accessories.map(acc => 
-        acc.id === accessoryId ? { ...acc, equipped: !acc.equipped } : acc
-      );
-      
-      await supabase
-        .from('user_pets')
-        .update({ accessories })
-        .eq('user_id', userId);
-      
-      return true;
-    } catch (error) {
-      console.error('Error toggling accessory:', error);
       return false;
     }
   }
@@ -614,74 +618,6 @@ class PetService {
     if (stats.happiness >= 30) return 'bored';
     if (stats.happiness >= 10) return 'hungry';
     return 'sad';
-  }
-  
-  private getInteractionResponse(pet: StoryPet, type: PetInteraction['type']): string {
-    const responses: Record<PetInteraction['type'], Record<PetPersonality, string[]>> = {
-      pet: {
-        energetic: ['*bounces happily* That tickles!', 'Woohoo! More pets!', '*spins around* Again again!'],
-        calm: ['*purrs softly* That feels nice...', 'Mmm, peaceful...', '*gentle happy sounds*'],
-        curious: ['*tilts head* What is that feeling?', 'Ooh, interesting!', '*examines your hand*'],
-        playful: ['*giggles* Hehe!', 'Boop! Got your finger!', '*playful nibble*'],
-        wise: ['*nods appreciatively* Thank you, friend.', 'A moment of connection...', 'You honor me.'],
-        mischievous: ['*pretends to bite* Gotcha!', 'Hmm, what are you up to?', '*sneaky smile*'],
-        shy: ['*blushes* Oh my...', '*hides face* So nice...', '*small happy squeak*'],
-        brave: ['*stands proud* I appreciate this!', 'A warrior needs rest too!', '*confident nod*'],
-        dreamy: ['*floats contentedly* Like clouds...', 'Mmm, this is nice...', '*dreamy sigh*'],
-        loyal: ['*nuzzles* I love you!', 'My favorite human!', '*devoted gaze*'],
-      },
-      feed: {
-        energetic: ['FOOD! *chomps excitedly*', 'Yummy yummy!', '*happy dance*'],
-        calm: ['*gracefully eats* Delicious.', 'Thank you for the meal.', '*satisfied sigh*'],
-        curious: ['*sniffs* What flavor is this?', 'Ooh, new food!', '*investigates carefully*'],
-        playful: ['*plays with food first* Wheee!', 'Food fight? Just kidding!', '*happy munch*'],
-        wise: ['A thoughtful meal. Thank you.', '*savors each bite*', 'Nourishment for the soul.'],
-        mischievous: ['*pretends to share, eats all*', 'Mine! All mine!', '*sneaky eating*'],
-        shy: ['*quietly eats* Thank you...', '*small grateful look*', '*happy but quiet*'],
-        brave: ['*eats heroically* Fuel for adventure!', 'A feast for a champion!', '*mighty chomp*'],
-        dreamy: ['*eats slowly* Like star dust...', 'Tastes like dreams...', '*floaty eating*'],
-        loyal: ['You always take care of me!', '*grateful eating* The best!', '*loving gaze*'],
-      },
-      play: {
-        energetic: ['YES! PLAYTIME! *zooms around*', 'Catch me if you can!', '*super excited*'],
-        calm: ['*gentle play* This is fun.', 'A nice game...', '*peaceful enjoyment*'],
-        curious: ['What game is this?', '*figures out the rules*', 'Ooh, how does this work?'],
-        playful: ['*laughs* This is the BEST!', 'Again! Again!', '*unlimited energy*'],
-        wise: ['Strategy time! *thinks*', 'A clever move...', '*wise play*'],
-        mischievous: ['*cheats a little* Oops!', 'I make the rules now!', '*sneaky tactics*'],
-        shy: ['*nervously plays* Am I doing it right?', '*small happy sounds*', '*growing confidence*'],
-        brave: ['A worthy opponent!', '*competitive spirit*', 'Victory shall be mine!'],
-        dreamy: ['*plays in slow motion*', 'Like floating in space...', '*dreamy enjoyment*'],
-        loyal: ['Playing with you is the best!', '*never wants to stop*', 'More adventures together!'],
-      },
-      talk: {
-        energetic: ['Tell me EVERYTHING! So exciting!', '*bouncing* And then? And then?', 'I love stories!'],
-        calm: ['*listens attentively* I understand.', 'Please, continue...', '*peaceful presence*'],
-        curious: ['Really? Tell me more!', '*endless questions*', 'Why? How? What?'],
-        playful: ['*makes silly faces while listening*', 'Hehe, that\'s funny!', '*playful commentary*'],
-        wise: ['*nods sagely* Wisdom speaks.', 'I see...', '*thoughtful response*'],
-        mischievous: ['*whispers secrets back*', 'I know something you don\'t!', '*conspiratorial*'],
-        shy: ['*listens quietly* That\'s nice...', '*small nod*', '*shy smile*'],
-        brave: ['A tale of adventure!', '*inspired* We should do that!', 'Heroic indeed!'],
-        dreamy: ['*drifts off imagining*', 'That sounds magical...', '*starry-eyed*'],
-        loyal: ['I\'ll always listen to you!', '*devoted attention*', 'Your voice is my favorite!'],
-      },
-      gift: {
-        energetic: ['A PRESENT?! *explodes with joy*', 'FOR ME?! THANK YOU!', '*celebration dance*'],
-        calm: ['*receives gracefully* How kind.', 'A lovely gesture...', '*serene appreciation*'],
-        curious: ['*examines gift carefully* What is it?', 'Ooh, fascinating!', '*investigates*'],
-        playful: ['*plays with wrapping* The box is fun too!', 'Best day ever!', '*happy chaos*'],
-        wise: ['A meaningful gift. I am honored.', '*treasures it*', 'The thoughtfulness matters most.'],
-        mischievous: ['*already planning what to do with it*', 'Ooh, possibilities...', '*scheming*'],
-        shy: ['*blushes deeply* For... for me?', '*small gasp*', '*overwhelmed happiness*'],
-        brave: ['A token of friendship!', '*wears it proudly*', 'I shall cherish this!'],
-        dreamy: ['*gazes at it in wonder*', 'Like a piece of a dream...', '*treasures it*'],
-        loyal: ['I\'ll never let it go!', '*hugs it*', 'The best human ever!'],
-      },
-    };
-    
-    const personalityResponses = responses[type][pet.personality] || responses[type].loyal;
-    return personalityResponses[Math.floor(Math.random() * personalityResponses.length)];
   }
   
   private getDialogueOptions(pet: StoryPet, trigger: PetDialogue['trigger']): string[] {
@@ -736,29 +672,9 @@ class PetService {
       ],
     };
     
-    // Add personality-specific variations
-    const personalityAdditions: Partial<Record<PetDialogue['trigger'], Partial<Record<PetPersonality, string[]>>>> = {
-      greeting: {
-        energetic: [`*ZOOMS around* YOU'RE HERE!`],
-        calm: [`*peaceful wave* Welcome back.`],
-        mischievous: [`*appears behind you* BOO! Hehe!`],
-        shy: [`*peeks out* O-oh, hi...`],
-      },
-      idle: {
-        wise: [`*meditates* The stories call to us...`],
-        playful: [`*juggling* Bored bored bored!`],
-        dreamy: [`*stares at stars* So beautiful...`],
-        curious: [`*investigating something* What's this?`],
-      },
-    };
-    
-    const base = baseDialogues[trigger];
-    const additions = personalityAdditions[trigger]?.[pet.personality] || [];
-    
-    return [...base, ...additions];
+    return baseDialogues[trigger];
   }
 }
 
 // Export singleton
-export const petService = new PetService();
-
+export const petService = new EnhancedPetService();
