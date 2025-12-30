@@ -232,10 +232,8 @@ export class TTSService {
       similarityBoost?: number;
     }
   ): Promise<AudioGeneration> {
-    // TODO: Integrate with actual TTS API (OpenAI, ElevenLabs, etc.)
-    // For now, create a placeholder record
-
-    const { data, error } = await this.supabase
+    // Create initial record
+    const { data: initialRecord, error: insertError } = await this.supabase
       .from('audio_generations')
       .insert({
         user_id: options?.userId,
@@ -248,14 +246,110 @@ export class TTSService {
         pitch: options?.pitch || 1.0,
         stability: options?.stability || 0.5,
         similarity_boost: options?.similarityBoost || 0.5,
-        generation_status: 'pending',
-        provider: 'openai', // Would be determined by voice provider
+        generation_status: 'processing',
+        provider: 'openai',
       })
       .select()
       .single();
 
-    if (error) throw error;
-    return this.mapAudioGeneration(data);
+    if (insertError) throw insertError;
+
+    try {
+      // Get voice details to determine provider
+      const voice = await this.getVoice(voiceId);
+      const provider = voice?.provider || 'openai';
+
+      // Integrate with OpenAI TTS API
+      if (provider === 'openai' && process.env.OPENAI_API_KEY) {
+        const openaiResponse = await fetch('https://api.openai.com/v1/audio/speech', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'tts-1', // or 'tts-1-hd' for higher quality
+            input: text,
+            voice: voice?.voiceId || 'alloy', // Default OpenAI voices: alloy, echo, fable, onyx, nova, shimmer
+            speed: options?.speed || 1.0,
+          }),
+        });
+
+        if (!openaiResponse.ok) {
+          const error = await openaiResponse.json().catch(() => ({ error: { message: 'Unknown error' } }));
+          throw new Error(`OpenAI TTS API error: ${error.error?.message || openaiResponse.statusText}`);
+        }
+
+        // Convert response to blob and upload to storage
+        const audioBlob = await openaiResponse.blob();
+        const audioArrayBuffer = await audioBlob.arrayBuffer();
+        const audioSize = audioArrayBuffer.byteLength;
+
+        // Upload to Supabase Storage (you'll need to configure storage bucket)
+        const fileName = `${initialRecord.id}.mp3`;
+        const { data: uploadData, error: uploadError } = await this.supabase.storage
+          .from('audio-generations')
+          .upload(fileName, audioBlob, {
+            contentType: 'audio/mpeg',
+            upsert: true,
+          });
+
+        let audioUrl: string | undefined;
+        if (!uploadError && uploadData) {
+          const { data: urlData } = this.supabase.storage
+            .from('audio-generations')
+            .getPublicUrl(fileName);
+          audioUrl = urlData.publicUrl;
+        }
+
+        // Update record with results
+        const { data: updatedRecord, error: updateError } = await this.supabase
+          .from('audio_generations')
+          .update({
+            generation_status: 'completed',
+            audio_url: audioUrl,
+            audio_file_size_bytes: audioSize,
+            audio_format: 'mp3',
+            provider_job_id: openaiResponse.headers.get('x-request-id') || undefined,
+          })
+          .eq('id', initialRecord.id)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        return this.mapAudioGeneration(updatedRecord);
+      } else {
+        // No API key configured or unsupported provider - mark as failed
+        const { data: failedRecord, error: failError } = await this.supabase
+          .from('audio_generations')
+          .update({
+            generation_status: 'failed',
+            error_message: provider === 'openai' 
+              ? 'OpenAI API key not configured' 
+              : `Provider ${provider} not yet implemented`,
+          })
+          .eq('id', initialRecord.id)
+          .select()
+          .single();
+
+        if (failError) throw failError;
+        return this.mapAudioGeneration(failedRecord);
+      }
+    } catch (error) {
+      // Update record with error
+      const { data: errorRecord, error: errorUpdateError } = await this.supabase
+        .from('audio_generations')
+        .update({
+          generation_status: 'failed',
+          error_message: error instanceof Error ? error.message : 'Unknown error during generation',
+        })
+        .eq('id', initialRecord.id)
+        .select()
+        .single();
+
+      if (errorUpdateError) throw errorUpdateError;
+      return this.mapAudioGeneration(errorRecord);
+    }
   }
 
   /**

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { aiService } from '@/lib/api';
 import Icon from '@/components/ui/AppIcon';
 import { AIStreamingProgress } from '@/components/ai/AIStreamingProgress';
+import { PremiumGate } from './PremiumGate';
 
 interface GenerationOptions {
   genre: string;
@@ -111,19 +112,20 @@ export function AIStoryGenerator({ onStoryGenerated }: AIStoryGeneratorProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Icon name="SparklesIcon" size={24} className="text-primary" />
-            AI Story Generator
-          </h2>
-          <p className="text-muted-foreground">Generate complete stories with AI</p>
+    <PremiumGate feature="ai_story_generator">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <Icon name="SparklesIcon" size={24} className="text-primary" />
+              AI Story Generator
+            </h2>
+            <p className="text-muted-foreground">Generate complete stories with AI</p>
+          </div>
+          <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-sm font-bold rounded-full">
+            PREMIUM
+          </span>
         </div>
-        <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-sm font-bold rounded-full">
-          PREMIUM
-        </span>
-      </div>
 
       {/* Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,7 +284,8 @@ export function AIStoryGenerator({ onStoryGenerated }: AIStoryGeneratorProps) {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </PremiumGate>
   );
 }
 

@@ -335,19 +335,55 @@ export class StoryModeManager {
     // Include continuity constraints
     const constraints = this.buildContinuityConstraints(context);
 
-    // TODO: Integrate with actual AI service for content generation
-    // The AI service should be called here with the prompt and constraints
-    // Example: const generatedContent = await aiService.generateContent(prompt, constraints);
-    
-    // For now, return a placeholder structure
-    // In production, this would be populated by the AI service
-    const result: NarrativeGenerationResult = {
-      success: true,
-      content: '', // Would be filled by AI generation
-      wordCount: 0,
-      charactersInvolved: [],
-      worldElementsReferenced: [],
-      arcsAdvanced: [],
+    // Integrate with AI service for content generation
+    let generatedContent = '';
+    let result: NarrativeGenerationResult;
+
+    // Check if AI is configured
+    if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
+      try {
+        const { generateCompletion } = await import('@/lib/ai/client');
+        
+        const systemPrompt = `You are an expert narrative writer. Generate story content that:
+- Follows the provided chapter outline
+- Maintains continuity with previous chapters
+- Respects character development and world-building constraints
+- Advances narrative arcs appropriately
+- Plants and pays off foreshadowing when relevant
+
+Return the generated content as narrative text.`;
+
+        const fullPrompt = `${prompt}\n\nConstraints:\n${JSON.stringify(constraints, null, 2)}`;
+
+        const response = await generateCompletion({
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: fullPrompt },
+          ],
+          temperature: modeConfig?.creativity || 0.8,
+          maxTokens: modeConfig?.maxTokens || 2000,
+        });
+
+        generatedContent = response.content;
+      } catch (aiError) {
+        console.error('AI generation failed:', aiError);
+        // Fall through to placeholder content
+      }
+    }
+
+    // If AI generation failed or isn't configured, use placeholder
+    if (!generatedContent) {
+      generatedContent = `[Content generation requires AI API key configuration]`;
+    }
+
+    // Build result structure
+    result = {
+      success: !!generatedContent && !generatedContent.includes('[Content generation requires'),
+      content: generatedContent,
+      wordCount: generatedContent.split(/\s+/).length,
+      charactersInvolved: this.extractCharactersFromContent(generatedContent, context),
+      worldElementsReferenced: this.extractWorldElementsFromContent(generatedContent, context),
+      arcsAdvanced: this.identifyArcProgressFromContent(generatedContent, context),
       suggestedCharacterEvents: [],
       suggestedWorldChanges: [],
       potentialViolations: [],
@@ -921,6 +957,59 @@ export interface RevisionSuggestion {
   autoApplicable: boolean;
 }
 
+// Add helper methods to StoryModeManager class
+// These methods are used by the AI generation integration
+const addHelperMethods = (manager: StoryModeManager) => {
+  (manager as any).extractCharactersFromContent = function(content: string, context: GenerationContext): string[] {
+    const mentioned: string[] = [];
+    const contentLower = content.toLowerCase();
+    
+    for (const character of context.activeCharacters) {
+      const nameLower = character.name.toLowerCase();
+      if (contentLower.includes(nameLower)) {
+        mentioned.push(character.id);
+      }
+    }
+    
+    return mentioned;
+  };
+
+  (manager as any).extractWorldElementsFromContent = function(content: string, context: GenerationContext): string[] {
+    const mentioned: string[] = [];
+    const contentLower = content.toLowerCase();
+    
+    // Check for world elements (locations, items, concepts) from context
+    if (context.worldElements) {
+      for (const element of context.worldElements) {
+        const nameLower = element.name?.toLowerCase() || '';
+        if (nameLower && contentLower.includes(nameLower)) {
+          mentioned.push(element.id);
+        }
+      }
+    }
+    
+    return mentioned;
+  };
+
+  (manager as any).identifyArcProgressFromContent = function(content: string, context: GenerationContext): string[] {
+    const advanced: string[] = [];
+    
+    // Simple heuristic: if content mentions arc-related keywords or characters
+    // In a full implementation, this would use more sophisticated analysis
+    if (context.activeArcs) {
+      for (const arc of context.activeArcs) {
+        // Check if content is substantial (likely advanced the arc)
+        if (content.length > 500) {
+          advanced.push(arc.id);
+        }
+      }
+    }
+    
+    return advanced;
+  };
+};
+
 // Export singleton
 export const storyModeManager = new StoryModeManager();
+addHelperMethods(storyModeManager);
 

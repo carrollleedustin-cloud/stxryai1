@@ -72,7 +72,13 @@ const ModernAuthPage = () => {
       if (isLogin) {
         await signIn(email, password);
         toast.success('Welcome back!');
-        router.push('/user-dashboard');
+        
+        // Get redirect URL from query params or default to dashboard
+        const redirectUrl = typeof window !== 'undefined' 
+          ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+          : '/user-dashboard';
+        
+        router.push(redirectUrl);
       } else {
         if (password !== confirmPassword) {
           toast.error('Passwords do not match');

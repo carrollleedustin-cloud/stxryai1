@@ -23,6 +23,12 @@ import {
   getEvolutionStage,
   calculateXpToNextLevel,
 } from '@/types/pet';
+import {
+  analyzeReadingPatterns,
+  updateTraitsFromPatterns,
+  calculateDynamicMood,
+  getVisualEffects,
+} from './petPersonalizationService';
 
 // =============================================================================
 // UNIQUE PET GENERATION
@@ -243,7 +249,7 @@ class EnhancedPetService {
         return null;
       }
       
-      return this.mapDatabasePet(data);
+      return await this.mapDatabasePet(data, userId);
     } catch (error) {
       console.error('Error getting pet:', error);
       return null;
@@ -589,8 +595,8 @@ Keep it under 100 characters.`;
   // PRIVATE HELPERS
   // ===========================================================================
   
-  private mapDatabasePet(data: any): StoryPet {
-    return {
+  private async mapDatabasePet(data: any, userId?: string): Promise<StoryPet> {
+    const pet: StoryPet = {
       id: data.id,
       userId: data.user_id,
       name: data.name,
@@ -609,6 +615,22 @@ Keep it under 100 characters.`;
       geneticSeed: data.genetic_seed,
       evolutionHistory: data.evolution_history || [],
     };
+
+    // Personalize pet based on reading patterns if userId provided
+    if (userId) {
+      try {
+        const patterns = await analyzeReadingPatterns(userId);
+        const updatedTraits = updateTraitsFromPatterns(pet.traits, patterns, pet);
+        const dynamicMood = calculateDynamicMood(pet, patterns);
+        
+        pet.traits = updatedTraits;
+        pet.currentMood = dynamicMood;
+      } catch (error) {
+        console.error('Error personalizing pet:', error);
+      }
+    }
+
+    return pet;
   }
   
   private calculateMood(stats: PetStats): PetMood {

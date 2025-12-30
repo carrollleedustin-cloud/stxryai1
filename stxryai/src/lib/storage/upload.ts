@@ -91,14 +91,90 @@ export async function uploadImage({
       };
     }
 
-    // For now, upload directly
-    // TODO: Add client-side image optimization
-    return uploadFile({ bucket, file, path });
+    // Client-side image optimization: resize to maxWidth and compress
+    let fileToUpload: File = file;
+    try {
+      const optimized = await optimizeImage(file, { maxWidth, quality });
+      if (optimized) {
+        fileToUpload = optimized;
+      }
+    } catch (e) {
+      // Fallback to original file on any optimization error
+      console.warn('Image optimization failed, uploading original file.', e);
+    }
+
+    return uploadFile({ bucket, file: fileToUpload, path });
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Upload failed',
     };
+  }
+}
+
+// Best-effort client-side image optimization using Canvas/ImageBitmap
+async function optimizeImage(
+  file: File,
+  opts: { maxWidth: number; quality: number }
+): Promise<File | null> {
+  try {
+    const { maxWidth, quality } = opts;
+
+    // Create an image bitmap for more efficient decoding when available
+    const blob = file as Blob;
+
+    const createImageBitmapSafe = (input: Blob): Promise<ImageBitmap | HTMLImageElement> => {
+      if (typeof createImageBitmap === 'function') {
+        return createImageBitmap(input);
+      }
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = URL.createObjectURL(input);
+      });
+    };
+
+    const bitmapOrImg = await createImageBitmapSafe(blob);
+
+    const width = 'width' in bitmapOrImg ? bitmapOrImg.width : (bitmapOrImg as HTMLImageElement).naturalWidth;
+    const height = 'height' in bitmapOrImg ? bitmapOrImg.height : (bitmapOrImg as HTMLImageElement).naturalHeight;
+
+    const scale = width > maxWidth ? maxWidth / width : 1;
+    const targetWidth = Math.max(1, Math.round(width * scale));
+    const targetHeight = Math.max(1, Math.round(height * scale));
+
+    // If no scaling and mime already efficient (jpeg/webp/png), we may still recompress
+    const canvas = document.createElement('canvas');
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    if ('close' in bitmapOrImg) {
+      // ImageBitmap
+      ctx.drawImage(bitmapOrImg as ImageBitmap, 0, 0, targetWidth, targetHeight);
+      (bitmapOrImg as ImageBitmap).close?.();
+    } else {
+      ctx.drawImage(bitmapOrImg as HTMLImageElement, 0, 0, targetWidth, targetHeight);
+      URL.revokeObjectURL((bitmapOrImg as HTMLImageElement).src);
+    }
+
+    // Prefer WebP for better compression when supported, else JPEG; preserve PNG for PNGs unless resized
+    const isPng = file.type === 'image/png';
+    const outputType = isPng && scale === 1 ? 'image/png' : ('image/webp' in document.createElement('canvas') ? 'image/webp' : 'image/jpeg');
+
+    const blobOut: Blob = await new Promise((resolve) => canvas.toBlob(b => resolve(b as Blob), outputType, quality));
+    if (!blobOut) return null;
+
+    // Cap name extension to match output type
+    const ext = outputType.includes('webp') ? 'webp' : outputType.includes('png') ? 'png' : 'jpg';
+    const base = file.name.replace(/\.[^.]+$/, '');
+    const optimizedFile = new File([blobOut], `${base}.${ext}`, { type: outputType, lastModified: Date.now() });
+    return optimizedFile;
+  } catch (err) {
+    console.warn('optimizeImage error', err);
+    return null;
   }
 }
 

@@ -45,7 +45,13 @@ export default function LoginForm({
 
     try {
       await signIn(email, password);
-      router.push('/user-dashboard');
+      
+      // Get redirect URL from query params or default to dashboard
+      const redirectUrl = typeof window !== 'undefined' 
+        ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+        : '/user-dashboard';
+      
+      router.push(redirectUrl);
     } catch (err: unknown) {
       const error = err as Error;
       if (

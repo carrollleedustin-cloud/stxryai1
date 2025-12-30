@@ -80,9 +80,62 @@ export default function CreateChildProfilePage() {
   
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    // TODO: Save to database
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    router.push('/family?success=profile-created');
+    try {
+      // Get current user
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('You must be logged in to create a child profile');
+      }
+
+      // Save child profile to database
+      // Note: This assumes a 'family_profiles' or 'child_profiles' table exists
+      // If the table structure is different, adjust accordingly
+      const { error: saveError } = await supabase
+        .from('family_profiles')
+        .insert({
+          parent_id: user.id,
+          name: name,
+          age: parseInt(age),
+          avatar: avatar,
+          preferences: preferences,
+          screen_time_limit: screenTime === 'unlimited' ? null : parseInt(screenTime),
+          pin: pin,
+          created_at: new Date().toISOString(),
+        });
+
+      if (saveError) {
+        // If table doesn't exist, try alternative table name
+        const { error: altError } = await supabase
+          .from('child_profiles')
+          .insert({
+            parent_id: user.id,
+            name: name,
+            age: parseInt(age),
+            avatar: avatar,
+            preferences: preferences,
+            screen_time_limit: screenTime === 'unlimited' ? null : parseInt(screenTime),
+            pin: pin,
+            created_at: new Date().toISOString(),
+          });
+
+        if (altError) {
+          console.error('Failed to save profile:', altError);
+          // Still redirect but show error message
+          router.push('/family?error=profile-save-failed');
+          return;
+        }
+      }
+
+      router.push('/family?success=profile-created');
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      router.push('/family?error=profile-creation-failed');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   const canProceed = () => {

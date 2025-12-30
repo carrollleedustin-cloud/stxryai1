@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
  */
 
 interface AdminProfile {
-  role?: 'user' | 'moderator' | 'admin';
+  role?: 'user' | 'moderator' | 'admin' | 'owner';
   is_admin?: boolean;
 }
 
@@ -20,7 +20,8 @@ function isAuthorized(profile: AdminProfile | null): boolean {
   if (!profile) return false;
   return profile.is_admin === true || 
          profile.role === 'admin' || 
-         profile.role === 'moderator';
+         profile.role === 'moderator' ||
+         profile.role === 'owner';
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -26,7 +26,9 @@ import {
   Sparkles,
   Edit2,
   Check,
+  Palette,
 } from 'lucide-react';
+import PetCustomizationPanel from './PetCustomizationPanel';
 
 interface PetPanelProps {
   position?: 'bottom-right' | 'bottom-left' | 'sidebar';
@@ -55,6 +57,7 @@ export default function PetPanel({
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [greeting, setGreeting] = useState('');
+  const [showCustomization, setShowCustomization] = useState(false);
   
   // Set greeting when pet loads
   useEffect(() => {
@@ -213,12 +216,12 @@ export default function PetPanel({
         exit={{ opacity: 0, y: 50, scale: 0.9 }}
         className={`${positionClasses[position]} z-40`}
       >
-        <div className="bg-void-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 bg-void-elevated/50 border-b border-white/5">
-            <div className="flex items-center gap-2">
+        <div className="bg-void-black/90 backdrop-blur-xl border-2 border-white/10 rounded-3xl shadow-2xl overflow-hidden min-w-[400px]">
+          {/* Header - 3x bigger */}
+          <div className="flex items-center justify-between px-6 py-4 bg-void-elevated/50 border-b-2 border-white/5">
+            <div className="flex items-center gap-3">
               <div 
-                className="w-3 h-3 rounded-full"
+                className="w-6 h-6 rounded-full border-2 border-white/20"
                 style={{ backgroundColor: pet.traits.primaryColor }}
               />
               {isEditing ? (
@@ -228,49 +231,56 @@ export default function PetPanel({
                     value={newName}
                     onChange={e => setNewName(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleRename()}
-                    className="w-24 px-2 py-1 text-sm bg-void-black border border-white/20 rounded text-white"
+                    className="w-48 px-4 py-2 text-lg bg-void-black border-2 border-white/20 rounded-lg text-white"
                     autoFocus
                     maxLength={20}
                   />
                   <button
                     onClick={handleRename}
-                    className="p-1 hover:bg-white/10 rounded"
+                    className="p-2 hover:bg-white/10 rounded-lg"
                   >
-                    <Check className="w-4 h-4 text-green-400" />
+                    <Check className="w-6 h-6 text-green-400" />
                   </button>
                 </div>
               ) : (
                 <>
-                  <span className="font-medium text-white text-sm">{pet.name}</span>
+                  <span className="font-bold text-white text-xl">{pet.name}</span>
                   <button
                     onClick={() => {
                       setNewName(pet.name);
                       setIsEditing(true);
                     }}
-                    className="p-1 hover:bg-white/10 rounded opacity-50 hover:opacity-100"
+                    className="p-2 hover:bg-white/10 rounded-lg opacity-50 hover:opacity-100"
                   >
-                    <Edit2 className="w-3 h-3 text-ghost-400" />
+                    <Edit2 className="w-5 h-5 text-ghost-400" />
                   </button>
                 </>
               )}
             </div>
             
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowCustomization(true)}
+                className="p-3 hover:bg-white/10 rounded-lg transition-colors"
+                title="Customize Pet"
+              >
+                <Palette className="w-6 h-6 text-ghost-400" />
+              </button>
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
-                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-3 hover:bg-white/10 rounded-lg transition-colors"
               >
                 {isMinimized ? (
-                  <Maximize2 className="w-4 h-4 text-ghost-400" />
+                  <Maximize2 className="w-6 h-6 text-ghost-400" />
                 ) : (
-                  <Minimize2 className="w-4 h-4 text-ghost-400" />
+                  <Minimize2 className="w-6 h-6 text-ghost-400" />
                 )}
               </button>
               <button
                 onClick={() => setShowPetPanel(false)}
-                className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-3 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <X className="w-4 h-4 text-ghost-400" />
+                <X className="w-6 h-6 text-ghost-400" />
               </button>
             </div>
           </div>
@@ -286,35 +296,49 @@ export default function PetPanel({
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="p-4">
-                  {/* Pet display */}
-                  <div className="flex justify-center mb-4">
-                    <StoryPetDisplay size="md" showStats />
+                <div className="p-8">
+                  {/* Pet display - 3x bigger */}
+                  <div className="flex justify-center mb-8">
+                    <StoryPetDisplay size="lg" showStats showInteractions />
                   </div>
                   
-                  {/* Greeting */}
-                  <div className="bg-void-elevated/50 rounded-lg p-3 mb-4">
-                    <p className="text-sm text-ghost-300 italic text-center">
+                  {/* Greeting - 3x bigger */}
+                  <div className="bg-void-elevated/50 rounded-xl p-6 mb-6">
+                    <p className="text-xl text-ghost-300 italic text-center">
                       "{greeting}"
                     </p>
                   </div>
                   
-                  {/* Quick stats */}
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-void-elevated/30 rounded-lg p-2">
-                      <Book className="w-4 h-4 mx-auto mb-1 text-spectral-cyan" />
-                      <p className="text-xs text-ghost-400">Stories</p>
-                      <p className="text-sm font-bold text-white">{pet.stats.storiesRead}</p>
+                  {/* Quick stats - 3x bigger */}
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div className="bg-void-elevated/30 rounded-xl p-4">
+                      <Book className="w-8 h-8 mx-auto mb-2 text-spectral-cyan" />
+                      <p className="text-lg text-ghost-400 font-semibold">Stories</p>
+                      <p className="text-2xl font-bold text-white">{pet.stats.storiesRead}</p>
                     </div>
-                    <div className="bg-void-elevated/30 rounded-lg p-2">
-                      <Flame className="w-4 h-4 mx-auto mb-1 text-orange-400" />
-                      <p className="text-xs text-ghost-400">Streak</p>
-                      <p className="text-sm font-bold text-white">{pet.stats.currentStreak}</p>
+                    <div className="bg-void-elevated/30 rounded-xl p-4">
+                      <Flame className="w-8 h-8 mx-auto mb-2 text-orange-400" />
+                      <p className="text-lg text-ghost-400 font-semibold">Streak</p>
+                      <p className="text-2xl font-bold text-white">{pet.stats.currentStreak}</p>
                     </div>
-                    <div className="bg-void-elevated/30 rounded-lg p-2">
-                      <Star className="w-4 h-4 mx-auto mb-1 text-amber-400" />
-                      <p className="text-xs text-ghost-400">Days</p>
-                      <p className="text-sm font-bold text-white">{pet.stats.daysActive}</p>
+                    <div className="bg-void-elevated/30 rounded-xl p-4">
+                      <Star className="w-8 h-8 mx-auto mb-2 text-amber-400" />
+                      <p className="text-lg text-ghost-400 font-semibold">Days</p>
+                      <p className="text-2xl font-bold text-white">{pet.stats.daysActive}</p>
+                    </div>
+                  </div>
+                  
+                  {/* Additional stats */}
+                  <div className="mt-6 grid grid-cols-2 gap-4 text-center">
+                    <div className="bg-void-elevated/30 rounded-xl p-4">
+                      <Trophy className="w-8 h-8 mx-auto mb-2 text-purple-400" />
+                      <p className="text-lg text-ghost-400 font-semibold">Level</p>
+                      <p className="text-2xl font-bold text-white">{pet.stats.level}</p>
+                    </div>
+                    <div className="bg-void-elevated/30 rounded-xl p-4">
+                      <Sparkles className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
+                      <p className="text-lg text-ghost-400 font-semibold">XP</p>
+                      <p className="text-2xl font-bold text-white">{pet.stats.experience}/{pet.stats.experienceToNextLevel}</p>
                     </div>
                   </div>
                 </div>
@@ -328,15 +352,15 @@ export default function PetPanel({
                 transition={{ duration: 0.3 }}
                 className="p-3"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   <StoryPetDisplay size="sm" showInteractions={false} showStats={false} />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-ghost-400">Lv.{pet.stats.level}</span>
-                      <span className="text-xs text-ghost-500 capitalize">{pet.evolutionStage}</span>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-lg font-bold text-ghost-400">Lv.{pet.stats.level}</span>
+                      <span className="text-lg text-ghost-500 capitalize">{pet.evolutionStage}</span>
                     </div>
-                    {/* Mini XP bar */}
-                    <div className="h-1.5 bg-void-elevated rounded-full overflow-hidden">
+                    {/* Mini XP bar - 3x bigger */}
+                    <div className="h-3 bg-void-elevated rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-spectral-cyan to-spectral-violet transition-all duration-500"
                         style={{ width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%` }}
@@ -349,6 +373,13 @@ export default function PetPanel({
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {/* Customization Panel */}
+      <AnimatePresence>
+        {showCustomization && (
+          <PetCustomizationPanel onClose={() => setShowCustomization(false)} />
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -7,6 +7,7 @@ import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCo
 import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import Icon from '@/components/ui/AppIcon';
+import AchievementBadge from '@/components/achievements/AchievementBadge';
 
 // Achievement categories
 const ACHIEVEMENT_CATEGORIES = [
@@ -213,7 +214,7 @@ const AchievementsPage: React.FC = () => {
         </RevealOnScroll>
 
         {/* Achievements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-12">
           <AnimatePresence mode="popLayout">
             {filteredAchievements.map((achievement, index) => {
               const isUnlocked = achievement.unlockedAt !== null;
@@ -234,39 +235,46 @@ const AchievementsPage: React.FC = () => {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedAchievement(achievement)}
                     className={`
-                      relative p-6 rounded-xl cursor-pointer transition-all duration-300
-                      backdrop-blur-md border
+                      relative p-12 rounded-2xl cursor-pointer transition-all duration-300
+                      backdrop-blur-md border-2
                       bg-gradient-to-br ${rarityStyle.bg} ${rarityStyle.border}
-                      ${isUnlocked ? `shadow-lg ${rarityStyle.glow}` : 'opacity-60 grayscale-[30%]'}
-                      hover:shadow-xl hover:${rarityStyle.glow}
+                      ${isUnlocked ? `shadow-2xl ${rarityStyle.glow}` : 'opacity-60 grayscale-[30%]'}
+                      hover:shadow-2xl hover:${rarityStyle.glow} hover:scale-105
                     `}
                   >
                     {/* Rarity Badge */}
-                    <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold uppercase ${rarityStyle.text} bg-void-100/50`}>
+                    <div className={`absolute top-6 right-6 px-4 py-2 rounded-full text-lg font-bold uppercase ${rarityStyle.text} bg-void-100/50`}>
                       {achievement.rarity}
                     </div>
                     
-                    {/* Icon */}
-                    <div className={`text-5xl mb-4 ${!isUnlocked && 'filter grayscale'}`}>
-                      {isUnlocked ? achievement.icon : '🔒'}
+                    {/* Custom Badge Icon - 3x bigger */}
+                    <div className="flex justify-center mb-8">
+                      <AchievementBadge
+                        achievementId={achievement.id}
+                        name={achievement.name}
+                        category={achievement.category}
+                        rarity={achievement.rarity}
+                        size="lg"
+                        unlocked={isUnlocked}
+                      />
                     </div>
                     
                     {/* Title & Description */}
-                    <h3 className={`text-lg font-bold mb-2 ${isUnlocked ? 'text-aurora' : 'text-text-secondary'}`}>
+                    <h3 className={`text-3xl font-bold mb-4 text-center ${isUnlocked ? 'text-aurora' : 'text-text-secondary'}`}>
                       {achievement.name}
                     </h3>
-                    <p className="text-sm text-text-secondary mb-4 line-clamp-2">
+                    <p className="text-xl text-text-secondary mb-6 text-center line-clamp-2">
                       {achievement.description}
                     </p>
                     
                     {/* Progress Bar */}
                     {!isUnlocked && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-xs text-text-secondary mb-1">
+                      <div className="mb-6">
+                        <div className="flex justify-between text-lg text-text-secondary mb-3">
                           <span>Progress</span>
-                          <span>{achievement.progress}/{achievement.maxProgress}</span>
+                          <span className="font-bold">{achievement.progress}/{achievement.maxProgress}</span>
                         </div>
-                        <div className="h-2 bg-void-100/50 rounded-full overflow-hidden">
+                        <div className="h-4 bg-void-100/50 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${progressPercent}%` }}
@@ -278,16 +286,16 @@ const AchievementsPage: React.FC = () => {
                     )}
                     
                     {/* XP Reward */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center text-sm">
-                        <Icon name="SparklesIcon" className="mr-1 text-amber-400" size={16} />
-                        <span className={isUnlocked ? 'text-amber-400' : 'text-text-secondary'}>
+                    <div className="flex items-center justify-between text-xl">
+                      <div className="flex items-center">
+                        <Icon name="SparklesIcon" className="mr-2 text-amber-400" size={24} />
+                        <span className={`font-bold ${isUnlocked ? 'text-amber-400' : 'text-text-secondary'}`}>
                           +{achievement.xpReward} XP
                         </span>
                       </div>
                       
                       {isUnlocked && (
-                        <div className="text-xs text-text-secondary">
+                        <div className="text-lg text-text-secondary">
                           {new Date(achievement.unlockedAt!).toLocaleDateString()}
                         </div>
                       )}
@@ -353,13 +361,20 @@ const AchievementsPage: React.FC = () => {
                       <Icon name="XIcon" size={20} className="text-text-secondary" />
                     </button>
                     
-                    {/* Icon */}
-                    <div className="text-8xl text-center mb-6">
-                      {selectedAchievement.unlockedAt ? selectedAchievement.icon : '🔒'}
+                    {/* Custom Badge Icon - Extra Large */}
+                    <div className="flex justify-center mb-8">
+                      <AchievementBadge
+                        achievementId={selectedAchievement.id}
+                        name={selectedAchievement.name}
+                        category={selectedAchievement.category}
+                        rarity={selectedAchievement.rarity}
+                        size="xl"
+                        unlocked={selectedAchievement.unlockedAt !== null}
+                      />
                     </div>
                     
                     {/* Title */}
-                    <h2 className="text-3xl font-bold text-aurora text-center mb-2">
+                    <h2 className="text-5xl font-bold text-aurora text-center mb-4">
                       {selectedAchievement.name}
                     </h2>
                     
@@ -369,17 +384,17 @@ const AchievementsPage: React.FC = () => {
                     </div>
                     
                     {/* Description */}
-                    <p className="text-text-secondary text-center mb-6">
+                    <p className="text-2xl text-text-secondary text-center mb-8">
                       {selectedAchievement.description}
                     </p>
                     
                     {/* Progress */}
-                    <div className="mb-6">
-                      <div className="flex justify-between text-sm text-text-secondary mb-2">
+                    <div className="mb-8">
+                      <div className="flex justify-between text-2xl text-text-secondary mb-4">
                         <span>Progress</span>
-                        <span>{selectedAchievement.progress}/{selectedAchievement.maxProgress}</span>
+                        <span className="font-bold">{selectedAchievement.progress}/{selectedAchievement.maxProgress}</span>
                       </div>
-                      <div className="h-3 bg-void-100/50 rounded-full overflow-hidden">
+                      <div className="h-6 bg-void-100/50 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${(selectedAchievement.progress / selectedAchievement.maxProgress) * 100}%` }}
@@ -390,8 +405,8 @@ const AchievementsPage: React.FC = () => {
                     </div>
                     
                     {/* Reward */}
-                    <div className="flex items-center justify-center gap-2 text-xl mb-6">
-                      <Icon name="SparklesIcon" className="text-amber-400" size={24} />
+                    <div className="flex items-center justify-center gap-3 text-3xl mb-8">
+                      <Icon name="SparklesIcon" className="text-amber-400" size={36} />
                       <span className="font-bold text-amber-400">+{selectedAchievement.xpReward} XP Reward</span>
                     </div>
                     
@@ -425,7 +440,7 @@ const AchievementsPage: React.FC = () => {
               Legendary Goals
             </TemporalHeading>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {achievements
                 .filter(a => a.rarity === 'legendary' || a.rarity === 'mythic')
                 .slice(0, 3)
@@ -442,31 +457,36 @@ const AchievementsPage: React.FC = () => {
                       transition={{ duration: 0.6, delay: index * 0.15 }}
                       viewport={{ once: true }}
                     >
-                      <GradientBorder className="p-1 rounded-xl h-full">
+                      <GradientBorder className="p-2 rounded-2xl h-full">
                         <div className={`
-                          p-6 rounded-xl h-full
+                          p-12 rounded-2xl h-full
                           bg-gradient-to-br ${rarityStyle.bg}
                           ${isUnlocked ? '' : 'opacity-80'}
                         `}>
-                          <div className="flex items-start gap-4">
-                            <div className={`text-5xl ${!isUnlocked && 'filter grayscale'}`}>
-                              {isUnlocked ? achievement.icon : '🔒'}
-                            </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-1 ${rarityStyle.text}`}>
+                          <div className="flex flex-col items-center gap-6">
+                            <AchievementBadge
+                              achievementId={achievement.id}
+                              name={achievement.name}
+                              category={achievement.category}
+                              rarity={achievement.rarity}
+                              size="lg"
+                              unlocked={isUnlocked}
+                            />
+                            <div className="flex-1 w-full text-center">
+                              <h3 className={`text-3xl font-bold mb-3 ${rarityStyle.text}`}>
                                 {achievement.name}
                               </h3>
-                              <p className="text-sm text-text-secondary mb-3">
+                              <p className="text-xl text-text-secondary mb-6">
                                 {achievement.description}
                               </p>
                               
                               {/* Progress */}
-                              <div className="mb-2">
-                                <div className="flex justify-between text-xs text-text-secondary mb-1">
-                                  <span>{achievement.progress}/{achievement.maxProgress}</span>
-                                  <span>{Math.round(progressPercent)}%</span>
+                              <div className="mb-4">
+                                <div className="flex justify-between text-xl text-text-secondary mb-3">
+                                  <span className="font-bold">{achievement.progress}/{achievement.maxProgress}</span>
+                                  <span className="font-bold">{Math.round(progressPercent)}%</span>
                                 </div>
-                                <div className="h-2 bg-void-100/50 rounded-full overflow-hidden">
+                                <div className="h-4 bg-void-100/50 rounded-full overflow-hidden">
                                   <motion.div
                                     initial={{ width: 0 }}
                                     whileInView={{ width: `${progressPercent}%` }}
@@ -477,9 +497,9 @@ const AchievementsPage: React.FC = () => {
                                 </div>
                               </div>
                               
-                              <div className="flex items-center text-sm text-amber-400">
-                                <Icon name="SparklesIcon" className="mr-1" size={14} />
-                                +{achievement.xpReward} XP
+                              <div className="flex items-center justify-center text-2xl text-amber-400">
+                                <Icon name="SparklesIcon" className="mr-2" size={28} />
+                                <span className="font-bold">+{achievement.xpReward} XP</span>
                               </div>
                             </div>
                           </div>

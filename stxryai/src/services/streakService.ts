@@ -487,7 +487,14 @@ class StreakService {
       return false;
     }
 
-    // TODO: Award XP or other rewards through achievement service
+    // Award XP through achievement service
+    try {
+      const { achievementService } = await import('@/services/achievementService');
+      await achievementService.awardXp(userId, 25, 'daily_goal_completed');
+    } catch (xpError) {
+      console.error('Failed to award XP for daily goal:', xpError);
+      // Don't fail the reward claim if XP award fails
+    }
     return true;
   }
 

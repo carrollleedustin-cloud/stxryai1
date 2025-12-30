@@ -118,13 +118,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
-    // Award XP
-    await supabase
-      .from('user_profiles')
-      .update({
-        total_xp: supabase.rpc('increment_xp', { amount: 50, user_id: user.id }),
-      })
-      .eq('id', user.id);
+    // Award XP using achievement service method
+    try {
+      const { achievementService } = await import('@/services/achievementService');
+      await achievementService.awardXp(user.id, 50, 'story_created');
+    } catch (xpError) {
+      // Log but don't fail the story creation if XP award fails
+      console.error('Failed to award XP:', xpError);
+    }
 
     return NextResponse.json({
       success: true,

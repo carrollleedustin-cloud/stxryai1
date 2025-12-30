@@ -1,6 +1,6 @@
 export type Tier = 'free' | 'premium' | 'creator_pro' | 'pro' | 'enterprise';
 export type Difficulty = 'easy' | 'medium' | 'hard';
-export type UserRole = 'user' | 'moderator' | 'admin';
+export type UserRole = 'user' | 'moderator' | 'admin' | 'owner';
 
 export interface UserProfile {
   id: string;

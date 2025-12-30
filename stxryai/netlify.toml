@@ -126,3 +126,15 @@
   to = "/authentication"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/terms-and-conditions"
+  to = "/terms"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/community"
+  to = "/community-hub"
+  status = 301
+  force = true

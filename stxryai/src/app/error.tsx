@@ -94,7 +94,11 @@ export default function Error({
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => (window.location.href = '/')}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/';
+                }
+              }}
               className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-200"
             >
               <div className="flex items-center justify-center">
@@ -116,7 +120,11 @@ export default function Error({
             <h3 className="text-lg font-semibold text-white mb-4">Need Help?</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
-                onClick={() => (window.location.href = '/help')}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/help';
+                  }
+                }}
                 className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
                 <div className="text-2xl mb-2">📖</div>
@@ -124,7 +132,11 @@ export default function Error({
               </button>
 
               <button
-                onClick={() => (window.location.href = '/contact')}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = '/contact';
+                  }
+                }}
                 className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
                 <div className="text-2xl mb-2">💬</div>

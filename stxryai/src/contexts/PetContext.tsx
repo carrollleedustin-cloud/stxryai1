@@ -236,8 +236,14 @@ export function PetProvider({ children }: PetProviderProps) {
   const dismissEvolutionCelebration = useCallback(() => {
     setShowEvolutionCelebration(false);
     setPendingEvolution(null);
-    // TODO: Mark celebration as seen in database
-  }, []);
+    if (user) {
+      // Persist celebration seen and refresh pet state
+      petService
+        .markLatestEvolutionCelebrationSeen(user.id)
+        .then(() => refreshPet())
+        .catch((err) => console.error('Failed to mark celebration as seen:', err));
+    }
+  }, [user, refreshPet]);
   
   const value: PetContextType = {
     pet,

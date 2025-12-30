@@ -258,8 +258,21 @@ export class ChallengeService {
       .single();
 
     if (challenge.data) {
-      // TODO: Integrate with XP and badge system
-      // await this.awardChallengeRewards(userId, challenge.data);
+      // Award XP and badges through achievement service
+      try {
+        const { achievementService } = await import('@/services/achievementService');
+        const xpReward = challenge.data.xp_reward || 100;
+        await achievementService.awardXp(userId, xpReward, 'monthly_challenge_completed');
+        
+        // Award badge if challenge has one
+        if (challenge.data.badge_id) {
+          // Badge awarding would be handled by achievement service
+          // This is a placeholder for badge integration
+        }
+      } catch (xpError) {
+        console.error('Failed to award challenge rewards:', xpError);
+        // Don't fail the challenge completion if XP award fails
+      }
     }
 
     return this.mapUserMonthlyChallenge(data);

@@ -3,6 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
+import { PremiumGate } from './PremiumGate';
+import { useAuth } from '@/contexts/AuthContext';
+import { canAccessPremiumFeature } from '@/lib/auth/accessControl';
 
 interface VoiceSettings {
   voice: string;
@@ -20,6 +23,7 @@ interface AIVoiceNarrationProps {
 }
 
 export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarrationProps) {
+  const { profile } = useAuth();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -40,23 +44,66 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
     { id: 'shimmer', name: 'Shimmer', gender: 'female' },
   ]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  const accessCheck = canAccessPremiumFeature(profile, 'ai_voice_narration');
 
   const handlePlay = async () => {
     if (!text.trim()) return;
 
     try {
-      // TODO: Replace with actual TTS API call
-      // const audioUrl = await ttsService.generateSpeech(text, settings);
-      // if (audioRef.current) {
-      //   audioRef.current.src = audioUrl;
-      //   audioRef.current.play();
-      // }
+      // Import and use TTS service
+      const { ttsService } = await import('@/services/ttsService');
+      
+      // Get user ID from context or auth
+      const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : undefined;
+      
+      // Generate audio using TTS service
+      const audioGeneration = await ttsService.generateAudio(text, settings.voice, {
+        userId: userId || undefined,
+        speed: settings.speed,
+        pitch: settings.pitch,
+      });
 
-      setIsPlaying(true);
-      setIsPaused(false);
-      onPlay?.();
+      // Wait for generation to complete and get audio URL
+      if (audioGeneration.audioUrl && audioRef.current) {
+        audioRef.current.src = audioGeneration.audioUrl;
+        audioRef.current.volume = settings.volume;
+        await audioRef.current.play();
+        setDuration(audioRef.current.duration || 0);
+        setIsPlaying(true);
+        setIsPaused(false);
+        onPlay?.();
+      } else if (audioGeneration.generationStatus === 'failed') {
+        throw new Error(audioGeneration.errorMessage || 'Audio generation failed');
+      } else {
+        // Still processing - poll for completion
+        const checkStatus = setInterval(async () => {
+          const updated = await ttsService.getUserAudioGenerations(userId || '', undefined);
+          const current = updated.find(a => a.id === audioGeneration.id);
+          if (current?.generationStatus === 'completed' && current.audioUrl) {
+            clearInterval(checkStatus);
+            if (audioRef.current) {
+              audioRef.current.src = current.audioUrl;
+              audioRef.current.volume = settings.volume;
+              await audioRef.current.play();
+              setDuration(audioRef.current.duration || 0);
+              setIsPlaying(true);
+              setIsPaused(false);
+              onPlay?.();
+            }
+          } else if (current?.generationStatus === 'failed') {
+            clearInterval(checkStatus);
+            throw new Error(current.errorMessage || 'Audio generation failed');
+          }
+        }, 2000);
+        
+        // Timeout after 30 seconds
+        setTimeout(() => clearInterval(checkStatus), 30000);
+      }
     } catch (error) {
       console.error('Playback failed:', error);
+      setIsPlaying(false);
+      alert('Failed to generate audio. Please check your API configuration.');
     }
   };
 
@@ -87,19 +134,20 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-          <Icon name="SpeakerWaveIcon" size={24} className="text-primary" />
-          AI Voice Narration
-        </h3>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Premium</span>
-          <span className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full">
-            PRO
-          </span>
+    <PremiumGate feature="ai_voice_narration">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Icon name="SpeakerWaveIcon" size={24} className="text-primary" />
+            AI Voice Narration
+          </h3>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Premium</span>
+            <span className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full">
+              PRO
+            </span>
+          </div>
         </div>
-      </div>
 
       {/* Voice Settings */}
       <div className="p-4 bg-card border border-border rounded-lg space-y-4">
@@ -228,8 +276,9 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
         </div>
       </div>
 
-      <audio ref={audioRef} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} />
-    </div>
+        <audio ref={audioRef} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} />
+      </div>
+    </PremiumGate>
   );
 }
 

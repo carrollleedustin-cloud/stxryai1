@@ -80,10 +80,15 @@ const AuthenticationInteractive = () => {
     try {
       await signIn(data.email, data.password);
       toast.success('Login successful!');
+      
+      // Get redirect URL from query params or default to dashboard
+      const redirectUrl = typeof window !== 'undefined' 
+        ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+        : '/user-dashboard';
+      
       // Wait a moment for auth state to propagate, then redirect
-      // Using router.push instead of window.location to avoid full page reload flicker
       setTimeout(() => {
-        router.push('/user-dashboard');
+        router.push(redirectUrl);
       }, 100);
     } catch (err: any) {
       setIsLoading(false);

@@ -125,7 +125,16 @@ export default function RegisterForm({
         formData.username.trim(),
         formData.displayName.trim()
       );
-      router.push('/user-dashboard');
+      
+      // After registration, redirect to login (email confirmation needed)
+      // Or if auto-confirmed, redirect to dashboard
+      const redirectUrl = typeof window !== 'undefined' 
+        ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+        : '/user-dashboard';
+      
+      // Note: Registration typically requires email confirmation
+      // So we redirect to login with a message, or dashboard if already confirmed
+      router.push('/authentication?mode=login&message=Please check your email to confirm your account');
     } catch (err: unknown) {
       const error = err as Error;
       if (
@@ -297,7 +306,7 @@ export default function RegisterForm({
             className="w-4 h-4 text-purple-600 border-white/20 rounded focus:ring-purple-500"
           />
           <a
-            href="/terms-and-conditions"
+            href="/terms"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-1 text-sm text-purple-400 hover:underline"

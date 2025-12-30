@@ -13,12 +13,25 @@ export default function GlobalFooter() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement newsletter subscription
-    setSubscribed(true);
-    setEmail('');
-    setTimeout(() => setSubscribed(false), 3000);
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Subscription failed');
+      }
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 5000);
+    } catch (err) {
+      console.error('Newsletter subscribe error', err);
+      alert('Subscription failed. Please try again later.');
+    }
   };
 
   const footerLinks = {

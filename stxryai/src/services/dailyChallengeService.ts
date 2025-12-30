@@ -493,12 +493,79 @@ class DailyChallengeService {
 
     const favoriteType = Object.entries(typeCounts).sort(([, a], [, b]) => b - a)[0]?.[0] as ChallengeType || null;
 
-    // TODO: Calculate streak based on consecutive days with completed challenges
-    // For now, return placeholder
+    // Calculate streak based on consecutive days with completed challenges
+    let currentStreak = 0;
+    let longestStreak = 0;
+    let tempStreak = 0;
+
+    if (completed.length > 0) {
+      // Sort by completion date (most recent first)
+      const sorted = [...completed].sort((a, b) => {
+        const dateA = new Date(a.completed_at || a.created_at || 0).getTime();
+        const dateB = new Date(b.completed_at || b.created_at || 0).getTime();
+        return dateB - dateA;
+      });
+
+      // Calculate current streak (consecutive days from today backwards)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      let expectedDate = new Date(today);
+      let streakBroken = false;
+
+      for (const challenge of sorted) {
+        const completedDate = new Date(challenge.completed_at || challenge.created_at);
+        completedDate.setHours(0, 0, 0, 0);
+        
+        const daysDiff = Math.floor((expectedDate.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (!streakBroken && daysDiff === 0) {
+          // Perfect match - continue streak
+          currentStreak++;
+          expectedDate.setDate(expectedDate.getDate() - 1);
+        } else if (!streakBroken && daysDiff === 1) {
+          // One day gap - continue streak
+          currentStreak++;
+          expectedDate.setDate(expectedDate.getDate() - 2); // Skip the gap day
+        } else if (!streakBroken) {
+          // Streak broken
+          streakBroken = true;
+        }
+      }
+
+      // Calculate longest streak (any consecutive period)
+      const dates = sorted.map(c => {
+        const date = new Date(c.completed_at || c.created_at);
+        date.setHours(0, 0, 0, 0);
+        return date.getTime();
+      });
+
+      // Remove duplicates and sort
+      const uniqueDates = [...new Set(dates)].sort((a, b) => b - a);
+
+      if (uniqueDates.length > 0) {
+        tempStreak = 1;
+        longestStreak = 1;
+
+        for (let i = 1; i < uniqueDates.length; i++) {
+          const daysDiff = Math.floor((uniqueDates[i - 1] - uniqueDates[i]) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff === 1) {
+            // Consecutive day
+            tempStreak++;
+            longestStreak = Math.max(longestStreak, tempStreak);
+          } else {
+            // Streak broken
+            tempStreak = 1;
+          }
+        }
+      }
+    }
+
     return {
       totalCompleted: completed.length,
-      currentStreak: 0, // Implement based on completion dates
-      longestStreak: 0,
+      currentStreak,
+      longestStreak,
       totalXpEarned,
       favoriteType,
     };

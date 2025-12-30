@@ -37,8 +37,9 @@ export default function AuthCallback() {
           } = await supabase.auth.getSession();
 
           if (session) {
-            // Successfully authenticated, redirect to dashboard
-            router.push('/user-dashboard');
+            // Successfully authenticated, check for redirect parameter
+            const redirectUrl = urlParams.get('redirect') || '/user-dashboard';
+            router.push(redirectUrl);
           } else {
             router.push('/authentication?error=no_session');
           }

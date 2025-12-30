@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
 import { aiService } from '@/lib/api';
+import { PremiumGate } from './PremiumGate';
 
 interface StoryAnalysis {
   overallScore: number;
@@ -61,55 +62,58 @@ Provide:
 8. Dialogue quality analysis
 9. Grammar and style issues`;
 
-      // TODO: Replace with actual AI analysis
-      // const result = await aiService.analyzeStory(storyContent);
+      // Use AI Story Assistant service for Plot Doctor analysis
+      const { aiStoryAssistantService } = await import('@/services/aiStoryAssistantService');
       
-      // Mock analysis
-      setTimeout(() => {
-        const mockAnalysis: StoryAnalysis = {
-          overallScore: 78,
-          strengths: [
-            'Strong character development',
-            'Engaging plot twists',
-            'Vivid descriptions',
-            'Good pacing',
-          ],
-          weaknesses: [
-            'Some dialogue feels forced',
-            'Pacing slows in middle chapters',
-            'Could use more character backstory',
-          ],
-          suggestions: [
-            'Add more internal monologue',
-            'Vary sentence structure',
-            'Deepen character motivations',
-            'Tighten middle section',
-          ],
-          pacing: {
-            score: 75,
-            feedback: 'Good overall pacing, but middle chapters could be tightened',
-          },
-          character: {
-            score: 82,
-            feedback: 'Characters are well-developed with clear motivations',
-          },
-          plot: {
-            score: 80,
-            feedback: 'Plot is engaging with good twists, but some loose ends',
-          },
-          dialogue: {
-            score: 70,
-            feedback: 'Dialogue is natural but could be more distinctive per character',
-          },
-          grammar: {
-            score: 85,
-            issues: ['Minor punctuation issues', 'Some run-on sentences'],
-          },
-        };
-        setAnalysis(mockAnalysis);
-        onAnalysisComplete?.(mockAnalysis);
-        setIsAnalyzing(false);
-      }, 3000);
+      // Get user ID from context or auth
+      const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : 'anonymous';
+      
+      // Run Plot Doctor analysis
+      const plotAnalysis = await aiStoryAssistantService.runPlotDoctorAnalysis(
+        userId,
+        'temp-story-id', // Would be actual story ID in real usage
+        'full_story',
+        storyContent
+      );
+
+      // Transform Plot Doctor analysis to StoryAnalysis format
+      const analysis: StoryAnalysis = {
+        overallScore: plotAnalysis.overallScore || 70,
+        strengths: (plotAnalysis.strengths || []).map((s: any) => 
+          typeof s === 'string' ? s : s.description || s.aspect || String(s)
+        ),
+        weaknesses: (plotAnalysis.issuesFound || []).map((i: any) => 
+          typeof i === 'string' ? i : i.description || String(i)
+        ),
+        suggestions: (plotAnalysis.suggestions || []).map((s: any) => 
+          typeof s === 'string' ? s : s.description || String(s)
+        ),
+        pacing: {
+          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 5)) : 75,
+          feedback: plotAnalysis.overallFeedback || 'Analysis completed',
+        },
+        character: {
+          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 5)) : 80,
+          feedback: plotAnalysis.overallFeedback || 'Character analysis completed',
+        },
+        plot: {
+          score: plotAnalysis.overallScore || 75,
+          feedback: plotAnalysis.overallFeedback || 'Plot analysis completed',
+        },
+        dialogue: {
+          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 10)) : 70,
+          feedback: plotAnalysis.overallFeedback || 'Dialogue analysis completed',
+        },
+        grammar: {
+          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 10)) : 85,
+          issues: (plotAnalysis.issuesFound || []).slice(0, 5).map((i: any) => 
+            typeof i === 'string' ? i : i.description || String(i)
+          ),
+        },
+      };
+      setAnalysis(analysis);
+      onAnalysisComplete?.(analysis);
+      setIsAnalyzing(false);
     } catch (error) {
       console.error('Analysis failed:', error);
       setIsAnalyzing(false);
@@ -131,15 +135,16 @@ Provide:
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <span>🎯</span>
-            AI Story Critic
-          </h2>
-          <p className="text-muted-foreground">Get detailed AI-powered feedback on your story</p>
-        </div>
+    <PremiumGate feature="ai_story_critic">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <span>🎯</span>
+              AI Story Critic
+            </h2>
+            <p className="text-muted-foreground">Get detailed AI-powered feedback on your story</p>
+          </div>
         <motion.button
           onClick={analyzeStory}
           disabled={isAnalyzing || !storyContent.trim()}
@@ -320,7 +325,8 @@ Provide:
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </PremiumGate>
   );
 }
 

@@ -20,6 +20,8 @@ const PROTECTED_ROUTES = [
 
 // Routes that require admin/moderator role
 const ADMIN_ROUTES = ['/admin'];
+// Routes that require owner role
+const OWNER_ROUTES = ['/admin/owner-dashboard'];
 
 // Routes that should redirect to dashboard if already authenticated
 const AUTH_ROUTES = ['/authentication', '/auth'];
@@ -116,7 +118,46 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Check admin routes - requires authenticated admin/moderator
+  // Check owner routes - requires authenticated owner
+  const isOwnerRoute = OWNER_ROUTES.some((route) => pathname.startsWith(route));
+  
+  if (isOwnerRoute) {
+    if (!hasValidSession) {
+      return NextResponse.redirect(new URL('/authentication', request.url));
+    }
+
+    // Check owner status by querying user_profiles
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return request.cookies.get(name)?.value;
+          },
+          set() {},
+          remove() {},
+        },
+      }
+    );
+
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('role, is_admin')
+      .eq('id', user.id)
+      .single();
+
+    const isOwner = profile?.role === 'owner';
+
+    if (!isOwner) {
+      // Not an owner - redirect to home with error message
+      const homeUrl = new URL('/', request.url);
+      homeUrl.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(homeUrl);
+    }
+  }
+
+  // Check admin routes - requires authenticated admin/moderator/owner
   if (isAdminRoute) {
     if (!hasValidSession) {
       return NextResponse.redirect(new URL('/authentication', request.url));
@@ -145,7 +186,8 @@ export async function middleware(request: NextRequest) {
 
     const isAdmin = profile?.is_admin === true || 
                     profile?.role === 'admin' || 
-                    profile?.role === 'moderator';
+                    profile?.role === 'moderator' ||
+                    profile?.role === 'owner';
 
     if (!isAdmin) {
       // Not an admin - redirect to home with error message

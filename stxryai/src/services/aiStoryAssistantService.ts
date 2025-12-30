@@ -112,34 +112,99 @@ export class AIStoryAssistantService {
       suggestionTypes?: AIWritingSuggestion['suggestionType'][];
     }
   ): Promise<AIWritingSuggestion[]> {
-    // This would typically call an AI API
-    // For now, we'll create placeholder suggestions
-    const suggestions: Partial<AIWritingSuggestion>[] = [];
+    const suggestionTypes = context.suggestionTypes || ['plot', 'character', 'dialogue', 'description', 'pacing', 'tone', 'style'];
+    
+    // Check if AI is configured
+    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      console.warn('AI API key not configured - returning empty suggestions');
+      return [];
+    }
 
-    // TODO: Integrate with OpenAI API for actual suggestions
-    // For now, return empty array or mock data
+    try {
+      // Import AI client
+      const { generateCompletion } = await import('@/lib/ai/client');
+      
+      const systemPrompt = `You are an expert writing assistant. Analyze the provided text and generate specific, actionable writing suggestions. 
+Focus on: ${suggestionTypes.join(', ')}. For each suggestion, provide:
+1. The type of suggestion
+2. The original text (if applicable)
+3. Suggested improvement
+4. Brief reasoning
+5. Confidence score (0-1)
 
-    const { data, error } = await this.supabase
-      .from('ai_writing_suggestions')
-      .insert(
-        suggestions.map((s) => ({
-          user_id: userId,
-          story_id: context.storyId,
-          chapter_id: context.chapterId,
-          suggestion_type: s.suggestionType,
-          original_text: s.originalText,
-          suggested_text: s.suggestedText,
-          suggestion_context: s.suggestionContext,
-          ai_model: 'gpt-4',
-          confidence_score: s.confidenceScore,
-          reasoning: s.reasoning,
-          status: 'pending',
-        }))
-      )
-      .select();
+Return suggestions as a JSON array.`;
 
-    if (error) throw error;
-    return (data || []).map((item: any) => this.mapSuggestion(item));
+      const userPrompt = `Analyze this text and provide writing suggestions:\n\n${content}\n\nFocus on: ${suggestionTypes.join(', ')}`;
+
+      const response = await generateCompletion({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.7,
+        maxTokens: 2000,
+      });
+
+      // Parse AI response
+      let parsedSuggestions: any[] = [];
+      try {
+        // Try to extract JSON from response
+        const jsonMatch = response.content.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          parsedSuggestions = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback: create suggestions from text analysis
+          parsedSuggestions = [{
+            suggestionType: 'style',
+            originalText: content.substring(0, 100),
+            suggestedText: content.substring(0, 100),
+            suggestionContext: 'AI analysis',
+            confidenceScore: 0.7,
+            reasoning: response.content.substring(0, 200),
+          }];
+        }
+      } catch (parseError) {
+        console.error('Failed to parse AI suggestions:', parseError);
+        // Return empty array if parsing fails
+        return [];
+      }
+
+      // Map to our format
+      const suggestions: Partial<AIWritingSuggestion>[] = parsedSuggestions.map((s: any, index: number) => ({
+        suggestionType: s.suggestionType || suggestionTypes[index % suggestionTypes.length],
+        originalText: s.originalText || content.substring(0, 100),
+        suggestedText: s.suggestedText || s.suggestion,
+        suggestionContext: s.suggestionContext || s.context || 'AI-generated suggestion',
+        confidenceScore: s.confidenceScore || 0.7,
+        reasoning: s.reasoning || s.explanation || 'AI analysis',
+      }));
+
+      const { data, error } = await this.supabase
+        .from('ai_writing_suggestions')
+        .insert(
+          suggestions.map((s) => ({
+            user_id: userId,
+            story_id: context.storyId,
+            chapter_id: context.chapterId,
+            suggestion_type: s.suggestionType,
+            original_text: s.originalText,
+            suggested_text: s.suggestedText,
+            suggestion_context: s.suggestionContext,
+            ai_model: 'gpt-4',
+            confidence_score: s.confidenceScore,
+            reasoning: s.reasoning,
+            status: 'pending',
+          }))
+        )
+        .select();
+
+      if (error) throw error;
+      return (data || []).map((item: any) => this.mapSuggestion(item));
+    } catch (error) {
+      console.error('Error generating AI suggestions:', error);
+      // Return empty array on error rather than throwing
+      return [];
+    }
   }
 
   /**
@@ -217,30 +282,95 @@ export class AIStoryAssistantService {
     analysisType: PlotDoctorAnalysis['analysisType'],
     content: string
   ): Promise<PlotDoctorAnalysis> {
-    // TODO: Integrate with AI API for actual analysis
-    // This would analyze the story for plot holes, inconsistencies, etc.
+    // Check if AI is configured
+    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      throw new Error('AI API key not configured. Please set OPENAI_API_KEY or ANTHROPIC_API_KEY.');
+    }
 
-    const { data, error } = await this.supabase
-      .from('plot_doctor_analyses')
-      .insert({
-        user_id: userId,
-        story_id: storyId,
-        analysis_type: analysisType,
-        analyzed_content: content,
-        issues_found: [],
-        issue_count: 0,
+    try {
+      // Import AI client
+      const { generateCompletion } = await import('@/lib/ai/client');
+      
+      const systemPrompt = `You are an expert story analyst (Plot Doctor). Analyze the provided story content for:
+- Plot holes and inconsistencies
+- Character development issues
+- Pacing problems
+- Narrative structure issues
+- Strengths and well-executed elements
+
+Return a JSON object with:
+{
+  "issues": [{"type": "...", "severity": "low|medium|high|critical", "description": "...", "location": "..."}],
+  "suggestions": [{"type": "...", "description": "...", "impact": "..."}],
+  "strengths": [{"aspect": "...", "description": "..."}],
+  "overallScore": 0-100,
+  "overallFeedback": "..."
+}`;
+
+      const userPrompt = `Analyze this ${analysisType} for plot issues, inconsistencies, and provide feedback:\n\n${content}`;
+
+      const response = await generateCompletion({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.5, // Lower temperature for more consistent analysis
+        maxTokens: 3000,
+      });
+
+      // Parse AI response
+      let analysisResult: any = {
+        issues: [],
         suggestions: [],
-        suggestion_count: 0,
         strengths: [],
-        strength_count: 0,
-        ai_model: 'gpt-4',
-        analysis_parameters: {},
-      })
-      .select()
-      .single();
+        overallScore: 70,
+        overallFeedback: 'Analysis completed',
+      };
 
-    if (error) throw error;
-    return this.mapPlotAnalysis(data);
+      try {
+        const jsonMatch = response.content.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          analysisResult = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback parsing
+          analysisResult.overallFeedback = response.content;
+        }
+      } catch (parseError) {
+        console.error('Failed to parse plot analysis:', parseError);
+        analysisResult.overallFeedback = response.content;
+      }
+
+      const { data, error } = await this.supabase
+        .from('plot_doctor_analyses')
+        .insert({
+          user_id: userId,
+          story_id: storyId,
+          analysis_type: analysisType,
+          analyzed_content: content,
+          issues_found: analysisResult.issues || [],
+          issue_count: (analysisResult.issues || []).length,
+          suggestions: analysisResult.suggestions || [],
+          suggestion_count: (analysisResult.suggestions || []).length,
+          strengths: analysisResult.strengths || [],
+          strength_count: (analysisResult.strengths || []).length,
+          overall_score: analysisResult.overallScore,
+          overall_feedback: analysisResult.overallFeedback,
+          severity_level: (analysisResult.issues || []).some((i: any) => i.severity === 'critical' || i.severity === 'high') 
+            ? 'high' 
+            : (analysisResult.issues || []).length > 0 ? 'medium' : 'low',
+          ai_model: 'gpt-4',
+          analysis_parameters: {},
+          tokens_used: response.usage.totalTokens,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return this.mapPlotAnalysis(data);
+    } catch (error) {
+      console.error('Error running plot doctor analysis:', error);
+      throw error;
+    }
   }
 
   /**
@@ -274,25 +404,98 @@ export class AIStoryAssistantService {
     prompt?: string,
     constraints?: Record<string, any>
   ): Promise<AIIdeaGeneration> {
-    // TODO: Integrate with AI API for actual idea generation
+    // Check if AI is configured
+    if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
+      throw new Error('AI API key not configured. Please set OPENAI_API_KEY or ANTHROPIC_API_KEY.');
+    }
 
-    const { data, error } = await this.supabase
-      .from('ai_idea_generations')
-      .insert({
-        user_id: userId,
-        generation_type: generationType,
-        prompt,
-        constraints: constraints || {},
-        generated_ideas: [],
-        idea_count: 0,
-        ai_model: 'gpt-4',
-        generation_parameters: {},
-      })
-      .select()
-      .single();
+    try {
+      // Import AI client
+      const { generateCompletion } = await import('@/lib/ai/client');
+      
+      const typePrompts: Record<string, string> = {
+        story_concept: 'Generate creative story concepts',
+        character: 'Generate interesting character ideas',
+        plot_twist: 'Generate unexpected plot twists',
+        world_building: 'Generate world-building elements',
+        dialogue: 'Generate engaging dialogue examples',
+        scene: 'Generate compelling scene ideas',
+        title: 'Generate story titles',
+        synopsis: 'Generate story synopses',
+      };
 
-    if (error) throw error;
-    return this.mapIdeaGeneration(data);
+      const systemPrompt = `You are a creative writing assistant. Generate ${typePrompts[generationType] || 'creative ideas'}.
+${constraints ? `Constraints: ${JSON.stringify(constraints)}` : ''}
+
+Return a JSON array of ideas, each with:
+- title/name
+- description
+- key elements
+- potential use cases`;
+
+      const userPrompt = prompt || `Generate 5 ${generationType.replace('_', ' ')} ideas`;
+
+      const response = await generateCompletion({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.9, // Higher temperature for more creative ideas
+        maxTokens: 2000,
+      });
+
+      // Parse AI response
+      let generatedIdeas: any[] = [];
+      try {
+        const jsonMatch = response.content.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          generatedIdeas = JSON.parse(jsonMatch[0]);
+        } else {
+          // Fallback: split by lines or create single idea
+          const lines = response.content.split('\n').filter(l => l.trim());
+          generatedIdeas = lines.slice(0, 5).map((line, i) => ({
+            title: `Idea ${i + 1}`,
+            description: line.trim(),
+            keyElements: [],
+            potentialUseCases: [],
+          }));
+        }
+      } catch (parseError) {
+        console.error('Failed to parse idea generation:', parseError);
+        // Create fallback ideas
+        generatedIdeas = [{
+          title: 'Generated Idea',
+          description: response.content.substring(0, 500),
+          keyElements: [],
+          potentialUseCases: [],
+        }];
+      }
+
+      const { data, error } = await this.supabase
+        .from('ai_idea_generations')
+        .insert({
+          user_id: userId,
+          generation_type: generationType,
+          prompt,
+          constraints: constraints || {},
+          generated_ideas: generatedIdeas,
+          idea_count: generatedIdeas.length,
+          ai_model: 'gpt-4',
+          generation_parameters: {
+            temperature: 0.9,
+            maxTokens: 2000,
+          },
+          tokens_used: response.usage.totalTokens,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return this.mapIdeaGeneration(data);
+    } catch (error) {
+      console.error('Error generating ideas:', error);
+      throw error;
+    }
   }
 
   /**

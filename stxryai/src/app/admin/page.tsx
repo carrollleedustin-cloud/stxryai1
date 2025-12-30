@@ -78,8 +78,23 @@ const AdminPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const router = useRouter();
+  
+  useEffect(() => {
+    if (profile) {
+      // Redirect based on role
+      if (profile.role === 'owner') {
+        router.push('/admin/owner-dashboard');
+      } else if (profile.role === 'moderator') {
+        router.push('/admin/mod-dashboard');
+      } else if (profile.role === 'admin') {
+        // Stay on admin page
+      } else {
+        router.push('/user-dashboard');
+      }
+    }
+  }, [profile, router]);
 
   // Announcement form state
   const [announcementForm, setAnnouncementForm] = useState<CreateAnnouncementDTO>({
