@@ -238,12 +238,13 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.6)',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
   },
   username: {
     fontSize: 24,
     color: '#fff',
-    fontFamily: 'Sora-Bold',
+    fontWeight: 'bold',
+    // fontFamily: 'Sora-Bold', // Uncomment when fonts are loaded
     marginTop: 4,
   },
   notificationButton: {
@@ -266,7 +267,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     color: '#fff',
-    fontFamily: 'Sora-SemiBold',
+    fontWeight: '600',
+    // fontFamily: 'Sora-SemiBold', // Uncomment when fonts are loaded
     paddingHorizontal: 20,
     marginTop: 24,
     marginBottom: 16,
@@ -280,7 +282,7 @@ const styles = StyleSheet.create({
   seeAll: {
     fontSize: 14,
     color: '#00f5d4',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
   },
   continueCard: {
     marginHorizontal: 20,
@@ -312,12 +314,13 @@ const styles = StyleSheet.create({
   continueTitle: {
     fontSize: 16,
     color: '#fff',
-    fontFamily: 'Sora-SemiBold',
+    fontWeight: '600',
+    // fontFamily: 'Sora-SemiBold', // Uncomment when fonts are loaded
   },
   continueAuthor: {
     fontSize: 13,
     color: 'rgba(255, 255, 255, 0.5)',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
     marginTop: 4,
   },
   progressContainer: {
@@ -339,7 +342,7 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.5)',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
     marginLeft: 12,
   },
   playButton: {
@@ -370,7 +373,7 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 14,
     color: '#fff',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
   },
   storiesContainer: {
     paddingHorizontal: 20,
@@ -402,13 +405,14 @@ const styles = StyleSheet.create({
   storyCardTitle: {
     fontSize: 18,
     color: '#fff',
-    fontFamily: 'Sora-SemiBold',
+    fontWeight: '600',
+    // fontFamily: 'Sora-SemiBold', // Uncomment when fonts are loaded
     marginBottom: 4,
   },
   storyCardGenre: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.5)',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
   },
   storyCardRating: {
     flexDirection: 'row',
@@ -419,7 +423,8 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 14,
     color: '#ffc040',
-    fontFamily: 'Sora-SemiBold',
+    fontWeight: '600',
+    // fontFamily: 'Sora-SemiBold', // Uncomment when fonts are loaded
   },
   kidsBanner: {
     marginHorizontal: 20,
@@ -444,12 +449,13 @@ const styles = StyleSheet.create({
   kidsTitle: {
     fontSize: 18,
     color: '#fff',
-    fontFamily: 'Sora-Bold',
+    fontWeight: 'bold',
+    // fontFamily: 'Sora-Bold', // Uncomment when fonts are loaded
   },
   kidsSubtitle: {
     fontSize: 13,
     color: 'rgba(255, 255, 255, 0.6)',
-    fontFamily: 'Sora-Regular',
+    // fontFamily: 'Sora-Regular', // Uncomment when fonts are loaded
     marginTop: 2,
   },
 });

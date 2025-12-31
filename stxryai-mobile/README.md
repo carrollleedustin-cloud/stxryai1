@@ -18,8 +18,8 @@ StxryAI Mobile brings the magic of interactive storytelling to your fingertips. 
 
 ## Tech Stack
 
-- **Framework**: Expo SDK 52 + React Native 0.74
-- **Navigation**: Expo Router (file-based routing)
+- **Framework**: Expo SDK 52 + React Native 0.76
+- **Navigation**: Expo Router 4 (file-based routing)
 - **Animations**: React Native Reanimated 3
 - **State Management**: Zustand
 - **Backend**: Supabase

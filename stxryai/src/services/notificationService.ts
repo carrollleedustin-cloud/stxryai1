@@ -167,44 +167,54 @@ export const NOTIFICATION_TEMPLATES: Record<
 
 export const notificationService = {
   /**
-   * Get user's notifications
-   */
-  async getNotifications(
-    userId: string,
-    options?: {
-      unreadOnly?: boolean;
-      limit?: number;
-      offset?: number;
-    }
-  ): Promise<Notification[]> {
-    let query = supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_archived', false)
-      .order('created_at', { ascending: false });
+    * Get user's notifications
+    */
+   async getNotifications(
+     userId: string,
+     options?: {
+       unreadOnly?: boolean;
+       limit?: number;
+       offset?: number;
+     }
+   ): Promise<Notification[]> {
+     try {
+       if (!userId || typeof userId !== 'string') {
+         console.error('Invalid userId provided to getNotifications');
+         return [];
+       }
 
-    if (options?.unreadOnly) {
-      query = query.eq('is_read', false);
-    }
+       let query = supabase
+         .from('notifications')
+         .select('*')
+         .eq('user_id', userId)
+         .eq('is_archived', false)
+         .order('created_at', { ascending: false });
 
-    if (options?.limit) {
-      query = query.limit(options.limit);
-    }
+       if (options?.unreadOnly) {
+         query = query.eq('is_read', false);
+       }
 
-    if (options?.offset) {
-      query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
-    }
+       if (options?.limit) {
+         query = query.limit(Math.min(options.limit, 100)); // Max 100
+       }
 
-    const { data, error } = await query;
+       if (options?.offset) {
+         query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
+       }
 
-    if (error) {
-      console.error('Error fetching notifications:', error);
-      return [];
-    }
+       const { data, error } = await query;
 
-    return data || [];
-  },
+       if (error) {
+         console.error('Database error fetching notifications:', error);
+         return [];
+       }
+
+       return data || [];
+     } catch (error) {
+       console.error('Unexpected error in getNotifications:', error);
+       return [];
+     }
+   },
 
   /**
    * Get unread count
@@ -265,8 +275,8 @@ export const notificationService = {
     if (prefs?.push_enabled && this.shouldSendPush(type, prefs)) {
       // Map notification type to push notification type
       let pushType: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation' | undefined;
-      const storyTypes: NotificationType[] = ['story_comment', 'story_rating', 'story_featured', 'story_update'];
-      const socialTypes: NotificationType[] = ['follower_new', 'following_activity', 'club_invite', 'club_activity', 'comment_reply', 'like'];
+      const storyTypes: NotificationType[] = ['story_comment', 'story_rating', 'story_featured'];
+      const socialTypes: NotificationType[] = ['follower_new', 'following_activity', 'club_invite', 'club_activity'];
       const reminderTypes: NotificationType[] = ['reading_reminder', 'streak_milestone', 'goal_completed'];
       
       if (storyTypes.includes(type)) pushType = 'story_update';

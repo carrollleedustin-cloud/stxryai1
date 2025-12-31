@@ -12,6 +12,7 @@ export interface PrismButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   isLoading?: boolean;
   icon?: React.ReactNode;
   glow?: boolean;
+  'aria-label'?: string;
 }
 
 const variants: Record<PrismButtonVariant, string> = {

@@ -46,6 +46,48 @@ export default function AIWritingStudio({ seriesId, seriesTitle }: AIWritingStud
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Auto-save functionality
+  useEffect(() => {
+    const autoSaveKey = `ai-writing-studio-${seriesId}-${selectedBookId}`;
+    const saved = localStorage.getItem(autoSaveKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.content) setContent(parsed.content);
+        if (parsed.prompt) setPrompt(parsed.prompt);
+        if (parsed.generationType) setGenerationType(parsed.generationType);
+        if (parsed.selectedCharacters) setSelectedCharacters(parsed.selectedCharacters);
+      } catch (error) {
+        console.error('Failed to load auto-saved data:', error);
+      }
+    }
+  }, [seriesId, selectedBookId]);
+
+  useEffect(() => {
+    const autoSaveKey = `ai-writing-studio-${seriesId}-${selectedBookId}`;
+    const autoSave = () => {
+      const data = {
+        content,
+        prompt,
+        generationType,
+        selectedCharacters,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(autoSaveKey, JSON.stringify(data));
+    };
+
+    const interval = setInterval(autoSave, 30000); // Auto-save every 30 seconds
+
+    // Save on beforeunload
+    const handleBeforeUnload = () => autoSave();
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [content, prompt, generationType, selectedCharacters, seriesId, selectedBookId]);
+
   useEffect(() => {
     fetchBooks();
     fetchCharacters();

@@ -17,25 +17,46 @@ SplashScreen.preventAutoHideAsync();
  * Sets up providers, fonts, and navigation.
  */
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
-    'Bricolage-Regular': require('../assets/fonts/BricolageGrotesque-Regular.ttf'),
-    'Bricolage-Bold': require('../assets/fonts/BricolageGrotesque-Bold.ttf'),
-    'Sora-Regular': require('../assets/fonts/Sora-Regular.ttf'),
-    'Sora-SemiBold': require('../assets/fonts/Sora-SemiBold.ttf'),
-    'Sora-Bold': require('../assets/fonts/Sora-Bold.ttf'),
-    'Instrument-Regular': require('../assets/fonts/InstrumentSerif-Regular.ttf'),
-    'Instrument-Italic': require('../assets/fonts/InstrumentSerif-Italic.ttf'),
-  });
+  // Load fonts - fonts are optional, system fonts will be used as fallback
+  // If fonts are missing, the app will still work with system fonts
+  // To add fonts, uncomment the lines below and add font files to assets/fonts/
+  const fontMap: Record<string, any> = {};
+  
+  // Uncomment when font files are added:
+  // try {
+  //   fontMap['Bricolage-Regular'] = require('../assets/fonts/BricolageGrotesque-Regular.ttf');
+  //   fontMap['Bricolage-Bold'] = require('../assets/fonts/BricolageGrotesque-Bold.ttf');
+  //   fontMap['Sora-Regular'] = require('../assets/fonts/Sora-Regular.ttf');
+  //   fontMap['Sora-SemiBold'] = require('../assets/fonts/Sora-SemiBold.ttf');
+  //   fontMap['Sora-Bold'] = require('../assets/fonts/Sora-Bold.ttf');
+  //   fontMap['Instrument-Regular'] = require('../assets/fonts/InstrumentSerif-Regular.ttf');
+  //   fontMap['Instrument-Italic'] = require('../assets/fonts/InstrumentSerif-Italic.ttf');
+  // } catch (e) {
+  //   // Fonts not available, will use system fonts
+  // }
+
+  // Only call useFonts if we have fonts to load
+  // Note: useFonts must always be called (hooks rule), so we pass empty object if no fonts
+  const [fontsLoaded, fontError] = useFonts(
+    Object.keys(fontMap).length > 0 ? fontMap : {}
+  );
+  
+  // If no fonts to load, consider them "loaded" immediately
+  const areFontsReady = Object.keys(fontMap).length === 0 ? true : fontsLoaded;
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    // Hide splash screen after fonts load or timeout
+    const timer = setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 500);
+    
+    if (areFontsReady || fontError) {
+      clearTimeout(timer);
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
+    
+    return () => clearTimeout(timer);
+  }, [areFontsReady, fontError]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

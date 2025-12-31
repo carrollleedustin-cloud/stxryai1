@@ -122,21 +122,31 @@ export const storyService = {
   },
 
   async getStoryById(storyId: string) {
-    const { data, error } = await supabase.from('stories').select('*').eq('id', storyId).single();
+    try {
+      const { data, error } = await supabase.from('stories').select('*').eq('id', storyId).single();
 
-    if (error) throw error;
-    return data as Story;
+      if (error) throw error;
+      return data as Story;
+    } catch (error) {
+      console.error('Error fetching story by ID:', error);
+      throw new Error('Failed to load story. Please try again.');
+    }
   },
 
   async getStoryChapters(storyId: string) {
-    const { data, error } = await supabase
-      .from('chapters')
-      .select('*')
-      .eq('story_id', storyId)
-      .order('chapter_number', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('chapters')
+        .select('*')
+        .eq('story_id', storyId)
+        .order('chapter_number', { ascending: true });
 
-    if (error) throw error;
-    return data;
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching story chapters:', error);
+      throw new Error('Failed to load story chapters. Please try again.');
+    }
   },
 
   async getChapterChoices(chapterId: string) {
