@@ -169,7 +169,7 @@ export function updateTraitsFromPatterns(
   if (patterns.favoriteGenres.length > 0) {
     const genreColors: Record<string, { primary: string; secondary: string; accent: string }> = {
       fantasy: { primary: '#8b5cf6', secondary: '#a78bfa', accent: '#c4b5fd' },
-      sci-fi: { primary: '#06b6d4', secondary: '#22d3ee', accent: '#67e8f9' },
+      'sci-fi': { primary: '#06b6d4', secondary: '#22d3ee', accent: '#67e8f9' },
       romance: { primary: '#ec4899', secondary: '#f472b6', accent: '#fbcfe8' },
       mystery: { primary: '#1e293b', secondary: '#334155', accent: '#64748b' },
       horror: { primary: '#7c2d12', secondary: '#9a3412', accent: '#c2410c' },

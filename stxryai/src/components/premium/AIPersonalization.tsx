@@ -324,6 +324,7 @@ Avoid: ${profile.dislikedElements.join(', ')}`;
           </motion.button>
         </div>
       </div>
+      </div>
     </PremiumGate>
   );
 }

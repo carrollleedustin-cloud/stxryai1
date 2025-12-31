@@ -18,9 +18,7 @@ import {
   PetTraits,
 } from '@/types/pet';
 import { usePet } from '@/contexts/PetContext';
-import { getVisualEffects } from '@/services/petPersonalizationService';
 import PetAccessoryRenderer from './PetAccessoryRenderer';
-import { useEffect, useState } from 'react';
 import {
   Heart,
   Zap,
