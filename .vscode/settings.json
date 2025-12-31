@@ -92,5 +92,5 @@
         "Invoke-Expression": false,
         "iex": false
     },
-    "codium.codeCompletion.enable": false
+    "codium.codeCompletion.enable": true
 }

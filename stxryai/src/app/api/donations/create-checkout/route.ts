@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { stripe } from '@/lib/stripe/server';
+import { getStripe } from '@/lib/stripe/server';
+export const runtime = 'nodejs';
 
 /**
  * Create a Stripe checkout session for donations
@@ -44,15 +45,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if Stripe is configured
-    if (!process.env.STRIPE_SECRET_KEY) {
+    // Create a one-time payment checkout session
+    const stripe = getStripe();
+    if (!stripe) {
       return NextResponse.json(
         { error: 'Payment processing is not configured' },
         { status: 503 }
       );
     }
-
-    // Create a one-time payment checkout session
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],

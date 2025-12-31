@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createPortalSession } from '@/lib/stripe/server';
+import { createPortalSession, getStripe } from '@/lib/stripe/server';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,6 +55,9 @@ export async function POST(request: NextRequest) {
     const returnUrl = body.returnUrl || `${process.env.NEXT_PUBLIC_APP_URL}/settings`;
 
     // Create portal session
+    if (!getStripe()) {
+      return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
+    }
     const session = await createPortalSession({
       customerId: userData.stripe_customer_id,
       returnUrl,

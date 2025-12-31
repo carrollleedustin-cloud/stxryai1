@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { stripe } from '@/lib/stripe/server';
+import { getStripe } from '@/lib/stripe/server';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,6 +52,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check subscription status
+    const stripe = getStripe();
+    if (!stripe) {
+      return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
+    }
     const currentSubscription = await stripe.subscriptions.retrieve(
       userData.stripe_subscription_id
     );

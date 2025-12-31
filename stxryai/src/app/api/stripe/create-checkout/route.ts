@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createCheckoutSession, getOrCreateCustomer, SUBSCRIPTION_TIERS, StripeTier } from '@/lib/stripe/server';
+import { createCheckoutSession, getOrCreateCustomer, SUBSCRIPTION_TIERS, StripeTier, getStripe } from '@/lib/stripe/server';
+export const runtime = 'nodejs';
 
 // Map frontend tier names to Stripe tier keys
 function mapTierToStripeTier(tier: string): StripeTier | null {
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Stripe is configured
-    if (!process.env.STRIPE_SECRET_KEY) {
+    if (!getStripe()) {
       return NextResponse.json(
         { error: 'Stripe is not configured' },
         { status: 503 }

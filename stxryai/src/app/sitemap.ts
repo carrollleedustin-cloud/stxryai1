@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
+export const dynamic = 'force-dynamic';
 
 /**
  * Dynamic sitemap generation for StxryAI
