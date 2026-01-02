@@ -11,6 +11,7 @@ import DimensionalCard from '@/components/void/DimensionalCard';
 import SpectralButton from '@/components/void/SpectralButton';
 import TemporalReveal, { StaggerContainer, StaggerItem } from '@/components/void/TemporalReveal';
 import ParticleField, { AnimatedCounter, TypewriterText } from '@/components/void/ParticleField';
+import { AuroraBackdrop, NoiseOverlay, BentoGrid, BentoItem, GlassCard, NarrativeConstellation } from '@/components/void/AdvancedEffects';
 import StoryPetDisplay from '@/components/pet/StoryPetDisplay';
 import { 
   BookOpen, 
@@ -326,7 +327,9 @@ export default function DashboardInteractive() {
 
   return (
     <div className="min-h-screen bg-void-absolute">
+      <NoiseOverlay opacity={0.03} />
       <VoidBackground variant="default" />
+      <AuroraBackdrop className="opacity-30" />
       <ParticleField particleCount={40} color="rgba(123, 44, 191, 0.3)" />
       <AmbientOrbs />
       <EtherealNav />
@@ -391,52 +394,136 @@ export default function DashboardInteractive() {
             </div>
           </motion.div>
           
-          {/* Stats Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
-          >
-            {[
-              { icon: BookOpen, value: stats.storiesRead, label: 'Stories Read', color: 'spectral-cyan', trend: '+3' },
-              { icon: Zap, value: stats.choicesMade, label: 'Choices Made', color: 'spectral-violet', trend: '+24' },
-              { icon: Flame, value: stats.readingStreak, label: 'Day Streak', color: 'spectral-rose', trend: null, suffix: ' 🔥' },
-              { icon: Clock, value: stats.totalReadingTime, label: 'Hours Read', color: 'green-400', trend: '+2h' },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.25 + index * 0.05 }}
-              >
-                <HolographicCard className="p-5" glowColor={stat.color}>
+          {/* Stats & Featured Bento Grid */}
+          <BentoGrid className="mb-10 p-0">
+            <BentoItem size="medium" className="p-0 border-0 overflow-visible">
+               <HolographicCard className="p-5 h-full" glowColor="spectral-cyan">
                   <div className="flex items-start justify-between mb-4">
-                    <div 
-                      className="w-11 h-11 rounded-xl flex items-center justify-center"
-                      style={{ background: `var(--${stat.color})15` }}
-                    >
-                      <stat.icon className="w-5 h-5" style={{ color: `var(--${stat.color})` }} />
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-spectral-cyan/15">
+                      <BookOpen className="w-5 h-5 text-spectral-cyan" />
                     </div>
-                    
-                    {stat.trend && (
-                      <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-400/10 text-green-400 text-xs font-medium">
-                        <TrendingUp className="w-3 h-3" />
-                        {stat.trend}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-green-400/10 text-green-400 text-xs font-medium">
+                      <TrendingUp className="w-3 h-3" />
+                      +3
+                    </div>
                   </div>
-                  
-                  <div className="font-display text-3xl text-white mb-1">
-                    <AnimatedCounter end={stat.value} duration={2} suffix={stat.suffix || ''} />
+                  <div className="font-display text-4xl text-white mb-1">
+                    <AnimatedCounter end={stats.storiesRead} duration={2} />
                   </div>
                   <div className="text-xs font-ui tracking-wide uppercase text-ghost-500">
-                    {stat.label}
+                    Stories Read
                   </div>
-                </HolographicCard>
-              </motion.div>
-            ))}
-          </motion.div>
+               </HolographicCard>
+            </BentoItem>
+
+            <BentoItem size="small" className="p-0 border-0">
+               <HolographicCard className="p-5 h-full" glowColor="spectral-rose">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-spectral-rose/15">
+                      <Flame className="w-5 h-5 text-spectral-rose" />
+                    </div>
+                  </div>
+                  <div className="font-display text-4xl text-white mb-1">
+                    {stats.readingStreak} 🔥
+                  </div>
+                  <div className="text-xs font-ui tracking-wide uppercase text-ghost-500">
+                    Streak
+                  </div>
+               </HolographicCard>
+            </BentoItem>
+
+            <BentoItem size="small" className="p-0 border-0">
+               <HolographicCard className="p-5 h-full" glowColor="spectral-violet">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-spectral-violet/15">
+                      <Zap className="w-5 h-5 text-spectral-violet" />
+                    </div>
+                  </div>
+                  <div className="font-display text-4xl text-white mb-1">
+                    <AnimatedCounter end={stats.choicesMade} duration={2} />
+                  </div>
+                  <div className="text-xs font-ui tracking-wide uppercase text-ghost-500">
+                    Choices
+                  </div>
+               </HolographicCard>
+            </BentoItem>
+
+            <BentoItem size="tall" className="p-0 border-0 overflow-hidden">
+               <GlassCard className="h-full relative overflow-hidden flex flex-col justify-end p-6 border-0" hoverEffect={false}>
+                  <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-t from-void-black to-transparent z-10" />
+                    <motion.div 
+                      animate={{ 
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, 0]
+                      }}
+                      transition={{ duration: 20, repeat: Infinity }}
+                      className="w-full h-full bg-[url('https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-40"
+                    />
+                  </div>
+                  <div className="relative z-20">
+                    <h3 className="font-display text-lg text-white mb-2">Narrative Core</h3>
+                    <p className="text-xs text-ghost-400 mb-4 leading-relaxed">
+                      Your AI companion is analyzing your latest story ripples.
+                    </p>
+                    <SpectralButton size="sm" variant="cyan" fullWidth>
+                      View Intelligence
+                    </SpectralButton>
+                  </div>
+               </GlassCard>
+            </BentoItem>
+
+            <BentoItem size="wide" className="p-0 border-0 overflow-hidden">
+               <HolographicCard className="p-6 h-full flex items-center justify-between" glowColor="spectral-cyan">
+                  <div className="flex gap-6 items-center">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-spectral-cyan/30 to-spectral-violet/30 flex items-center justify-center border border-white/10 shrink-0">
+                      <Sparkles className="w-10 h-10 text-white animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-xl text-white mb-1">Adventure Awaits</h3>
+                      <p className="text-sm text-ghost-400">Jump back into your most recent narrative journey.</p>
+                    </div>
+                  </div>
+                  <SpectralButton 
+                    onClick={() => continueReading[0] && router.push(`/story-reader?storyId=${continueReading[0].story_id}`)}
+                    variant="cyan"
+                  >
+                    Resume Story
+                  </SpectralButton>
+               </HolographicCard>
+            </BentoItem>
+            <BentoItem size="large" className="p-0 border-0 overflow-hidden">
+               <HolographicCard className="p-6 h-full" glowColor="spectral-violet">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-display text-lg text-white flex items-center gap-2">
+                      <Compass className="w-5 h-5 text-spectral-violet" />
+                      Narrative Constellation
+                    </h3>
+                    <div className="text-[10px] font-ui tracking-widest uppercase text-ghost-500">Live View</div>
+                  </div>
+                  
+                  <NarrativeConstellation 
+                    nodes={[
+                      { id: '1', x: 20, y: 50, label: 'The Awakening', type: 'choice' },
+                      { id: '2', x: 50, y: 30, label: 'Shadow Path', type: 'choice' },
+                      { id: '3', x: 50, y: 70, label: 'Light Path', type: 'choice' },
+                      { id: '4', x: 80, y: 50, label: 'Convergence', type: 'outcome' },
+                    ]}
+                    connections={[
+                      { from: '1', to: '2' },
+                      { from: '1', to: '3' },
+                      { from: '2', to: '4' },
+                      { from: '3', to: '4' },
+                    ]}
+                  />
+                  
+                  <div className="mt-6 flex items-center justify-between">
+                    <p className="text-xs text-ghost-400">4 active narrative paths detected.</p>
+                    <SpectralButton size="sm" variant="ghost">Explore Map</SpectralButton>
+                  </div>
+               </HolographicCard>
+            </BentoItem>
+          </BentoGrid>
           
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Main Content */}

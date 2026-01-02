@@ -43,6 +43,7 @@ const ModDashboardPage: React.FC = () => {
     setIsLoading(true);
     try {
       const supabase = createClient();
+      if (!supabase) return;
       
       // Load reports
       const { data: reportsData } = await supabase
@@ -87,6 +88,9 @@ const ModDashboardPage: React.FC = () => {
 
   const handleReportAction = async (reportId: string, action: 'approve' | 'reject' | 'investigate') => {
     try {
+      const supabase = createClient();
+      if (!supabase) return;
+
       const statusMap = {
         approve: 'resolved',
         reject: 'dismissed',
@@ -106,6 +110,9 @@ const ModDashboardPage: React.FC = () => {
 
   const handleContentAction = async (storyId: string, action: 'approve' | 'reject' | 'flag') => {
     try {
+      const supabase = createClient();
+      if (!supabase) return;
+
       const statusMap = {
         approve: 'published',
         reject: 'rejected',

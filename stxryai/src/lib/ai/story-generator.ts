@@ -3,6 +3,8 @@
  * Powered by OpenAI GPT-4 for generating interactive stories
  */
 
+import { generateCompletion } from './client';
+
 interface StoryPrompt {
   genre: string;
   theme?: string;
@@ -239,67 +241,57 @@ Create a detailed chapter-by-chapter outline. Return as JSON array with: chapter
 
   private buildSystemPrompt(prompt: StoryPrompt): string {
     return `You are an expert interactive fiction writer specializing in ${prompt.genre} stories.
-You create engaging, choice-driven narratives with meaningful consequences.
-Your stories have ${prompt.tone || 'balanced'} tone and are suitable for ${prompt.difficulty || 'medium'} difficulty readers.
-Always return responses in valid JSON format.`;
+Create engaging, choice-driven narratives with meaningful consequences.
+Tone: ${prompt.tone || 'balanced'}. Difficulty: ${prompt.difficulty || 'medium'}.
+Output ONLY valid JSON.`;
   }
 
   private buildUserPrompt(prompt: StoryPrompt): string {
     const parts = [
-      `Generate an interactive ${prompt.length || 'medium'}-length story with the following parameters:`,
-      `Genre: ${prompt.genre}`,
+      `Generate an interactive ${prompt.length || 'medium'} story.`,
+      `Genre: ${prompt.genre}.`,
     ];
 
-    if (prompt.theme) parts.push(`Theme: ${prompt.theme}`);
-    if (prompt.characters?.length) parts.push(`Characters: ${prompt.characters.join(', ')}`);
-    if (prompt.setting) parts.push(`Setting: ${prompt.setting}`);
-    if (prompt.tone) parts.push(`Tone: ${prompt.tone}`);
+    if (prompt.theme) parts.push(`Theme: ${prompt.theme}.`);
+    if (prompt.characters?.length) parts.push(`Characters: ${prompt.characters.join(', ')}.`);
+    if (prompt.setting) parts.push(`Setting: ${prompt.setting}.`);
 
     parts.push(`
-Create a story with:
-- A compelling title and description
-- 3-5 chapters with branching paths
+Requirements:
+- 3-5 chapters, branching paths
 - 3-4 meaningful choices per chapter
-- Consistent world-building and character development
+- Consistent world/characters
 
-Return as JSON with structure: { title, description, chapters: [{ title, content, choices: [{ text, consequence }] }], metadata }
-`);
+JSON format:
+{
+  "title": "...",
+  "description": "...",
+  "chapters": [
+    {
+      "title": "...",
+      "content": "...",
+      "choices": [{"text": "...", "consequence": "..."}]
+    }
+  ],
+  "metadata": {"genre": "...", "tags": ["..."]}
+}`);
 
     return parts.join('\n');
   }
 
   private async callOpenAI(
     messages: Array<{ role: string; content: string }>,
-    model: string = 'gpt-4-turbo-preview'
+    model: string = 'gpt-4o'
   ): Promise<string> {
-    if (!this.apiKey) {
-      // Fallback to mock data for development
-      return this.getMockResponse(messages);
-    }
-
     try {
-      const response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages,
-          temperature: 0.8,
-          max_tokens: 4000,
-        }),
+      const response = await generateCompletion({
+        messages: messages as any,
+        model,
+        temperature: 0.8,
       });
-
-      if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
+      return response.content;
     } catch (error) {
-      console.error('OpenAI API call failed:', error);
+      console.error('AI completion failed:', error);
       return this.getMockResponse(messages);
     }
   }

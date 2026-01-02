@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/client';
+import { PersistentNarrativeEngine } from './persistentNarrativeEngine';
 
 export interface AIWritingSuggestion {
   id: string;
@@ -93,8 +94,20 @@ export interface WritingAssistantSession {
   updatedAt: string;
 }
 
+export interface AIPuzzle {
+  id: string;
+  type: 'riddle' | 'logic' | 'cipher' | 'choice-consequence';
+  question: string;
+  options?: string[];
+  answer: string;
+  hint: string;
+  rewardXP: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+}
+
 export class AIStoryAssistantService {
   private supabase = createClient();
+  private narrativeEngine = new PersistentNarrativeEngine();
 
   // ========================================
   // WRITING SUGGESTIONS
@@ -109,10 +122,11 @@ export class AIStoryAssistantService {
     context: {
       storyId?: string;
       chapterId?: string;
+      seriesId?: string;
       suggestionTypes?: AIWritingSuggestion['suggestionType'][];
     }
   ): Promise<AIWritingSuggestion[]> {
-    const suggestionTypes = context.suggestionTypes || ['plot', 'character', 'dialogue', 'description', 'pacing', 'tone', 'style'];
+    const suggestionTypes = context.suggestionTypes || ['plot', 'character', 'dialogue', 'description', 'pacing', 'tone', 'style', 'continuity'];
     
     // Check if AI is configured
     if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
@@ -120,21 +134,52 @@ export class AIStoryAssistantService {
       return [];
     }
 
+    // Get narrative context if seriesId is provided
+    let narrativeContext = '';
+    if (context.seriesId) {
+      try {
+        const [characters, worldElements] = await Promise.all([
+          this.narrativeEngine.getSeriesCharacters(context.seriesId),
+          this.narrativeEngine.getWorldElements(context.seriesId)
+        ]);
+
+        if (characters.length > 0) {
+          narrativeContext += `\nCharacters in this series:\n${characters.map(c => `- ${c.name}: ${c.shortDescription}`).join('\n')}\n`;
+        }
+
+        if (worldElements.length > 0) {
+          narrativeContext += `\nWorld Building Elements:\n${worldElements.map(w => `- ${w.name} (${w.elementType}): ${w.shortDescription}`).join('\n')}\n`;
+          
+          const locations = worldElements.filter(w => w.elementType === 'location');
+          if (locations.length > 0) {
+            const locationDetails = await Promise.all(locations.map(l => this.narrativeEngine.getLocationDetails(l.id)));
+            const validDetails = locationDetails.filter((d): d is any => d !== null);
+            if (validDetails.length > 0) {
+              narrativeContext += `\nLocation Specifics:\n${validDetails.map(d => `- Terrain: ${d.terrain}, Climate: ${d.climate}`).join('\n')}\n`;
+            }
+          }
+        }
+
+        // Add Active Ripples to context
+        const ripples = await this.narrativeEngine.getActiveRipples(context.seriesId);
+        if (ripples.length > 0) {
+          narrativeContext += `\nActive World Ripples (Long-term consequences):\n${ripples.map(r => `- ${r.title} (Intensity: ${r.intensity}): ${r.description}`).join('\n')}\n`;
+        }
+      } catch (e) {
+        console.error('Error fetching narrative context:', e);
+      }
+    }
+
     try {
       // Import AI client
       const { generateCompletion } = await import('@/lib/ai/client');
       
-      const systemPrompt = `You are an expert writing assistant. Analyze the provided text and generate specific, actionable writing suggestions. 
-Focus on: ${suggestionTypes.join(', ')}. For each suggestion, provide:
-1. The type of suggestion
-2. The original text (if applicable)
-3. Suggested improvement
-4. Brief reasoning
-5. Confidence score (0-1)
+      const systemPrompt = `Analyze text and provide actionable suggestions. 
+Focus: ${suggestionTypes.join(', ')}. 
+${narrativeContext ? `Series Context: ${narrativeContext}` : ''}
+Return ONLY JSON array of objects: [{suggestionType, originalText, suggestedText, reasoning, confidenceScore}]`;
 
-Return suggestions as a JSON array.`;
-
-      const userPrompt = `Analyze this text and provide writing suggestions:\n\n${content}\n\nFocus on: ${suggestionTypes.join(', ')}`;
+      const userPrompt = `Analyze:\n\n${content}`;
 
       const response = await generateCompletion({
         messages: [
@@ -143,6 +188,7 @@ Return suggestions as a JSON array.`;
         ],
         temperature: 0.7,
         maxTokens: 2000,
+        model: 'gpt-4o',
       });
 
       // Parse AI response
@@ -190,7 +236,7 @@ Return suggestions as a JSON array.`;
             original_text: s.originalText,
             suggested_text: s.suggestedText,
             suggestion_context: s.suggestionContext,
-            ai_model: 'gpt-4',
+            ai_model: 'gpt-4o',
             confidence_score: s.confidenceScore,
             reasoning: s.reasoning,
             status: 'pending',
@@ -291,14 +337,8 @@ Return suggestions as a JSON array.`;
       // Import AI client
       const { generateCompletion } = await import('@/lib/ai/client');
       
-      const systemPrompt = `You are an expert story analyst (Plot Doctor). Analyze the provided story content for:
-- Plot holes and inconsistencies
-- Character development issues
-- Pacing problems
-- Narrative structure issues
-- Strengths and well-executed elements
-
-Return a JSON object with:
+      const systemPrompt = `Narrative analyst. Analyze for issues, inconsistencies, pacing.
+Return ONLY JSON:
 {
   "issues": [{"type": "...", "severity": "low|medium|high|critical", "description": "...", "location": "..."}],
   "suggestions": [{"type": "...", "description": "...", "impact": "..."}],
@@ -307,7 +347,7 @@ Return a JSON object with:
   "overallFeedback": "..."
 }`;
 
-      const userPrompt = `Analyze this ${analysisType} for plot issues, inconsistencies, and provide feedback:\n\n${content}`;
+      const userPrompt = `Analyze ${analysisType}:\n\n${content}`;
 
       const response = await generateCompletion({
         messages: [
@@ -316,6 +356,7 @@ Return a JSON object with:
         ],
         temperature: 0.5, // Lower temperature for more consistent analysis
         maxTokens: 3000,
+        model: 'gpt-4o',
       });
 
       // Parse AI response
@@ -358,7 +399,7 @@ Return a JSON object with:
           severity_level: (analysisResult.issues || []).some((i: any) => i.severity === 'critical' || i.severity === 'high') 
             ? 'high' 
             : (analysisResult.issues || []).length > 0 ? 'medium' : 'low',
-          ai_model: 'gpt-4',
+          ai_model: 'gpt-4o',
           analysis_parameters: {},
           tokens_used: response.usage.totalTokens,
         })
@@ -424,14 +465,9 @@ Return a JSON object with:
         synopsis: 'Generate story synopses',
       };
 
-      const systemPrompt = `You are a creative writing assistant. Generate ${typePrompts[generationType] || 'creative ideas'}.
+      const systemPrompt = `Generate creative ${typePrompts[generationType] || 'writing ideas'}.
 ${constraints ? `Constraints: ${JSON.stringify(constraints)}` : ''}
-
-Return a JSON array of ideas, each with:
-- title/name
-- description
-- key elements
-- potential use cases`;
+Return ONLY JSON array of objects: [{title, description, keyElements[], potentialUseCases[]}]`;
 
       const userPrompt = prompt || `Generate 5 ${generationType.replace('_', ' ')} ideas`;
 
@@ -442,6 +478,7 @@ Return a JSON array of ideas, each with:
         ],
         temperature: 0.9, // Higher temperature for more creative ideas
         maxTokens: 2000,
+        model: 'gpt-4o-mini',
       });
 
       // Parse AI response
@@ -480,7 +517,7 @@ Return a JSON array of ideas, each with:
           constraints: constraints || {},
           generated_ideas: generatedIdeas,
           idea_count: generatedIdeas.length,
-          ai_model: 'gpt-4',
+          ai_model: 'gpt-4o-mini',
           generation_parameters: {
             temperature: 0.9,
             maxTokens: 2000,
@@ -627,6 +664,70 @@ Return a JSON array of ideas, each with:
 
     if (error) throw error;
     return this.mapSession(data);
+  }
+
+  // ========================================
+  // NARRATIVE PUZZLES
+  // ========================================
+
+  /**
+   * Generates a narrative puzzle based on the current story content
+   */
+  async generatePuzzle(
+    storyContent: string,
+    difficulty: 'easy' | 'medium' | 'hard' = 'medium'
+  ): Promise<AIPuzzle> {
+    const prompt = `
+      Based on the following story content, generate a narrative puzzle for the reader.
+      The puzzle should be relevant to the plot or characters.
+      
+      STORY CONTENT:
+      ${storyContent.substring(0, 3000)}
+
+      DIFFICULTY: ${difficulty}
+
+      Respond with a JSON object:
+      {
+        "type": "riddle" | "logic" | "cipher" | "choice-consequence",
+        "question": "The puzzle text",
+        "options": ["option 1", "option 2", "option 3", "option 4"], // only if appropriate for type
+        "answer": "The correct answer",
+        "hint": "A helpful hint",
+        "rewardXP": 50-200
+      }
+    `;
+
+    try {
+      const { generateCompletion } = await import('@/lib/ai/client');
+      const completion = await generateCompletion(
+        'gpt-4o-mini',
+        [
+          { role: 'system', content: 'You are a master puzzle designer for interactive stories.' },
+          { role: 'user', content: prompt }
+        ],
+        { temperature: 0.7, response_format: { type: 'json_object' } }
+      );
+
+      const data = JSON.parse(completion.message.content || '{}');
+      
+      return {
+        id: `puzzle-${Date.now()}`,
+        ...data,
+        difficulty
+      };
+    } catch (error) {
+      console.error('Error generating puzzle:', error);
+      // Fallback puzzle
+      return {
+        id: `puzzle-fallback-${Date.now()}`,
+        type: 'riddle',
+        question: 'What has keys but no locks, and space but no room?',
+        answer: 'A keyboard',
+        hint: 'You use it to write stories.',
+        rewardXP: 50,
+        difficulty: 'easy'
+      };
+    }
   }
 
   // ========================================

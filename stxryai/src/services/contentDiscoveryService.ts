@@ -202,7 +202,7 @@ class ContentDiscoveryService {
       const trendingScore = 
         (recentPlays * SCORING_WEIGHTS.trending.recentPlays) +
         ((story.completion_rate || 0) * SCORING_WEIGHTS.trending.completionRate) +
-        ((story.average_rating || 0) / 5 * SCORING_WEIGHTS.trending.rating) +
+        ((story.rating || 0) / 5 * SCORING_WEIGHTS.trending.rating) +
         (Math.min(recentRatings / 10, 1) * SCORING_WEIGHTS.trending.ratingVelocity);
 
       const trendingReason = this.getTrendingReason(story, recentPlays, recentRatings);
@@ -249,7 +249,7 @@ class ContentDiscoveryService {
       `)
       .eq('is_published', true)
       .not('id', 'in', `(${preferences.readingHistory.join(',') || 'null'})`)
-      .order('average_rating', { ascending: false })
+      .order('rating', { ascending: false })
       .limit(100);
 
     if (error) {
@@ -264,7 +264,7 @@ class ContentDiscoveryService {
         (scores.genreMatch * SCORING_WEIGHTS.recommendation.genreMatch) +
         (scores.authorFollow * SCORING_WEIGHTS.recommendation.authorFollow) +
         (scores.similarToLiked * SCORING_WEIGHTS.recommendation.similarToLiked) +
-        (scores.rating * SCORING_WEIGHTS.recommendation.rating) +
+        ((story.rating || 0) / 5 * SCORING_WEIGHTS.recommendation.rating) +
         (scores.freshness * SCORING_WEIGHTS.recommendation.freshness);
 
       return {
@@ -494,7 +494,7 @@ class ContentDiscoveryService {
       dbQuery = dbQuery.in('genre', filters.genres);
     }
     if (filters.minRating) {
-      dbQuery = dbQuery.gte('average_rating', filters.minRating);
+      dbQuery = dbQuery.gte('rating', filters.minRating);
     }
     if (filters.maxDuration) {
       dbQuery = dbQuery.lte('estimated_duration', filters.maxDuration);
@@ -506,7 +506,7 @@ class ContentDiscoveryService {
     // Apply sorting
     switch (filters.sortBy) {
       case 'rating':
-        dbQuery = dbQuery.order('average_rating', { ascending: false });
+        dbQuery = dbQuery.order('rating', { ascending: false });
         break;
       case 'newest':
         dbQuery = dbQuery.order('created_at', { ascending: false });
@@ -645,7 +645,7 @@ class ContentDiscoveryService {
     if (descLower.includes(queryLower)) score += 0.3;
 
     // Boost by rating
-    score *= 1 + (story.average_rating || 0) / 10;
+    score *= 1 + (story.rating || 0) / 10;
 
     return score;
   }
@@ -692,7 +692,7 @@ class ContentDiscoveryService {
       reasons.push('From an author you follow');
     }
     if (scores.rating > 0.8) {
-      reasons.push(`Highly rated (${story.average_rating?.toFixed(1)}★)`);
+      reasons.push(`Highly rated (${story.rating?.toFixed(1)}★)`);
     }
     if (scores.freshness > 0.8) {
       reasons.push('New release');
@@ -719,7 +719,7 @@ class ContentDiscoveryService {
       id: story.id,
       title: story.title,
       description: story.description,
-      coverImageUrl: story.cover_image_url,
+      coverImageUrl: story.cover_image,
       genre: story.genre,
       author: {
         id: story.users?.id || story.author_id,
@@ -727,7 +727,7 @@ class ContentDiscoveryService {
         avatarUrl: story.users?.avatar_url,
       },
       stats: {
-        rating: story.average_rating || 0,
+        rating: story.rating || 0,
         ratingCount: story.rating_count || 0,
         playCount: story.play_count || 0,
         completionRate: story.completion_rate || 0,
@@ -749,7 +749,7 @@ class ContentDiscoveryService {
       `)
       .eq('genre', genre)
       .eq('is_published', true)
-      .order('average_rating', { ascending: false })
+      .order('rating', { ascending: false })
       .limit(1);
 
     if (error || !stories || stories.length === 0) return null;

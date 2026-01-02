@@ -4,6 +4,212 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
 
 /**
+ * GLASS CARD
+ * A refined glassmorphism card with noise texture and light streaks
+ */
+export function GlassCard({
+  children,
+  className = '',
+  intensity = 1,
+  hoverEffect = true,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  intensity?: number;
+  hoverEffect?: boolean;
+}) {
+  return (
+    <motion.div
+      className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl ${className}`}
+      whileHover={hoverEffect ? { 
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        y: -5
+      } : {}}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Grain/Noise Overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      
+      {/* Light Streak */}
+      <motion.div 
+        className="absolute -inset-[100%] opacity-20 pointer-events-none"
+        animate={{
+          rotate: [0, 360],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: "linear"
+        }}
+        style={{
+          background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent 20%, transparent 80%, rgba(255,255,255,0.1), transparent)',
+        }}
+      />
+
+      <div className="relative z-10 p-6">
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
+/**
+ * BENTO GRID
+ * A flexible grid layout for modern UI
+ */
+export function BentoGrid({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function BentoItem({
+  children,
+  className = '',
+  size = 'medium',
+}: {
+  children: React.ReactNode;
+  className?: string;
+  size?: 'small' | 'medium' | 'large' | 'tall' | 'wide';
+}) {
+  const sizeClasses = {
+    small: 'col-span-1 row-span-1',
+    medium: 'col-span-1 md:col-span-2 row-span-1',
+    large: 'col-span-1 md:col-span-2 row-span-2',
+    tall: 'col-span-1 row-span-2',
+    wide: 'col-span-1 md:col-span-3 row-span-1',
+  };
+
+  return (
+    <GlassCard className={`${sizeClasses[size]} ${className}`}>
+      {children}
+    </GlassCard>
+  );
+}
+
+/**
+ * NOISE OVERLAY
+ * A global or container-level noise texture
+ */
+export function NoiseOverlay({ opacity = 0.05 }: { opacity?: number }) {
+  return (
+    <div 
+      className="fixed inset-0 pointer-events-none z-[100] mix-blend-overlay"
+      style={{
+        opacity,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
+
+/**
+ * NARRATIVE CONSTELLATION
+ * A unique node-based visualization for story paths
+ */
+export function NarrativeConstellation({
+  nodes = [],
+  connections = [],
+  className = '',
+}: {
+  nodes?: { id: string; x: number; y: number; label: string; type?: 'choice' | 'event' | 'outcome' }[];
+  connections?: { from: string; to: string }[];
+  className?: string;
+}) {
+  return (
+    <div className={`relative w-full aspect-video bg-void-black/20 rounded-3xl overflow-hidden border border-white/5 ${className}`}>
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--spectral-cyan)" stopOpacity="0.2" />
+            <stop offset="50%" stopColor="var(--spectral-violet)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--spectral-cyan)" stopOpacity="0.2" />
+          </linearGradient>
+        </defs>
+        {connections.map((conn, i) => {
+          const from = nodes.find(n => n.id === conn.from);
+          const to = nodes.find(n => n.id === conn.to);
+          if (!from || !to) return null;
+          return (
+            <motion.line
+              key={`${conn.from}-${conn.to}`}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 1.5, delay: i * 0.2 }}
+              x1={`${from.x}%`}
+              y1={`${from.y}%`}
+              x2={`${to.x}%`}
+              y2={`${to.y}%`}
+              stroke="url(#lineGradient)"
+              strokeWidth="1"
+              strokeDasharray="4 4"
+            />
+          );
+        })}
+      </svg>
+
+      {nodes.map((node, i) => (
+        <motion.div
+          key={node.id}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ 
+            type: 'spring', 
+            stiffness: 260, 
+            damping: 20,
+            delay: i * 0.1 
+          }}
+          className="absolute group cursor-pointer"
+          style={{ left: `${node.x}%`, top: `${node.y}%`, transform: 'translate(-50%, -50%)' }}
+        >
+          <div className="relative">
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 4, repeat: Infinity }}
+              className={`w-3 h-3 rounded-full blur-[2px] ${
+                node.type === 'choice' ? 'bg-spectral-cyan' : 
+                node.type === 'outcome' ? 'bg-spectral-rose' : 'bg-spectral-violet'
+              }`}
+            />
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+              <div className="bg-void-black/80 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg text-[10px] font-ui uppercase tracking-widest text-white">
+                {node.label}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+      
+      {/* Background Star Field Effect */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-px h-px bg-white rounded-full"
+            initial={{ 
+              x: `${Math.random() * 100}%`, 
+              y: `${Math.random() * 100}%`,
+              opacity: Math.random() 
+            }}
+            animate={{ opacity: [0.2, 1, 0.2] }}
+            transition={{ duration: 2 + Math.random() * 3, repeat: Infinity }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
  * HOLOGRAPHIC CARD
  * A card with holographic shimmer and parallax tilt effects
  */
@@ -68,6 +274,8 @@ export function HolographicCard({
       }}
       whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      role="region"
+      aria-label="Interactive holographic card"
     >
       {/* Holographic gradient */}
       <motion.div
@@ -404,11 +612,13 @@ export function RevealOnScroll({
   direction = 'up',
   delay = 0,
   className = '',
+  threshold = 0.2,
 }: {
   children: React.ReactNode;
   direction?: 'up' | 'down' | 'left' | 'right';
   delay?: number;
   className?: string;
+  threshold?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -421,7 +631,7 @@ export function RevealOnScroll({
           observer.disconnect();
         }
       },
-      { threshold: 0.2 }
+      { threshold }
     );
 
     if (ref.current) {
@@ -685,7 +895,11 @@ export function RippleButton({
   };
 
   return (
-    <button className={`relative overflow-hidden ${className}`} onClick={handleClick}>
+    <button 
+      className={`relative overflow-hidden ${className}`} 
+      onClick={handleClick}
+      aria-label={typeof children === 'string' ? children : 'Interactive button'}
+    >
       {children}
       <AnimatePresence>
         {ripples.map((ripple) => (

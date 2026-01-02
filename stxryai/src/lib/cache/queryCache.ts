@@ -51,7 +51,19 @@ class QueryCache {
    * Get value from cache
    */
   get<T>(key: string): T | null {
-    const entry = this.cache.get(key) as CacheEntry<T> | undefined;
+    let entry = this.cache.get(key) as CacheEntry<T> | undefined;
+
+    // Fallback to localStorage for browser environments
+    if (!entry && typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem(`cache:${key}`);
+        if (stored) {
+          entry = JSON.parse(stored);
+        }
+      } catch (e) {
+        // Silently fail if localStorage is unavailable
+      }
+    }
     
     if (!entry) {
       return null;
@@ -75,11 +87,22 @@ class QueryCache {
       this.evictOldest();
     }
 
-    this.cache.set(key, {
+    const entry = {
       data,
       timestamp: Date.now(),
       ttl,
-    });
+    };
+
+    this.cache.set(key, entry);
+
+    // Persist to localStorage for AI results (which have longer keys)
+    if (typeof window !== 'undefined' && key.startsWith('ai:')) {
+      try {
+        localStorage.setItem(`cache:${key}`, JSON.stringify(entry));
+      } catch (e) {
+        // Silently fail if localStorage is full or unavailable
+      }
+    }
   }
 
   /**
@@ -87,6 +110,9 @@ class QueryCache {
    */
   invalidate(key: string): void {
     this.cache.delete(key);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(`cache:${key}`);
+    }
   }
 
   /**
@@ -99,6 +125,21 @@ class QueryCache {
         this.cache.delete(key);
       }
     }
+
+    // Also check localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key?.startsWith('cache:') && regex.test(key.replace('cache:', ''))) {
+            localStorage.removeItem(key);
+            i--; // Adjust index after removal
+          }
+        }
+      } catch (e) {
+        // Silently fail
+      }
+    }
   }
 
   /**
@@ -106,6 +147,19 @@ class QueryCache {
    */
   clear(): void {
     this.cache.clear();
+    if (typeof window !== 'undefined') {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key?.startsWith('cache:')) {
+            localStorage.removeItem(key);
+            i--;
+          }
+        }
+      } catch (e) {
+        // Silently fail
+      }
+    }
   }
 
   /**

@@ -203,7 +203,7 @@ export default function KidsZoneProfilePage() {
                   }`}
                   style={{
                     background: theme.color,
-                    ringColor: `${theme.color}40`,
+                    borderColor: `${theme.color}40`,
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

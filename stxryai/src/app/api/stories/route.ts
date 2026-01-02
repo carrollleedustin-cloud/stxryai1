@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         description,
         genre,
         difficulty: difficulty || 'beginner',
-        cover_image_url: coverImageUrl || null,
+        cover_image: coverImageUrl || null,
         is_premium: isPremium || false,
         estimated_duration: estimatedDuration || 30,
         is_published: false,

@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CharacterRelationshipWidget, CharacterRelationship } from './CharacterRelationshipWidget';
+import { PuzzleOverlay } from './PuzzleOverlay';
+import { aiStoryAssistantService, AIPuzzle } from '@/services/aiStoryAssistantService';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePet } from '@/contexts/PetContext';
 import { storyService } from '@/services/storyService';
@@ -28,7 +31,11 @@ import {
   Loader2,
   Bot,
   PawPrint,
+  Wind,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
+import { AuroraBackdrop, NoiseOverlay, GlassCard } from '@/components/void/AdvancedEffects';
 
 /**
  * STORY READER INTERACTIVE
@@ -70,6 +77,16 @@ export default function StoryReaderInteractive() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [theme, setTheme] = useState<'void' | 'sepia' | 'light'>('void');
   const [activeParagraph, setActiveParagraph] = useState(0);
+  const [zenMode, setZenMode] = useState(false);
+  const [ambientIntensity, setAmbientIntensity] = useState(0.5);
+  
+  // Character Relationships State
+  const [characterRelationships, setCharacterRelationships] = useState<CharacterRelationship[]>([]);
+  const [showRelationships, setShowRelationships] = useState(false);
+  
+  // Puzzle State
+  const [currentPuzzle, setCurrentPuzzle] = useState<AIPuzzle | null>(null);
+  const [showPuzzle, setShowPuzzle] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
@@ -108,6 +125,20 @@ export default function StoryReaderInteractive() {
         userProgressService.getUserProgress(user.id, storyId),
         userProgressService.isChapterBookmarked(user.id, ''),
       ]);
+
+      // Mock relationships for now - in production this would come from persistentNarrativeEngine
+      if (storyData) {
+        setCharacterRelationships([
+          { 
+            id: 'char-1', 
+            name: 'Lyra', 
+            dynamic: 'Mysterious Guide', 
+            affinity: 65, 
+            status: 'Friend',
+            lastEncounter: 'Chapter 1' 
+          }
+        ]);
+      }
       
       setStory(storyData);
       setChapters(chaptersData || []);
@@ -236,6 +267,19 @@ export default function StoryReaderInteractive() {
   
   const handleChoiceSelect = async (choice: any) => {
     if (!user || !profile) return;
+
+    // 10% chance to trigger a puzzle before proceeding
+    if (Math.random() < 0.1 && !showPuzzle) {
+      try {
+        const puzzle = await aiStoryAssistantService.generatePuzzle(currentChapter.content);
+        setCurrentPuzzle(puzzle);
+        setShowPuzzle(true);
+        // We'll proceed with the choice AFTER the puzzle is closed/solved
+        return;
+      } catch (err) {
+        console.error('Failed to generate puzzle:', err);
+      }
+    }
     
     if (profile.daily_choices_used >= profile.daily_choice_limit) {
       alert('You have reached your daily choice limit. Upgrade to premium for unlimited choices!');
@@ -403,7 +447,22 @@ export default function StoryReaderInteractive() {
   }
   
   return (
-    <div className={`min-h-screen ${currentTheme.bg} transition-colors duration-500`}>
+    <div className={`min-h-screen ${currentTheme.bg} transition-colors duration-500 overflow-hidden relative`}>
+      {/* Background Effects */}
+      <AnimatePresence>
+        {zenMode && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-0 pointer-events-none"
+          >
+            <AuroraBackdrop className="opacity-40" />
+            <NoiseOverlay opacity={0.03} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Reading Progress Bar */}
       <div
         className="fixed top-0 left-0 h-[2px] z-50 transition-all duration-100"
@@ -467,6 +526,28 @@ export default function StoryReaderInteractive() {
                   </button>
                 )}
                 <button
+                  onClick={() => setShowRelationships(!showRelationships)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    showRelationships 
+                      ? 'text-spectral-violet bg-spectral-violet/10' 
+                      : theme === 'light' ? 'text-[#6b4423]/60 hover:text-[#6b4423] hover:bg-[#6b4423]/5' : 'text-text-tertiary hover:text-text-primary hover:bg-void-mist'
+                  }`}
+                  title="Relationships"
+                >
+                  <Users className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setZenMode(!zenMode)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    zenMode 
+                      ? 'text-spectral-cyan bg-spectral-cyan/10' 
+                      : theme === 'light' ? 'text-[#6b4423]/60 hover:text-[#6b4423] hover:bg-[#6b4423]/5' : 'text-text-tertiary hover:text-text-primary hover:bg-void-mist'
+                  }`}
+                  title="Zen Mode"
+                >
+                  {zenMode ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+                <button
                   onClick={handleBookmark}
                   className={`p-2 rounded-lg transition-colors ${
                     isBookmarked 
@@ -494,6 +575,47 @@ export default function StoryReaderInteractive() {
         )}
       </AnimatePresence>
       
+      {/* Relationships Sidebar */}
+      <AnimatePresence>
+        {showRelationships && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRelationships(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className={`fixed top-0 right-0 bottom-0 w-full max-w-sm z-[70] shadow-2xl p-6 overflow-y-auto ${
+                theme === 'light' ? 'bg-[#f5f1e8]' : 'bg-void-absolute border-l border-membrane'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-8">
+                <h2 className={`font-display text-xl tracking-wide ${currentTheme.text}`}>
+                  Narrative Intelligence
+                </h2>
+                <button
+                  onClick={() => setShowRelationships(false)}
+                  className={`p-2 rounded-lg ${theme === 'light' ? 'hover:bg-[#6b4423]/5' : 'hover:bg-void-mist'}`}
+                >
+                  <ChevronLeft className="w-6 h-6 rotate-180" />
+                </button>
+              </div>
+
+              <CharacterRelationshipWidget 
+                characters={characterRelationships} 
+                theme={theme} 
+              />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Settings Panel */}
       <AnimatePresence>
         {showSettings && (
@@ -590,6 +712,22 @@ export default function StoryReaderInteractive() {
         )}
       </AnimatePresence>
       
+      {/* Puzzle Overlay */}
+      {showPuzzle && currentPuzzle && (
+        <PuzzleOverlay
+          puzzle={currentPuzzle}
+          onSolve={(xp) => {
+            // Reward XP (could call a service here)
+            console.log(`Earned ${xp} XP!`);
+          }}
+          onClose={() => {
+            setShowPuzzle(false);
+            // Optional: Auto-select choice after puzzle if needed, 
+            // but usually we want user to see the content again
+          }}
+        />
+      )}
+
       {/* Main Content */}
       <main
         ref={contentRef}

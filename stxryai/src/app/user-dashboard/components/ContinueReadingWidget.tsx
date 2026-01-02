@@ -18,7 +18,7 @@ export default function ContinueReadingWidget({ progress, onClick }: ContinueRea
     >
       <div className="relative h-32">
         <AppImage
-          src={story?.cover_image_url || ''}
+          src={story?.cover_image || ''}
           alt={`Cover for ${story?.title || 'Unknown Story'}`}
           className="w-full h-full object-cover"
         />

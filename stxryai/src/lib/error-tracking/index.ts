@@ -17,6 +17,7 @@ export interface ErrorContext {
   extra?: Record<string, unknown>;
   tags?: Record<string, string>;
   level?: 'fatal' | 'error' | 'warning' | 'info' | 'debug';
+  contexts?: Record<string, any>;
 }
 
 interface BreadcrumbData {
@@ -108,7 +109,7 @@ class ErrorTrackingService {
       type: level,
       source: typeof window !== 'undefined' ? 'client' : 'server',
       userId: context?.userId || this.userId || undefined,
-      metadata: { ...context?.extra, tags: context?.tags },
+      metadata: { ...context?.extra, ...context?.contexts, tags: context?.tags },
     });
   }
 

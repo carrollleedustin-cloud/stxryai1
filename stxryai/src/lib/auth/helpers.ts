@@ -26,7 +26,7 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
     .eq('id', user.id)
     .single();
 
-  return profile as UserProfile | null;
+  return (profile as any) as UserProfile | null;
 }
 
 // Require authentication (redirect if not authenticated)

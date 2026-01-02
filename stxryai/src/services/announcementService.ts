@@ -12,6 +12,7 @@ export interface Announcement {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  readBy: string[];
   metadata: {
     viewCount?: number;
     dismissCount?: number;

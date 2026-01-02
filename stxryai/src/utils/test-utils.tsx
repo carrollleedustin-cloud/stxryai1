@@ -262,7 +262,7 @@ export const mockAnimations = () => {
         {},
         {
           get: (_, prop) => {
-            return React.forwardRef((props: any, ref) =>
+            return React.forwardRef<any, any>((props: any, ref) =>
               React.createElement(prop as string, { ...props, ref })
             );
           },

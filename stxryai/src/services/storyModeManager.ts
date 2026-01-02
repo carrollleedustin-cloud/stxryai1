@@ -344,14 +344,14 @@ export class StoryModeManager {
       try {
         const { generateCompletion } = await import('@/lib/ai/client');
         
-        const systemPrompt = `You are an expert narrative writer. Generate story content that:
-- Follows the provided chapter outline
-- Maintains continuity with previous chapters
-- Respects character development and world-building constraints
-- Advances narrative arcs appropriately
-- Plants and pays off foreshadowing when relevant
-
-Return the generated content as narrative text.`;
+        const systemPrompt = `Expert narrative writer. Generate story content.
+Requirements:
+- Follow chapter outline
+- Maintain continuity
+- Respect character/world constraints
+- Advance arcs appropriately
+- Use foreshadowing
+Return ONLY narrative text.`;
 
         const fullPrompt = `${prompt}\n\nConstraints:\n${JSON.stringify(constraints, null, 2)}`;
 
@@ -360,8 +360,9 @@ Return the generated content as narrative text.`;
             { role: 'system', content: systemPrompt },
             { role: 'user', content: fullPrompt },
           ],
-          temperature: modeConfig?.creativity || 0.8,
-          maxTokens: modeConfig?.maxTokens || 2000,
+          temperature: (modeConfig as any)?.creativity || 0.8,
+          maxTokens: (modeConfig as any)?.maxTokens || 2000,
+          model: 'gpt-4o',
         });
 
         generatedContent = response.content;

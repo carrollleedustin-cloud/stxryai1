@@ -28,7 +28,8 @@
       ]
     },
     "types": [
-      "node"
+      "node",
+      "@testing-library/jest-dom"
     ],
     "isolatedModules": true
   },

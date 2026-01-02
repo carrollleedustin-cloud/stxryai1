@@ -95,6 +95,13 @@ export const mockDate = (dateString: string) => {
 
   // Override only `Date.now` to return the mocked time. Avoid overriding constructor to keep runtime behavior stable.
   global.Date = class extends originalDate {
+    constructor(...args: any[]) {
+      if (args.length > 0) {
+        super(...args);
+      } else {
+        super(mockDate.getTime());
+      }
+    }
     static now() {
       return mockDate.getTime();
     }

@@ -1,5 +1,7 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useState } from 'react';
+import * as Haptics from 'expo-haptics';
 import Animated, { 
   FadeInDown, 
   FadeInRight,
@@ -10,7 +12,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { mobileGamificationService, PlayerProgress } from '../../src/services/gamificationService';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.7;
@@ -46,6 +49,16 @@ const categories = [
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const [progress, setProgress] = useState<PlayerProgress | null>(null);
+
+  const handlePress = (target: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.push(target as any);
+  };
+
+  useEffect(() => {
+    mobileGamificationService.getProgress('user-123').then(setProgress);
+  }, []);
   
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -71,11 +84,52 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>Good evening</Text>
             <Text style={styles.username}>Alex 👋</Text>
           </View>
-          <Pressable style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#fff" />
-            <View style={styles.notificationBadge} />
-          </Pressable>
+          <View style={styles.headerRight}>
+            {progress && (
+              <View style={styles.streakBadge}>
+                <MaterialCommunityIcons name="fire" size={18} color="#FF9F0A" />
+                <Text style={styles.streakText}>{progress.streakDays}</Text>
+              </View>
+            )}
+            <Pressable 
+              style={styles.notificationButton}
+              onPress={() => handlePress('/bingo')}
+            >
+              <Ionicons name="grid-outline" size={24} color="#00ffd5" />
+            </Pressable>
+            <Pressable 
+              style={styles.notificationButton}
+              onPress={() => handlePress('/badges')}
+            >
+              <Ionicons name="medal-outline" size={24} color="#fff" />
+            </Pressable>
+            <Pressable style={styles.notificationButton}>
+              <Ionicons name="notifications-outline" size={24} color="#fff" />
+              <View style={styles.notificationBadge} />
+            </Pressable>
+          </View>
         </Animated.View>
+
+        {/* Level Progress */}
+        {progress && (
+          <Animated.View 
+            entering={FadeInDown.delay(150).duration(600)}
+            style={styles.levelCard}
+          >
+            <View style={styles.levelHeader}>
+              <Text style={styles.levelLabel}>Level {progress.level}</Text>
+              <Text style={styles.xpLabel}>{progress.currentXP} / 1000 XP</Text>
+            </View>
+            <View style={styles.mobileProgressBar}>
+              <LinearGradient
+                colors={['#00f5d4', '#00bbf9']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[styles.mobileProgressFill, { width: '45%' }]}
+              />
+            </View>
+          </Animated.View>
+        )}
         
         {/* Continue Reading */}
         <Animated.View entering={FadeInDown.delay(200).duration(600)}>
@@ -263,6 +317,62 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#ff4080',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 159, 10, 0.15)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 159, 10, 0.3)',
+  },
+  streakText: {
+    color: '#FF9F0A',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  levelCard: {
+    marginHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  levelHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  levelLabel: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  xpLabel: {
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 12,
+  },
+  mobileProgressBar: {
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  mobileProgressFill: {
+    height: '100%',
+    borderRadius: 3,
   },
   sectionTitle: {
     fontSize: 20,

@@ -220,10 +220,33 @@ interface ActivityItemProps {
 }
 
 function ActivityItem({ activity, compact, index }: ActivityItemProps) {
+  const { user } = useAuth();
   const config = ACTIVITY_CONFIG[activity.activityType];
   const storyUrl = activity.metadata.storyId 
     ? `/story-reader?id=${activity.metadata.storyId}` 
     : null;
+
+  const [hasLiked, setHasLiked] = useState(activity.hasLiked || false);
+  const [likesCount, setLikesCount] = useState(activity.likesCount || 0);
+  const [showComments, setShowComments] = useState(false);
+  const [commentContent, setCommentContent] = useState('');
+  const [comments, setComments] = useState(activity.comments || []);
+
+  const handleLike = async () => {
+    if (!user) return;
+    const result = await activityFeedService.likeActivity(user.id, activity.id);
+    setHasLiked(result.liked);
+    setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+  };
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user || !commentContent.trim()) return;
+
+    const newComment = await activityFeedService.addComment(user.id, activity.id, commentContent);
+    setComments(prev => [...prev, newComment]);
+    setCommentContent('');
+  };
 
   return (
     <motion.div
@@ -305,10 +328,106 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
             </div>
           </div>
 
-          {/* Timestamp */}
-          <p className={`text-void-500 mt-1 ${compact ? 'text-xs' : 'text-sm'}`}>
-            {getRelativeTime(activity.createdAt)}
-          </p>
+          {/* Social Interactions */}
+          <div className="mt-3 flex items-center gap-4">
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1.5 text-xs transition-colors ${
+                hasLiked ? 'text-red-400' : 'text-void-400 hover:text-void-100'
+              }`}
+            >
+              <svg 
+                className={`w-4 h-4 ${hasLiked ? 'fill-current' : ''}`} 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                />
+              </svg>
+              {likesCount > 0 && <span>{likesCount}</span>}
+              {compact ? '' : 'Like'}
+            </button>
+
+            <button
+              onClick={() => setShowComments(!showComments)}
+              className="flex items-center gap-1.5 text-xs text-void-400 hover:text-void-100 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+                />
+              </svg>
+              {comments.length > 0 && <span>{comments.length}</span>}
+              {compact ? '' : 'Comment'}
+            </button>
+
+            <div className="flex-1" />
+            
+            <span className="text-[10px] text-void-500 font-mono uppercase tracking-wider">
+              {getRelativeTime(activity.createdAt)}
+            </span>
+          </div>
+
+          {/* Comments Section */}
+          <AnimatePresence>
+            {showComments && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 overflow-hidden"
+              >
+                <div className="space-y-3 pt-3 border-t border-void-800/50">
+                  {comments.map((comment) => (
+                    <div key={comment.id} className="flex gap-2">
+                      <div className="flex-shrink-0">
+                        {comment.userAvatar ? (
+                          <img
+                            src={comment.userAvatar}
+                            alt={comment.username}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-void-800 flex items-center justify-center text-[10px] text-void-300">
+                            {comment.username.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 bg-void-900/50 rounded-lg p-2 text-xs">
+                        <p className="font-medium text-void-200 mb-0.5">{comment.username}</p>
+                        <p className="text-void-400">{comment.content}</p>
+                      </div>
+                    </div>
+                  ))}
+
+                  <form onSubmit={handleAddComment} className="flex gap-2 mt-2">
+                    <input
+                      type="text"
+                      placeholder="Add a comment..."
+                      value={commentContent}
+                      onChange={(e) => setCommentContent(e.target.value)}
+                      className="flex-1 bg-void-950 border border-void-800 rounded-lg px-3 py-1.5 text-xs text-void-100 focus:outline-none focus:border-spectral-cyan/50 transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!commentContent.trim()}
+                      className="px-3 py-1.5 bg-void-800 hover:bg-void-700 disabled:opacity-50 text-void-100 rounded-lg text-xs transition-colors"
+                    >
+                      Post
+                    </button>
+                  </form>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>

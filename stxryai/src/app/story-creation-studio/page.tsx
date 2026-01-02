@@ -181,15 +181,19 @@ export default function StoryCreationStudioPage() {
 
     if (result.success && result.story && result.chapters) {
       setCurrentStoryId(draftId);
+      const story = result.story;
       setMetadata({
-        id: result.story.id,
-        title: result.story.title,
-        description: result.story.description,
-        genre: result.story.genre,
-        difficulty: result.story.difficulty,
-        coverImageUrl: result.story.cover_image_url,
-        isPremium: result.story.is_premium,
-        estimatedDuration: result.story.estimated_duration,
+        id: story.id,
+        title: story.title || '',
+        description: story.description || '',
+        genre: (story.genre as any) || 'fantasy',
+        difficulty: (story.difficulty as any) || 'easy',
+        coverImageUrl: story.cover_image || '',
+        isPremium: story.is_premium || false,
+        estimatedDuration: story.estimated_duration || 30,
+        storyMode: (story.story_mode as any) || 'ai_choices',
+        customChoiceTier: (story.custom_choice_tier as any) || 'none',
+        enableAICompanion: story.enable_ai_companion || false,
       });
 
       const loadedChapters: StoryNode[] = result.chapters.map((ch: any) => ({

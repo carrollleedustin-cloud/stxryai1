@@ -233,7 +233,7 @@ export const optimizedStoryService = {
         }
 
         if (minRating && minRating > 0) {
-          query = query.gte('average_rating', minRating);
+          query = query.gte('rating', minRating);
         }
 
         if (isPremium !== undefined) {
@@ -251,7 +251,7 @@ export const optimizedStoryService = {
             query = query.order('view_count', { ascending: false });
             break;
           case 'rating':
-            query = query.order('average_rating', { ascending: false });
+            query = query.order('rating', { ascending: false });
             break;
           case 'relevance':
             // For relevance, we'd ideally use full-text search ranking

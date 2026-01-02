@@ -19,7 +19,7 @@ interface Club {
   name: string;
   description: string;
   cover_image_url?: string;
-  member_count: number;
+  member_count?: number;
   category: string;
   activity?: string;
   is_private?: boolean;
@@ -27,6 +27,9 @@ interface Club {
   online?: number;
   featured?: boolean;
   recentActivity?: string;
+  members?: number;
+  isPrivate?: boolean;
+  cover?: string;
 }
 
 // Mock data for clubs (fallback)

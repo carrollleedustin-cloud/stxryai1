@@ -170,7 +170,7 @@ export class AdaptiveStorytellingService {
         original_content: adaptation.originalContent,
         adapted_content: adaptation.adaptedContent,
         adaptation_reason: adaptation.adaptationReason,
-        ai_model: adaptation.aiModel || 'gpt-4',
+        ai_model: adaptation.aiModel || 'gpt-4o',
         confidence_score: adaptation.confidenceScore,
         adaptation_parameters: adaptation.adaptationParameters || {},
       })

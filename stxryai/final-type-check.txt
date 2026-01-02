@@ -1,0 +1,189 @@
+﻿.next/types/app/api/ai/suggestions/route.ts(2,24): error TS2306: File 'C:/Users/dustin/Documents/GitHub/stxryai1/stxryai/src/app/api/ai/suggestions/route.ts' is not a module.
+.next/types/app/api/ai/suggestions/route.ts(5,29): error TS2306: File 'C:/Users/dustin/Documents/GitHub/stxryai1/stxryai/src/app/api/ai/suggestions/route.ts' is not a module.
+src/app/admin/mod-dashboard/page.tsx(96,13): error TS2304: Cannot find name 'supabase'.
+src/app/admin/mod-dashboard/page.tsx(115,13): error TS2304: Cannot find name 'supabase'.
+src/app/api/webhooks/stripe/route.ts(3,10): error TS2305: Module '"@/lib/stripe/server"' has no exported member 'stripe'.
+src/app/api/webhooks/stripe/route.ts(56,39): error TS2345: Argument of type '{ tier: DatabaseTier; stripe_subscription_id: string; subscription_status: string; subscription_end_date: string; }' is not assignable to parameter of type '{ id?: string; email?: string; username?: string; display_name?: string; avatar_url?: string; bio?: string; tier?: "premium" | "free" | "creator_pro"; role?: "user" | "moderator" | "admin"; is_admin?: boolean; ... 9 more ...; updated_at?: string; }'.
+  Types of property 'tier' are incompatible.
+    Type 'DatabaseTier' is not assignable to type '"premium" | "free" | "creator_pro"'.
+      Type '"enterprise"' is not assignable to type '"premium" | "free" | "creator_pro"'.
+src/app/clubs/page.tsx(38,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(52,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(66,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(80,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(94,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(108,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(122,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(136,5): error TS2353: Object literal may only specify known properties, and 'cover' does not exist in type 'Club'.
+src/app/clubs/page.tsx(301,39): error TS2339: Property 'cover' does not exist on type 'Club'.
+src/app/clubs/page.tsx(325,37): error TS2339: Property 'members' does not exist on type 'Club'.
+src/app/clubs/page.tsx(406,35): error TS2339: Property 'cover' does not exist on type 'Club'.
+src/app/clubs/page.tsx(411,29): error TS2551: Property 'isPrivate' does not exist on type 'Club'. Did you mean 'is_private'?
+src/app/clubs/page.tsx(442,33): error TS2339: Property 'members' does not exist on type 'Club'.
+src/app/kids-zone/profile/page.tsx(206,21): error TS2353: Object literal may only specify known properties, and 'ringColor' does not exist in type 'MotionStyle'.
+src/app/notifications/page.tsx(53,61): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/notifications/page.tsx(63,45): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/notifications/page.tsx(71,27): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/notifications/page.tsx(75,69): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/notifications/page.tsx(103,52): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/notifications/page.tsx(192,45): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/app/search/page.tsx(234,74): error TS2322: Type '{ children: Element[]; className: string; onClick: () => void; }' is not assignable to type 'IntrinsicAttributes & { children: ReactNode; className?: string; glowColor?: string; intensity?: number; enableTilt?: boolean; }'.
+  Property 'onClick' does not exist on type 'IntrinsicAttributes & { children: ReactNode; className?: string; glowColor?: string; intensity?: number; enableTilt?: boolean; }'.
+src/app/story-creation-studio/page.tsx(184,19): error TS2345: Argument of type '{ id: any; title: any; description: any; genre: any; difficulty: any; coverImageUrl: any; isPremium: any; estimatedDuration: any; }' is not assignable to parameter of type 'SetStateAction<StoryMetadata>'.
+  Type '{ id: any; title: any; description: any; genre: any; difficulty: any; coverImageUrl: any; isPremium: any; estimatedDuration: any; }' is missing the following properties from type 'StoryMetadata': storyMode, customChoiceTier, enableAICompanion
+src/app/story-library/components/StoryLibraryInteractive.tsx(279,34): error TS2551: Property 'cover_image_url' does not exist on type 'Story'. Did you mean 'cover_image'?
+src/app/story-library/components/StoryLibraryInteractive.tsx(281,42): error TS2551: Property 'cover_image_url' does not exist on type 'Story'. Did you mean 'cover_image'?
+src/app/story-library/components/StoryLibraryInteractive.tsx(329,38): error TS2339: Property 'average_rating' does not exist on type 'Story'.
+src/app/story-library/components/StoryLibraryInteractive.tsx(337,38): error TS2339: Property 'estimated_read_time' does not exist on type 'Story'.
+src/app/story-reader/components/ChoiceSelector.tsx(71,6): error TS2304: Cannot find name 'PrismPanel'.
+src/app/story-reader/components/ChoiceSelector.tsx(97,12): error TS2304: Cannot find name 'motion'.
+src/app/story-reader/components/ChoiceSelector.tsx(132,13): error TS2304: Cannot find name 'motion'.
+src/app/story-reader/components/ChoiceSelector.tsx(190,7): error TS2304: Cannot find name 'PrismPanel'.
+src/components/analytics/CreatorAnalytics.tsx(25,44): error TS2300: Duplicate identifier 'timeframe'.
+src/components/analytics/CreatorAnalytics.tsx(27,10): error TS2300: Duplicate identifier 'timeframe'.
+src/components/donations/DonationWidget.tsx(7,22): error TS2307: Cannot find module 'canvas-confetti' or its corresponding type declarations.
+src/components/engagement/ActivityFeed.tsx(8,10): error TS2305: Module '"@/lib/utils"' has no exported member 'getRelativeTime'.
+src/components/engagement/MilestoneCelebration.tsx(278,19): error TS2367: This comparison appears to be unintentional because the types '"confetti" | "fireworks" | "sparkle" | "glow"' and '"legendary"' have no overlap.
+src/components/error/ErrorBoundary.tsx(53,11): error TS2353: Object literal may only specify known properties, and 'contexts' does not exist in type 'ErrorContext'.
+src/components/notifications/NotificationPreferences.tsx(44,52): error TS2339: Property 'pushEnabled' does not exist on type 'NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(72,68): error TS2353: Object literal may only specify known properties, and 'pushEnabled' does not exist in type 'Partial<NotificationPreferences>'.
+src/components/notifications/NotificationPreferences.tsx(78,68): error TS2353: Object literal may only specify known properties, and 'pushEnabled' does not exist in type 'Partial<NotificationPreferences>'.
+src/components/notifications/NotificationPreferences.tsx(195,40): error TS2551: Property 'pushStoryUpdates' does not exist on type 'NotificationPreferences'. Did you mean 'storyUpdates'?
+src/components/notifications/NotificationPreferences.tsx(197,44): error TS2345: Argument of type '"pushStoryUpdates"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(213,40): error TS2551: Property 'pushFriendActivity' does not exist on type 'NotificationPreferences'. Did you mean 'friendActivity'?
+src/components/notifications/NotificationPreferences.tsx(215,44): error TS2345: Argument of type '"pushFriendActivity"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(231,40): error TS2339: Property 'pushEngagementReminders' does not exist on type 'NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(233,44): error TS2345: Argument of type '"pushEngagementReminders"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(249,40): error TS2339: Property 'pushSocialNotifications' does not exist on type 'NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(251,44): error TS2345: Argument of type '"pushSocialNotifications"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(269,40): error TS2339: Property 'pushPersonalizedRecommendations' does not exist on type 'NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(271,44): error TS2345: Argument of type '"pushPersonalizedRecommendations"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(292,40): error TS2551: Property 'quietHoursEnabled' does not exist on type 'NotificationPreferences'. Did you mean 'quietHoursEnd'?
+src/components/notifications/NotificationPreferences.tsx(294,44): error TS2345: Argument of type '"quietHoursEnabled"' is not assignable to parameter of type 'keyof NotificationPreferences'.
+src/components/notifications/NotificationPreferences.tsx(303,26): error TS2551: Property 'quietHoursEnabled' does not exist on type 'NotificationPreferences'. Did you mean 'quietHoursEnd'?
+src/components/pet/PetCustomizationPanel.tsx(29,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/PetCustomizationPanel.tsx(33,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/PetCustomizationPanel.tsx(38,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/PetCustomizationPanel.tsx(42,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/PetCustomizationPanel.tsx(47,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/PetCustomizationPanel.tsx(52,9): error TS2322: Type '{ id: string; name: string; type: string; rarity: string; unlockedAt: string; equipped: boolean; }' is not assignable to type 'PetAccessory'.
+  Types of property 'type' are incompatible.
+    Type 'string' is not assignable to type '"hat" | "collar" | "wings" | "glasses" | "bow" | "crown" | "scarf" | "aura"'.
+src/components/pet/StoryPetDisplay.tsx(1033,7): error TS2322: Type '{ idle: { y: number[]; transition: { duration: number; repeat: number; ease: string; }; }; happy: { y: number[]; scale: number[]; transition: { duration: number; repeat: number; }; }; excited: { y: number[]; rotate: number[]; transition: { ...; }; }; sleepy: { ...; }; eating: { ...; }; playing: { ...; }; }' is not assignable to type 'Variants'.
+  Property 'idle' is incompatible with index signature.
+    Type '{ y: number[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ y: number[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ y: number[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any>; transitionEnd?: ResolvedValues; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'Transition<any>'.
+              Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[]'.
+src/components/premium/AIPersonalization.tsx(47,98): error TS2345: Argument of type '{ limit: number; includeAnalysis: boolean; }' is not assignable to parameter of type 'number'.
+src/components/premium/AIStoryCritic.tsx(314,61): error TS2339: Property 'feedback' does not exist on type '{ score: number; issues: string[]; }'.
+src/components/sentient/PerformanceReader.tsx(236,19): error TS1117: An object literal cannot have multiple properties with the same name.
+src/components/sentient/SentientDashboard.tsx(127,19): error TS1117: An object literal cannot have multiple properties with the same name.
+src/components/sentient/SentientReader.tsx(29,22): error TS2339: Property 'trim' does not exist on type 'never'.
+src/components/sentient/SentientReader.tsx(226,19): error TS1117: An object literal cannot have multiple properties with the same name.
+src/components/sentient/SentientReader.tsx(274,20): error TS2304: Cannot find name 'ArrowRight'.
+src/components/social/ShareButton.tsx(121,30): error TS2559: Type 'string' has no properties in common with type 'ExternalToast'.
+src/components/social/ShareButton.tsx(149,31): error TS2345: Argument of type '{ files: (Blob | File)[]; title: string; text: string; url: string; }' is not assignable to parameter of type 'ShareData'.
+  Types of property 'files' are incompatible.
+    Type '(Blob | File)[]' is not assignable to type 'File[]'.
+      Type 'Blob | File' is not assignable to type 'File'.
+        Type 'Blob' is missing the following properties from type 'File': lastModified, name, webkitRelativePath
+src/components/void/EtherealNav.tsx(76,45): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/components/void/EtherealNav.tsx(264,61): error TS2339: Property 'readBy' does not exist on type 'Announcement'.
+src/components/void/SpectralButton.tsx(126,6): error TS2322: Type '{ children: Element; viewport?: ViewportOptions; name?: string; value?: string | number | readonly string[]; values?: { [key: string]: MotionValue<number> | MotionValue<string>; }; ... 329 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLButtonElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'LegacyRef<HTMLButtonElement>' is not assignable to type 'Ref<HTMLButtonElement>'.
+      Type 'string' is not assignable to type 'Ref<HTMLButtonElement>'.
+src/components/void/SpectralButton.tsx(178,6): error TS2322: Type '{ children: ReactNode & (ReactNode | MotionValueNumber | MotionValueString); name?: string; value?: string | number | readonly string[]; ... 331 more ...; className: string; }' is not assignable to type 'RefAttributes<HTMLButtonElement>'.
+  Types of property 'ref' are incompatible.
+    Type 'LegacyRef<HTMLButtonElement>' is not assignable to type 'Ref<HTMLButtonElement>'.
+      Type 'string' is not assignable to type 'Ref<HTMLButtonElement>'.
+src/contexts/PetContext.tsx(131,14): error TS2339: Property 'created_at' does not exist on type 'User'.
+src/contexts/PetContext.tsx(242,10): error TS2339: Property 'markLatestEvolutionCelebrationSeen' does not exist on type 'EnhancedPetService'.
+src/hooks/usePushNotifications.ts(38,61): error TS2339: Property 'getSubscriptions' does not exist on type 'PushNotificationService'.
+src/lib/api/error-handler.ts(211,9): error TS2353: Object literal may only specify known properties, and 'contexts' does not exist in type 'ErrorContext'.
+src/lib/cache/aiResponseCache.ts(6,22): error TS2305: Module '"./queryCache"' has no exported member 'generateCacheKey'.
+src/lib/logger/index.ts(124,35): error TS2339: Property 'isProduction' does not exist on type 'Logger'.
+src/lib/performance/lazyLoad.tsx(60,35): error TS2322: Type 'Promise<typeof import("C:/Users/dustin/Documents/GitHub/stxryai1/stxryai/src/components/analytics/ReadingInsights")>' is not assignable to type 'Promise<{ default: ComponentType<any>; }>'.
+  Property 'default' is missing in type 'typeof import("C:/Users/dustin/Documents/GitHub/stxryai1/stxryai/src/components/analytics/ReadingInsights")' but required in type '{ default: ComponentType<any>; }'.
+src/lib/stripe/server.ts(12,5): error TS2322: Type '"2023-10-16"' is not assignable to type '"2025-02-24.acacia"'.
+src/lib/utils/index.ts(9,20): error TS2305: Module '"./debounce"' has no exported member 'throttle'.
+src/lib/utils/index.ts(10,10): error TS2305: Module '"./toast"' has no exported member 'showToast'.
+src/lib/utils/index.ts(10,21): error TS2305: Module '"./toast"' has no exported member 'showSuccessToast'.
+src/lib/utils/index.ts(10,39): error TS2305: Module '"./toast"' has no exported member 'showErrorToast'.
+src/lib/utils/index.ts(10,55): error TS2305: Module '"./toast"' has no exported member 'showLoadingToast'.
+src/lib/utils/index.ts(10,73): error TS2305: Module '"./toast"' has no exported member 'dismissToast'.
+src/lib/utils/sanitization.ts(1,23): error TS2307: Cannot find module 'dompurify' or its corresponding type declarations.
+src/lib/validation/accessibilitySchemas.ts(1,19): error TS2307: Cannot find module 'zod' or its corresponding type declarations.
+src/middleware.ts(63,9): error TS2322: Type '{ readonly windowMs: number; readonly maxRequests: 100; } | { readonly windowMs: number; readonly maxRequests: 10; } | { readonly windowMs: number; readonly maxRequests: 20; } | { readonly windowMs: number; readonly maxRequests: 500; } | { ...; } | { ...; }' is not assignable to type '{ readonly windowMs: number; readonly maxRequests: 100; }'.
+  Type '{ readonly windowMs: number; readonly maxRequests: 10; }' is not assignable to type '{ readonly windowMs: number; readonly maxRequests: 100; }'.
+    Types of property 'maxRequests' are incompatible.
+      Type '10' is not assignable to type '100'.
+src/services/analyticsService.ts(302,28): error TS2304: Cannot find name 'totalReaders'.
+src/services/analyticsService.ts(303,41): error TS2304: Cannot find name 'totalReaders'.
+src/services/analyticsService.ts(306,28): error TS2304: Cannot find name 'totalReaders'.
+src/services/analyticsService.ts(307,29): error TS2304: Cannot find name 'totalReaders'.
+src/services/character-sheet-generator.ts(12,3): error TS2305: Module '"@/types/character-sheet"' has no exported member 'CharacterTraits'.
+src/services/character-sheet-generator.ts(19,3): error TS2305: Module '"@/types/character-sheet"' has no exported member 'ARCHETYPE_TITLES'.
+src/services/character-sheet-generator.ts(499,5): error TS2353: Object literal may only specify known properties, and 'traits' does not exist in type 'CharacterSheet'.
+src/services/contentDiscoveryService.ts(444,46): error TS2339: Property 'id' does not exist on type 'any[]'.
+src/services/contentDiscoveryService.ts(448,31): error TS2339: Property 'id' does not exist on type 'any[]'.
+src/services/enhancedModerationService.ts(155,9): error TS2322: Type '"message" | "story" | "comment" | "profile" | "chapter"' is not assignable to type '"message" | "story" | "comment" | "profile"'.
+  Type '"chapter"' is not assignable to type '"message" | "story" | "comment" | "profile"'.
+src/services/globalStoryService.ts(467,26): error TS2339: Property 'id' does not exist on type '{ id: any; username: any; avatar_url: any; }[]'.
+src/services/globalStoryService.ts(468,28): error TS2339: Property 'username' does not exist on type '{ id: any; username: any; avatar_url: any; }[]'.
+src/services/globalStoryService.ts(469,29): error TS2339: Property 'avatar_url' does not exist on type '{ id: any; username: any; avatar_url: any; }[]'.
+src/services/pushNotificationService.ts(281,9): error TS2322: Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'string | BufferSource'.
+  Type 'Uint8Array<ArrayBufferLike>' is not assignable to type 'ArrayBufferView<ArrayBuffer>'.
+    Types of property 'buffer' are incompatible.
+      Type 'ArrayBufferLike' is not assignable to type 'ArrayBuffer'.
+        Type 'SharedArrayBuffer' is missing the following properties from type 'ArrayBuffer': resizable, resize, detached, transfer, transferToFixedLength
+src/services/pushNotificationService.ts(541,7): error TS2353: Object literal may only specify known properties, and 'actions' does not exist in type 'NotificationOptions'.
+src/services/revisionPropagation.ts(598,66): error TS2345: Argument of type '{ type: string; description: string; suggestedEdit: string; }' is not assignable to parameter of type 'ChapterChange'.
+  Type '{ type: string; description: string; suggestedEdit: string; }' is missing the following properties from type 'ChapterChange': changeType, originalText, suggestedText, occurrences, autoApplicable
+src/services/storyCreationService.ts(84,7): error TS2353: Object literal may only specify known properties, and 'story_mode' does not exist in type '{ id?: string; user_id: string; title: string; description?: string; cover_image?: string; genre: string; difficulty?: "hard" | "easy" | "medium"; tags?: string[]; is_premium?: boolean; is_published?: boolean; ... 10 more ...; published_at?: string; } | { ...; }[]'.
+src/services/storyModeManager.ts(363,36): error TS2339: Property 'creativity' does not exist on type 'StoryModeConfig'.
+  Property 'creativity' does not exist on type 'BookModeConfig'.
+src/services/storyModeManager.ts(364,34): error TS2339: Property 'maxTokens' does not exist on type 'StoryModeConfig'.
+  Property 'maxTokens' does not exist on type 'BookModeConfig'.
+src/services/storyModeManager.ts(384,32): error TS2339: Property 'extractCharactersFromContent' does not exist on type 'StoryModeManager'.
+src/services/storyModeManager.ts(385,37): error TS2339: Property 'extractWorldElementsFromContent' does not exist on type 'StoryModeManager'.
+src/services/storyModeManager.ts(386,26): error TS2339: Property 'identifyArcProgressFromContent' does not exist on type 'StoryModeManager'.
+src/services/storyModeManager.ts(982,17): error TS2339: Property 'worldElements' does not exist on type 'GenerationContext'.
+src/services/storyModeManager.ts(983,37): error TS2339: Property 'worldElements' does not exist on type 'GenerationContext'.
+src/services/storyService.ts(105,9): error TS2345: Argument of type 'PromiseLike<{ data: Story[]; error: Error; }>' is not assignable to parameter of type 'Promise<{ data: Story[]; error: Error; }>'.
+  Type 'PromiseLike<{ data: Story[]; error: Error; }>' is missing the following properties from type 'Promise<{ data: Story[]; error: Error; }>': catch, finally, [Symbol.toStringTag]
+src/services/storyTemplateService.ts(253,66): error TS2322: Type '"midpoint"' is not assignable to type '"climax" | "resolution" | "introduction" | "rising_action" | "falling_action" | "branch_point" | "ending"'.
+src/services/storyTemplateService.ts(255,76): error TS2322: Type '"dark_moment"' is not assignable to type '"climax" | "resolution" | "introduction" | "rising_action" | "falling_action" | "branch_point" | "ending"'.
+src/services/storyTemplateService.ts(307,76): error TS2322: Type '"midpoint"' is not assignable to type '"climax" | "resolution" | "introduction" | "rising_action" | "falling_action" | "branch_point" | "ending"'.
+src/services/userActivityService.ts(61,15): error TS2339: Property 'data' does not exist on type '{}'.
+src/services/userActivityService.ts(61,21): error TS2339: Property 'error' does not exist on type '{}'.
+src/services/userActivityService.ts(62,9): error TS2345: Argument of type 'PostgrestFilterBuilder<any, any, any, any[], "user_activities", unknown, "GET">' is not assignable to parameter of type 'Promise<unknown>'.
+  Type 'PostgrestFilterBuilder<any, any, any, any[], "user_activities", unknown, "GET">' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]
+src/services/userProgressService.ts(36,15): error TS2339: Property 'data' does not exist on type '{}'.
+src/services/userProgressService.ts(36,21): error TS2339: Property 'error' does not exist on type '{}'.
+src/services/userProgressService.ts(37,9): error TS2345: Argument of type 'PostgrestBuilder<any, any, false>' is not assignable to parameter of type 'Promise<unknown>'.
+  Type 'PostgrestBuilder<any, any, false>' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]
+src/services/userProgressService.ts(75,15): error TS2339: Property 'data' does not exist on type '{}'.
+src/services/userProgressService.ts(75,21): error TS2339: Property 'error' does not exist on type '{}'.
+src/services/userProgressService.ts(76,9): error TS2345: Argument of type 'PostgrestFilterBuilder<any, any, any, any[], "user_progress", unknown, "GET">' is not assignable to parameter of type 'Promise<unknown>'.
+  Type 'PostgrestFilterBuilder<any, any, any, any[], "user_progress", unknown, "GET">' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]
+src/services/userProgressService.ts(164,15): error TS2339: Property 'data' does not exist on type '{}'.
+src/services/userProgressService.ts(164,21): error TS2339: Property 'error' does not exist on type '{}'.
+src/services/userProgressService.ts(165,9): error TS2345: Argument of type 'PostgrestFilterBuilder<any, any, any, any[], "user_badges", unknown, "GET">' is not assignable to parameter of type 'Promise<unknown>'.
+  Type 'PostgrestFilterBuilder<any, any, any, any[], "user_badges", unknown, "GET">' is missing the following properties from type 'Promise<unknown>': catch, finally, [Symbol.toStringTag]

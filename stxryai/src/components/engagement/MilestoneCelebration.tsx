@@ -19,7 +19,7 @@ interface MilestoneCelebrationProps {
 }
 
 interface ParticleProps {
-  type: 'confetti' | 'fireworks' | 'sparkle';
+  type: 'confetti' | 'fireworks' | 'sparkle' | 'glow' | 'legendary';
   delay: number;
 }
 

@@ -9,6 +9,8 @@ import { queryCache, generateCacheKey } from './queryCache';
 // TYPES
 // ========================================
 
+import { generateCacheKey } from '../utils';
+
 export interface CachedAIResponse {
   content: string;
   model: string;
@@ -225,15 +227,18 @@ class AIResponseCache {
   }
 
   /**
-   * Estimate cost for tokens (based on GPT-4 pricing)
+   * Estimate cost for tokens (based on GPT-4o-mini and GPT-4o pricing)
    */
   private estimateCost(tokens: CachedAIResponse['tokens']): number {
-    const PROMPT_COST_PER_1K = 0.03;    // $0.03 per 1K prompt tokens
-    const COMPLETION_COST_PER_1K = 0.06; // $0.06 per 1K completion tokens
+    // Current GPT-4o-mini pricing (approximate)
+    // $0.150 / 1M input tokens
+    // $0.600 / 1M output tokens
+    const PROMPT_COST_PER_1M = 0.15;
+    const COMPLETION_COST_PER_1M = 0.60;
     
     return (
-      (tokens.prompt / 1000) * PROMPT_COST_PER_1K +
-      (tokens.completion / 1000) * COMPLETION_COST_PER_1K
+      (tokens.prompt / 1000000) * PROMPT_COST_PER_1M +
+      (tokens.completion / 1000000) * COMPLETION_COST_PER_1M
     );
   }
 
@@ -318,3 +323,5 @@ export const aiCacheKeys = {
     generateCacheKey('ai:choices', chapterId, choiceCount.toString()),
 };
 
+
+import { generateCacheKey } from '../utils';

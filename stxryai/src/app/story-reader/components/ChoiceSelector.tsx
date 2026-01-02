@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Sparkles, Send, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { PrismPanel } from '@/components/ui/prism/PrismPanel';
 
 interface ChoiceSelectorProps {
   choices: any[];

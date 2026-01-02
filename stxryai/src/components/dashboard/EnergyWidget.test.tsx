@@ -135,7 +135,6 @@ describe('EnergyWidget', () => {
 
   describe('Interactions', () => {
     it('calls onUpgrade when upgrade button is clicked', async () => {
-      const user = userEvent.setup({ delay: null });
       const onUpgrade = jest.fn();
 
       render(
@@ -192,7 +191,6 @@ describe('EnergyWidget', () => {
     });
 
     it('upgrade button is keyboard accessible', async () => {
-      const user = userEvent.setup({ delay: null });
       const onUpgrade = jest.fn();
 
       render(

@@ -15,6 +15,7 @@ export type WorldElementType = 'geography' | 'culture' | 'religion' | 'magic_sys
 export type ChangeType = 'physical' | 'psychological' | 'relational' | 'status' | 'ability' | 'possession' | 'location';
 export type ArcType = 'character' | 'plot' | 'thematic' | 'relationship' | 'world';
 export type ArcStatus = 'setup' | 'rising' | 'climax' | 'falling' | 'resolved' | 'abandoned';
+export type RippleIntensity = 'subtle' | 'noticeable' | 'significant' | 'transformative';
 
 // ============================================================================
 // SERIES MANAGEMENT
@@ -710,6 +711,32 @@ export interface PropagatedChange {
   
   appliedAt?: string;
   createdAt: string;
+}
+
+export interface WorldRipple {
+  id: string;
+  seriesId: string;
+  sourceChoiceId?: string;
+  sourceEventId?: string;
+  
+  title: string;
+  description: string;
+  intensity: RippleIntensity;
+  
+  // Impact
+  affectedCharacterIds: string[];
+  affectedLocationIds: string[];
+  affectedFactionIds: string[];
+  
+  // Logic
+  triggerCondition?: string;
+  consequenceSummary: string;
+  isActive: boolean;
+  
+  // Persistence
+  resolvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ============================================================================

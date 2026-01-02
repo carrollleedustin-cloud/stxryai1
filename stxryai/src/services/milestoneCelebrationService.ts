@@ -36,7 +36,7 @@ export interface Milestone {
   title: string;
   description: string;
   icon: string;
-  celebrationType: 'confetti' | 'fireworks' | 'sparkle' | 'glow' | 'epic';
+  celebrationType: 'confetti' | 'fireworks' | 'sparkle' | 'glow' | 'epic' | 'legendary';
   xpReward: number;
   badgeId?: string;
   createdAt: string;

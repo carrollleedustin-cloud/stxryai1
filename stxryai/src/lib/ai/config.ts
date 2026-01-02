@@ -14,17 +14,17 @@ export interface AIConfig {
 // OpenAI models optimized for different tasks
 export const OPENAI_MODELS = {
   // Best for complex reasoning and long-form content
-  default: 'gpt-4-turbo-preview',
-  // Faster, cheaper alternative for simpler tasks
-  fast: 'gpt-3.5-turbo',
+  default: 'gpt-4o',
+  // Faster, significantly cheaper alternative for simpler tasks
+  fast: 'gpt-4o-mini',
   // Latest model with improved performance
-  latest: 'gpt-4-turbo-preview',
+  latest: 'gpt-4o',
 };
 
 // Anthropic models (fallback)
 export const ANTHROPIC_MODELS = {
   default: 'claude-3-5-sonnet-20241022',
-  fast: 'claude-3-haiku-20240307',
+  fast: 'claude-3-5-haiku-20241022',
   latest: 'claude-3-5-sonnet-20241022',
 };
 
@@ -73,14 +73,15 @@ export const DEFAULT_AI_CONFIG: Omit<AIConfig, 'apiKey'> = {
 // Model options for each provider
 export const AI_MODELS = {
   openai: [
-    'gpt-4-turbo-preview',
+    'gpt-4o',
+    'gpt-4o-mini',
+    'gpt-4-turbo',
     'gpt-4',
-    'gpt-3.5-turbo',
   ],
   anthropic: [
     'claude-3-5-sonnet-20241022',
+    'claude-3-5-haiku-20241022',
     'claude-3-opus-20240229',
-    'claude-3-sonnet-20240229',
     'claude-3-haiku-20240307',
   ],
 };

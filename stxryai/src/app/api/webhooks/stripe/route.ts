@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { stripe, verifyWebhookSignature, getTierFromPriceId } from '@/lib/stripe/server';
+import { getStripe, verifyWebhookSignature, getTierFromPriceId } from '@/lib/stripe/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { updateUserById, insertNotification } from '@/lib/supabase/typed';
 import type { Stripe } from 'stripe';
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
           subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
         };
 
-        await updateUserById(user.id, updateData);
+        await updateUserById(user.id, updateData as any);
 
         break;
       }

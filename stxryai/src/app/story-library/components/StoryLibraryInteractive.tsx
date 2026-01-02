@@ -276,9 +276,9 @@ export default function StoryLibraryInteractive() {
                       >
                         {/* Cover Image */}
                         <div className="relative h-40 overflow-hidden rounded-t-2xl -mx-px -mt-px">
-                          {story.cover_image_url ? (
+                          {story.cover_image ? (
                             <img
-                              src={story.cover_image_url}
+                              src={story.cover_image}
                               alt={story.title}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                             />
@@ -326,7 +326,7 @@ export default function StoryLibraryInteractive() {
                           <div className="flex items-center gap-4 text-xs text-text-ghost">
                             <span className="flex items-center gap-1">
                               <Star className="w-3.5 h-3.5 text-spectral-amber" />
-                              {story.average_rating?.toFixed(1) || '—'}
+                              {story.rating?.toFixed(1) || '—'}
                             </span>
                             <span className="flex items-center gap-1">
                               <Users className="w-3.5 h-3.5" />
@@ -334,7 +334,7 @@ export default function StoryLibraryInteractive() {
                             </span>
                             <span className="flex items-center gap-1">
                               <Clock className="w-3.5 h-3.5" />
-                              {story.estimated_read_time || '?'} min
+                              {story.estimated_duration || '?'} min
                             </span>
                           </div>
                         </div>

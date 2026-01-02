@@ -22,9 +22,9 @@ interface CreatorAnalyticsProps {
   timeframe?: '7d' | '30d' | '90d' | 'all';
 }
 
-export function CreatorAnalytics({ userId, timeframe = '30d' }: CreatorAnalyticsProps) {
+export function CreatorAnalytics({ userId, timeframe: initialTimeframe = '30d' }: CreatorAnalyticsProps) {
   const [selectedStory, setSelectedStory] = useState<string | null>(null);
-  const [timeframe, setTimeframe] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  const [timeframe, setTimeframe] = useState<'7d' | '30d' | '90d' | 'all'>(initialTimeframe);
 
   // Mock data - replace with actual API calls
   const overallStats = {

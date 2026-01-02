@@ -231,47 +231,52 @@ function SearchResultsContent() {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 layout
               >
-                <HolographicCard className="h-full group cursor-pointer" onClick={() => router.push(`/story-reader?id=${story.id}`)}>
-                  <div className="relative overflow-hidden rounded-t-xl">
-                    <img
-                      src={story.cover}
-                      alt={story.title}
-                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-void-900/90 via-void-900/30 to-transparent" />
-                    <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-spectral-cyan/20 backdrop-blur-sm border border-spectral-cyan/50 text-spectral-cyan text-xs font-medium">
-                      {story.genre}
-                    </div>
-                    <div className="absolute bottom-3 left-3 right-3">
-                      <h3 className="text-xl font-bold text-white mb-1">{story.title}</h3>
-                      <p className="text-sm text-white/80">by {story.author}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4">
-                    <p className="text-text-secondary text-sm mb-4 line-clamp-2">
-                      {story.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center text-amber-400">
-                          <Icon name="StarIcon" className="mr-1" size={16} />
-                          <span className="font-medium">{story.rating}</span>
-                        </div>
-                        <div className="flex items-center text-text-secondary">
-                          <Icon name="EyeIcon" className="mr-1" size={16} />
-                          <span>{(story.reads / 1000).toFixed(1)}K</span>
-                        </div>
+                <div 
+                  className="h-full group cursor-pointer" 
+                  onClick={() => router.push(`/story-reader?id=${story.id}`)}
+                >
+                  <HolographicCard className="h-full">
+                    <div className="relative overflow-hidden rounded-t-xl">
+                      <img
+                        src={story.cover}
+                        alt={story.title}
+                        className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-void-900/90 via-void-900/30 to-transparent" />
+                      <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-spectral-cyan/20 backdrop-blur-sm border border-spectral-cyan/50 text-spectral-cyan text-xs font-medium">
+                        {story.genre}
                       </div>
-                      
-                      <SpectralButton variant="secondary" className="px-4 py-2 text-sm">
-                        <Icon name="BookOpenIcon" className="mr-1" size={14} />
-                        Read
-                      </SpectralButton>
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <h3 className="text-xl font-bold text-white mb-1">{story.title}</h3>
+                        <p className="text-sm text-white/80">by {story.author}</p>
+                      </div>
                     </div>
-                  </div>
-                </HolographicCard>
+                    
+                    <div className="p-4">
+                      <p className="text-text-secondary text-sm mb-4 line-clamp-2">
+                        {story.description}
+                      </p>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center text-amber-400">
+                            <Icon name="StarIcon" className="mr-1" size={16} />
+                            <span className="font-medium">{story.rating}</span>
+                          </div>
+                          <div className="flex items-center text-text-secondary">
+                            <Icon name="EyeIcon" className="mr-1" size={16} />
+                            <span>{(story.reads / 1000).toFixed(1)}K</span>
+                          </div>
+                        </div>
+                        
+                        <SpectralButton variant="secondary" className="px-4 py-2 text-sm">
+                          <Icon name="BookOpenIcon" className="mr-1" size={14} />
+                          Read
+                        </SpectralButton>
+                      </div>
+                    </div>
+                  </HolographicCard>
+                </div>
               </motion.div>
             ))}
           </AnimatePresence>

@@ -37,6 +37,7 @@ export interface PushSubscription {
 
 export interface NotificationPreferences {
   userId: string;
+  pushEnabled: boolean;
   streakReminders: boolean;
   dailyChallenges: boolean;
   storyUpdates: boolean;

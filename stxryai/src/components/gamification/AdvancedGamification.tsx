@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '@/components/ui/AppIcon';
+import { bingoService, BingoBoard, BingoTile } from '@/services/bingoService';
 
 interface Badge {
   id: string;
@@ -305,81 +306,88 @@ export function AdvancedGamification({
               Complete challenges to fill your bingo card and win rewards!
             </p>
           </div>
-          <BingoCard />
+          <BingoCard userId={userId} />
         </div>
       )}
     </div>
   );
 }
 
-function BingoCard() {
-  const [card, setCard] = useState<(boolean | null)[][]>(
-    Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(null))
-  );
+function BingoCard({ userId }: { userId: string }) {
+  const [board, setBoard] = useState<BingoBoard | null>(null);
 
-  const challenges = [
-    'Read a Fantasy story',
-    'Complete 3 choices',
-    'Read for 30 min',
-    'Bookmark a story',
-    'Share a story',
-    'Join a club',
-    'Rate 5 stories',
-    'Read Sci-Fi',
-    'Complete daily goal',
-    'Unlock achievement',
-    'Read Mystery',
-    'Make 10 choices',
-    'Read Romance',
-    'Comment on story',
-    'Read Horror',
-    'Follow creator',
-    'Read Adventure',
-    'Create collection',
-    'Read Thriller',
-    'Complete weekly goal',
-    'Read Drama',
-    'Remix a story',
-    'Read Comedy',
-    'Join tournament',
-    'Read Historical',
-  ];
+  useEffect(() => {
+    // Load board from service or generate new one
+    const newBoard = bingoService.generateBoard(userId);
+    setBoard(newBoard);
+  }, [userId]);
+
+  if (!board) return null;
+
+  const size = Math.sqrt(board.tiles.length);
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="grid grid-cols-5 gap-2">
-        {challenges.map((challenge, index) => {
-          const row = Math.floor(index / 5);
-          const col = index % 5;
-          const isCompleted = card[row][col] === true;
-
+      <div 
+        className="grid gap-2"
+        style={{ 
+          gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` 
+        }}
+      >
+        {board.tiles.map((tile, index) => {
           return (
-            <motion.button
-              key={index}
-              onClick={() => {
-                const newCard = [...card];
-                newCard[row][col] = !isCompleted;
-                setCard(newCard);
-              }}
+            <motion.div
+              key={tile.id}
               whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`aspect-square p-2 rounded-lg border-2 text-xs font-medium text-center flex items-center justify-center ${
-                isCompleted
+              className={`aspect-square p-2 rounded-lg border-2 text-xs font-medium text-center flex flex-col items-center justify-center relative overflow-hidden ${
+                tile.completed
                   ? 'bg-green-500 border-green-600 text-white'
-                  : 'bg-card border-border text-foreground hover:border-primary'
+                  : 'bg-card border-border text-foreground hover:border-primary/50'
               }`}
             >
-              {isCompleted ? '✓' : challenge}
-            </motion.button>
+              <div className="z-10">{tile.label}</div>
+              <div className={`z-10 text-[10px] mt-1 opacity-80 ${tile.completed ? 'hidden' : 'block'}`}>
+                {tile.current} / {tile.target}
+              </div>
+              
+              {!tile.completed && (
+                <div 
+                  className="absolute bottom-0 left-0 h-1 bg-primary/30 transition-all duration-500"
+                  style={{ width: `${(tile.current / tile.target) * 100}%` }}
+                />
+              )}
+
+              {tile.completed && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute inset-0 flex items-center justify-center bg-green-500/20 pointer-events-none"
+                >
+                  <Icon name="CheckCircleIcon" size={24} className="text-white/40" />
+                </motion.div>
+              )}
+            </motion.div>
           );
         })}
       </div>
-      <div className="mt-4 text-center">
-        <p className="text-muted-foreground">
-          Completed: {card.flat().filter((c) => c === true).length} / 25
-        </p>
+
+      <div className="mt-8 p-4 bg-primary/5 border border-primary/10 rounded-xl flex items-center justify-between">
+        <div>
+          <h4 className="font-bold text-foreground">Bingo Bonus</h4>
+          <p className="text-sm text-muted-foreground">Complete any row, column, or diagonal for 500 bonus XP!</p>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="text-2xl font-black text-primary">500 XP</div>
+          {bingoService.checkBingo(board) && !board.bonusClaimed && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="mt-2 px-4 py-1 bg-primary text-primary-foreground rounded-full text-sm font-bold shadow-lg"
+            >
+              Claim!
+            </motion.button>
+          )}
+        </div>
       </div>
     </div>
   );

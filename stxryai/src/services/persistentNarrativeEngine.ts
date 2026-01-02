@@ -597,6 +597,49 @@ export class PersistentNarrativeEngine {
   }
 
   /**
+   * Create a world location detail
+   */
+  async createWorldLocation(location: Partial<WorldLocation>): Promise<WorldLocation> {
+    const { data, error } = await this.supabase
+      .from('world_locations')
+      .insert({
+        element_id: location.elementId,
+        series_id: location.seriesId,
+        location_type: location.locationType,
+        coordinates: location.coordinates,
+        parent_location_id: location.parentLocationId,
+        population: location.population,
+        climate: location.climate,
+        terrain: location.terrain,
+        resources: location.resources || [],
+        hazards: location.hazards || [],
+        controlling_faction: location.controllingFaction,
+        government_type: location.governmentType,
+        connected_locations: location.connectedLocations || [],
+        travel_times: location.travelTimes || {},
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return this.mapLocation(data);
+  }
+
+  /**
+   * Get location details for a world element
+   */
+  async getLocationDetails(elementId: string): Promise<WorldLocation | null> {
+    const { data, error } = await this.supabase
+      .from('world_locations')
+      .select('*')
+      .eq('element_id', elementId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+    return data ? this.mapLocation(data) : null;
+  }
+
+  /**
    * Get all world elements for a series
    */
   async getWorldElements(seriesId: string, type?: string): Promise<WorldElement[]> {
@@ -1275,6 +1318,59 @@ export class PersistentNarrativeEngine {
       .eq('id', changeId);
   }
 
+  public async createWorldRipple(ripple: any): Promise<any | null> {
+    const { data, error } = await this.supabase
+      .from('world_ripples')
+      .insert({
+        ...ripple,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating world ripple:', error);
+      return null;
+    }
+
+    return data;
+  }
+
+  public async getActiveRipples(seriesId: string): Promise<any[]> {
+    const { data, error } = await this.supabase
+      .from('world_ripples')
+      .select('*')
+      .eq('series_id', seriesId)
+      .eq('is_active', true);
+
+    if (error) {
+      console.error('Error fetching active ripples:', error);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  public async resolveRipple(rippleId: string, resolution: string): Promise<boolean> {
+    const { error } = await this.supabase
+      .from('world_ripples')
+      .update({
+        is_active: false,
+        resolved_at: new Date().toISOString(),
+        consequence_summary: resolution,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', rippleId);
+
+    if (error) {
+      console.error('Error resolving ripple:', error);
+      return false;
+    }
+
+    return true;
+  }
+
   // ==========================================================================
   // MAPPING FUNCTIONS
   // ==========================================================================
@@ -1460,7 +1556,7 @@ export class PersistentNarrativeEngine {
       category: data.category,
       tags: data.tags || [],
       relatedElements: data.related_elements || [],
-      conflictsWith: data.conflicts_with || [],
+      conflicts_with: data.conflicts_with || [],
       dependsOn: data.depends_on || [],
       rules: data.rules || { rules: [], constraints: [], exceptions: [] },
       introducedInBook: data.introduced_in_book,
@@ -1470,6 +1566,28 @@ export class PersistentNarrativeEngine {
       destructionReason: data.destruction_reason,
       canonLockLevel: data.canon_lock_level,
       metadata: data.metadata || {},
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
+  }
+
+  private mapLocation(data: any): WorldLocation {
+    return {
+      id: data.id,
+      elementId: data.element_id,
+      seriesId: data.series_id,
+      locationType: data.location_type,
+      coordinates: data.coordinates,
+      parentLocationId: data.parent_location_id,
+      population: data.population,
+      climate: data.climate,
+      terrain: data.terrain,
+      resources: data.resources || [],
+      hazards: data.hazards || [],
+      controllingFaction: data.controlling_faction,
+      governmentType: data.government_type,
+      connectedLocations: data.connected_locations || [],
+      travelTimes: data.travel_times || {},
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };

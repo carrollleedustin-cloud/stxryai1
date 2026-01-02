@@ -473,7 +473,7 @@ export class AnalyticsService {
       totalLikes: data.total_likes || 0,
       totalComments: data.total_comments || 0,
       totalReviews: data.total_reviews || 0,
-      averageRating: parseFloat(data.average_rating || '0'),
+      averageRating: parseFloat(data.rating || '0'),
       totalBookmarks: data.total_bookmarks || 0,
       totalShares: data.total_shares || 0,
       totalRevenue: parseFloat(data.total_revenue || '0'),

@@ -73,6 +73,8 @@ export default function RootLayout() {
             >
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="badges" options={{ presentation: 'modal', headerShown: false }} />
+              <Stack.Screen name="reader/[id]" options={{ presentation: 'fullScreenModal', headerShown: false }} />
               <Stack.Screen name="story/[id]" options={{ presentation: 'fullScreenModal' }} />
               <Stack.Screen name="kids-zone" options={{ headerShown: false }} />
             </Stack>
