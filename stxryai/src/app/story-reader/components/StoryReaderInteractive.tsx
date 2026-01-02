@@ -15,11 +15,18 @@ import { aiCompanionService } from '@/services/aiCompanionService';
 import usePetRewards from '@/hooks/usePetRewards';
 import { PetGreeting } from '@/components/pet';
 import type { StoryMode, CustomChoiceTier } from '@/services/storyCreationService';
-import { 
-  ChevronLeft, 
-  Bookmark, 
-  Settings, 
-  Maximize2, 
+// Revolutionary new components
+import QuantumTextRenderer from '@/components/story-reader/QuantumTextRenderer';
+import NeuralNetworkBackground from '@/components/story-reader/NeuralNetworkBackground';
+import ImmersiveSoundscape from '@/components/story-reader/ImmersiveSoundscape';
+import GestureControls from '@/components/story-reader/GestureControls';
+import DynamicPacingIndicator from '@/components/story-reader/DynamicPacingIndicator';
+import AICompanionPanel from '@/components/story-reader/AICompanionPanel';
+import {
+  ChevronLeft,
+  Bookmark,
+  Settings,
+  Maximize2,
   Minimize2,
   Type,
   Volume2,
@@ -34,6 +41,7 @@ import {
   Wind,
   Eye,
   EyeOff,
+  Users,
 } from 'lucide-react';
 import { AuroraBackdrop, NoiseOverlay, GlassCard } from '@/components/void/AdvancedEffects';
 
@@ -48,7 +56,7 @@ export default function StoryReaderInteractive() {
   const { user, profile } = useAuth();
   const { pet, hasPet, getDialogue, setShowPetPanel } = usePet();
   const { onChoiceMade, onChapterComplete, onStoryRead } = usePetRewards();
-  const storyId = searchParams?.get('storyId');
+  const storyId = searchParams?.get('storyId') || searchParams?.get('id');
   
   // State
   const [loading, setLoading] = useState(true);
@@ -87,7 +95,18 @@ export default function StoryReaderInteractive() {
   // Puzzle State
   const [currentPuzzle, setCurrentPuzzle] = useState<AIPuzzle | null>(null);
   const [showPuzzle, setShowPuzzle] = useState(false);
-  
+
+  // Revolutionary Features State
+  const [enableQuantumText, setEnableQuantumText] = useState(true);
+  const [showNeuralNetwork, setShowNeuralNetwork] = useState(true);
+  const [soundscapeEnabled, setSoundscapeEnabled] = useState(false);
+  const [gestureControlsEnabled, setGestureControlsEnabled] = useState(true);
+  const [showPacingIndicator, setShowPacingIndicator] = useState(true);
+  const [showAICompanion, setShowAICompanion] = useState(false);
+  const [currentEmotionalState, setCurrentEmotionalState] = useState('neutral');
+  const [readingSpeed, setReadingSpeed] = useState(1);
+  const [hoveredWord, setHoveredWord] = useState<{ word: string; position: { x: number; y: number } } | null>(null);
+
   const contentRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -463,6 +482,85 @@ export default function StoryReaderInteractive() {
         )}
       </AnimatePresence>
 
+      {/* Revolutionary Features */}
+      {showNeuralNetwork && (
+        <NeuralNetworkBackground
+          intensity={zenMode ? 0.8 : 0.4}
+          colorScheme={theme === 'void' ? 'cyan' : theme === 'sepia' ? 'mixed' : 'violet'}
+          readingProgress={progress}
+          emotionalState={currentEmotionalState}
+          particleCount={80}
+        />
+      )}
+
+      <ImmersiveSoundscape
+        isEnabled={soundscapeEnabled}
+        volume={0.3}
+        emotionalState={currentEmotionalState}
+        readingSpeed={readingSpeed}
+        chapterProgress={progress}
+        theme={theme}
+      />
+
+      {gestureControlsEnabled && (
+        <GestureControls
+          onSwipeLeft={() => {
+            const nextIndex = Math.min(currentChapterIndex + 1, chapters.length - 1);
+            setCurrentChapterIndex(nextIndex);
+            contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onSwipeRight={() => {
+            const prevIndex = Math.max(currentChapterIndex - 1, 0);
+            setCurrentChapterIndex(prevIndex);
+            contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onSwipeUp={() => setZenMode(!zenMode)}
+          onSwipeDown={() => setShowSettings(!showSettings)}
+          onTap={(position) => {
+            // Handle tap gestures
+            console.log('Tap at:', position);
+          }}
+          onDoubleTap={() => setShowAICompanion(!showAICompanion)}
+          onLongPress={(position) => {
+            setHoveredWord({ word: 'Long press detected', position });
+            setTimeout(() => setHoveredWord(null), 2000);
+          }}
+          sensitivity={1}
+          enableHapticFeedback={true}
+          showGestureHints={true}
+        />
+      )}
+
+      {showPacingIndicator && (
+        <DynamicPacingIndicator
+          readingSpeed={readingSpeed}
+          emotionalIntensity={currentEmotionalState === 'joy' || currentEmotionalState === 'anger' ? 0.8 :
+                              currentEmotionalState === 'fear' ? 0.6 :
+                              currentEmotionalState === 'sadness' ? 0.3 : 0.5}
+          chapterComplexity={0.5} // Could be calculated from chapter content
+          userStamina={profile?.daily_choice_limit ? (profile.daily_choices_used / profile.daily_choice_limit) : 1}
+          showSuggestions={true}
+          theme={theme}
+          position="floating"
+        />
+      )}
+
+      <AICompanionPanel
+        isVisible={showAICompanion}
+        companionName="Aria"
+        personality="wise"
+        currentEmotion={currentEmotionalState}
+        readingProgress={progress}
+        onSendMessage={(message) => {
+          console.log('User message:', message);
+          // Could integrate with AI service here
+        }}
+        onCompanionResponse={(response) => {
+          console.log('Companion response:', response);
+        }}
+        theme={theme}
+      />
+
       {/* Reading Progress Bar */}
       <div
         className="fixed top-0 left-0 h-[2px] z-50 transition-all duration-100"
@@ -706,6 +804,109 @@ export default function StoryReaderInteractive() {
                     />
                   </button>
                 </div>
+
+                {/* Revolutionary Features */}
+                <div className="border-t border-membrane/50 pt-4 space-y-4">
+                  <h4 className={`text-xs font-bold tracking-widest uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-spectral-cyan'}`}>
+                    🚀 Advanced Features
+                  </h4>
+
+                  {/* Quantum Text */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      Quantum Text
+                    </label>
+                    <button
+                      onClick={() => setEnableQuantumText(!enableQuantumText)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${enableQuantumText ? 'bg-spectral-violet' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: enableQuantumText ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !enableQuantumText ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Neural Network */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      Neural Network
+                    </label>
+                    <button
+                      onClick={() => setShowNeuralNetwork(!showNeuralNetwork)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${showNeuralNetwork ? 'bg-spectral-cyan' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: showNeuralNetwork ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !showNeuralNetwork ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Immersive Sound */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      Soundscape
+                    </label>
+                    <button
+                      onClick={() => setSoundscapeEnabled(!soundscapeEnabled)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${soundscapeEnabled ? 'bg-spectral-rose' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: soundscapeEnabled ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !soundscapeEnabled ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Gesture Controls */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      Gestures
+                    </label>
+                    <button
+                      onClick={() => setGestureControlsEnabled(!gestureControlsEnabled)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${gestureControlsEnabled ? 'bg-spectral-emerald' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: gestureControlsEnabled ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !gestureControlsEnabled ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Pacing Indicator */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      Pacing Guide
+                    </label>
+                    <button
+                      onClick={() => setShowPacingIndicator(!showPacingIndicator)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${showPacingIndicator ? 'bg-plasma-orange' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: showPacingIndicator ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !showPacingIndicator ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* AI Companion */}
+                  <div className="flex items-center justify-between">
+                    <label className={`text-xs tracking-wide uppercase ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-tertiary'}`}>
+                      AI Companion
+                    </label>
+                    <button
+                      onClick={() => setShowAICompanion(!showAICompanion)}
+                      className={`w-12 h-6 rounded-full transition-colors relative ${showAICompanion ? 'bg-spectral-violet' : theme === 'light' ? 'bg-[#6b4423]/10' : 'bg-void-mist'}`}
+                    >
+                      <motion.div
+                        animate={{ x: showAICompanion ? 26 : 2 }}
+                        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-md ${theme === 'light' && !showAICompanion ? 'bg-[#6b4423]/40' : 'bg-text-primary'}`}
+                      />
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </>
@@ -762,39 +963,60 @@ export default function StoryReaderInteractive() {
         
         {/* Story Content */}
         <article className="max-w-2xl mx-auto px-6 pb-32">
-          {paragraphs.map((paragraph: string, index: number) => (
-            <motion.p
-              key={index}
-              data-paragraph={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ 
-                opacity: focusMode ? (index === activeParagraph ? 1 : 0.25) : 1,
-                y: 0,
-                scale: focusMode && index === activeParagraph ? 1.01 : 1,
+          {enableQuantumText ? (
+            <QuantumTextRenderer
+              text={currentChapter?.content || 'No content available.'}
+              fontSize={fontSize}
+              theme={theme}
+              onWordHover={(word, position) => {
+                setHoveredWord({ word, position });
+                // Analyze word for emotional content
+                const emotionalWords = ['love', 'hate', 'fear', 'joy', 'sad', 'angry', 'happy', 'scared'];
+                if (emotionalWords.some(emotion => word.toLowerCase().includes(emotion))) {
+                  setCurrentEmotionalState(word.toLowerCase());
+                }
               }}
-              transition={{ 
-                duration: 0.6, 
-                delay: index * 0.05,
-                ease: [0.16, 1, 0.3, 1],
+              onEmotionDetected={(emotion, intensity) => {
+                setCurrentEmotionalState(emotion);
               }}
-              className={`font-prose leading-[2.2] mb-8 transition-all duration-500 ${index === 0 ? '' : 'indent-8'} ${currentTheme.text}`}
-              style={{ fontSize: `${fontSize}px` }}
-            >
-              {index === 0 ? (
-                <>
-                  <span 
-                    className={`float-left font-literary text-6xl leading-none pr-3 pt-1 ${currentTheme.accent}`}
-                    style={{ textShadow: theme !== 'light' ? '0 0 30px rgba(0, 245, 212, 0.3)' : 'none' }}
-                  >
-                    {paragraph[0]}
-                  </span>
-                  {paragraph.slice(1)}
-                </>
-              ) : (
-                paragraph
-              )}
-            </motion.p>
-          ))}
+              enableParticleEffects={true}
+              readingSpeed={readingSpeed}
+            />
+          ) : (
+            paragraphs.map((paragraph: string, index: number) => (
+              <motion.p
+                key={index}
+                data-paragraph={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{
+                  opacity: focusMode ? (index === activeParagraph ? 1 : 0.25) : 1,
+                  y: 0,
+                  scale: focusMode && index === activeParagraph ? 1.01 : 1,
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.05,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className={`font-prose leading-[2.2] mb-8 transition-all duration-500 ${index === 0 ? '' : 'indent-8'} ${currentTheme.text}`}
+                style={{ fontSize: `${fontSize}px` }}
+              >
+                {index === 0 ? (
+                  <>
+                    <span
+                      className={`float-left font-literary text-6xl leading-none pr-3 pt-1 ${currentTheme.accent}`}
+                      style={{ textShadow: theme !== 'light' ? '0 0 30px rgba(0, 245, 212, 0.3)' : 'none' }}
+                    >
+                      {paragraph[0]}
+                    </span>
+                    {paragraph.slice(1)}
+                  </>
+                ) : (
+                  paragraph
+                )}
+              </motion.p>
+            ))
+          )}
           
           {/* AI Resonance */}
           {aiSegments.length > 0 && (

@@ -1,392 +1,525 @@
-# Stxryai Setup Guide
+# StxryAI Platform Setup Guide
 
-Complete setup guide for deploying Stxryai with authentication and AI features.
+## 📋 Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Initial Setup](#initial-setup)
+3. [Database Configuration](#database-configuration)
+4. [Environment Variables](#environment-variables)
+5. [Running Migrations](#running-migrations)
+6. [Seeding Data](#seeding-data)
+7. [Development Workflow](#development-workflow)
+8. [Testing](#testing)
+9. [Deployment](#deployment)
+10. [Troubleshooting](#troubleshooting)
+
+---
 
 ## Prerequisites
 
-- Node.js 18+ installed
-- Supabase account (free tier works)
-- Google Cloud Console account (for Google OAuth)
-- Discord Developer Portal account (for Discord OAuth)
-- OpenAI or Anthropic API key (for AI features)
+### Required Software
 
-## 1. Supabase Setup
+- **Node.js** (v18 or higher)
+- **npm** or **yarn** or **pnpm**
+- **PostgreSQL** (v14 or higher)
+- **Git**
 
-### Create Supabase Project
+### Recommended Tools
 
-1. Go to [Supabase](https://supabase.com) and sign in
-2. Click "New Project"
-3. Fill in project details:
-   - Project name: `stxryai` (or your choice)
-   - Database password: (save this securely)
-   - Region: Choose closest to your users
-4. Wait for project to be created (takes ~2 minutes)
+- **VS Code** with extensions:
+  - Svelte for VS Code
+  - Prisma
+  - ESLint
+  - Prettier
+- **Postman** or **Insomnia** for API testing
+- **pgAdmin** or **TablePlus** for database management
 
-### Get API Keys
+---
 
-1. In your Supabase project dashboard, go to **Settings** → **API**
-2. Copy these values:
-   - **Project URL** (looks like `https://xxxxx.supabase.co`)
-   - **Anon/Public Key** (starts with `eyJ...`)
+## Initial Setup
 
-### Configure Authentication
-
-1. Go to **Authentication** → **Providers**
-2. Enable **Email** provider:
-   - Toggle "Enable Email provider" ON
-   - Enable "Confirm email" (recommended for production)
-   - Save
-
-## 2. Google OAuth Setup
-
-### Create OAuth Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project or select existing
-3. Enable Google+ API:
-   - Go to **APIs & Services** → **Library**
-   - Search for "Google+ API"
-   - Click "Enable"
-4. Create OAuth credentials:
-   - Go to **APIs & Services** → **Credentials**
-   - Click **+ CREATE CREDENTIALS** → **OAuth client ID**
-   - Application type: **Web application**
-   - Name: `Stxryai`
-   - Authorized redirect URIs:
-     - `https://your-project.supabase.co/auth/v1/callback`
-     - `http://localhost:3000/authentication/callback` (for local dev)
-   - Click **CREATE**
-5. Copy **Client ID** and **Client Secret**
-
-### Configure in Supabase
-
-1. In Supabase, go to **Authentication** → **Providers**
-2. Find **Google** and toggle ON
-3. Paste your **Client ID** and **Client Secret**
-4. Save
-
-## 3. Discord OAuth Setup
-
-### Create Discord Application
-
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Click **New Application**
-3. Name: `Stxryai`
-4. Go to **OAuth2** tab
-5. Copy **Client ID** and **Client Secret**
-6. Add Redirects:
-   - ``
-   - `http://localhost:3000/authentication/callback` (for local dev)
-7. Save Changes
-
-### Configure in Supabase
-
-1. In Supabase, go to **Authentication** → **Providers**
-2. Find **Discord** and toggle ON
-3. Paste your **Client ID** and **Client Secret**
-4. Save
-
-## 4. Environment Variables Setup
-
-Create a `.env.local` file in the `stxryai` directory:
+### 1. Clone the Repository
 
 ```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-
-# AI API (Choose one or both)
-OPENAI_API_KEY=sk-...your_openai_key
-ANTHROPIC_API_KEY=sk-ant-...your_anthropic_key
-
-# Stripe (Optional - for payments)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-
-# Google AdSense (Optional)
-NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-...
-NEXT_PUBLIC_ADSENSE_ID=your_adsense_id_here
+git clone <repository-url>
+cd stxryai
 ```
 
-### Get AI API Keys
+### 2. Install Dependencies
 
-**OpenAI:**
-1. Go to [OpenAI Platform](https://platform.openai.com)
-2. Sign in or create account
-3. Go to **API Keys**
-4. Click **+ Create new secret key**
-5. Copy the key (starts with `sk-`)
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
-**Anthropic (Claude):**
-1. Go to [Anthropic Console](https://console.anthropic.com)
-2. Sign in or create account
-3. Go to **API Keys**
-4. Click **Create Key**
-5. Copy the key (starts with `sk-ant-`)
+### 3. Create Environment File
 
-## 5. Database Schema Setup
+```bash
+cp .env.example .env
+```
 
-Run these SQL commands in your Supabase SQL Editor:
+---
+
+## Database Configuration
+
+### 1. Create PostgreSQL Database
 
 ```sql
--- User Profiles Table
-CREATE TABLE IF NOT EXISTS user_profiles (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE UNIQUE NOT NULL,
-  username TEXT UNIQUE NOT NULL,
-  display_name TEXT NOT NULL,
-  avatar_url TEXT,
-  bio TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enable Row Level Security
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-
--- Policies
-CREATE POLICY "Users can view any profile"
-  ON user_profiles FOR SELECT
-  USING (true);
-
-CREATE POLICY "Users can update own profile"
-  ON user_profiles FOR UPDATE
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own profile"
-  ON user_profiles FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- Stories Table
-CREATE TABLE IF NOT EXISTS stories (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  author_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT,
-  content JSONB NOT NULL,
-  genre TEXT NOT NULL,
-  tags TEXT[] DEFAULT '{}',
-  cover_image_url TEXT,
-  is_published BOOLEAN DEFAULT false,
-  is_premium BOOLEAN DEFAULT false,
-  view_count INTEGER DEFAULT 0,
-  like_count INTEGER DEFAULT 0,
-  bookmark_count INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
-
--- Story Policies
-CREATE POLICY "Published stories are viewable by everyone"
-  ON stories FOR SELECT
-  USING (is_published = true OR auth.uid() = author_id);
-
-CREATE POLICY "Authors can insert own stories"
-  ON stories FOR INSERT
-  WITH CHECK (auth.uid() = author_id);
-
-CREATE POLICY "Authors can update own stories"
-  ON stories FOR UPDATE
-  USING (auth.uid() = author_id);
-
-CREATE POLICY "Authors can delete own stories"
-  ON stories FOR DELETE
-  USING (auth.uid() = author_id);
-
--- Reading Progress Table
-CREATE TABLE IF NOT EXISTS reading_progress (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  story_id UUID REFERENCES stories(id) ON DELETE CASCADE NOT NULL,
-  current_chapter INTEGER DEFAULT 0,
-  progress_percentage INTEGER DEFAULT 0,
-  last_read_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, story_id)
-);
-
-ALTER TABLE reading_progress ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can manage own reading progress"
-  ON reading_progress FOR ALL
-  USING (auth.uid() = user_id);
-
--- User Activity Table
-CREATE TABLE IF NOT EXISTS user_activity (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  activity_type TEXT NOT NULL,
-  metadata JSONB DEFAULT '{}',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
-ALTER TABLE user_activity ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own activity"
-  ON user_activity FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own activity"
-  ON user_activity FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- Create indexes for performance
-CREATE INDEX idx_stories_author ON stories(author_id);
-CREATE INDEX idx_stories_genre ON stories(genre);
-CREATE INDEX idx_stories_published ON stories(is_published);
-CREATE INDEX idx_reading_progress_user ON reading_progress(user_id);
-CREATE INDEX idx_reading_progress_story ON reading_progress(story_id);
-CREATE INDEX idx_user_activity_user ON user_activity(user_id);
-CREATE INDEX idx_user_activity_type ON user_activity(activity_type);
+CREATE DATABASE stxryai_dev;
+CREATE USER stxryai_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE stxryai_dev TO stxryai_user;
 ```
 
-## 6. Local Development
+### 2. Configure Database URL
 
-1. Install dependencies:
+Update your `.env` file:
+
+```env
+DATABASE_URL="postgresql://stxryai_user:your_secure_password@localhost:5432/stxryai_dev"
+```
+
+---
+
+## Environment Variables
+
+### Required Variables
+
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/stxryai_dev"
+
+# Authentication
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+SESSION_SECRET="your-session-secret-key"
+
+# OpenAI API
+OPENAI_API_KEY="sk-..."
+
+# Application
+NODE_ENV="development"
+PORT=5173
+PUBLIC_APP_URL="http://localhost:5173"
+
+# Email (Optional for development)
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+SMTP_USER="your-email@gmail.com"
+SMTP_PASSWORD="your-app-password"
+
+# Storage (Optional)
+AWS_ACCESS_KEY_ID="your-aws-key"
+AWS_SECRET_ACCESS_KEY="your-aws-secret"
+AWS_S3_BUCKET="stxryai-assets"
+AWS_REGION="us-east-1"
+```
+
+### Optional Variables
+
+```env
+# Analytics
+GOOGLE_ANALYTICS_ID="G-XXXXXXXXXX"
+
+# Feature Flags
+ENABLE_FAMILY_FEATURES=true
+ENABLE_CULTURAL_CONTENT=true
+ENABLE_EARLY_LEARNING=true
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+```
+
+---
+
+## Running Migrations
+
+### 1. Generate Prisma Client
+
 ```bash
-cd stxryai
-npm install
+npx prisma generate
 ```
 
-2. Run development server:
+### 2. Run Migrations
+
+```bash
+npx prisma migrate dev --name init
+```
+
+### 3. Verify Database Schema
+
+```bash
+npx prisma studio
+```
+
+This opens a browser-based database GUI at `http://localhost:5555`
+
+---
+
+## Seeding Data
+
+### 1. Run Seed Script
+
+```bash
+npm run seed
+# or
+npx prisma db seed
+```
+
+### 2. Verify Seeded Data
+
+The seed script creates:
+- Sample users (parent, child, educator)
+- Cultural heritage data (Black, African, Caribbean)
+- Age-appropriate content templates
+- Sample stories and activities
+- Family collaboration examples
+
+### 3. Test Accounts
+
+After seeding, you can log in with:
+
+**Parent Account:**
+- Email: `parent@example.com`
+- Password: `password123`
+
+**Educator Account:**
+- Email: `educator@example.com`
+- Password: `password123`
+
+**Child Account:**
+- Username: `child_user`
+- PIN: `1234`
+
+---
+
+## Development Workflow
+
+### 1. Start Development Server
+
 ```bash
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000)
+The application will be available at `http://localhost:5173`
 
-## 7. Testing Authentication
+### 2. Watch for Changes
 
-### Test Email Signup
+The dev server automatically:
+- Hot-reloads on file changes
+- Compiles TypeScript
+- Processes Svelte components
+- Updates Tailwind CSS
 
-1. Go to `/authentication`
-2. Click "Sign Up"
-3. Fill in the form with your email
-4. Check email for confirmation link (if email confirmation is enabled)
-5. After confirming, you should be redirected to `/user-dashboard`
+### 3. Database Changes
 
-### Test Google OAuth
+When modifying the schema:
 
-1. Go to `/authentication`
-2. Click "Continue with Google"
-3. Select your Google account
-4. Grant permissions
-5. You should be redirected to `/user-dashboard`
+```bash
+# 1. Update schema.prisma
+# 2. Create migration
+npx prisma migrate dev --name your_migration_name
 
-### Test Discord OAuth
-
-1. Go to `/authentication`
-2. Click "Continue with Discord"
-3. Authorize the application
-4. You should be redirected to `/user-dashboard`
-
-## 8. Create Admin Account
-
-### Option 1: Through UI
-
-1. Go to `/authentication`
-2. Sign up with your admin email
-3. In Supabase dashboard, go to **Authentication** → **Users**
-4. Find your user
-5. Add custom claim in user metadata:
-```json
-{
-  "role": "admin"
-}
+# 3. Regenerate client
+npx prisma generate
 ```
 
-### Option 2: Through SQL
+### 4. Code Quality
 
-```sql
--- After signing up, run this with your user ID
-UPDATE auth.users
-SET raw_app_meta_data = jsonb_set(
-  COALESCE(raw_app_meta_data, '{}'::jsonb),
-  '{role}',
-  '"admin"'
-)
-WHERE email = 'your-admin-email@example.com';
+```bash
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Type check
+npm run check
 ```
-
-## 9. Deploy to Production
-
-### Netlify Deployment
-
-1. Push code to GitHub repository
-2. Go to [Netlify](https://netlify.com)
-3. Click "Add new site" → "Import an existing project"
-4. Connect to your GitHub repository
-5. Configure build settings:
-   - Build command: `cd stxryai && npm run build`
-   - Publish directory: `stxryai/.next`
-6. Add environment variables (all from `.env.local`)
-7. Deploy!
-
-### Update OAuth Redirect URLs
-
-After deployment, update redirect URLs in:
-1. **Google Cloud Console** → Add production URL
-2. **Discord Developer Portal** → Add production URL
-3. **Supabase** → Update site URL in Settings
-
-## 10. AI API Integration
-
-The app is configured to use AI APIs for:
-- Story generation assistance
-- Content suggestions
-- Personalized recommendations
-
-See `src/lib/ai/` for implementation details.
-
-### Configure AI Provider
-
-Edit `src/lib/ai/config.ts` to set your preferred provider:
-
-```typescript
-export const AI_CONhttps://your-project.supabase.co/auth/v1/callbackFIG = {
-  provider: 'anthropic', // or 'openai'
-  model: 'claude-3-5-sonnet-20241022', // or 'gpt-4'
-  maxTokens: 4000,
-  temperature: 0.7
-};
-```
-
-## Troubleshooting
-
-### "Supabase is not configured"
-
-- Check that `.env.local` exists and has correct values
-- Restart development server after adding env variables
-- Verify Supabase project is not paused
-
-### OAuth Not Working
-
-- Verify redirect URLs match exactly (including http/https)
-- Check that OAuth providers are enabled in Supabase
-- Clear browser cookies and try again
-
-### Database Errors
-
-- Ensure all SQL commands ran successfully
-- Check Supabase database logs for errors
-- Verify RLS policies are correct
-
-## Next Steps
-
-1. ✅ Authentication is now fully functional
-2. Configure AI API for story generation
-3. Customize branding and styling
-4. Add custom features
-5. Launch!
-
-## Support
-
-For issues or questions:
-- Check Supabase documentation: https://supabase.com/docs
-- Review Next.js docs: https://nextjs.org/docs
-- Open an issue on GitHub
 
 ---
 
-**Ready to launch!** 🚀
+## Testing
+
+### 1. Run All Tests
+
+```bash
+npm test
+```
+
+### 2. Run Specific Test Suites
+
+```bash
+# Unit tests
+npm run test:unit
+
+# Integration tests
+npm run test:integration
+
+# E2E tests
+npm run test:e2e
+```
+
+### 3. Test Coverage
+
+```bash
+npm run test:coverage
+```
+
+### 4. Watch Mode
+
+```bash
+npm run test:watch
+```
+
+---
+
+## Deployment
+
+### Production Build
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+### Environment-Specific Builds
+
+```bash
+# Staging
+NODE_ENV=staging npm run build
+
+# Production
+NODE_ENV=production npm run build
+```
+
+### Database Migration (Production)
+
+```bash
+# Deploy migrations
+npx prisma migrate deploy
+
+# Generate client
+npx prisma generate
+```
+
+### Deployment Checklist
+
+- [ ] Update environment variables
+- [ ] Run database migrations
+- [ ] Build application
+- [ ] Run smoke tests
+- [ ] Monitor error logs
+- [ ] Verify critical features
+- [ ] Check performance metrics
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Database Connection Errors
+
+**Problem:** `Can't reach database server`
+
+**Solutions:**
+- Verify PostgreSQL is running: `pg_isready`
+- Check DATABASE_URL in `.env`
+- Ensure database exists
+- Verify user permissions
+
+```bash
+# Test connection
+psql -U stxryai_user -d stxryai_dev -h localhost
+```
+
+#### 2. Migration Errors
+
+**Problem:** `Migration failed to apply`
+
+**Solutions:**
+```bash
+# Reset database (development only!)
+npx prisma migrate reset
+
+# Or manually fix
+npx prisma migrate resolve --applied "migration_name"
+```
+
+#### 3. Prisma Client Out of Sync
+
+**Problem:** `Type errors after schema changes`
+
+**Solution:**
+```bash
+npx prisma generate
+npm run check
+```
+
+#### 4. Port Already in Use
+
+**Problem:** `Port 5173 is already in use`
+
+**Solutions:**
+```bash
+# Find and kill process
+lsof -ti:5173 | xargs kill -9
+
+# Or use different port
+PORT=3000 npm run dev
+```
+
+#### 5. OpenAI API Errors
+
+**Problem:** `Invalid API key` or `Rate limit exceeded`
+
+**Solutions:**
+- Verify OPENAI_API_KEY in `.env`
+- Check API quota and billing
+- Implement rate limiting
+- Use fallback content
+
+#### 6. Build Errors
+
+**Problem:** `Build failed` or `Type errors`
+
+**Solutions:**
+```bash
+# Clear cache
+rm -rf .svelte-kit node_modules
+npm install
+
+# Type check
+npm run check
+
+# Rebuild
+npm run build
+```
+
+### Debug Mode
+
+Enable detailed logging:
+
+```env
+DEBUG=true
+LOG_LEVEL=debug
+```
+
+### Getting Help
+
+1. Check documentation: `FAMILY_ENGAGEMENT_AND_CULTURAL_EMPOWERMENT.md`
+2. Review code comments in source files
+3. Search existing issues
+4. Create detailed bug report with:
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Environment details
+   - Error messages and logs
+
+---
+
+## Additional Resources
+
+### Documentation
+
+- [SvelteKit Documentation](https://kit.svelte.dev/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [OpenAI API Documentation](https://platform.openai.com/docs)
+
+### Project Documentation
+
+- `FAMILY_ENGAGEMENT_AND_CULTURAL_EMPOWERMENT.md` - Feature documentation
+- `src/lib/family/familyCollaboration.ts` - Family features
+- `src/lib/family/parentDashboard.ts` - Parent dashboard
+- `src/lib/learning/earlyLearning.ts` - Early learning system
+- `src/lib/cultural/empowerment.ts` - Cultural content
+
+### Development Tools
+
+```bash
+# Database GUI
+npx prisma studio
+
+# API testing
+npm run test:api
+
+# Performance profiling
+npm run profile
+
+# Bundle analysis
+npm run analyze
+```
+
+---
+
+## Quick Reference
+
+### Essential Commands
+
+```bash
+# Development
+npm run dev              # Start dev server
+npm run build            # Production build
+npm run preview          # Preview build
+
+# Database
+npx prisma studio        # Database GUI
+npx prisma migrate dev   # Run migrations
+npx prisma generate      # Generate client
+npm run seed             # Seed database
+
+# Code Quality
+npm run lint             # Lint code
+npm run format           # Format code
+npm run check            # Type check
+npm test                 # Run tests
+
+# Utilities
+npm run clean            # Clean build artifacts
+npm run reset            # Reset everything
+```
+
+### File Structure
+
+```
+stxryai/
+├── src/
+│   ├── lib/
+│   │   ├── family/          # Family engagement features
+│   │   ├── learning/        # Early learning system
+│   │   ├── cultural/        # Cultural empowerment
+│   │   └── components/      # Reusable components
+│   ├── routes/              # SvelteKit routes
+│   └── app.html             # HTML template
+├── prisma/
+│   ├── schema.prisma        # Database schema
+│   ├── migrations/          # Migration files
+│   └── seed.ts              # Seed script
+├── static/                  # Static assets
+├── tests/                   # Test files
+└── docs/                    # Documentation
+```
+
+---
+
+## Support
+
+For additional help:
+- Review inline code documentation
+- Check troubleshooting section
+- Consult feature documentation
+- Contact development team
+
+---
+
+**Last Updated:** 2025
+**Version:** 1.0.0

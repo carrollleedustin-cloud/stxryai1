@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { createCheckoutSession, getOrCreateCustomer, SUBSCRIPTION_TIERS, StripeTier, getStripe } from '@/lib/stripe/server';
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 // Map frontend tier names to Stripe tier keys
 function mapTierToStripeTier(tier: string): StripeTier | null {

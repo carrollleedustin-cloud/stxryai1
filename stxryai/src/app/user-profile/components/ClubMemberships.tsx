@@ -55,7 +55,7 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
         {clubs.map((club) => (
           <Link
             key={club.id}
-            href={`/social?club=${club.id}`}
+            href={`/clubs/${club.id}`}
             className="flex items-start space-x-4 p-4 bg-muted/30 hover:bg-muted/50 rounded-lg transition-smooth group"
           >
             <div className="relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
@@ -114,7 +114,7 @@ const ClubMemberships = ({ clubs }: ClubMembershipsProps) => {
             You haven&apos;t joined any clubs yet
           </p>
           <Link
-            href="/social"
+            href="/community-hub"
             className="inline-flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition-smooth"
           >
             <Icon name="PlusIcon" size={18} />
