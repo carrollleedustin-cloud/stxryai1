@@ -1,8 +1,9 @@
 -- ============================================================================
--- STXRYAI DATABASE INITIALIZATION SCRIPT
+-- STXRYAI DATABASE INITIALIZATION SCRIPT (MIGRATION-SAFE VERSION)
 -- Version: 1.0.0
 -- Date: January 2026
 -- Description: Complete database schema with tables, indexes, and policies
+-- SAFE TO RUN ON EXISTING DATABASES - Won't error on duplicates
 -- ============================================================================
 
 -- Enable required extensions
@@ -10,7 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ============================================================================
--- ENUMS
+-- ENUMS (Safe creation - won't error if exists)
 -- ============================================================================
 
 DO $$ BEGIN
@@ -374,7 +375,7 @@ CREATE INDEX IF NOT EXISTS idx_friendships_user ON user_friendships(user_id);
 CREATE INDEX IF NOT EXISTS idx_friendships_friend ON user_friendships(friend_id);
 
 -- ============================================================================
--- ROW LEVEL SECURITY POLICIES
+-- ROW LEVEL SECURITY POLICIES (Safe creation - drops existing first)
 -- ============================================================================
 
 -- Enable RLS on all tables
@@ -399,33 +400,42 @@ ALTER TABLE user_friendships ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_reading_lists ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reading_list_items ENABLE ROW LEVEL SECURITY;
 
--- User profiles policies
+-- Drop existing policies if they exist, then create new ones
+DROP POLICY IF EXISTS "Users can view own profile" ON user_profiles;
 CREATE POLICY "Users can view own profile" ON user_profiles
   FOR SELECT USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
 CREATE POLICY "Users can update own profile" ON user_profiles
   FOR UPDATE USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Anyone can view public profiles" ON user_profiles;
 CREATE POLICY "Anyone can view public profiles" ON user_profiles
   FOR SELECT USING (true);
 
 -- Stories policies
+DROP POLICY IF EXISTS "Anyone can view published stories" ON stories;
 CREATE POLICY "Anyone can view published stories" ON stories
   FOR SELECT USING (is_published = true);
 
+DROP POLICY IF EXISTS "Users can view own stories" ON stories;
 CREATE POLICY "Users can view own stories" ON stories
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can create stories" ON stories;
 CREATE POLICY "Users can create stories" ON stories
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own stories" ON stories;
 CREATE POLICY "Users can update own stories" ON stories
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own stories" ON stories;
 CREATE POLICY "Users can delete own stories" ON stories
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Chapters policies
+DROP POLICY IF EXISTS "Anyone can view published chapters" ON chapters;
 CREATE POLICY "Anyone can view published chapters" ON chapters
   FOR SELECT USING (
     EXISTS (
@@ -435,6 +445,7 @@ CREATE POLICY "Anyone can view published chapters" ON chapters
     )
   );
 
+DROP POLICY IF EXISTS "Users can manage own story chapters" ON chapters;
 CREATE POLICY "Users can manage own story chapters" ON chapters
   FOR ALL USING (
     EXISTS (
@@ -445,13 +456,16 @@ CREATE POLICY "Users can manage own story chapters" ON chapters
   );
 
 -- User progress policies
+DROP POLICY IF EXISTS "Users can view own progress" ON user_progress;
 CREATE POLICY "Users can view own progress" ON user_progress
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can manage own progress" ON user_progress;
 CREATE POLICY "Users can manage own progress" ON user_progress
   FOR ALL USING (auth.uid() = user_id);
 
 -- Comments policies
+DROP POLICY IF EXISTS "Anyone can view comments on published stories" ON comments;
 CREATE POLICY "Anyone can view comments on published stories" ON comments
   FOR SELECT USING (
     EXISTS (
@@ -461,38 +475,48 @@ CREATE POLICY "Anyone can view comments on published stories" ON comments
     )
   );
 
+DROP POLICY IF EXISTS "Authenticated users can create comments" ON comments;
 CREATE POLICY "Authenticated users can create comments" ON comments
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own comments" ON comments;
 CREATE POLICY "Users can update own comments" ON comments
   FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own comments" ON comments;
 CREATE POLICY "Users can delete own comments" ON comments
   FOR DELETE USING (auth.uid() = user_id);
 
 -- Notifications policies
+DROP POLICY IF EXISTS "Users can view own notifications" ON notifications;
 CREATE POLICY "Users can view own notifications" ON notifications
   FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own notifications" ON notifications;
 CREATE POLICY "Users can update own notifications" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- User badges policies
+DROP POLICY IF EXISTS "Users can view own badges" ON user_badges;
 CREATE POLICY "Users can view own badges" ON user_badges
   FOR SELECT USING (auth.uid() = user_id);
 
 -- User activities policies
+DROP POLICY IF EXISTS "Users can view own activities" ON user_activities;
 CREATE POLICY "Users can view own activities" ON user_activities
   FOR SELECT USING (auth.uid() = user_id);
 
 -- User friendships policies
+DROP POLICY IF EXISTS "Users can manage own friendships" ON user_friendships;
 CREATE POLICY "Users can manage own friendships" ON user_friendships
   FOR ALL USING (auth.uid() = user_id OR auth.uid() = friend_id);
 
 -- User reading lists policies
+DROP POLICY IF EXISTS "Users can manage own reading lists" ON user_reading_lists;
 CREATE POLICY "Users can manage own reading lists" ON user_reading_lists
   FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can view public reading lists" ON user_reading_lists;
 CREATE POLICY "Users can view public reading lists" ON user_reading_lists
   FOR SELECT USING (is_public = true);
 
@@ -509,22 +533,28 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply updated_at trigger to relevant tables
+-- Drop existing triggers if they exist, then create new ones
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles;
 CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_profiles
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_stories_updated_at ON stories;
 CREATE TRIGGER update_stories_updated_at BEFORE UPDATE ON stories
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_chapters_updated_at ON chapters;
 CREATE TRIGGER update_chapters_updated_at BEFORE UPDATE ON chapters
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_user_progress_updated_at ON user_progress;
 CREATE TRIGGER update_user_progress_updated_at BEFORE UPDATE ON user_progress
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_comments_updated_at ON comments;
 CREATE TRIGGER update_comments_updated_at BEFORE UPDATE ON comments
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_ratings_updated_at ON ratings;
 CREATE TRIGGER update_ratings_updated_at BEFORE UPDATE ON ratings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -542,6 +572,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to update story rating on new rating
+DROP TRIGGER IF EXISTS update_story_rating_trigger ON ratings;
 CREATE TRIGGER update_story_rating_trigger AFTER INSERT OR UPDATE ON ratings
   FOR EACH ROW EXECUTE FUNCTION update_story_rating();
 
@@ -549,19 +580,21 @@ CREATE TRIGGER update_story_rating_trigger AFTER INSERT OR UPDATE ON ratings
 -- SEED DATA (Development/Staging Only)
 -- ============================================================================
 
--- Insert default achievements
-INSERT INTO achievements (title, description, icon, rarity, xp_reward, requirement_type, requirement_value) VALUES
-  ('First Steps', 'Create your first story', '🌟', 'common', 100, 'stories_created', 1),
-  ('Prolific Writer', 'Create 10 stories', '📚', 'rare', 500, 'stories_created', 10),
-  ('Master Storyteller', 'Create 50 stories', '👑', 'epic', 2500, 'stories_created', 50),
-  ('Bookworm', 'Read 10 stories', '📖', 'common', 100, 'stories_read', 10),
-  ('Avid Reader', 'Read 50 stories', '🎓', 'rare', 500, 'stories_read', 50),
-  ('Literary Legend', 'Read 200 stories', '🏆', 'legendary', 5000, 'stories_read', 200),
-  ('Social Butterfly', 'Follow 10 users', '🦋', 'common', 100, 'follows', 10),
-  ('Community Leader', 'Get 100 followers', '⭐', 'epic', 1000, 'followers', 100),
-  ('Critic', 'Leave 25 reviews', '✍️', 'rare', 250, 'reviews_written', 25),
-  ('Completionist', 'Finish 10 stories', '✅', 'rare', 500, 'stories_completed', 10)
-ON CONFLICT DO NOTHING;
+-- Insert default achievements (only if table is empty)
+INSERT INTO achievements (title, description, icon, rarity, xp_reward, requirement_type, requirement_value)
+SELECT * FROM (VALUES
+  ('First Steps', 'Create your first story', '🌟', 'common'::achievement_rarity, 100, 'stories_created', 1),
+  ('Prolific Writer', 'Create 10 stories', '📚', 'rare'::achievement_rarity, 500, 'stories_created', 10),
+  ('Master Storyteller', 'Create 50 stories', '👑', 'epic'::achievement_rarity, 2500, 'stories_created', 50),
+  ('Bookworm', 'Read 10 stories', '📖', 'common'::achievement_rarity, 100, 'stories_read', 10),
+  ('Avid Reader', 'Read 50 stories', '🎓', 'rare'::achievement_rarity, 500, 'stories_read', 50),
+  ('Literary Legend', 'Read 200 stories', '🏆', 'legendary'::achievement_rarity, 5000, 'stories_read', 200),
+  ('Social Butterfly', 'Follow 10 users', '🦋', 'common'::achievement_rarity, 100, 'follows', 10),
+  ('Community Leader', 'Get 100 followers', '⭐', 'epic'::achievement_rarity, 1000, 'followers', 100),
+  ('Critic', 'Leave 25 reviews', '✍️', 'rare'::achievement_rarity, 250, 'reviews_written', 25),
+  ('Completionist', 'Finish 10 stories', '✅', 'rare'::achievement_rarity, 500, 'stories_completed', 10)
+) AS v(title, description, icon, rarity, xp_reward, requirement_type, requirement_value)
+WHERE NOT EXISTS (SELECT 1 FROM achievements LIMIT 1);
 
 -- ============================================================================
 -- COMPLETION
@@ -575,10 +608,12 @@ GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated;
 -- Success message
 DO $$
 BEGIN
-  RAISE NOTICE 'Database initialization completed successfully!';
+  RAISE NOTICE '✅ Database initialization completed successfully!';
   RAISE NOTICE 'Tables created: 20 core tables';
   RAISE NOTICE 'Indexes created: 20+ performance indexes';
   RAISE NOTICE 'RLS policies enabled on all tables';
   RAISE NOTICE 'Triggers created for automatic timestamp updates and rating calculations';
   RAISE NOTICE 'Seed data inserted for achievements';
+  RAISE NOTICE '';
+  RAISE NOTICE '🎉 Safe to run on existing databases - no duplicate errors!';
 END $$;
