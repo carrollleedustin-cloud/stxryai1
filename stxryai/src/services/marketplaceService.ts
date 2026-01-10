@@ -143,22 +143,25 @@ export class MarketplaceService {
   ): Promise<PremiumStoryPricing> {
     const { data, error } = await this.supabase
       .from('premium_story_pricing')
-      .upsert({
-        story_id: storyId,
-        pricing_model: pricing.pricingModel,
-        price_amount: pricing.priceAmount,
-        currency: pricing.currency || 'USD',
-        chapter_price: pricing.chapterPrice,
-        free_chapters: pricing.freeChapters || 0,
-        subscription_duration_days: pricing.subscriptionDurationDays,
-        discount_percentage: pricing.discountPercentage || 0,
-        discount_expires_at: pricing.discountExpiresAt,
-        creator_share_percentage: pricing.creatorSharePercentage || 70.00,
-        platform_share_percentage: pricing.platformSharePercentage || 30.00,
-        is_active: pricing.isActive !== undefined ? pricing.isActive : true,
-      }, {
-        onConflict: 'story_id',
-      })
+      .upsert(
+        {
+          story_id: storyId,
+          pricing_model: pricing.pricingModel,
+          price_amount: pricing.priceAmount,
+          currency: pricing.currency || 'USD',
+          chapter_price: pricing.chapterPrice,
+          free_chapters: pricing.freeChapters || 0,
+          subscription_duration_days: pricing.subscriptionDurationDays,
+          discount_percentage: pricing.discountPercentage || 0,
+          discount_expires_at: pricing.discountExpiresAt,
+          creator_share_percentage: pricing.creatorSharePercentage || 70.0,
+          platform_share_percentage: pricing.platformSharePercentage || 30.0,
+          is_active: pricing.isActive !== undefined ? pricing.isActive : true,
+        },
+        {
+          onConflict: 'story_id',
+        }
+      )
       .select()
       .single();
 
@@ -173,11 +176,7 @@ export class MarketplaceService {
   /**
    * Check if user has access to a story/chapter
    */
-  async checkStoryAccess(
-    userId: string,
-    storyId: string,
-    chapterId?: string
-  ): Promise<boolean> {
+  async checkStoryAccess(userId: string, storyId: string, chapterId?: string): Promise<boolean> {
     const { data, error } = await this.supabase.rpc('check_story_access', {
       p_user_id: userId,
       p_story_id: storyId,
@@ -292,18 +291,21 @@ export class MarketplaceService {
 
     const { data, error } = await this.supabase
       .from('story_subscriptions')
-      .upsert({
-        user_id: userId,
-        story_id: storyId,
-        pricing_id: pricingId,
-        subscription_status: 'active',
-        current_period_start: periodStart.toISOString(),
-        current_period_end: periodEnd.toISOString(),
-        stripe_subscription_id: stripeSubscriptionId,
-        auto_renew: true,
-      }, {
-        onConflict: 'user_id,story_id',
-      })
+      .upsert(
+        {
+          user_id: userId,
+          story_id: storyId,
+          pricing_id: pricingId,
+          subscription_status: 'active',
+          current_period_start: periodStart.toISOString(),
+          current_period_end: periodEnd.toISOString(),
+          stripe_subscription_id: stripeSubscriptionId,
+          auto_renew: true,
+        },
+        {
+          onConflict: 'user_id,story_id',
+        }
+      )
       .select()
       .single();
 
@@ -314,10 +316,7 @@ export class MarketplaceService {
   /**
    * Cancel subscription
    */
-  async cancelSubscription(
-    subscriptionId: string,
-    reason?: string
-  ): Promise<StorySubscription> {
+  async cancelSubscription(subscriptionId: string, reason?: string): Promise<StorySubscription> {
     const { data, error } = await this.supabase
       .from('story_subscriptions')
       .update({
@@ -375,7 +374,7 @@ export class MarketplaceService {
     const earnings = this.mapEarnings(data || []);
     const totalEarnings = earnings.reduce((sum, e) => sum + e.creatorEarnings, 0);
     const paidOut = earnings
-      .filter(e => e.isPaidOut)
+      .filter((e) => e.isPaidOut)
       .reduce((sum, e) => sum + e.creatorEarnings, 0);
     const pending = totalEarnings - paidOut;
 
@@ -425,7 +424,7 @@ export class MarketplaceService {
         currency: 'USD',
         message,
         payment_status: 'pending',
-        platform_fee_percentage: 5.00, // Lower fee for tips
+        platform_fee_percentage: 5.0, // Lower fee for tips
         platform_fee: 0, // Will be calculated by trigger
         creator_receives: 0, // Will be calculated by trigger
         is_paid_out: false,
@@ -609,5 +608,3 @@ export class MarketplaceService {
 }
 
 export const marketplaceService = new MarketplaceService();
-
-

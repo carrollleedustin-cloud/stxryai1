@@ -4,7 +4,17 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Rocket, Crown, Building, Heart, Search, BookOpen, Star, ArrowLeft, ArrowRight } from 'lucide-react';
+import {
+  Rocket,
+  Crown,
+  Building,
+  Heart,
+  Search,
+  BookOpen,
+  Star,
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react';
 
 interface TrendingStory {
   id: string;
@@ -21,10 +31,10 @@ interface TrendingStory {
 
 const genreIcons: { [key: string]: React.ElementType } = {
   'Sci-Fi': Rocket,
-  'Fantasy': Crown,
-  'Cyberpunk': Building,
-  'Romance': Heart,
-  'Mystery': Search,
+  Fantasy: Crown,
+  Cyberpunk: Building,
+  Romance: Heart,
+  Mystery: Search,
 };
 
 export default function TrendingStoriesSection() {
@@ -169,9 +179,7 @@ export default function TrendingStoriesSection() {
             >
               <div className="grid md:grid-cols-2 gap-0">
                 {/* Story Image/Gradient */}
-                <div
-                  className={`relative h-96 md:h-auto`}
-                >
+                <div className={`relative h-96 md:h-auto`}>
                   <Image
                     src={currentStory.thumbnail}
                     alt={currentStory.title}

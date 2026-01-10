@@ -21,16 +21,14 @@ const STEPS: Step[] = ['name', 'date', 'time', 'location', 'confirm'];
 
 const StepIndicator = ({ currentStep }: { currentStep: Step }) => {
   const currentIndex = STEPS.indexOf(currentStep);
-  
+
   return (
     <div className="flex justify-center gap-2 mb-8">
       {STEPS.map((step, index) => (
         <motion.div
           key={step}
           className={`w-3 h-3 rounded-full transition-all duration-300 ${
-            index <= currentIndex
-              ? 'bg-gradient-to-r from-cyan-400 to-purple-500'
-              : 'bg-white/20'
+            index <= currentIndex ? 'bg-gradient-to-r from-cyan-400 to-purple-500' : 'bg-white/20'
           }`}
           initial={false}
           animate={{
@@ -153,7 +151,7 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
     const month = date.getMonth() + 1;
     const day = date.getDate();
     const mmdd = `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    
+
     for (const zodiac of ZODIAC_SIGNS) {
       if (zodiac.sign === 'Capricorn') {
         if (mmdd >= '12-22' || mmdd <= '01-19') {
@@ -181,7 +179,10 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
           >
             <div className="text-center mb-8">
               <span className="text-5xl mb-4 block">✨</span>
-              <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2
+                className="text-2xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 Welcome, Cosmic Traveler
               </h2>
               <p className="text-white/60">
@@ -210,7 +211,10 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
           >
             <div className="text-center mb-8">
               <span className="text-5xl mb-4 block">🌅</span>
-              <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2
+                className="text-2xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 When did your journey begin?
               </h2>
               <p className="text-white/60">
@@ -225,7 +229,7 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               max={new Date().toISOString().split('T')[0]}
             />
             {errors.birthDate && <p className="text-red-400 text-sm">{errors.birthDate}</p>}
-            
+
             {zodiac && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -234,7 +238,9 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               >
                 <span className="text-3xl">{zodiac.emoji}</span>
                 <p className="text-lg font-bold text-white mt-2">{zodiac.sign}</p>
-                <p className="text-sm text-white/60">{zodiac.element} Sign • {zodiac.symbol}</p>
+                <p className="text-sm text-white/60">
+                  {zodiac.element} Sign • {zodiac.symbol}
+                </p>
               </motion.div>
             )}
           </motion.div>
@@ -251,7 +257,10 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
           >
             <div className="text-center mb-8">
               <span className="text-5xl mb-4 block">🕐</span>
-              <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2
+                className="text-2xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 What time were you born?
               </h2>
               <p className="text-white/60">
@@ -265,11 +274,11 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               onChange={(v) => updateData('birthTime', v)}
             />
             {errors.birthTime && <p className="text-red-400 text-sm">{errors.birthTime}</p>}
-            
+
             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
               <p className="text-sm text-white/60">
-                💡 <strong className="text-white/80">Tip:</strong> Check your birth certificate for the exact time. 
-                If you don't know it, use 12:00 PM as an approximation.
+                💡 <strong className="text-white/80">Tip:</strong> Check your birth certificate for
+                the exact time. If you don't know it, use 12:00 PM as an approximation.
               </p>
             </div>
           </motion.div>
@@ -286,7 +295,10 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
           >
             <div className="text-center mb-8">
               <span className="text-5xl mb-4 block">🌍</span>
-              <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2
+                className="text-2xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 Where did you enter this world?
               </h2>
               <p className="text-white/60">
@@ -300,14 +312,14 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               placeholder="e.g., Minneapolis"
             />
             {errors.birthCity && <p className="text-red-400 text-sm">{errors.birthCity}</p>}
-            
+
             <InputField
               label="State/Province (optional)"
               value={data.birthState || ''}
               onChange={(v) => updateData('birthState', v)}
               placeholder="e.g., Minnesota"
             />
-            
+
             <InputField
               label="Country"
               value={data.birthCountry}
@@ -329,14 +341,17 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
           >
             <div className="text-center mb-8">
               <span className="text-5xl mb-4 block">⭐</span>
-              <h2 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+              <h2
+                className="text-2xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
                 Ready to reveal your cosmic blueprint?
               </h2>
               <p className="text-white/60">
                 Confirm your details to generate your Character Sheet.
               </p>
             </div>
-            
+
             <div className="p-6 rounded-2xl bg-gradient-to-br from-nebula-deep to-nebula-space border border-white/10 space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-white/10">
                 <span className="text-white/60">Name</span>
@@ -344,7 +359,13 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               </div>
               <div className="flex justify-between items-center py-2 border-b border-white/10">
                 <span className="text-white/60">Birth Date</span>
-                <span className="text-white font-medium">{new Date(data.birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span className="text-white font-medium">
+                  {new Date(data.birthDate).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
               <div className="flex justify-between items-center py-2 border-b border-white/10">
                 <span className="text-white/60">Birth Time</span>
@@ -353,10 +374,11 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
               <div className="flex justify-between items-center py-2">
                 <span className="text-white/60">Birth Place</span>
                 <span className="text-white font-medium">
-                  {data.birthCity}{data.birthState ? `, ${data.birthState}` : ''}, {data.birthCountry}
+                  {data.birthCity}
+                  {data.birthState ? `, ${data.birthState}` : ''}, {data.birthCountry}
                 </span>
               </div>
-              
+
               {zodiac && (
                 <div className="mt-4 pt-4 border-t border-white/10 text-center">
                   <p className="text-sm text-white/40 mb-2">Sun Sign</p>
@@ -377,10 +399,8 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
   return (
     <div className="max-w-md mx-auto p-6">
       <StepIndicator currentStep={step} />
-      
-      <AnimatePresence mode="wait">
-        {renderStepContent()}
-      </AnimatePresence>
+
+      <AnimatePresence mode="wait">{renderStepContent()}</AnimatePresence>
 
       {/* Navigation Buttons */}
       <div className="flex gap-3 mt-8">
@@ -394,7 +414,7 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
             ← Back
           </motion.button>
         )}
-        
+
         {onCancel && step === 'name' && (
           <motion.button
             onClick={onCancel}
@@ -405,7 +425,7 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
             Cancel
           </motion.button>
         )}
-        
+
         {step !== 'confirm' ? (
           <motion.button
             onClick={handleNext}
@@ -431,4 +451,3 @@ export function BirthChartWizard({ onComplete, onCancel, initialData }: BirthCha
 }
 
 export default BirthChartWizard;
-

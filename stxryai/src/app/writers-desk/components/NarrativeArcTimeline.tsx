@@ -75,7 +75,10 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
         arcDescription: createForm.arcDescription || undefined,
         startsInBook: createForm.startsInBook,
         endsInBook: createForm.endsInBook ? parseInt(createForm.endsInBook) : undefined,
-        themes: createForm.themes.split(',').map(t => t.trim()).filter(Boolean),
+        themes: createForm.themes
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
         setupPoints: createForm.setupPoints.split('\n').filter(Boolean),
       });
 
@@ -95,13 +98,17 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
     }
   };
 
-  const getTypeInfo = (type: ArcType) => ARC_TYPES.find(t => t.id === type) || ARC_TYPES[1];
-  const getStatusInfo = (status: ArcStatus) => ARC_STATUSES.find(s => s.id === status) || ARC_STATUSES[0];
+  const getTypeInfo = (type: ArcType) => ARC_TYPES.find((t) => t.id === type) || ARC_TYPES[1];
+  const getStatusInfo = (status: ArcStatus) =>
+    ARC_STATUSES.find((s) => s.id === status) || ARC_STATUSES[0];
 
-  const filteredArcs = arcs.filter(a => filterType === 'all' || a.arcType === filterType);
+  const filteredArcs = arcs.filter((a) => filterType === 'all' || a.arcType === filterType);
 
   // Group arcs by starting book for timeline view
-  const maxBook = Math.max(...arcs.map(a => Math.max(a.startsInBook, a.endsInBook || a.startsInBook)), 3);
+  const maxBook = Math.max(
+    ...arcs.map((a) => Math.max(a.startsInBook, a.endsInBook || a.startsInBook)),
+    3
+  );
   const books = Array.from({ length: maxBook }, (_, i) => i + 1);
 
   if (loading) {
@@ -139,8 +146,10 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
             className="px-4 py-2 bg-void-depth border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
           >
             <option value="all">All Arc Types</option>
-            {ARC_TYPES.map(type => (
-              <option key={type.id} value={type.id}>{type.icon} {type.name}</option>
+            {ARC_TYPES.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.icon} {type.name}
+              </option>
             ))}
           </select>
         </div>
@@ -158,7 +167,12 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-text-primary">Create Narrative Arc</h3>
-              <button onClick={() => setViewMode('timeline')} className="text-text-tertiary hover:text-text-secondary">✕</button>
+              <button
+                onClick={() => setViewMode('timeline')}
+                className="text-text-tertiary hover:text-text-secondary"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -201,12 +215,19 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                       type="number"
                       min="1"
                       value={createForm.startsInBook}
-                      onChange={(e) => setCreateForm({ ...createForm, startsInBook: parseInt(e.target.value) || 1 })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          startsInBook: parseInt(e.target.value) || 1,
+                        })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Ends in Book (optional)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Ends in Book (optional)
+                    </label>
                     <input
                       type="number"
                       min="1"
@@ -219,7 +240,9 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Themes (comma-separated)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Themes (comma-separated)
+                  </label>
                   <input
                     type="text"
                     value={createForm.themes}
@@ -235,7 +258,9 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                   <label className="block text-sm text-text-tertiary mb-1">Description</label>
                   <textarea
                     value={createForm.arcDescription}
-                    onChange={(e) => setCreateForm({ ...createForm, arcDescription: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, arcDescription: e.target.value })
+                    }
                     rows={4}
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none"
                     placeholder="Describe the overall arc and its significance..."
@@ -243,7 +268,9 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Setup Points (one per line)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Setup Points (one per line)
+                  </label>
                   <textarea
                     value={createForm.setupPoints}
                     onChange={(e) => setCreateForm({ ...createForm, setupPoints: e.target.value })}
@@ -256,7 +283,10 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
             </div>
 
             <div className="flex justify-end gap-3 pt-6 border-t border-void-mist">
-              <button onClick={() => setViewMode('timeline')} className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors">
+              <button
+                onClick={() => setViewMode('timeline')}
+                className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors"
+              >
                 Cancel
               </button>
               <button
@@ -272,7 +302,12 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
 
         {/* Timeline View */}
         {viewMode === 'timeline' && (
-          <motion.div key="timeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div
+            key="timeline"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
             {arcs.length === 0 ? (
               <div className="text-center py-12 text-text-tertiary">
                 <p className="text-lg mb-2">No narrative arcs yet</p>
@@ -283,9 +318,15 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                 {/* Timeline Header */}
                 <div className="flex">
                   <div className="w-48 flex-shrink-0" />
-                  <div className="flex-1 grid" style={{ gridTemplateColumns: `repeat(${maxBook}, 1fr)` }}>
+                  <div
+                    className="flex-1 grid"
+                    style={{ gridTemplateColumns: `repeat(${maxBook}, 1fr)` }}
+                  >
                     {books.map((book) => (
-                      <div key={book} className="text-center text-sm font-medium text-text-secondary py-2 border-l border-void-mist">
+                      <div
+                        key={book}
+                        className="text-center text-sm font-medium text-text-secondary py-2 border-l border-void-mist"
+                      >
                         Book {book}
                       </div>
                     ))}
@@ -319,14 +360,21 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{typeInfo.icon}</span>
                           <div className="min-w-0">
-                            <div className="font-medium text-text-primary text-sm truncate">{arc.arcName}</div>
-                            <div className={`text-xs text-${statusInfo.color}`}>{statusInfo.name}</div>
+                            <div className="font-medium text-text-primary text-sm truncate">
+                              {arc.arcName}
+                            </div>
+                            <div className={`text-xs text-${statusInfo.color}`}>
+                              {statusInfo.name}
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Timeline Bar */}
-                      <div className="flex-1 grid relative" style={{ gridTemplateColumns: `repeat(${maxBook}, 1fr)` }}>
+                      <div
+                        className="flex-1 grid relative"
+                        style={{ gridTemplateColumns: `repeat(${maxBook}, 1fr)` }}
+                      >
                         {books.map((book) => (
                           <div key={book} className="border-l border-void-mist min-h-[60px]" />
                         ))}
@@ -338,8 +386,12 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                           }}
                         >
                           <div className="flex items-center justify-between h-full px-3">
-                            <span className="text-xs text-text-primary truncate">{arc.arcName}</span>
-                            <span className="text-xs text-text-tertiary">{arc.completionPercentage}%</span>
+                            <span className="text-xs text-text-primary truncate">
+                              {arc.arcName}
+                            </span>
+                            <span className="text-xs text-text-tertiary">
+                              {arc.completionPercentage}%
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -379,20 +431,29 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                 <div>
                   <h3 className="text-xl font-bold text-text-primary">{selectedArc.arcName}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-text-secondary">{getTypeInfo(selectedArc.arcType).name}</span>
+                    <span className="text-sm text-text-secondary">
+                      {getTypeInfo(selectedArc.arcType).name}
+                    </span>
                     <span className="text-text-tertiary">•</span>
                     <span className={`text-sm text-${getStatusInfo(selectedArc.arcStatus).color}`}>
                       {getStatusInfo(selectedArc.arcStatus).name}
                     </span>
                     <span className="text-text-tertiary">•</span>
-                    <span className="text-sm text-spectral-cyan">{selectedArc.completionPercentage}% complete</span>
+                    <span className="text-sm text-spectral-cyan">
+                      {selectedArc.completionPercentage}% complete
+                    </span>
                   </div>
                 </div>
               </div>
               <button
-                onClick={() => { setSelectedArc(null); setViewMode('timeline'); }}
+                onClick={() => {
+                  setSelectedArc(null);
+                  setViewMode('timeline');
+                }}
                 className="text-text-tertiary hover:text-text-secondary"
-              >✕</button>
+              >
+                ✕
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -417,7 +478,10 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
                     <h4 className="text-sm font-semibold text-text-secondary mb-2">Themes</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedArc.themes.map((theme) => (
-                        <span key={theme} className="px-3 py-1 bg-spectral-violet/10 text-spectral-violet rounded-full text-sm">
+                        <span
+                          key={theme}
+                          className="px-3 py-1 bg-spectral-violet/10 text-spectral-violet rounded-full text-sm"
+                        >
                           {theme}
                         </span>
                       ))}
@@ -442,7 +506,9 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
 
                 {selectedArc.risingActionPoints.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Rising Action</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Rising Action
+                    </h4>
                     <ul className="space-y-1">
                       {selectedArc.risingActionPoints.map((point, i) => (
                         <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
@@ -473,4 +539,3 @@ export default function NarrativeArcTimeline({ seriesId, seriesTitle }: Narrativ
     </div>
   );
 }
-

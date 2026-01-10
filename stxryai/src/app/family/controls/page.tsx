@@ -70,8 +70,8 @@ export default function ContentControlsPage() {
   });
 
   const toggleCategory = (id: string) => {
-    setCategories(prev => 
-      prev.map(cat => cat.id === id ? { ...cat, enabled: !cat.enabled } : cat)
+    setCategories((prev) =>
+      prev.map((cat) => (cat.id === id ? { ...cat, enabled: !cat.enabled } : cat))
     );
   };
 
@@ -94,7 +94,7 @@ export default function ContentControlsPage() {
   return (
     <div className="min-h-screen bg-nebula-void relative">
       <NebulaBackground variant="subtle" />
-      
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-nebula-void/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,20 +104,35 @@ export default function ContentControlsPage() {
                 Stxryai
               </Link>
               <div className="hidden md:flex items-center gap-6">
-                <Link href="/family" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Overview
                 </Link>
-                <Link href="/family/profiles" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/profiles"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Kids Profiles
                 </Link>
-                <Link href="/family/controls" className="text-sm text-aurora-cyan font-medium relative">
+                <Link
+                  href="/family/controls"
+                  className="text-sm text-aurora-cyan font-medium relative"
+                >
                   Content Controls
                   <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-aurora-cyan rounded-full" />
                 </Link>
-                <Link href="/family/activity" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/activity"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Activity
                 </Link>
-                <Link href="/family/settings" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/settings"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Settings
                 </Link>
               </div>
@@ -140,15 +155,18 @@ export default function ContentControlsPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-aurora-cyan mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+            <h1
+              className="text-3xl font-bold text-aurora-cyan mb-2"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
               Content Controls
             </h1>
             <p className="text-white/60">Manage screen time and content filters</p>
           </div>
-          
+
           {/* Kid Selector */}
           <div className="flex items-center gap-3">
-            {kidsData.map(kid => (
+            {kidsData.map((kid) => (
               <motion.button
                 key={kid.id}
                 onClick={() => setSelectedKid(kid)}
@@ -181,7 +199,7 @@ export default function ContentControlsPage() {
               <Clock className="w-5 h-5 text-aurora-cyan" />
               Screen Time Limits
             </h2>
-            
+
             {/* Weekday Limit */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
@@ -197,7 +215,9 @@ export default function ContentControlsPage() {
                 max="180"
                 step="15"
                 value={screenTime.weekday}
-                onChange={(e) => setScreenTime(prev => ({ ...prev, weekday: parseInt(e.target.value) }))}
+                onChange={(e) =>
+                  setScreenTime((prev) => ({ ...prev, weekday: parseInt(e.target.value) }))
+                }
                 className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-aurora-cyan"
               />
               <div className="flex justify-between text-xs text-white/30 mt-1">
@@ -221,7 +241,9 @@ export default function ContentControlsPage() {
                 max="240"
                 step="15"
                 value={screenTime.weekend}
-                onChange={(e) => setScreenTime(prev => ({ ...prev, weekend: parseInt(e.target.value) }))}
+                onChange={(e) =>
+                  setScreenTime((prev) => ({ ...prev, weekend: parseInt(e.target.value) }))
+                }
                 className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-aurora-pink"
               />
               <div className="flex justify-between text-xs text-white/30 mt-1">
@@ -240,7 +262,7 @@ export default function ContentControlsPage() {
                 <input
                   type="time"
                   value={screenTime.bedtime}
-                  onChange={(e) => setScreenTime(prev => ({ ...prev, bedtime: e.target.value }))}
+                  onChange={(e) => setScreenTime((prev) => ({ ...prev, bedtime: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-aurora-cyan"
                 />
               </div>
@@ -252,7 +274,7 @@ export default function ContentControlsPage() {
                 <input
                   type="time"
                   value={screenTime.wakeTime}
-                  onChange={(e) => setScreenTime(prev => ({ ...prev, wakeTime: e.target.value }))}
+                  onChange={(e) => setScreenTime((prev) => ({ ...prev, wakeTime: e.target.value }))}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-aurora-cyan"
                 />
               </div>
@@ -275,7 +297,7 @@ export default function ContentControlsPage() {
               <Shield className="w-5 h-5 text-aurora-cyan" />
               Age-Appropriate Content
             </h2>
-            
+
             <div className="space-y-3">
               {ageRatings.map((rating) => (
                 <motion.button
@@ -290,12 +312,17 @@ export default function ContentControlsPage() {
                   whileTap={{ scale: 0.99 }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${
-                      rating.color === 'green' ? 'bg-green-500/20 text-green-400' :
-                      rating.color === 'cyan' ? 'bg-cyan-500/20 text-cyan-400' :
-                      rating.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-orange-500/20 text-orange-400'
-                    }`}>
+                    <div
+                      className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${
+                        rating.color === 'green'
+                          ? 'bg-green-500/20 text-green-400'
+                          : rating.color === 'cyan'
+                            ? 'bg-cyan-500/20 text-cyan-400'
+                            : rating.color === 'yellow'
+                              ? 'bg-yellow-500/20 text-yellow-400'
+                              : 'bg-orange-500/20 text-orange-400'
+                      }`}
+                    >
                       {rating.id === 'all' ? '✓' : rating.label.split(' ')[1]}
                     </div>
                     <div className="text-left">
@@ -328,7 +355,7 @@ export default function ContentControlsPage() {
               <Filter className="w-5 h-5 text-aurora-cyan" />
               Story Categories
             </h2>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {categories.map((cat) => (
                 <motion.button
@@ -365,7 +392,7 @@ export default function ContentControlsPage() {
               <Lock className="w-5 h-5 text-aurora-cyan" />
               Additional Restrictions
             </h2>
-            
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
                 <div className="flex items-center gap-3">
@@ -377,7 +404,9 @@ export default function ContentControlsPage() {
                 </div>
                 <ToggleSwitch
                   enabled={restrictions.requirePin}
-                  onChange={() => setRestrictions(prev => ({ ...prev, requirePin: !prev.requirePin }))}
+                  onChange={() =>
+                    setRestrictions((prev) => ({ ...prev, requirePin: !prev.requirePin }))
+                  }
                 />
               </div>
 
@@ -391,7 +420,9 @@ export default function ContentControlsPage() {
                 </div>
                 <ToggleSwitch
                   enabled={restrictions.limitGames}
-                  onChange={() => setRestrictions(prev => ({ ...prev, limitGames: !prev.limitGames }))}
+                  onChange={() =>
+                    setRestrictions((prev) => ({ ...prev, limitGames: !prev.limitGames }))
+                  }
                 />
               </div>
 
@@ -405,7 +436,9 @@ export default function ContentControlsPage() {
                 </div>
                 <ToggleSwitch
                   enabled={restrictions.limitSocial}
-                  onChange={() => setRestrictions(prev => ({ ...prev, limitSocial: !prev.limitSocial }))}
+                  onChange={() =>
+                    setRestrictions((prev) => ({ ...prev, limitSocial: !prev.limitSocial }))
+                  }
                 />
               </div>
 
@@ -419,7 +452,9 @@ export default function ContentControlsPage() {
                 </div>
                 <ToggleSwitch
                   enabled={restrictions.autoLogout}
-                  onChange={() => setRestrictions(prev => ({ ...prev, autoLogout: !prev.autoLogout }))}
+                  onChange={() =>
+                    setRestrictions((prev) => ({ ...prev, autoLogout: !prev.autoLogout }))
+                  }
                 />
               </div>
             </div>
@@ -446,4 +481,3 @@ export default function ContentControlsPage() {
     </div>
   );
 }
-

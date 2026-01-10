@@ -2,10 +2,23 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { 
-  Home, BookOpen, Users, CreditCard, HelpCircle, Shield, FileText, 
-  Cookie, User, Settings, PenTool, Trophy, MessageSquare, Star,
-  Map, Compass
+import {
+  Home,
+  BookOpen,
+  Users,
+  CreditCard,
+  HelpCircle,
+  Shield,
+  FileText,
+  Cookie,
+  User,
+  Settings,
+  PenTool,
+  Trophy,
+  MessageSquare,
+  Star,
+  Map,
+  Compass,
 } from 'lucide-react';
 import VoidBackground from '@/components/void/VoidBackground';
 import { EtherealNav } from '@/components/void';
@@ -90,7 +103,7 @@ const SitemapPage = () => {
   return (
     <VoidBackground variant="subtle">
       <EtherealNav />
-      
+
       <main className="relative min-h-screen pt-20">
         {/* Hero Section */}
         <section className="relative py-16 px-6">
@@ -156,4 +169,3 @@ const SitemapPage = () => {
 };
 
 export default SitemapPage;
-

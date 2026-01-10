@@ -76,7 +76,7 @@ const AccessibilityPage = () => {
   return (
     <VoidBackground variant="subtle">
       <EtherealNav />
-      
+
       <main className="relative min-h-screen pt-20">
         {/* Hero Section */}
         <section className="relative py-20 px-6">
@@ -96,8 +96,8 @@ const AccessibilityPage = () => {
                 </span>
               </h1>
               <p className="text-lg text-text-secondary max-w-2xl mx-auto font-prose leading-relaxed">
-                We're committed to making StxryAI accessible to all users. 
-                Everyone deserves to experience the magic of interactive storytelling.
+                We're committed to making StxryAI accessible to all users. Everyone deserves to
+                experience the magic of interactive storytelling.
               </p>
             </motion.div>
           </div>
@@ -150,7 +150,7 @@ const AccessibilityPage = () => {
             >
               Our Commitment
             </motion.h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {standards.map((standard, index) => (
                 <motion.div
@@ -180,10 +180,12 @@ const AccessibilityPage = () => {
             >
               <div className="flex items-center gap-3 mb-6">
                 <Settings className="w-8 h-8 text-spectral-cyan" />
-                <h2 className="font-display text-2xl text-text-primary">Personalize Your Experience</h2>
+                <h2 className="font-display text-2xl text-text-primary">
+                  Personalize Your Experience
+                </h2>
               </div>
               <p className="text-text-secondary font-prose text-lg leading-relaxed mb-6">
-                StxryAI offers extensive customization options to tailor your reading experience. 
+                StxryAI offers extensive customization options to tailor your reading experience.
                 Access these settings from your profile or the reading interface:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -220,9 +222,11 @@ const AccessibilityPage = () => {
               className="void-glass-heavy rounded-3xl p-12"
             >
               <Mail className="w-12 h-12 text-spectral-cyan mx-auto mb-6" />
-              <h2 className="font-display text-3xl text-text-primary mb-4">Accessibility Feedback</h2>
+              <h2 className="font-display text-3xl text-text-primary mb-4">
+                Accessibility Feedback
+              </h2>
               <p className="text-text-secondary font-prose mb-8">
-                We value your feedback on accessibility. If you encounter any barriers or have 
+                We value your feedback on accessibility. If you encounter any barriers or have
                 suggestions for improvement, please let us know.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -249,4 +253,3 @@ const AccessibilityPage = () => {
 };
 
 export default AccessibilityPage;
-

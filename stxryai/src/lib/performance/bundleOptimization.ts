@@ -33,34 +33,33 @@ export const lazyComponents = {
     () => import('@/components/story-reader/QuantumTextRenderer'),
     { ssr: false }
   ),
-  
+
   AICompanionPanel: createDynamicComponent(
     () => import('@/components/story-reader/AICompanionPanel'),
     { ssr: false }
   ),
-  
+
   NeuralNetworkBackground: createDynamicComponent(
     () => import('@/components/story-reader/NeuralNetworkBackground'),
     { ssr: false }
   ),
-  
+
   // Writers Desk Components
   AIWritingStudio: createDynamicComponent(
     () => import('@/app/writers-desk/components/AIWritingStudio'),
     { ssr: false }
   ),
-  
+
   CharacterManager: createDynamicComponent(
     () => import('@/app/writers-desk/components/CharacterManager'),
     { ssr: false }
   ),
-  
+
   // Heavy UI Components
-  CommandPalette: createDynamicComponent(
-    () => import('@/components/ui/CommandPalette'),
-    { ssr: false }
-  ),
-  
+  CommandPalette: createDynamicComponent(() => import('@/components/ui/CommandPalette'), {
+    ssr: false,
+  }),
+
   // Note: Confetti and Analytics components can be added when available
 };
 
@@ -90,11 +89,7 @@ export function preloadRoutes(routes: string[]) {
 /**
  * Critical routes to preload on app initialization
  */
-export const CRITICAL_ROUTES = [
-  '/user-dashboard',
-  '/story-library',
-  '/story-creation-studio',
-];
+export const CRITICAL_ROUTES = ['/user-dashboard', '/story-library', '/story-creation-studio'];
 
 // ============================================================================
 // RESOURCE HINTS
@@ -133,14 +128,8 @@ export function addPreconnect(urls: string[]) {
  * Critical external resources
  */
 export const CRITICAL_EXTERNAL_RESOURCES = {
-  dnsPrefetch: [
-    'https://fonts.googleapis.com',
-    'https://fonts.gstatic.com',
-  ],
-  preconnect: [
-    'https://fonts.googleapis.com',
-    'https://fonts.gstatic.com',
-  ],
+  dnsPrefetch: ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
+  preconnect: ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
 };
 
 // ============================================================================
@@ -193,7 +182,7 @@ export function getChunkName(module: string): string {
   if (isFrameworkModule(module)) {
     return 'framework';
   }
-  
+
   if (isVendorModule(module)) {
     const match = module.match(/node_modules\/(@[^/]+\/[^/]+|[^/]+)/);
     if (match) {
@@ -201,7 +190,7 @@ export function getChunkName(module: string): string {
     }
     return 'vendor';
   }
-  
+
   return 'main';
 }
 

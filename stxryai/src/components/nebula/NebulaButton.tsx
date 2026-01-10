@@ -82,45 +82,45 @@ export function NebulaButton({
   const [isHovered, setIsHovered] = useState(false);
   const [ripples, setRipples] = useState<Array<{ x: number; y: number; id: number }>>([]);
   const [magneticOffset, setMagneticOffset] = useState({ x: 0, y: 0 });
-  
+
   const variantStyle = VARIANTS[variant];
   const sizeStyle = SIZES[size];
-  
+
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     if (!magnetic || disabled) return;
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const offsetX = (e.clientX - centerX) * 0.15;
     const offsetY = (e.clientY - centerY) * 0.15;
-    
+
     setMagneticOffset({ x: offsetX, y: offsetY });
   };
-  
+
   const handleMouseLeave = () => {
     setIsHovered(false);
     setMagneticOffset({ x: 0, y: 0 });
   };
-  
+
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled || loading) return;
-    
+
     // Create ripple
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const id = Date.now();
-    
+
     setRipples((prev) => [...prev, { x, y, id }]);
     setTimeout(() => {
       setRipples((prev) => prev.filter((r) => r.id !== id));
     }, 600);
-    
+
     onClick?.();
   };
-  
+
   const buttonContent = (
     <>
       {/* Ripple effects */}
@@ -141,7 +141,7 @@ export function NebulaButton({
           />
         ))}
       </AnimatePresence>
-      
+
       {/* Shimmer overlay */}
       <motion.span
         className="absolute inset-0 rounded-lg"
@@ -152,9 +152,12 @@ export function NebulaButton({
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ duration: 0.2 }}
       />
-      
+
       {/* Content */}
-      <span className="relative z-10 flex items-center justify-center" style={{ gap: sizeStyle.gap }}>
+      <span
+        className="relative z-10 flex items-center justify-center"
+        style={{ gap: sizeStyle.gap }}
+      >
         {loading ? (
           <motion.span
             className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
@@ -171,7 +174,7 @@ export function NebulaButton({
       </span>
     </>
   );
-  
+
   const buttonStyles = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -195,9 +198,9 @@ export function NebulaButton({
     transform: `translate(${magneticOffset.x}px, ${magneticOffset.y}px)`,
     transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
   };
-  
+
   const MotionComponent = href ? motion.create(Link) : motion.button;
-  
+
   return (
     <MotionComponent
       href={href as string}
@@ -208,11 +211,15 @@ export function NebulaButton({
       disabled={disabled || loading}
       className={className}
       style={buttonStyles}
-      whileHover={!disabled ? {
-        scale: 1.02,
-        y: -3,
-        boxShadow: variantStyle.glow,
-      } : undefined}
+      whileHover={
+        !disabled
+          ? {
+              scale: 1.02,
+              y: -3,
+              boxShadow: variantStyle.glow,
+            }
+          : undefined
+      }
       whileTap={!disabled ? { scale: 0.98, y: 0 } : undefined}
       transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
     >
@@ -232,9 +239,9 @@ interface FABProps {
   variant?: 'primary' | 'plasma';
 }
 
-export function NebulaFAB({ 
-  icon, 
-  onClick, 
+export function NebulaFAB({
+  icon,
+  onClick,
   position = 'bottom-right',
   variant = 'primary',
 }: FABProps) {
@@ -244,11 +251,12 @@ export function NebulaFAB({
     'top-right': { top: '2rem', right: '2rem' },
     'top-left': { top: '2rem', left: '2rem' },
   };
-  
-  const colors = variant === 'primary' 
-    ? { bg: '#00ffd5', glow: 'rgba(0,255,213,0.4)' }
-    : { bg: 'linear-gradient(135deg, #ff6600, #ff40c0)', glow: 'rgba(255,64,192,0.4)' };
-  
+
+  const colors =
+    variant === 'primary'
+      ? { bg: '#00ffd5', glow: 'rgba(0,255,213,0.4)' }
+      : { bg: 'linear-gradient(135deg, #ff6600, #ff40c0)', glow: 'rgba(255,64,192,0.4)' };
+
   return (
     <motion.button
       className="fixed z-50 w-16 h-16 rounded-full flex items-center justify-center text-black"
@@ -270,5 +278,3 @@ export function NebulaFAB({
 }
 
 export default NebulaButton;
-
-

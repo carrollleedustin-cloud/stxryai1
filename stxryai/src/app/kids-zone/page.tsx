@@ -72,11 +72,11 @@ const achievements = [
 export default function KidsZoneHomePage() {
   const [selectedAvatar] = useState('buddy');
   const [coins] = useState(150);
-  
+
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       {/* Top bar with coins */}
-      <MagicTopBar 
+      <MagicTopBar
         showCoins={coins}
         rightAction={
           <motion.button
@@ -90,7 +90,7 @@ export default function KidsZoneHomePage() {
           </motion.button>
         }
       />
-      
+
       {/* Hero greeting */}
       <section className="mt-20 mb-8 text-center">
         <motion.div
@@ -98,18 +98,16 @@ export default function KidsZoneHomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 
+          <h1
             className="text-4xl sm:text-5xl font-bold mb-3"
             style={{ fontFamily: 'var(--font-kids)' }}
           >
             <MagicText>Hello Explorer!</MagicText>
           </h1>
-          <p className="text-lg text-white/70">
-            Ready for a new adventure? 🌟
-          </p>
+          <p className="text-lg text-white/70">Ready for a new adventure? 🌟</p>
         </motion.div>
       </section>
-      
+
       {/* Continue Reading */}
       <section className="mb-10">
         <MagicCard color="rainbow" sparkles>
@@ -119,11 +117,14 @@ export default function KidsZoneHomePage() {
             </div>
             <div className="flex-1">
               <p className="text-sm text-white/60 mb-1">Continue your story</p>
-              <h3 className="text-xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-kids)' }}>
+              <h3
+                className="text-xl font-bold text-white mb-2"
+                style={{ fontFamily: 'var(--font-kids)' }}
+              >
                 The Dragon Who Lost His Fire
               </h3>
               <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                <motion.div 
+                <motion.div
                   className="h-full rounded-full"
                   style={{ background: 'linear-gradient(90deg, #9b5de5, #f15bb5)' }}
                   initial={{ width: 0 }}
@@ -139,10 +140,10 @@ export default function KidsZoneHomePage() {
           </div>
         </MagicCard>
       </section>
-      
+
       {/* Categories */}
       <section className="mb-10">
-        <h2 
+        <h2
           className="text-2xl font-bold mb-4 text-white"
           style={{ fontFamily: 'var(--font-kids)' }}
         >
@@ -166,14 +167,11 @@ export default function KidsZoneHomePage() {
           ))}
         </div>
       </section>
-      
+
       {/* Featured Stories */}
       <section className="mb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 
-            className="text-2xl font-bold text-white"
-            style={{ fontFamily: 'var(--font-kids)' }}
-          >
+          <h2 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-kids)' }}>
             New Stories ✨
           </h2>
           <motion.button
@@ -183,7 +181,7 @@ export default function KidsZoneHomePage() {
             See All →
           </motion.button>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {featuredStories.map((story, i) => (
             <motion.div
@@ -203,16 +201,16 @@ export default function KidsZoneHomePage() {
           ))}
         </div>
       </section>
-      
+
       {/* Achievements */}
       <section className="mb-10">
-        <h2 
+        <h2
           className="text-2xl font-bold mb-4 text-white"
           style={{ fontFamily: 'var(--font-kids)' }}
         >
           My Achievements 🏆
         </h2>
-        
+
         <MagicCard color="gold">
           <div className="grid grid-cols-4 gap-4">
             {achievements.map((ach, i) => (
@@ -223,10 +221,10 @@ export default function KidsZoneHomePage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.15, type: 'spring' }}
               >
-                <div 
+                <div
                   className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl ${
-                    ach.unlocked 
-                      ? 'bg-gradient-to-br from-yellow-400 to-orange-500' 
+                    ach.unlocked
+                      ? 'bg-gradient-to-br from-yellow-400 to-orange-500'
                       : 'bg-white/10 opacity-40'
                   }`}
                   style={{
@@ -241,7 +239,7 @@ export default function KidsZoneHomePage() {
           </div>
         </MagicCard>
       </section>
-      
+
       {/* Daily Challenge */}
       <section className="mb-24">
         <MagicCard color="cyan">
@@ -254,7 +252,10 @@ export default function KidsZoneHomePage() {
               🎯
             </motion.div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-white mb-1" style={{ fontFamily: 'var(--font-kids)' }}>
+              <h3
+                className="text-lg font-bold text-white mb-1"
+                style={{ fontFamily: 'var(--font-kids)' }}
+              >
                 Daily Challenge
               </h3>
               <p className="text-sm text-white/70">Read 2 stories today!</p>
@@ -269,5 +270,3 @@ export default function KidsZoneHomePage() {
     </div>
   );
 }
-
-

@@ -49,7 +49,9 @@ export const validationRules = {
     message,
   }),
 
-  password: (message = 'Password must be at least 8 characters with uppercase, lowercase, and number'): ValidationRule => ({
+  password: (
+    message = 'Password must be at least 8 characters with uppercase, lowercase, and number'
+  ): ValidationRule => ({
     test: (value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value),
     message,
   }),
@@ -164,9 +166,7 @@ export function ValidatedInput({
         )}
       </div>
 
-      {helperText && !error && (
-        <p className="text-xs text-muted-foreground">{helperText}</p>
-      )}
+      {helperText && !error && <p className="text-xs text-muted-foreground">{helperText}</p>}
 
       <ValidationMessage error={error} />
     </div>
@@ -239,9 +239,7 @@ export function ValidatedTextarea({
 
       <div className="flex items-center justify-between">
         <div>
-          {helperText && !error && (
-            <p className="text-xs text-muted-foreground">{helperText}</p>
-          )}
+          {helperText && !error && <p className="text-xs text-muted-foreground">{helperText}</p>}
           <ValidationMessage error={error} />
         </div>
         {characterCount && maxChars && (
@@ -261,4 +259,3 @@ export function ValidatedTextarea({
     </div>
   );
 }
-

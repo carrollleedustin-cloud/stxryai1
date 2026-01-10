@@ -94,110 +94,110 @@ export function ReadingChallenge({ challenges, onClaimReward }: ReadingChallenge
 
       {/* Challenges List */}
       <div className="space-y-4">
-        {(activeTab === 'active' ? activeChallenges : completedChallenges).map((challenge, index) => {
-          const percentage = Math.min(100, (challenge.progress / challenge.goal) * 100);
-          const isComplete = challenge.progress >= challenge.goal;
+        {(activeTab === 'active' ? activeChallenges : completedChallenges).map(
+          (challenge, index) => {
+            const percentage = Math.min(100, (challenge.progress / challenge.goal) * 100);
+            const isComplete = challenge.progress >= challenge.goal;
 
-          return (
-            <motion.div
-              key={challenge.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`bg-card border-2 rounded-xl p-6 ${
-                isComplete
-                  ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
-                  : 'border-border'
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-start gap-4">
-                  <div className="text-4xl">{getChallengeIcon(challenge.type)}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-lg font-bold text-foreground">{challenge.title}</h3>
-                      {challenge.type === 'special' && (
-                        <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full">
-                          SPECIAL
-                        </span>
+            return (
+              <motion.div
+                key={challenge.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className={`bg-card border-2 rounded-xl p-6 ${
+                  isComplete
+                    ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
+                    : 'border-border'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">{getChallengeIcon(challenge.type)}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg font-bold text-foreground">{challenge.title}</h3>
+                        {challenge.type === 'special' && (
+                          <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-bold rounded-full">
+                            SPECIAL
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
+                      {challenge.deadline && (
+                        <p className="text-xs text-muted-foreground">
+                          Deadline: {new Date(challenge.deadline).toLocaleDateString()}
+                        </p>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
-                    {challenge.deadline && (
-                      <p className="text-xs text-muted-foreground">
-                        Deadline: {new Date(challenge.deadline).toLocaleDateString()}
-                      </p>
-                    )}
                   </div>
+                  {isComplete && (
+                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-3xl">
+                      ✅
+                    </motion.div>
+                  )}
                 </div>
-                {isComplete && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="text-3xl"
-                  >
-                    ✅
-                  </motion.div>
-                )}
-              </div>
 
-              {/* Progress */}
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Progress</span>
-                  <span className="font-medium text-foreground">
-                    {challenge.progress} / {challenge.goal} {challenge.unit}
-                  </span>
-                </div>
-                <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <motion.div
-                    className={`h-full bg-gradient-to-r ${getProgressColor(
-                      challenge.progress,
-                      challenge.goal
-                    )}`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${percentage}%` }}
-                    transition={{ duration: 0.5, ease: 'easeOut' }}
-                  />
-                </div>
-              </div>
-
-              {/* Rewards */}
-              <div className="flex items-center justify-between pt-4 border-t border-border">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <Icon name="SparklesIcon" size={16} className="text-yellow-500" />
-                    <span className="text-sm font-medium text-foreground">
-                      +{challenge.reward.xp} XP
+                {/* Progress */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Progress</span>
+                    <span className="font-medium text-foreground">
+                      {challenge.progress} / {challenge.goal} {challenge.unit}
                     </span>
                   </div>
-                  {challenge.reward.badge && (
+                  <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full bg-gradient-to-r ${getProgressColor(
+                        challenge.progress,
+                        challenge.goal
+                      )}`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${percentage}%` }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Rewards */}
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
-                      <span className="text-lg">{challenge.reward.badge}</span>
-                      <span className="text-sm text-muted-foreground">Badge</span>
+                      <Icon name="SparklesIcon" size={16} className="text-yellow-500" />
+                      <span className="text-sm font-medium text-foreground">
+                        +{challenge.reward.xp} XP
+                      </span>
                     </div>
-                  )}
-                  {challenge.reward.title && (
-                    <div className="flex items-center gap-1">
-                      <Icon name="TrophyIcon" size={16} className="text-yellow-500" />
-                      <span className="text-sm text-muted-foreground">{challenge.reward.title}</span>
-                    </div>
+                    {challenge.reward.badge && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-lg">{challenge.reward.badge}</span>
+                        <span className="text-sm text-muted-foreground">Badge</span>
+                      </div>
+                    )}
+                    {challenge.reward.title && (
+                      <div className="flex items-center gap-1">
+                        <Icon name="TrophyIcon" size={16} className="text-yellow-500" />
+                        <span className="text-sm text-muted-foreground">
+                          {challenge.reward.title}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  {isComplete && onClaimReward && (
+                    <motion.button
+                      onClick={() => onClaimReward(challenge.id)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-medium text-sm"
+                    >
+                      Claim Reward
+                    </motion.button>
                   )}
                 </div>
-                {isComplete && onClaimReward && (
-                  <motion.button
-                    onClick={() => onClaimReward(challenge.id)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-medium text-sm"
-                  >
-                    Claim Reward
-                  </motion.button>
-                )}
-              </div>
-            </motion.div>
-          );
-        })}
+              </motion.div>
+            );
+          }
+        )}
       </div>
 
       {activeTab === 'active' && activeChallenges.length === 0 && (
@@ -214,4 +214,3 @@ export function ReadingChallenge({ challenges, onClaimReward }: ReadingChallenge
     </div>
   );
 }
-

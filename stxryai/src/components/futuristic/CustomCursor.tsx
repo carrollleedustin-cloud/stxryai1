@@ -22,10 +22,10 @@ const CustomCursor = () => {
       const target = e.target as HTMLElement;
       setIsHovering(
         target.tagName === 'BUTTON' ||
-        target.tagName === 'A' ||
-        target.closest('button') !== null ||
-        target.closest('a') !== null ||
-        target.style.cursor === 'pointer'
+          target.tagName === 'A' ||
+          target.closest('button') !== null ||
+          target.closest('a') !== null ||
+          target.style.cursor === 'pointer'
       );
     };
 
@@ -62,9 +62,7 @@ const CustomCursor = () => {
       >
         <div
           className={`w-5 h-5 rounded-full border-2 transition-all ${
-            isHovering
-              ? 'bg-white border-white scale-150'
-              : 'bg-transparent border-white'
+            isHovering ? 'bg-white border-white scale-150' : 'bg-transparent border-white'
           }`}
         />
       </motion.div>
@@ -110,4 +108,3 @@ const CustomCursor = () => {
 };
 
 export default CustomCursor;
-

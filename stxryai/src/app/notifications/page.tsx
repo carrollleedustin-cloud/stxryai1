@@ -37,7 +37,10 @@ export default function NotificationsPage() {
     const fetchNotifications = async () => {
       if (user) {
         setIsLoading(true);
-        const data = await announcementService.getForUser(user.id, profile?.subscription_tier || 'free');
+        const data = await announcementService.getForUser(
+          user.id,
+          profile?.subscription_tier || 'free'
+        );
         setNotifications(data);
         setFilteredNotifications(data);
         setIsLoading(false);
@@ -50,18 +53,18 @@ export default function NotificationsPage() {
     if (activeFilter === 'all') {
       setFilteredNotifications(notifications);
     } else if (activeFilter === 'unread') {
-      setFilteredNotifications(notifications.filter(n => !n.readBy.includes(user?.id || '')));
+      setFilteredNotifications(notifications.filter((n) => !n.readBy.includes(user?.id || '')));
     } else {
-      setFilteredNotifications(notifications.filter(n => n.type === activeFilter));
+      setFilteredNotifications(notifications.filter((n) => n.type === activeFilter));
     }
   }, [activeFilter, notifications, user]);
 
   const handleMarkAsRead = async (id: string) => {
     if (user) {
       await announcementService.markAsRead(id, user.id);
-      setNotifications(prev => prev.map(n => 
-        n.id === id ? { ...n, readBy: [...n.readBy, user.id] } : n
-      ));
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, readBy: [...n.readBy, user.id] } : n))
+      );
     }
   };
 
@@ -72,18 +75,28 @@ export default function NotificationsPage() {
           await announcementService.markAsRead(notification.id, user.id);
         }
       }
-      setNotifications(prev => prev.map(n => ({ ...n, readBy: [...n.readBy, user.id] })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, readBy: [...n.readBy, user.id] })));
     }
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'feature': return { icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' };
-      case 'maintenance': return { icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' };
-      case 'warning': return { icon: 'ExclamationTriangleIcon', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-      case 'urgent': return { icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' };
-      case 'success': return { icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' };
-      default: return { icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' };
+      case 'feature':
+        return { icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' };
+      case 'maintenance':
+        return { icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' };
+      case 'warning':
+        return {
+          icon: 'ExclamationTriangleIcon',
+          color: 'text-yellow-400',
+          bg: 'bg-yellow-500/20',
+        };
+      case 'urgent':
+        return { icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' };
+      case 'success':
+        return { icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' };
+      default:
+        return { icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' };
     }
   };
 
@@ -100,7 +113,7 @@ export default function NotificationsPage() {
     return date.toLocaleDateString();
   };
 
-  const unreadCount = notifications.filter(n => !n.readBy.includes(user?.id || '')).length;
+  const unreadCount = notifications.filter((n) => !n.readBy.includes(user?.id || '')).length;
 
   if (authLoading || isLoading) {
     return (
@@ -149,9 +162,10 @@ export default function NotificationsPage() {
                 onClick={() => setActiveFilter(filter.id)}
                 className={`
                   flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
-                  ${activeFilter === filter.id 
-                    ? 'bg-spectral-cyan/20 text-spectral-cyan border border-spectral-cyan/50' 
-                    : 'bg-void-100/30 text-text-secondary border border-void-border hover:border-void-400'
+                  ${
+                    activeFilter === filter.id
+                      ? 'bg-spectral-cyan/20 text-spectral-cyan border border-spectral-cyan/50'
+                      : 'bg-void-100/30 text-text-secondary border border-void-border hover:border-void-400'
                   }
                 `}
               >
@@ -181,17 +195,16 @@ export default function NotificationsPage() {
                 </div>
                 <h3 className="text-xl font-semibold text-text-primary mb-2">No Notifications</h3>
                 <p className="text-text-secondary">
-                  {activeFilter === 'unread' 
+                  {activeFilter === 'unread'
                     ? "You're all caught up! No unread notifications."
-                    : "You don't have any notifications yet."
-                  }
+                    : "You don't have any notifications yet."}
                 </p>
               </motion.div>
             ) : (
               filteredNotifications.map((notification, index) => {
                 const isRead = notification.readBy.includes(user?.id || '');
                 const iconInfo = getNotificationIcon(notification.type);
-                
+
                 return (
                   <motion.div
                     key={notification.id}
@@ -201,8 +214,10 @@ export default function NotificationsPage() {
                     exit={{ opacity: 0, x: -100 }}
                     transition={{ delay: index * 0.05 }}
                   >
-                    <GradientBorder className={`p-[1px] rounded-xl ${!isRead ? 'ring-1 ring-spectral-cyan/30' : ''}`}>
-                      <div 
+                    <GradientBorder
+                      className={`p-[1px] rounded-xl ${!isRead ? 'ring-1 ring-spectral-cyan/30' : ''}`}
+                    >
+                      <div
                         onClick={() => {
                           if (!isRead) handleMarkAsRead(notification.id);
                           if (notification.metadata?.linkUrl) {
@@ -216,14 +231,18 @@ export default function NotificationsPage() {
                         `}
                       >
                         <div className="flex gap-4">
-                          <div className={`w-12 h-12 rounded-xl ${iconInfo.bg} flex items-center justify-center flex-shrink-0`}>
+                          <div
+                            className={`w-12 h-12 rounded-xl ${iconInfo.bg} flex items-center justify-center flex-shrink-0`}
+                          >
                             <Icon name={iconInfo.icon} size={24} className={iconInfo.color} />
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-4 mb-2">
                               <div className="flex items-center gap-2">
-                                <h3 className={`font-semibold ${isRead ? 'text-text-secondary' : 'text-text-primary'}`}>
+                                <h3
+                                  className={`font-semibold ${isRead ? 'text-text-secondary' : 'text-text-primary'}`}
+                                >
                                   {notification.title}
                                 </h3>
                                 {notification.isPinned && (
@@ -237,11 +256,9 @@ export default function NotificationsPage() {
                                 {formatTimeAgo(notification.createdAt)}
                               </span>
                             </div>
-                            
-                            <p className="text-text-secondary mb-3">
-                              {notification.content}
-                            </p>
-                            
+
+                            <p className="text-text-secondary mb-3">{notification.content}</p>
+
                             <div className="flex items-center gap-4">
                               {notification.metadata?.linkUrl && (
                                 <span className="text-sm text-spectral-cyan flex items-center gap-1">
@@ -283,4 +300,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

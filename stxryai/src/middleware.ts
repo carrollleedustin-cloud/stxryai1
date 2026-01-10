@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { updateSession } from './lib/supabase/middleware';
-import { 
-  rateLimiter, 
-  getRateLimitKey, 
-  getClientIdentifier, 
+import {
+  rateLimiter,
+  getRateLimitKey,
+  getClientIdentifier,
   getIPFromHeaders,
-  RateLimiter
+  RateLimiter,
 } from './lib/api/rate-limiter';
 
 // Routes that require authentication
@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/')) {
     // Skip rate limiting for webhooks from trusted sources (they have their own signature verification)
     const isWebhook = pathname.startsWith('/api/webhooks/');
-    
+
     // Determine rate limit config based on endpoint
     let rateLimitConfig = RateLimiter.CONFIGS.default;
     for (const [prefix, configKey] of Object.entries(API_RATE_LIMITS)) {
@@ -81,12 +81,12 @@ export async function middleware(request: NextRequest) {
     // Block if rate limited (except webhooks which have their own protection)
     if (!result.allowed && !isWebhook) {
       return NextResponse.json(
-        { 
+        {
           error: 'Too many requests',
           message: `Rate limit exceeded. Try again in ${result.retryAfter} seconds.`,
           retryAfter: result.retryAfter,
         },
-        { 
+        {
           status: 429,
           headers: {
             'X-RateLimit-Limit': String(rateLimitConfig.maxRequests),
@@ -102,9 +102,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check authentication for protected routes
-  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
   const isAdminRoute = ADMIN_ROUTES.some((route) => pathname.startsWith(route));
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
@@ -120,7 +118,7 @@ export async function middleware(request: NextRequest) {
 
   // Check owner routes - requires authenticated owner
   const isOwnerRoute = OWNER_ROUTES.some((route) => pathname.startsWith(route));
-  
+
   if (isOwnerRoute) {
     if (!hasValidSession) {
       return NextResponse.redirect(new URL('/authentication', request.url));
@@ -184,10 +182,11 @@ export async function middleware(request: NextRequest) {
       .eq('id', user.id)
       .single();
 
-    const isAdmin = profile?.is_admin === true || 
-                    profile?.role === 'admin' || 
-                    profile?.role === 'moderator' ||
-                    profile?.role === 'owner';
+    const isAdmin =
+      profile?.is_admin === true ||
+      profile?.role === 'admin' ||
+      profile?.role === 'moderator' ||
+      profile?.role === 'owner';
 
     if (!isAdmin) {
       // Not an admin - redirect to home with error message
@@ -212,14 +211,15 @@ export async function middleware(request: NextRequest) {
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
   // Content Security Policy - adjust as needed for your app
-  response.headers.set('Content-Security-Policy',
+  response.headers.set(
+    'Content-Security-Policy',
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com; " +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-    "font-src 'self' https://fonts.gstatic.com; " +
-    "img-src 'self' data: https:; " +
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co; " +
-    "frame-ancestors 'none';"
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://fonts.gstatic.com; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+      "font-src 'self' https://fonts.gstatic.com; " +
+      "img-src 'self' data: https:; " +
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co; " +
+      "frame-ancestors 'none';"
   );
 
   // Add Netlify-specific headers for edge caching

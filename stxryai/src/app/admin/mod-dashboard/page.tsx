@@ -4,12 +4,27 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import VoidBackground from '@/components/void/VoidBackground';
-import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCounter } from '@/components/void';
-import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
+import {
+  EtherealNav,
+  TemporalHeading,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedCounter,
+} from '@/components/void';
+import {
+  HolographicCard,
+  RevealOnScroll,
+  GradientBorder,
+  NeonText,
+} from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/contexts/AuthContext';
-import { canAccessAdminDashboard, getRoleDisplayName, getRoleBadgeColor } from '@/lib/auth/accessControl';
+import {
+  canAccessAdminDashboard,
+  getRoleDisplayName,
+  getRoleBadgeColor,
+} from '@/lib/auth/accessControl';
 import { createClient } from '@/lib/supabase/client';
 
 type ModTab = 'reports' | 'content' | 'users' | 'comments' | 'activity';
@@ -44,7 +59,7 @@ const ModDashboardPage: React.FC = () => {
     try {
       const supabase = createClient();
       if (!supabase) return;
-      
+
       // Load reports
       const { data: reportsData } = await supabase
         .from('reports')
@@ -86,7 +101,10 @@ const ModDashboardPage: React.FC = () => {
     }
   };
 
-  const handleReportAction = async (reportId: string, action: 'approve' | 'reject' | 'investigate') => {
+  const handleReportAction = async (
+    reportId: string,
+    action: 'approve' | 'reject' | 'investigate'
+  ) => {
     try {
       const supabase = createClient();
       if (!supabase) return;
@@ -99,7 +117,11 @@ const ModDashboardPage: React.FC = () => {
 
       await supabase
         .from('reports')
-        .update({ status: statusMap[action], reviewed_by: user?.id, reviewed_at: new Date().toISOString() })
+        .update({
+          status: statusMap[action],
+          reviewed_by: user?.id,
+          reviewed_at: new Date().toISOString(),
+        })
         .eq('id', reportId);
 
       loadData();
@@ -119,10 +141,7 @@ const ModDashboardPage: React.FC = () => {
         flag: 'flagged',
       };
 
-      await supabase
-        .from('stories')
-        .update({ status: statusMap[action] })
-        .eq('id', storyId);
+      await supabase.from('stories').update({ status: statusMap[action] }).eq('id', storyId);
 
       loadData();
     } catch (error) {
@@ -146,7 +165,12 @@ const ModDashboardPage: React.FC = () => {
 
   const tabs = [
     { id: 'reports' as const, label: 'Reports', icon: 'FlagIcon', count: reports.length },
-    { id: 'content' as const, label: 'Content Queue', icon: 'DocumentTextIcon', count: contentQueue.length },
+    {
+      id: 'content' as const,
+      label: 'Content Queue',
+      icon: 'DocumentTextIcon',
+      count: contentQueue.length,
+    },
     { id: 'users' as const, label: 'Users', icon: 'UsersIcon' },
     { id: 'comments' as const, label: 'Comments', icon: 'ChatBubbleLeftIcon' },
     { id: 'activity' as const, label: 'Activity', icon: 'ClockIcon' },
@@ -155,7 +179,7 @@ const ModDashboardPage: React.FC = () => {
   return (
     <VoidBackground variant="minimal">
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -167,16 +191,14 @@ const ModDashboardPage: React.FC = () => {
                 </TemporalHeading>
                 <div className="flex items-center gap-3">
                   <p className="text-void-400">Content moderation and user management</p>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getRoleBadgeColor(profile.role as any)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold border ${getRoleBadgeColor(profile.role as any)}`}
+                  >
                     {getRoleDisplayName(profile.role as any)}
                   </span>
                 </div>
               </div>
-              <SpectralButton 
-                variant="primary" 
-                onClick={loadData}
-                className="mt-4 md:mt-0"
-              >
+              <SpectralButton variant="primary" onClick={loadData} className="mt-4 md:mt-0">
                 <Icon name="ArrowPathIcon" size={16} className="mr-2" />
                 Refresh
               </SpectralButton>
@@ -249,9 +271,10 @@ const ModDashboardPage: React.FC = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300
-                    ${activeTab === tab.id 
-                      ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50' 
-                      : 'text-void-400 hover:text-void-200 hover:bg-void-800/50'
+                    ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50'
+                        : 'text-void-400 hover:text-void-200 hover:bg-void-800/50'
                     }
                   `}
                   whileHover={{ scale: 1.02 }}
@@ -286,25 +309,40 @@ const ModDashboardPage: React.FC = () => {
                     <div className="divide-y divide-void-800/30">
                       {reports.length === 0 ? (
                         <div className="p-12 text-center">
-                          <Icon name="CheckCircleIcon" size={48} className="text-green-400 mx-auto mb-4" />
+                          <Icon
+                            name="CheckCircleIcon"
+                            size={48}
+                            className="text-green-400 mx-auto mb-4"
+                          />
                           <p className="text-void-300">No pending reports</p>
                         </div>
                       ) : (
                         reports.map((report) => (
-                          <div key={report.id} className="p-6 hover:bg-void-900/30 transition-colors">
+                          <div
+                            key={report.id}
+                            className="p-6 hover:bg-void-900/30 transition-colors"
+                          >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                  <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                    report.type === 'content' ? 'bg-orange-500/20 text-orange-400 border-orange-500/30' :
-                                    report.type === 'user' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                                    'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                                  }`}>
+                                  <span
+                                    className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                                      report.type === 'content'
+                                        ? 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+                                        : report.type === 'user'
+                                          ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                          : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                    }`}
+                                  >
                                     {report.type}
                                   </span>
-                                  <h4 className="font-semibold text-void-200">{report.title || report.reason}</h4>
+                                  <h4 className="font-semibold text-void-200">
+                                    {report.title || report.reason}
+                                  </h4>
                                 </div>
-                                <p className="text-sm text-void-400 mb-3">{report.description || report.details}</p>
+                                <p className="text-sm text-void-400 mb-3">
+                                  {report.description || report.details}
+                                </p>
                                 <div className="flex items-center gap-4 text-xs text-void-500">
                                   <span>Reported by: {report.users?.username || 'Unknown'}</span>
                                   <span>•</span>
@@ -368,16 +406,25 @@ const ModDashboardPage: React.FC = () => {
                     <div className="divide-y divide-void-800/30">
                       {contentQueue.length === 0 ? (
                         <div className="p-12 text-center">
-                          <Icon name="CheckCircleIcon" size={48} className="text-green-400 mx-auto mb-4" />
+                          <Icon
+                            name="CheckCircleIcon"
+                            size={48}
+                            className="text-green-400 mx-auto mb-4"
+                          />
                           <p className="text-void-300">No content pending review</p>
                         </div>
                       ) : (
                         contentQueue.map((story) => (
-                          <div key={story.id} className="p-6 hover:bg-void-900/30 transition-colors">
+                          <div
+                            key={story.id}
+                            className="p-6 hover:bg-void-900/30 transition-colors"
+                          >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1">
                                 <h4 className="font-semibold text-void-200 mb-2">{story.title}</h4>
-                                <p className="text-sm text-void-400 mb-3 line-clamp-2">{story.description}</p>
+                                <p className="text-sm text-void-400 mb-3 line-clamp-2">
+                                  {story.description}
+                                </p>
                                 <div className="flex items-center gap-4 text-xs text-void-500">
                                   <span>Author: {story.users?.username || 'Unknown'}</span>
                                   <span>•</span>
@@ -454,22 +501,30 @@ const ModDashboardPage: React.FC = () => {
                                     {u.display_name?.charAt(0) || u.username?.charAt(0) || 'U'}
                                   </div>
                                   <div>
-                                    <p className="font-medium text-void-200">{u.display_name || 'No name'}</p>
+                                    <p className="font-medium text-void-200">
+                                      {u.display_name || 'No name'}
+                                    </p>
                                     <p className="text-sm text-void-500">@{u.username}</p>
                                   </div>
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                                  u.tier === 'premium' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
-                                  u.tier === 'creator_pro' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
-                                  'bg-void-800/50 text-void-400 border-void-700/30'
-                                }`}>
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                                    u.tier === 'premium'
+                                      ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                                      : u.tier === 'creator_pro'
+                                        ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                        : 'bg-void-800/50 text-void-400 border-void-700/30'
+                                  }`}
+                                >
                                   {u.tier || 'free'}
                                 </span>
                               </td>
                               <td className="px-6 py-4">
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(u.role as any)}`}>
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(u.role as any)}`}
+                                >
                                   {getRoleDisplayName(u.role as any)}
                                 </span>
                               </td>
@@ -519,16 +574,25 @@ const ModDashboardPage: React.FC = () => {
                     <div className="divide-y divide-void-800/30">
                       {recentComments.length === 0 ? (
                         <div className="p-12 text-center">
-                          <Icon name="ChatBubbleLeftIcon" size={48} className="text-void-600 mx-auto mb-4" />
+                          <Icon
+                            name="ChatBubbleLeftIcon"
+                            size={48}
+                            className="text-void-600 mx-auto mb-4"
+                          />
                           <p className="text-void-300">No comments yet</p>
                         </div>
                       ) : (
                         recentComments.map((comment) => (
-                          <div key={comment.id} className="p-6 hover:bg-void-900/30 transition-colors">
+                          <div
+                            key={comment.id}
+                            className="p-6 hover:bg-void-900/30 transition-colors"
+                          >
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
-                                  <p className="font-medium text-void-200">{comment.users?.username || 'Unknown'}</p>
+                                  <p className="font-medium text-void-200">
+                                    {comment.users?.username || 'Unknown'}
+                                  </p>
                                   <span className="text-xs text-void-500">
                                     on {comment.stories?.title || 'Story'}
                                   </span>
@@ -537,7 +601,9 @@ const ModDashboardPage: React.FC = () => {
                                 <div className="flex items-center gap-4 text-xs text-void-500">
                                   <span>{new Date(comment.created_at).toLocaleDateString()}</span>
                                   {comment.is_flagged && (
-                                    <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400">Flagged</span>
+                                    <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400">
+                                      Flagged
+                                    </span>
                                   )}
                                 </div>
                               </div>
@@ -564,10 +630,7 @@ const ModDashboardPage: React.FC = () => {
                                   size="sm"
                                   onClick={async () => {
                                     const supabase = createClient();
-                                    await supabase
-                                      .from('comments')
-                                      .delete()
-                                      .eq('id', comment.id);
+                                    await supabase.from('comments').delete().eq('id', comment.id);
                                     loadData();
                                   }}
                                 >
@@ -612,4 +675,3 @@ const ModDashboardPage: React.FC = () => {
 };
 
 export default ModDashboardPage;
-

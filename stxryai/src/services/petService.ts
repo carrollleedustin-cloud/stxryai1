@@ -42,7 +42,7 @@ function generateGeneticSeed(userId: string, email: string, createdAt: string): 
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return Math.abs(hash).toString(36) + Math.random().toString(36).substr(2, 9);
@@ -52,8 +52,9 @@ function generateGeneticSeed(userId: string, email: string, createdAt: string): 
  * Seeded random number generator
  */
 function seededRandom(seed: string, index: number = 0): number {
-  const seedValue = seed.split('').reduce((acc, char, i) => 
-    acc + char.charCodeAt(0) * (i + 1 + index), 0);
+  const seedValue = seed
+    .split('')
+    .reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1 + index), 0);
   const x = Math.sin(seedValue) * 10000;
   return x - Math.floor(x);
 }
@@ -69,42 +70,51 @@ function seededPick<T>(array: T[], seed: string, index: number): T {
  * Generate unique pet traits from seed
  */
 function generateTraits(seed: string, element: PetElement, baseType: PetBaseType): PetTraits {
-  const elementColors: Record<PetElement, { primary: string; secondary: string; accent: string }> = {
-    fire: { primary: '#ff6b35', secondary: '#f7c59f', accent: '#ffd700' },
-    water: { primary: '#00b4d8', secondary: '#90e0ef', accent: '#48cae4' },
-    earth: { primary: '#606c38', secondary: '#dda15e', accent: '#bc6c25' },
-    air: { primary: '#caf0f8', secondary: '#90e0ef', accent: '#00b4d8' },
-    lightning: { primary: '#ffd60a', secondary: '#ffc300', accent: '#8338ec' },
-    ice: { primary: '#a2d2ff', secondary: '#bde0fe', accent: '#cdb4db' },
-    nature: { primary: '#80b918', secondary: '#d4e09b', accent: '#f19c79' },
-    shadow: { primary: '#7b2cbf', secondary: '#9d4edd', accent: '#10002b' },
-    light: { primary: '#ffd700', secondary: '#fff3b0', accent: '#ffbe0b' },
-    cosmic: { primary: '#7209b7', secondary: '#3a0ca3', accent: '#4cc9f0' },
-    void: { primary: '#1a1a2e', secondary: '#16213e', accent: '#7b2cbf' },
-  };
+  const elementColors: Record<PetElement, { primary: string; secondary: string; accent: string }> =
+    {
+      fire: { primary: '#ff6b35', secondary: '#f7c59f', accent: '#ffd700' },
+      water: { primary: '#00b4d8', secondary: '#90e0ef', accent: '#48cae4' },
+      earth: { primary: '#606c38', secondary: '#dda15e', accent: '#bc6c25' },
+      air: { primary: '#caf0f8', secondary: '#90e0ef', accent: '#00b4d8' },
+      lightning: { primary: '#ffd60a', secondary: '#ffc300', accent: '#8338ec' },
+      ice: { primary: '#a2d2ff', secondary: '#bde0fe', accent: '#cdb4db' },
+      nature: { primary: '#80b918', secondary: '#d4e09b', accent: '#f19c79' },
+      shadow: { primary: '#7b2cbf', secondary: '#9d4edd', accent: '#10002b' },
+      light: { primary: '#ffd700', secondary: '#fff3b0', accent: '#ffbe0b' },
+      cosmic: { primary: '#7209b7', secondary: '#3a0ca3', accent: '#4cc9f0' },
+      void: { primary: '#1a1a2e', secondary: '#16213e', accent: '#7b2cbf' },
+    };
 
   const colors = elementColors[element];
-  
+
   return {
     fluffiness: Math.floor(seededRandom(seed, 1) * 100),
     sparkle: Math.floor(seededRandom(seed, 2) * 100),
     glow: Math.floor(seededRandom(seed, 3) * 100),
     size: 40 + Math.floor(seededRandom(seed, 4) * 60),
     roundness: Math.floor(seededRandom(seed, 5) * 100),
-    
+
     hasWings: seededRandom(seed, 6) > 0.6 || baseType === 'dragon' || baseType === 'phoenix',
     hasHorns: seededRandom(seed, 7) > 0.7 || baseType === 'dragon',
     hasTail: seededRandom(seed, 8) > 0.4 && !['wisp', 'crystal', 'slime'].includes(baseType),
     hasHalo: seededRandom(seed, 9) > 0.85 || element === 'light',
     hasMarkings: seededRandom(seed, 10) > 0.5,
-    
+
     primaryColor: colors.primary,
     secondaryColor: colors.secondary,
     accentColor: colors.accent,
     eyeColor: `hsl(${Math.floor(seededRandom(seed, 11) * 360)}, 80%, 60%)`,
-    
-    pattern: seededPick(['solid', 'gradient', 'spotted', 'striped', 'galaxy', 'iridescent'], seed, 12),
-    particleType: seededPick(['none', 'sparkles', 'flames', 'bubbles', 'leaves', 'snow', 'stars', 'hearts', 'lightning'], seed, 13),
+
+    pattern: seededPick(
+      ['solid', 'gradient', 'spotted', 'striped', 'galaxy', 'iridescent'],
+      seed,
+      12
+    ),
+    particleType: seededPick(
+      ['none', 'sparkles', 'flames', 'bubbles', 'leaves', 'snow', 'stars', 'hearts', 'lightning'],
+      seed,
+      13
+    ),
     auraType: seededPick(['none', 'soft', 'pulsing', 'rainbow', 'electric', 'cosmic'], seed, 14),
   };
 }
@@ -141,7 +151,8 @@ function generateBirthMemory(): PetMemory {
     id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9),
     type: 'milestone',
     title: 'A New Beginning',
-    description: 'The moment we first met, a spark of magic connected us. Our story adventure begins!',
+    description:
+      'The moment we first met, a spark of magic connected us. Our story adventure begins!',
     date: new Date().toISOString(),
     emotionalImpact: 100,
   };
@@ -163,18 +174,54 @@ class EnhancedPetService {
   ): Promise<StoryPet | null> {
     try {
       const geneticSeed = generateGeneticSeed(userId, email, userCreatedAt);
-      
-      const baseTypes: PetBaseType[] = ['wisp', 'sprite', 'dragon', 'phoenix', 'wolf', 'cat', 'owl', 'fox', 'bunny', 'slime', 'crystal', 'shadow'];
-      const elements: PetElement[] = ['fire', 'water', 'earth', 'air', 'lightning', 'ice', 'nature', 'shadow', 'light', 'cosmic', 'void'];
-      const personalities: PetPersonality[] = ['energetic', 'calm', 'curious', 'playful', 'wise', 'mischievous', 'shy', 'brave', 'dreamy', 'loyal'];
-      
+
+      const baseTypes: PetBaseType[] = [
+        'wisp',
+        'sprite',
+        'dragon',
+        'phoenix',
+        'wolf',
+        'cat',
+        'owl',
+        'fox',
+        'bunny',
+        'slime',
+        'crystal',
+        'shadow',
+      ];
+      const elements: PetElement[] = [
+        'fire',
+        'water',
+        'earth',
+        'air',
+        'lightning',
+        'ice',
+        'nature',
+        'shadow',
+        'light',
+        'cosmic',
+        'void',
+      ];
+      const personalities: PetPersonality[] = [
+        'energetic',
+        'calm',
+        'curious',
+        'playful',
+        'wise',
+        'mischievous',
+        'shy',
+        'brave',
+        'dreamy',
+        'loyal',
+      ];
+
       const baseType = seededPick(baseTypes, geneticSeed, 0);
       const element = seededPick(elements, geneticSeed, 1);
       const personality = seededPick(personalities, geneticSeed, 2);
       const traits = generateTraits(geneticSeed, element, baseType);
-      
+
       const now = new Date().toISOString();
-      
+
       const pet: StoryPet = {
         id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 9),
         userId,
@@ -192,48 +239,48 @@ class EnhancedPetService {
         lastInteraction: now,
         lastFed: now,
         geneticSeed,
-        evolutionHistory: [{
-          stage: 'baby',
-          achievedAt: now,
-          celebrationSeen: false,
-        }],
+        evolutionHistory: [
+          {
+            stage: 'baby',
+            achievedAt: now,
+            celebrationSeen: false,
+          },
+        ],
       };
-      
+
       // Store in database
-      const { error } = await supabase
-        .from('user_pets')
-        .insert({
-          id: pet.id,
-          user_id: userId,
-          name: petName,
-          base_type: baseType,
-          element,
-          personality,
-          evolution_stage: 'baby',
-          traits: pet.traits,
-          current_mood: 'happy',
-          accessories: [],
-          stats: pet.stats,
-          memories: pet.memories,
-          born_at: now,
-          last_interaction: now,
-          last_fed: now,
-          genetic_seed: geneticSeed,
-          evolution_history: pet.evolutionHistory,
-        });
-      
+      const { error } = await supabase.from('user_pets').insert({
+        id: pet.id,
+        user_id: userId,
+        name: petName,
+        base_type: baseType,
+        element,
+        personality,
+        evolution_stage: 'baby',
+        traits: pet.traits,
+        current_mood: 'happy',
+        accessories: [],
+        stats: pet.stats,
+        memories: pet.memories,
+        born_at: now,
+        last_interaction: now,
+        last_fed: now,
+        genetic_seed: geneticSeed,
+        evolution_history: pet.evolutionHistory,
+      });
+
       if (error) {
         console.error('Error creating pet in database:', error);
         return pet;
       }
-      
+
       return pet;
     } catch (error) {
       console.error('Error creating pet:', error);
       return null;
     }
   }
-  
+
   /**
    * Get user's pet
    */
@@ -244,18 +291,18 @@ class EnhancedPetService {
         .select('*')
         .eq('user_id', userId)
         .single();
-      
+
       if (error || !data) {
         return null;
       }
-      
+
       return await this.mapDatabasePet(data, userId);
     } catch (error) {
       console.error('Error getting pet:', error);
       return null;
     }
   }
-  
+
   /**
    * Award experience to pet with AI-generated feedback
    */
@@ -267,13 +314,13 @@ class EnhancedPetService {
     try {
       const pet = await this.getUserPet(userId);
       if (!pet) return { leveledUp: false, evolved: false, pet: null };
-      
+
       const xpGained = PET_EXPERIENCE_REWARDS[activityType];
       const newStats = { ...pet.stats };
-      
+
       newStats.experience += xpGained;
       newStats.totalExperience += xpGained;
-      
+
       // Update activity-specific stats
       switch (activityType) {
         case 'storyRead':
@@ -289,13 +336,13 @@ class EnhancedPetService {
           newStats.commentsWritten++;
           break;
       }
-      
+
       if (additionalData?.genre && !newStats.genresExplored.includes(additionalData.genre)) {
         newStats.genresExplored.push(additionalData.genre);
       }
-      
+
       newStats.happiness = Math.min(100, newStats.happiness + 5);
-      
+
       let leveledUp = false;
       while (newStats.experience >= newStats.experienceToNextLevel) {
         newStats.experience -= newStats.experienceToNextLevel;
@@ -303,12 +350,12 @@ class EnhancedPetService {
         newStats.experienceToNextLevel = calculateXpToNextLevel(newStats.level);
         leveledUp = true;
       }
-      
+
       const newEvolutionStage = getEvolutionStage(newStats.level);
       const evolved = newEvolutionStage !== pet.evolutionStage;
-      
+
       const newMood = this.calculateMood(newStats);
-      
+
       const newMemories = [...pet.memories];
       if (evolved) {
         newMemories.push({
@@ -320,7 +367,7 @@ class EnhancedPetService {
           emotionalImpact: 100,
         });
       }
-      
+
       const evolutionHistory = [...pet.evolutionHistory];
       if (evolved) {
         evolutionHistory.push({
@@ -329,7 +376,7 @@ class EnhancedPetService {
           celebrationSeen: false,
         });
       }
-      
+
       await supabase
         .from('user_pets')
         .update({
@@ -342,7 +389,7 @@ class EnhancedPetService {
           last_fed: new Date().toISOString(),
         })
         .eq('user_id', userId);
-      
+
       return {
         leveledUp,
         evolved,
@@ -360,7 +407,7 @@ class EnhancedPetService {
       return { leveledUp: false, evolved: false, pet: null };
     }
   }
-  
+
   /**
    * Interact with pet with AI-generated response
    */
@@ -371,10 +418,10 @@ class EnhancedPetService {
     try {
       const pet = await this.getUserPet(userId);
       if (!pet) return null;
-      
+
       // Get AI-generated response
       const aiResponse = await this.generatePetResponse(pet, interactionType);
-      
+
       const interactions: Record<PetInteraction['type'], Omit<PetInteraction, 'response'>> = {
         pet: {
           type: 'pet',
@@ -407,23 +454,26 @@ class EnhancedPetService {
           experienceGained: 15,
         },
       };
-      
+
       const interaction = interactions[interactionType];
-      
+
       const newStats = { ...pet.stats };
-      newStats.happiness = Math.max(0, Math.min(100, newStats.happiness + interaction.happinessChange));
+      newStats.happiness = Math.max(
+        0,
+        Math.min(100, newStats.happiness + interaction.happinessChange)
+      );
       newStats.energy = Math.max(0, Math.min(100, newStats.energy + interaction.energyChange));
       newStats.experience += interaction.experienceGained;
       newStats.totalExperience += interaction.experienceGained;
-      
+
       while (newStats.experience >= newStats.experienceToNextLevel) {
         newStats.experience -= newStats.experienceToNextLevel;
         newStats.level++;
         newStats.experienceToNextLevel = calculateXpToNextLevel(newStats.level);
       }
-      
+
       const newMood = this.calculateMood(newStats);
-      
+
       await supabase
         .from('user_pets')
         .update({
@@ -433,20 +483,18 @@ class EnhancedPetService {
           last_interaction: new Date().toISOString(),
         })
         .eq('user_id', userId);
-      
+
       // Store interaction in database
-      await supabase
-        .from('pet_interactions')
-        .insert({
-          user_id: userId,
-          pet_id: pet.id,
-          interaction_type: interactionType,
-          response: aiResponse,
-          happiness_change: interaction.happinessChange,
-          energy_change: interaction.energyChange,
-          experience_gained: interaction.experienceGained,
-        });
-      
+      await supabase.from('pet_interactions').insert({
+        user_id: userId,
+        pet_id: pet.id,
+        interaction_type: interactionType,
+        response: aiResponse,
+        happiness_change: interaction.happinessChange,
+        energy_change: interaction.energyChange,
+        experience_gained: interaction.experienceGained,
+      });
+
       return {
         ...interaction,
         response: aiResponse,
@@ -456,14 +504,17 @@ class EnhancedPetService {
       return null;
     }
   }
-  
+
   /**
    * Generate AI response for pet interaction
    */
-  private async generatePetResponse(pet: StoryPet, interactionType: PetInteraction['type']): Promise<string> {
+  private async generatePetResponse(
+    pet: StoryPet,
+    interactionType: PetInteraction['type']
+  ): Promise<string> {
     try {
       const config = getTaskConfig('petDialogue');
-      
+
       const prompt = `You are a ${pet.personality} ${pet.baseType} companion with ${pet.element} element. 
 Your name is ${pet.name}. You are at level ${pet.stats.level} and in ${pet.evolutionStage} stage.
 Your current mood is ${pet.currentMood} and happiness is ${pet.stats.happiness}%.
@@ -481,7 +532,7 @@ Keep it under 100 characters.`;
       return this.getFallbackResponse(pet, interactionType);
     }
   }
-  
+
   /**
    * Get interaction description for AI prompt
    */
@@ -495,7 +546,7 @@ Keep it under 100 characters.`;
     };
     return descriptions[type];
   }
-  
+
   /**
    * Fallback response if AI generation fails
    */
@@ -562,10 +613,10 @@ Keep it under 100 characters.`;
         loyal: "I'll never let it go!",
       },
     };
-    
+
     return responses[type][pet.personality] || 'Thank you!';
   }
-  
+
   /**
    * Get pet dialogue
    */
@@ -573,7 +624,7 @@ Keep it under 100 characters.`;
     const dialogues = this.getDialogueOptions(pet, trigger);
     return dialogues[Math.floor(Math.random() * dialogues.length)];
   }
-  
+
   /**
    * Rename pet
    */
@@ -583,18 +634,18 @@ Keep it under 100 characters.`;
         .from('user_pets')
         .update({ name: newName })
         .eq('user_id', userId);
-      
+
       return !error;
     } catch (error) {
       console.error('Error renaming pet:', error);
       return false;
     }
   }
-  
+
   // ===========================================================================
   // PRIVATE HELPERS
   // ===========================================================================
-  
+
   private async mapDatabasePet(data: any, userId?: string): Promise<StoryPet> {
     const pet: StoryPet = {
       id: data.id,
@@ -622,7 +673,7 @@ Keep it under 100 characters.`;
         const patterns = await analyzeReadingPatterns(userId);
         const updatedTraits = updateTraitsFromPatterns(pet.traits, patterns, pet);
         const dynamicMood = calculateDynamicMood(pet, patterns);
-        
+
         pet.traits = updatedTraits;
         pet.currentMood = dynamicMood;
       } catch (error) {
@@ -632,7 +683,7 @@ Keep it under 100 characters.`;
 
     return pet;
   }
-  
+
   private calculateMood(stats: PetStats): PetMood {
     if (stats.happiness >= 90) return 'excited';
     if (stats.happiness >= 70) return 'happy';
@@ -641,7 +692,7 @@ Keep it under 100 characters.`;
     if (stats.happiness >= 10) return 'hungry';
     return 'sad';
   }
-  
+
   private getDialogueOptions(pet: StoryPet, trigger: PetDialogue['trigger']): string[] {
     const baseDialogues: Record<PetDialogue['trigger'], string[]> = {
       greeting: [
@@ -693,7 +744,7 @@ Keep it under 100 characters.`;
         `*party mode activated*`,
       ],
     };
-    
+
     return baseDialogues[trigger];
   }
 }

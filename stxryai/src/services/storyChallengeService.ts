@@ -142,10 +142,10 @@ const PROMPT_TEMPLATES: Record<string, string[]> = {
     'They thought the ritual was just a game...',
     'Something is wrong with the new neighbor, but no one else notices...',
     'The dreams are getting more real every night...',
-    'The voice on the phone knows things it shouldn\'t...',
+    "The voice on the phone knows things it shouldn't...",
   ],
   adventure: [
-    'The map leads to a place that shouldn\'t exist...',
+    "The map leads to a place that shouldn't exist...",
     'A dare leads to the discovery of a hidden world...',
     'The last survivor of the expedition finally tells the truth...',
     'A message in a bottle contains coordinates to something incredible...',
@@ -268,13 +268,11 @@ export const storyChallengeService = {
 
     if (existing) return true; // Already joined
 
-    const { error } = await supabase
-      .from('challenge_participants')
-      .insert({
-        challenge_id: challengeId,
-        user_id: userId,
-        joined_at: new Date().toISOString(),
-      });
+    const { error } = await supabase.from('challenge_participants').insert({
+      challenge_id: challengeId,
+      user_id: userId,
+      joined_at: new Date().toISOString(),
+    });
 
     if (error) {
       console.error('Error joining challenge:', error);
@@ -372,11 +370,13 @@ export const storyChallengeService = {
   ): Promise<ChallengeSubmission[]> {
     let query = supabase
       .from('challenge_submissions')
-      .select(`
+      .select(
+        `
         *,
         story:story_id (title, cover_image_url),
         user:user_id (display_name, avatar_url)
-      `)
+      `
+      )
       .eq('challenge_id', challengeId)
       .eq('is_valid', true);
 
@@ -424,10 +424,7 @@ export const storyChallengeService = {
 
     if (existingVote) {
       // Remove existing vote
-      await supabase
-        .from('challenge_votes')
-        .delete()
-        .eq('id', existingVote.id);
+      await supabase.from('challenge_votes').delete().eq('id', existingVote.id);
 
       // Decrement old submission's vote count
       await supabase.rpc('decrement_submission_votes', {
@@ -436,13 +433,11 @@ export const storyChallengeService = {
     }
 
     // Add new vote
-    const { error } = await supabase
-      .from('challenge_votes')
-      .insert({
-        challenge_id: challengeId,
-        submission_id: submissionId,
-        user_id: userId,
-      });
+    const { error } = await supabase.from('challenge_votes').insert({
+      challenge_id: challengeId,
+      submission_id: submissionId,
+      user_id: userId,
+    });
 
     if (error) {
       console.error('Error voting:', error);
@@ -495,10 +490,12 @@ export const storyChallengeService = {
     // Get all submissions
     const { data: submissions } = await supabase
       .from('challenge_submissions')
-      .select(`
+      .select(
+        `
         *,
         story:story_id (title, cover_image_url)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('submitted_at', { ascending: false });
 
@@ -520,10 +517,12 @@ export const storyChallengeService = {
 
     const { data, error } = await supabase
       .from('daily_challenges')
-      .select(`
+      .select(
+        `
         *,
         prompt:prompt_id (*)
-      `)
+      `
+      )
       .eq('date', today)
       .single();
 
@@ -645,12 +644,14 @@ export const storyChallengeService = {
   async getChallengeLeaderboard(limit: number = 10): Promise<ChallengeLeaderboard[]> {
     const { data, error } = await supabase
       .from('challenge_submissions')
-      .select(`
+      .select(
+        `
         user_id,
         is_winner,
         vote_count,
         user:user_id (display_name, avatar_url)
-      `)
+      `
+      )
       .eq('is_valid', true);
 
     if (error) {
@@ -663,9 +664,7 @@ export const storyChallengeService = {
 
     data?.forEach((submission: any) => {
       const userId = submission.user_id;
-      const userData = Array.isArray(submission.user)
-        ? submission.user[0]
-        : submission.user;
+      const userData = Array.isArray(submission.user) ? submission.user[0] : submission.user;
 
       if (!userStats[userId]) {
         userStats[userId] = {
@@ -753,10 +752,7 @@ export const storyChallengeService = {
     }
 
     // Update challenge status
-    await supabase
-      .from('story_challenges')
-      .update({ status: 'completed' })
-      .eq('id', challengeId);
+    await supabase.from('story_challenges').update({ status: 'completed' }).eq('id', challengeId);
 
     return true;
   },

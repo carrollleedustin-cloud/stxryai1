@@ -44,7 +44,7 @@ export function StoryClubs({ userId, onClubSelect, onCreateClub }: StoryClubsPro
       // TODO: Replace with actual API call
       // const data = await clubService.getClubs(userId, filter);
       // setClubs(data);
-      
+
       // Mock data for now
       setClubs([]);
     } catch (error) {
@@ -54,9 +54,10 @@ export function StoryClubs({ userId, onClubSelect, onCreateClub }: StoryClubsPro
     }
   };
 
-  const filteredClubs = clubs.filter((club) =>
-    club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    club.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredClubs = clubs.filter(
+    (club) =>
+      club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      club.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
@@ -185,7 +186,9 @@ export function StoryClubs({ userId, onClubSelect, onCreateClub }: StoryClubsPro
                 <h3 className="font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
                   {club.name}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{club.description}</p>
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {club.description}
+                </p>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1 mb-4">
@@ -220,4 +223,3 @@ export function StoryClubs({ userId, onClubSelect, onCreateClub }: StoryClubsPro
     </div>
   );
 }
-

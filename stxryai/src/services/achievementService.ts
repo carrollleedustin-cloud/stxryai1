@@ -480,9 +480,8 @@ export const achievementService = {
     const currentXpInLevel = totalXp - xpForCurrentLevel;
     const xpNeeded = xpForNextLevel - xpForCurrentLevel;
 
-    const titleConfig = [...LEVEL_CONFIG.titles]
-      .reverse()
-      .find((t) => level >= t.level) || LEVEL_CONFIG.titles[0];
+    const titleConfig =
+      [...LEVEL_CONFIG.titles].reverse().find((t) => level >= t.level) || LEVEL_CONFIG.titles[0];
 
     return {
       level,
@@ -583,7 +582,11 @@ export const achievementService = {
     }
 
     return (data || []).map((entry, index) => {
-      const user = entry.users as { username?: string; display_name?: string; avatar_url?: string } | null;
+      const user = entry.users as {
+        username?: string;
+        display_name?: string;
+        avatar_url?: string;
+      } | null;
       return {
         userId: entry.user_id,
         username: user?.username || 'Unknown',
@@ -692,10 +695,7 @@ export const achievementService = {
   /**
    * Update daily challenge progress
    */
-  async updateChallengeProgress(
-    challengeId: string,
-    progress: number
-  ): Promise<boolean> {
+  async updateChallengeProgress(challengeId: string, progress: number): Promise<boolean> {
     const { data: challenge } = await supabase
       .from('daily_challenges')
       .select('*')

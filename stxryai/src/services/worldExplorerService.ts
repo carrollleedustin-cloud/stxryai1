@@ -46,9 +46,9 @@ export class WorldExplorerService {
       Series Title: ${series?.title}
       Description: ${series?.description}
       
-      Characters: ${characters.map(c => c.name).join(', ')}
-      World Elements: ${elements.map(e => e.name).join(', ')}
-      Active Narrative Ripples: ${ripples.map(r => r.description).join('; ')}
+      Characters: ${characters.map((c) => c.name).join(', ')}
+      World Elements: ${elements.map((e) => e.name).join(', ')}
+      Active Narrative Ripples: ${ripples.map((r) => r.description).join('; ')}
 
       Return a JSON object with:
       - overview: A 2-3 paragraph summary of the world's current state.
@@ -58,15 +58,18 @@ export class WorldExplorerService {
     `;
 
     const response = await generateCompletion({
-      messages: [{ role: 'system', content: 'You are a master world-builder and lore-master.' }, { role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: 'You are a master world-builder and lore-master.' },
+        { role: 'user', content: prompt },
+      ],
       jsonMode: true,
-      tier: 'premium'
+      tier: 'premium',
     });
 
     const data = JSON.parse(response.content);
     return {
       seriesId,
-      ...data
+      ...data,
     };
   }
 
@@ -75,7 +78,7 @@ export class WorldExplorerService {
    */
   public async generateLoreEntry(seriesId: string, topic: string): Promise<LoreEntry> {
     const context = await this.narrativeEngine.compileGenerationContext(seriesId);
-    
+
     const prompt = `
       Create a detailed lore entry for the topic: "${topic}" in the context of this world.
       
@@ -91,15 +94,21 @@ export class WorldExplorerService {
     `;
 
     const response = await generateCompletion({
-      messages: [{ role: 'system', content: 'You are an archivist recording the history and secrets of a fictional world.' }, { role: 'user', content: prompt }],
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an archivist recording the history and secrets of a fictional world.',
+        },
+        { role: 'user', content: prompt },
+      ],
       jsonMode: true,
-      tier: 'regular'
+      tier: 'regular',
     });
 
     const data = JSON.parse(response.content);
     return {
       id: `lore-${Date.now()}`,
-      ...data
+      ...data,
     };
   }
 
@@ -118,7 +127,7 @@ export class WorldExplorerService {
       items,
       factions,
       characters,
-      ripples
+      ripples,
     };
   }
 }

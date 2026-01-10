@@ -4,7 +4,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-import { activityFeedService, ActivityFeedItem, ActivityType } from '@/services/activityFeedService';
+import {
+  activityFeedService,
+  ActivityFeedItem,
+  ActivityType,
+} from '@/services/activityFeedService';
 import { getRelativeTime } from '@/lib/utils';
 
 // ========================================
@@ -42,7 +46,10 @@ const ACTIVITY_CONFIG: Record<ActivityType, { icon: string; color: string; bgCol
 const FILTER_OPTIONS: Array<{ label: string; types: ActivityType[] }> = [
   { label: 'All', types: [] },
   { label: 'Reading', types: ['story_started', 'story_completed', 'chapter_read'] },
-  { label: 'Achievements', types: ['achievement_earned', 'level_up', 'streak_milestone', 'challenge_completed'] },
+  {
+    label: 'Achievements',
+    types: ['achievement_earned', 'level_up', 'streak_milestone', 'challenge_completed'],
+  },
   { label: 'Social', types: ['friend_added', 'club_joined', 'review_posted'] },
 ];
 
@@ -95,7 +102,7 @@ export function ActivityFeed({
     if (!user?.id) return;
 
     const unsubscribe = activityFeedService.subscribeToFeed(user.id, (newActivity) => {
-      setActivities(prev => [newActivity, ...prev.slice(0, maxItems - 1)]);
+      setActivities((prev) => [newActivity, ...prev.slice(0, maxItems - 1)]);
     });
 
     return () => unsubscribe();
@@ -110,7 +117,9 @@ export function ActivityFeed({
   }
 
   return (
-    <div className={`rounded-xl bg-void-900/50 border border-void-800 overflow-hidden ${className}`}>
+    <div
+      className={`rounded-xl bg-void-900/50 border border-void-800 overflow-hidden ${className}`}
+    >
       {/* Header */}
       <div className="px-4 py-3 border-b border-void-800 flex items-center justify-between">
         <h3 className="font-semibold text-void-100 flex items-center gap-2">
@@ -123,7 +132,12 @@ export function ActivityFeed({
           title="Refresh"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </button>
       </div>
@@ -180,12 +194,7 @@ export function ActivityFeed({
         ) : (
           <AnimatePresence mode="popLayout">
             {activities.map((activity, index) => (
-              <ActivityItem
-                key={activity.id}
-                activity={activity}
-                compact={compact}
-                index={index}
-              />
+              <ActivityItem key={activity.id} activity={activity} compact={compact} index={index} />
             ))}
           </AnimatePresence>
         )}
@@ -222,8 +231,8 @@ interface ActivityItemProps {
 function ActivityItem({ activity, compact, index }: ActivityItemProps) {
   const { user } = useAuth();
   const config = ACTIVITY_CONFIG[activity.activityType];
-  const storyUrl = activity.metadata.storyId 
-    ? `/story-reader?id=${activity.metadata.storyId}` 
+  const storyUrl = activity.metadata.storyId
+    ? `/story-reader?id=${activity.metadata.storyId}`
     : null;
 
   const [hasLiked, setHasLiked] = useState(activity.hasLiked || false);
@@ -236,7 +245,7 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
     if (!user) return;
     const result = await activityFeedService.likeActivity(user.id, activity.id);
     setHasLiked(result.liked);
-    setLikesCount(prev => result.liked ? prev + 1 : prev - 1);
+    setLikesCount((prev) => (result.liked ? prev + 1 : prev - 1));
   };
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -244,7 +253,7 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
     if (!user || !commentContent.trim()) return;
 
     const newComment = await activityFeedService.addComment(user.id, activity.id, commentContent);
-    setComments(prev => [...prev, newComment]);
+    setComments((prev) => [...prev, newComment]);
     setCommentContent('');
   };
 
@@ -269,7 +278,9 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
               className={`rounded-full object-cover ${compact ? 'w-8 h-8' : 'w-10 h-10'}`}
             />
           ) : (
-            <div className={`rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center text-void-950 font-bold ${compact ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm'}`}>
+            <div
+              className={`rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center text-void-950 font-bold ${compact ? 'w-8 h-8 text-xs' : 'w-10 h-10 text-sm'}`}
+            >
               {activity.username.charAt(0).toUpperCase()}
             </div>
           )}
@@ -283,7 +294,7 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
                 <span className="font-medium">{activity.username}</span>
                 <span className="text-void-400 ml-1">{activity.description}</span>
               </p>
-              
+
               {/* Story preview */}
               {activity.metadata.storyTitle && storyUrl && !compact && (
                 <Link
@@ -336,17 +347,17 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
                 hasLiked ? 'text-red-400' : 'text-void-400 hover:text-void-100'
               }`}
             >
-              <svg 
-                className={`w-4 h-4 ${hasLiked ? 'fill-current' : ''}`} 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                className={`w-4 h-4 ${hasLiked ? 'fill-current' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                 />
               </svg>
               {likesCount > 0 && <span>{likesCount}</span>}
@@ -358,11 +369,11 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
               className="flex items-center gap-1.5 text-xs text-void-400 hover:text-void-100 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 />
               </svg>
               {comments.length > 0 && <span>{comments.length}</span>}
@@ -370,7 +381,7 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
             </button>
 
             <div className="flex-1" />
-            
+
             <span className="text-[10px] text-void-500 font-mono uppercase tracking-wider">
               {getRelativeTime(activity.createdAt)}
             </span>
@@ -435,4 +446,3 @@ function ActivityItem({ activity, compact, index }: ActivityItemProps) {
 }
 
 export default ActivityFeed;
-

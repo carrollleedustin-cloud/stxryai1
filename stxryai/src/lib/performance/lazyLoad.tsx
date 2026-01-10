@@ -6,20 +6,20 @@
 import { lazy } from 'react';
 
 // Lazy load components with preloading
-export const LazyStoryReader = lazy(() =>
-  import('@/app/story-reader/components/StoryReaderInteractive')
+export const LazyStoryReader = lazy(
+  () => import('@/app/story-reader/components/StoryReaderInteractive')
 );
 
-export const LazyLandingPage = lazy(() =>
-  import('@/app/landing-page/components/LandingPageInteractive')
+export const LazyLandingPage = lazy(
+  () => import('@/app/landing-page/components/LandingPageInteractive')
 );
 
-export const LazyUserDashboard = lazy(() =>
-  import('@/app/user-dashboard/components/DashboardInteractive')
+export const LazyUserDashboard = lazy(
+  () => import('@/app/user-dashboard/components/DashboardInteractive')
 );
 
-export const LazyStoryLibrary = lazy(() =>
-  import('@/app/story-library/components/StoryLibraryInteractive')
+export const LazyStoryLibrary = lazy(
+  () => import('@/app/story-library/components/StoryLibraryInteractive')
 );
 
 // Preload critical components
@@ -45,9 +45,15 @@ export const LazyComponents = {
   AICompanionPanel: lazy(() => import('@/components/story-reader/AICompanionPanel')),
 
   // Advanced Effects
-  HolographicCard: lazy(() => import('@/components/void/AdvancedEffects').then(mod => ({ default: mod.HolographicCard }))),
-  MorphingBlob: lazy(() => import('@/components/void/AdvancedEffects').then(mod => ({ default: mod.MorphingBlob }))),
-  ParticleField: lazy(() => import('@/components/void/ParticleField').then(mod => ({ default: mod.ParticleField }))),
+  HolographicCard: lazy(() =>
+    import('@/components/void/AdvancedEffects').then((mod) => ({ default: mod.HolographicCard }))
+  ),
+  MorphingBlob: lazy(() =>
+    import('@/components/void/AdvancedEffects').then((mod) => ({ default: mod.MorphingBlob }))
+  ),
+  ParticleField: lazy(() =>
+    import('@/components/void/ParticleField').then((mod) => ({ default: mod.ParticleField }))
+  ),
 
   // Services (for dynamic imports)
   StoryService: lazy(() => import('@/services/storyService')),
@@ -163,10 +169,7 @@ export const resourceHints = {
   ],
 
   // Preload critical fonts
-  fontPreload: [
-    '/fonts/inter-var.woff2',
-    '/fonts/playfair-display.woff2',
-  ],
+  fontPreload: ['/fonts/inter-var.woff2', '/fonts/playfair-display.woff2'],
 };
 
 // Performance monitoring
@@ -191,8 +194,11 @@ export const performanceMonitor = {
     console.log(`Bundle ${bundleName}: ${(size / 1024 / 1024).toFixed(2)}MB`);
 
     // Alert if bundle is too large
-    if (size > 500 * 1024) { // 500KB
-      console.warn(`Bundle ${bundleName} is ${(size / 1024 / 1024).toFixed(2)}MB - consider code splitting`);
+    if (size > 500 * 1024) {
+      // 500KB
+      console.warn(
+        `Bundle ${bundleName} is ${(size / 1024 / 1024).toFixed(2)}MB - consider code splitting`
+      );
     }
   },
 
@@ -274,16 +280,12 @@ export const serviceWorkerUtils = {
 export const imageOptimization = {
   // Generate responsive image srcSet
   generateSrcSet: (baseUrl: string, widths: number[] = [320, 640, 1024, 1920]) => {
-    return widths
-      .map(width => `${baseUrl}?w=${width} ${width}w`)
-      .join(', ');
+    return widths.map((width) => `${baseUrl}?w=${width} ${width}w`).join(', ');
   },
 
   // Generate WebP fallbacks
   generateWebPSrcSet: (baseUrl: string, widths: number[] = [320, 640, 1024, 1920]) => {
-    return widths
-      .map(width => `${baseUrl}?w=${width}&format=webp ${width}w`)
-      .join(', ');
+    return widths.map((width) => `${baseUrl}?w=${width}&format=webp ${width}w`).join(', ');
   },
 
   // Lazy load images

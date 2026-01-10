@@ -22,7 +22,10 @@ interface CreatorAnalyticsProps {
   timeframe?: '7d' | '30d' | '90d' | 'all';
 }
 
-export function CreatorAnalytics({ userId, timeframe: initialTimeframe = '30d' }: CreatorAnalyticsProps) {
+export function CreatorAnalytics({
+  userId,
+  timeframe: initialTimeframe = '30d',
+}: CreatorAnalyticsProps) {
   const [selectedStory, setSelectedStory] = useState<string | null>(null);
   const [timeframe, setTimeframe] = useState<'7d' | '30d' | '90d' | 'all'>(initialTimeframe);
 
@@ -93,7 +96,9 @@ export function CreatorAnalytics({ userId, timeframe: initialTimeframe = '30d' }
             <span>📊</span>
             Creator Analytics
           </h2>
-          <p className="text-muted-foreground">Track your story performance and reader engagement</p>
+          <p className="text-muted-foreground">
+            Track your story performance and reader engagement
+          </p>
         </div>
         <div className="flex gap-2">
           {(['7d', '30d', '90d', 'all'] as const).map((tf) => (
@@ -129,10 +134,7 @@ export function CreatorAnalytics({ userId, timeframe: initialTimeframe = '30d' }
                   metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
                 }`}
               >
-                <Icon
-                  name={metric.trend === 'up' ? 'ArrowUpIcon' : 'ArrowDownIcon'}
-                  size={16}
-                />
+                <Icon name={metric.trend === 'up' ? 'ArrowUpIcon' : 'ArrowDownIcon'} size={16} />
                 {metric.change}
               </div>
             </div>
@@ -205,22 +207,13 @@ export function CreatorAnalytics({ userId, timeframe: initialTimeframe = '30d' }
 
       {/* Detailed Story View */}
       {selectedStory && (
-        <StoryDetailView
-          storyId={selectedStory}
-          onClose={() => setSelectedStory(null)}
-        />
+        <StoryDetailView storyId={selectedStory} onClose={() => setSelectedStory(null)} />
       )}
     </div>
   );
 }
 
-function StoryDetailView({
-  storyId,
-  onClose,
-}: {
-  storyId: string;
-  onClose: () => void;
-}) {
+function StoryDetailView({ storyId, onClose }: { storyId: string; onClose: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -237,4 +230,3 @@ function StoryDetailView({
     </motion.div>
   );
 }
-

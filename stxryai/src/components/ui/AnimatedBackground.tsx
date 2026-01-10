@@ -121,7 +121,10 @@ export function AnimatedBackground({
 
   if (variant === 'waves') {
     return (
-      <div className={`absolute inset-0 w-full h-full overflow-hidden ${className}`} style={{ zIndex: 0 }}>
+      <div
+        className={`absolute inset-0 w-full h-full overflow-hidden ${className}`}
+        style={{ zIndex: 0 }}
+      >
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
@@ -147,29 +150,30 @@ export function AnimatedBackground({
   if (variant === 'stars') {
     return (
       <div className={`absolute inset-0 w-full h-full ${className}`} style={{ zIndex: 0 }}>
-        {Array.from({ length: intensity === 'low' ? 20 : intensity === 'medium' ? 40 : 60 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-white rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              opacity: [0.3, 1, 0.3],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 2 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+        {Array.from({ length: intensity === 'low' ? 20 : intensity === 'medium' ? 40 : 60 }).map(
+          (_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-white rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                opacity: [0.3, 1, 0.3],
+                scale: [1, 1.5, 1],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          )
+        )}
       </div>
     );
   }
 
   return null;
 }
-

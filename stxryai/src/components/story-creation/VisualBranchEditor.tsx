@@ -62,9 +62,7 @@ export function VisualBranchEditor({
     const newX = (e.clientX - rect.left - dragOffset.x) / viewport.zoom;
     const newY = (e.clientY - rect.top - dragOffset.y) / viewport.zoom;
 
-    onNodesChange(
-      nodes.map((n) => (n.id === draggedNode ? { ...n, x: newX, y: newY } : n))
-    );
+    onNodesChange(nodes.map((n) => (n.id === draggedNode ? { ...n, x: newX, y: newY } : n)));
   };
 
   const handleNodeDragEnd = () => {
@@ -225,10 +223,7 @@ export function VisualBranchEditor({
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-foreground">Node Details</h3>
-              <button
-                onClick={() => setSelectedNode(null)}
-                className="p-1 hover:bg-muted rounded"
-              >
+              <button onClick={() => setSelectedNode(null)} className="p-1 hover:bg-muted rounded">
                 <Icon name="XMarkIcon" size={16} />
               </button>
             </div>
@@ -239,4 +234,3 @@ export function VisualBranchEditor({
     </div>
   );
 }
-

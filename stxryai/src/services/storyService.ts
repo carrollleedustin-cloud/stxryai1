@@ -55,10 +55,7 @@ export const storyService = {
 
   async getFilteredStories(filters: FilterOptions = {}): Promise<Story[]> {
     try {
-      let query = supabase
-        .from('stories')
-        .select('*')
-        .eq('is_published', true);
+      let query = supabase.from('stories').select('*').eq('is_published', true);
 
       // Search
       if (filters.searchQuery) {

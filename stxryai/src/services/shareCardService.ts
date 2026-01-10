@@ -28,10 +28,7 @@ class ShareCardService {
    * Generate share card image using canvas
    * Returns data URL that can be used as image source
    */
-  async generateShareCard(
-    data: ShareCardData,
-    options: ShareCardOptions = {}
-  ): Promise<string> {
+  async generateShareCard(data: ShareCardData, options: ShareCardOptions = {}): Promise<string> {
     const {
       width = 1200,
       height = 630, // Standard OG image size
@@ -76,7 +73,7 @@ class ShareCardService {
     ctx.font = 'bold 64px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    
+
     // Wrap text if needed
     const titleLines = this.wrapText(ctx, data.title, width - 200, 64);
     let yPos = 150;
@@ -96,15 +93,15 @@ class ShareCardService {
     if (data.stats && data.stats.length > 0) {
       const statY = height - 200;
       const statSpacing = width / (data.stats.length + 1);
-      
+
       data.stats.forEach((stat, index) => {
         const x = statSpacing * (index + 1);
-        
+
         // Stat value
         ctx.font = 'bold 48px Arial, sans-serif';
         ctx.fillStyle = textColor;
         ctx.fillText(stat.value, x, statY);
-        
+
         // Stat label
         ctx.font = '24px Arial, sans-serif';
         ctx.fillStyle = textColor + 'CC';
@@ -126,10 +123,7 @@ class ShareCardService {
    * Generate share card via API (server-side)
    * Falls back to client-side if API unavailable
    */
-  async generateShareCardAPI(
-    data: ShareCardData,
-    options: ShareCardOptions = {}
-  ): Promise<string> {
+  async generateShareCardAPI(data: ShareCardData, options: ShareCardOptions = {}): Promise<string> {
     try {
       const response = await fetch('/api/share/card', {
         method: 'POST',
@@ -340,4 +334,3 @@ class ShareCardService {
 
 // Export singleton instance
 export const shareCardService = new ShareCardService();
-

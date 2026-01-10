@@ -117,7 +117,14 @@ class AICompanionService {
           story_id: storyId,
           reader_id: readerId,
           companion_enabled: story?.enable_ai_companion || false,
-          companion_memory: { notableChoices: [], emotionalMoments: [], questionsAsked: [], hintsGiven: [], insideJokes: [], readerPreferences: {} },
+          companion_memory: {
+            notableChoices: [],
+            emotionalMoments: [],
+            questionsAsked: [],
+            hintsGiven: [],
+            insideJokes: [],
+            readerPreferences: {},
+          },
         })
         .select()
         .single();
@@ -272,7 +279,7 @@ You have a relationship level of ${relationship}/100 with this reader.
 
       if (memory.notableChoices.length > 0) {
         systemPrompt += `\nRecent reader choices:\n`;
-        memory.notableChoices.slice(-3).forEach(c => {
+        memory.notableChoices.slice(-3).forEach((c) => {
           systemPrompt += `- "${c.choiceText}" (${c.wasCustom ? 'custom' : 'preset'})\n`;
         });
       }
@@ -284,9 +291,10 @@ You have a relationship level of ${relationship}/100 with this reader.
       let userPrompt = '';
       switch (context.trigger) {
         case 'greeting':
-          userPrompt = session.totalChoicesMade === 0
-            ? 'Introduce yourself to a new reader starting this story.'
-            : `Welcome back a reader who has made ${session.totalChoicesMade} choices so far.`;
+          userPrompt =
+            session.totalChoicesMade === 0
+              ? 'Introduce yourself to a new reader starting this story.'
+              : `Welcome back a reader who has made ${session.totalChoicesMade} choices so far.`;
           break;
         case 'choice_made':
           userPrompt = `React to the reader choosing: "${context.lastChoice}". Be brief (1-2 sentences).`;
@@ -314,9 +322,14 @@ You have a relationship level of ${relationship}/100 with this reader.
 
       if (result.success && typeof result.data === 'string') {
         return {
-          type: context.trigger === 'greeting' ? 'greeting' : 
-                context.trigger === 'stuck' ? 'hint' :
-                context.trigger === 'milestone' ? 'encouragement' : 'reaction',
+          type:
+            context.trigger === 'greeting'
+              ? 'greeting'
+              : context.trigger === 'stuck'
+                ? 'hint'
+                : context.trigger === 'milestone'
+                  ? 'encouragement'
+                  : 'reaction',
           message: result.data.trim(),
         };
       }
@@ -367,7 +380,7 @@ Format:
 
       const result = await aiService.generateStoryContent(
         {
-          prompt: 'Continue the story based on the reader\'s custom choice.',
+          prompt: "Continue the story based on the reader's custom choice.",
           context: systemPrompt,
           genre: context.genre,
           tone: 'immersive',
@@ -377,29 +390,27 @@ Format:
 
       if (result.success && typeof result.data === 'string') {
         const content = result.data;
-        
+
         // Parse story and choices
         const storyMatch = content.match(/\[STORY\]([\s\S]*?)\[\/STORY\]/);
         const choicesMatch = content.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
-        
+
         const storyContent = storyMatch ? storyMatch[1].trim() : content;
         const choicesText = choicesMatch ? choicesMatch[1].trim() : '';
-        
+
         const choices = choicesText
           .split('\n')
-          .map(line => line.replace(/^\d+\.\s*/, '').trim())
+          .map((line) => line.replace(/^\d+\.\s*/, '').trim())
           .filter(Boolean);
 
         // Store the dynamic branch
-        await supabase
-          .from('dynamic_story_branches')
-          .insert({
-            story_id: storyId,
-            branch_title: `Custom: ${customChoice.slice(0, 50)}`,
-            branch_content: storyContent,
-            reader_choice_text: customChoice,
-            was_custom_choice: true,
-          });
+        await supabase.from('dynamic_story_branches').insert({
+          story_id: storyId,
+          branch_title: `Custom: ${customChoice.slice(0, 50)}`,
+          branch_content: storyContent,
+          reader_choice_text: customChoice,
+          was_custom_choice: true,
+        });
 
         // Record the AI response in choice history
         await supabase
@@ -411,11 +422,10 @@ Format:
 
         return {
           content: storyContent,
-          choices: choices.length >= 3 ? choices : [
-            'Continue exploring',
-            'Take a different approach',
-            'Wait and observe',
-          ],
+          choices:
+            choices.length >= 3
+              ? choices
+              : ['Continue exploring', 'Take a different approach', 'Wait and observe'],
         };
       }
 
@@ -439,7 +449,7 @@ Format:
         .single();
 
       if (!story) return false;
-      
+
       const tier = story.custom_choice_tier;
       if (tier === 'none') return false;
       if (tier === 'all') return true;
@@ -453,7 +463,8 @@ Format:
 
       const userTier = profile?.subscription_tier || 'free';
 
-      if (tier === 'premium' && ['premium', 'creator_pro', 'enterprise'].includes(userTier)) return true;
+      if (tier === 'premium' && ['premium', 'creator_pro', 'enterprise'].includes(userTier))
+        return true;
       if (tier === 'creator_pro' && ['creator_pro', 'enterprise'].includes(userTier)) return true;
 
       return false;
@@ -501,4 +512,3 @@ Format:
 
 // Export singleton
 export const aiCompanionService = new AICompanionService();
-

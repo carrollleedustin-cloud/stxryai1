@@ -89,7 +89,9 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
   if (npcs.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-card/50 backdrop-blur-glass p-6 shadow-elevation-1">
-        <p className="text-muted-foreground text-center">No characters detected in this story yet.</p>
+        <p className="text-muted-foreground text-center">
+          No characters detected in this story yet.
+        </p>
       </div>
     );
   }
@@ -98,7 +100,9 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
     <div className="rounded-3xl border border-border bg-card/50 backdrop-blur-glass p-6 shadow-elevation-1 space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground">Characters</h3>
+          <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            Characters
+          </h3>
           <p className="mt-1 text-sm text-muted-foreground">Who the story remembers you as.</p>
         </div>
       </div>
@@ -116,7 +120,9 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
             }`}
           >
             <h4 className="font-semibold text-lg text-foreground">{npc.npc_name}</h4>
-            {npc.npc_role && <p className="text-sm text-muted-foreground capitalize">{npc.npc_role}</p>}
+            {npc.npc_role && (
+              <p className="text-sm text-muted-foreground capitalize">{npc.npc_role}</p>
+            )}
             {npc.personality_traits && npc.personality_traits.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {npc.personality_traits.slice(0, 3).map((trait, idx) => (
@@ -159,7 +165,9 @@ export default function NPCInteractionPanel({ storyId, currentChapter }: NPCInte
                     }}
                   ></div>
                 </div>
-                <p className="text-xs text-muted-foreground">Score: {relationshipStatus.cumulativeScore}</p>
+                <p className="text-xs text-muted-foreground">
+                  Score: {relationshipStatus.cumulativeScore}
+                </p>
               </div>
             )}
 

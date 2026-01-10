@@ -26,7 +26,8 @@ const MOCK_REVIEWS = [
     },
     rating: 5,
     title: 'A masterpiece of horror storytelling',
-    content: 'This story completely captivated me from the first chapter. The way the choices branched out created a sense of genuine dread - I never knew what was lurking around the next corner. The atmosphere is incredibly immersive, and the writing quality is top-notch. Highly recommend for anyone who loves psychological horror.',
+    content:
+      'This story completely captivated me from the first chapter. The way the choices branched out created a sense of genuine dread - I never knew what was lurking around the next corner. The atmosphere is incredibly immersive, and the writing quality is top-notch. Highly recommend for anyone who loves psychological horror.',
     likes: 234,
     comments: 45,
     date: '2024-12-20',
@@ -48,7 +49,8 @@ const MOCK_REVIEWS = [
     },
     rating: 4,
     title: 'Thought-provoking sci-fi with great world-building',
-    content: 'The world-building in this story is exceptional. Each choice feels meaningful and the consequences are well thought out. My only minor criticism is that some branches feel shorter than others. Still, a solid sci-fi experience that makes you think about the future of humanity.',
+    content:
+      'The world-building in this story is exceptional. Each choice feels meaningful and the consequences are well thought out. My only minor criticism is that some branches feel shorter than others. Still, a solid sci-fi experience that makes you think about the future of humanity.',
     likes: 156,
     comments: 28,
     date: '2024-12-19',
@@ -70,7 +72,8 @@ const MOCK_REVIEWS = [
     },
     rating: 5,
     title: 'Epic fantasy that rivals published novels',
-    content: 'I\'ve read many interactive stories, but this one stands out. The character development is incredible - by the end, I genuinely cared about the fate of the kingdom. The multiple endings give great replay value. This is the kind of story that makes you want to explore every possible path.',
+    content:
+      "I've read many interactive stories, but this one stands out. The character development is incredible - by the end, I genuinely cared about the fate of the kingdom. The multiple endings give great replay value. This is the kind of story that makes you want to explore every possible path.",
     likes: 312,
     comments: 67,
     date: '2024-12-18',
@@ -92,7 +95,8 @@ const MOCK_REVIEWS = [
     },
     rating: 4,
     title: 'A clever mystery with satisfying twists',
-    content: 'The detective work in this story is engaging. I loved piecing together the clues and the branching paths actually affected how you could solve the mystery. The writing keeps you guessing until the very end. Would love to see more mysteries from this author.',
+    content:
+      'The detective work in this story is engaging. I loved piecing together the clues and the branching paths actually affected how you could solve the mystery. The writing keeps you guessing until the very end. Would love to see more mysteries from this author.',
     likes: 98,
     comments: 19,
     date: '2024-12-17',
@@ -114,7 +118,8 @@ const MOCK_REVIEWS = [
     },
     rating: 5,
     title: 'Cyberpunk perfection - immersive and thrilling',
-    content: 'The neon-soaked world of Digital Dreams pulled me in completely. Every choice felt like it had weight, and the hacking minigames between chapters were a nice touch. The story explores themes of identity and technology in a way that feels relevant. A must-read for cyberpunk fans.',
+    content:
+      'The neon-soaked world of Digital Dreams pulled me in completely. Every choice felt like it had weight, and the hacking minigames between chapters were a nice touch. The story explores themes of identity and technology in a way that feels relevant. A must-read for cyberpunk fans.',
     likes: 178,
     comments: 34,
     date: '2024-12-16',
@@ -136,14 +141,19 @@ const ReviewsPage: React.FC = () => {
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
   const sortedReviews = [...MOCK_REVIEWS]
-    .filter(review => !filterRating || review.rating === filterRating)
+    .filter((review) => !filterRating || review.rating === filterRating)
     .sort((a, b) => {
       switch (sortBy) {
-        case 'helpful': return b.helpful - a.helpful;
-        case 'likes': return b.likes - a.likes;
-        case 'rating-high': return b.rating - a.rating;
-        case 'rating-low': return a.rating - b.rating;
-        default: return new Date(b.date).getTime() - new Date(a.date).getTime();
+        case 'helpful':
+          return b.helpful - a.helpful;
+        case 'likes':
+          return b.likes - a.likes;
+        case 'rating-high':
+          return b.rating - a.rating;
+        case 'rating-low':
+          return a.rating - b.rating;
+        default:
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
       }
     });
 
@@ -166,7 +176,7 @@ const ReviewsPage: React.FC = () => {
   return (
     <VoidBackground variant="aurora">
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
@@ -284,7 +294,9 @@ const ReviewsPage: React.FC = () => {
                         />
                         <div>
                           <p className="font-medium text-void-200">{review.author.name}</p>
-                          <p className="text-sm text-void-500">@{review.author.username} • {review.date}</p>
+                          <p className="text-sm text-void-500">
+                            @{review.author.username} • {review.date}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
@@ -322,10 +334,15 @@ const ReviewsPage: React.FC = () => {
           <RevealOnScroll delay={0.3}>
             <div className="mt-16 text-center">
               <div className="max-w-xl mx-auto p-8 rounded-2xl bg-gradient-to-br from-spectral-cyan/10 via-spectral-violet/10 to-spectral-pink/10 border border-spectral-cyan/20">
-                <Icon name="PencilSquareIcon" size={48} className="text-spectral-cyan mx-auto mb-4" />
+                <Icon
+                  name="PencilSquareIcon"
+                  size={48}
+                  className="text-spectral-cyan mx-auto mb-4"
+                />
                 <h3 className="text-2xl font-bold text-void-100 mb-2">Share Your Thoughts</h3>
                 <p className="text-void-400 mb-6">
-                  Read a great story recently? Help others discover amazing narratives by writing a review.
+                  Read a great story recently? Help others discover amazing narratives by writing a
+                  review.
                 </p>
                 <SpectralButton variant="primary" size="lg">
                   Write a Review

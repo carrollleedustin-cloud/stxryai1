@@ -132,12 +132,14 @@ export const isDevelopment = () => env.NODE_ENV === 'development';
 export const isTest = () => env.NODE_ENV === 'test';
 
 // Feature availability checks
-export const hasStripe = () => Boolean(env.STRIPE_SECRET_KEY && env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+export const hasStripe = () =>
+  Boolean(env.STRIPE_SECRET_KEY && env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 export const hasAI = () => Boolean(env.OPENAI_API_KEY || env.ANTHROPIC_API_KEY);
 export const hasOpenAI = () => Boolean(env.OPENAI_API_KEY);
 export const hasAnthropic = () => Boolean(env.ANTHROPIC_API_KEY);
 export const hasEmail = () => Boolean(env.SENDGRID_API_KEY);
-export const hasAnalytics = () => Boolean(env.NEXT_PUBLIC_POSTHOG_KEY || env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
+export const hasAnalytics = () =>
+  Boolean(env.NEXT_PUBLIC_POSTHOG_KEY || env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 export const hasSentry = () => Boolean(env.NEXT_PUBLIC_SENTRY_DSN || env.SENTRY_DSN);
 export const hasErrorTracking = hasSentry;
 export const hasAds = () => Boolean(env.NEXT_PUBLIC_ADSENSE_CLIENT);

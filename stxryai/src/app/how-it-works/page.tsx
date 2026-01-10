@@ -9,25 +9,29 @@ export default function HowItWorksPage() {
     {
       icon: BookOpen,
       title: 'Explore Stories',
-      description: 'Browse our library of interactive stories across all genres. Each story adapts to your choices.',
+      description:
+        'Browse our library of interactive stories across all genres. Each story adapts to your choices.',
       color: 'from-purple-500 to-pink-500',
     },
     {
       icon: Sparkles,
       title: 'Make Choices',
-      description: 'At key moments, choose your path. Your decisions shape the narrative and lead to unique endings.',
+      description:
+        'At key moments, choose your path. Your decisions shape the narrative and lead to unique endings.',
       color: 'from-blue-500 to-cyan-500',
     },
     {
       icon: Users,
       title: 'Create Your Own',
-      description: 'Use our AI-powered creation tools to build your own interactive stories and share them with the community.',
+      description:
+        'Use our AI-powered creation tools to build your own interactive stories and share them with the community.',
       color: 'from-green-500 to-emerald-500',
     },
     {
       icon: Zap,
       title: 'Personalized Experience',
-      description: 'AI learns your preferences and recommends stories you\'ll love. Your reading journey is uniquely yours.',
+      description:
+        "AI learns your preferences and recommends stories you'll love. Your reading journey is uniquely yours.",
       color: 'from-orange-500 to-red-500',
     },
   ];
@@ -41,9 +45,7 @@ export default function HowItWorksPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            How It Works
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">How It Works</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Discover how StxryAI brings interactive storytelling to life with AI-powered narratives
           </p>
@@ -59,7 +61,9 @@ export default function HowItWorksPage() {
               transition={{ delay: index * 0.1 }}
               className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10"
             >
-              <div className={`w-16 h-16 rounded-lg bg-gradient-to-r ${step.color} flex items-center justify-center mb-6`}>
+              <div
+                className={`w-16 h-16 rounded-lg bg-gradient-to-r ${step.color} flex items-center justify-center mb-6`}
+              >
                 <step.icon className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">{step.title}</h3>
@@ -86,4 +90,3 @@ export default function HowItWorksPage() {
     </div>
   );
 }
-

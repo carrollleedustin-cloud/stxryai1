@@ -106,7 +106,9 @@ export function ReadingStreak({
 
   if (loading) {
     return (
-      <div className={`bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}>
+      <div
+        className={`bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}
+      >
         <div className="animate-pulse space-y-4">
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -118,7 +120,9 @@ export function ReadingStreak({
   if (!streakData) {
     // No streak data yet - show onboarding
     return (
-      <div className={`bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}>
+      <div
+        className={`bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}
+      >
         <div className="text-center">
           <span className="text-4xl mb-2 block">🔥</span>
           <h3 className="text-lg font-bold text-foreground mb-2">Start Your Reading Streak!</h3>
@@ -130,12 +134,12 @@ export function ReadingStreak({
     );
   }
 
-  const goalPercentage = dailyGoal
-    ? (dailyGoal.currentValue / dailyGoal.goalValue) * 100
-    : 0;
+  const goalPercentage = dailyGoal ? (dailyGoal.currentValue / dailyGoal.goalValue) * 100 : 0;
 
   return (
-    <div className={`relative bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}>
+    <div
+      className={`relative bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 rounded-xl p-6 border border-orange-200 dark:border-orange-800 ${className}`}
+    >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
           <span className="text-2xl">🔥</span>
@@ -330,4 +334,3 @@ export function DailyGoal({ goal, progress, type, onComplete }: DailyGoalProps) 
     </div>
   );
 }
-

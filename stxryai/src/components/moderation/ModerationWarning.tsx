@@ -10,20 +10,18 @@ interface ModerationWarningProps {
   className?: string;
 }
 
-export function ModerationWarning({
-  result,
-  onDismiss,
-  className = '',
-}: ModerationWarningProps) {
+export function ModerationWarning({ result, onDismiss, className = '' }: ModerationWarningProps) {
   if (!result.flagged) {
     return null;
   }
 
   const severityColors = {
     low: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
-    medium: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200',
+    medium:
+      'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-800 dark:text-orange-200',
     high: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
-    critical: 'bg-red-100 dark:bg-red-900/40 border-red-300 dark:border-red-700 text-red-900 dark:text-red-100',
+    critical:
+      'bg-red-100 dark:bg-red-900/40 border-red-300 dark:border-red-700 text-red-900 dark:text-red-100',
   };
 
   const severityIcons = {
@@ -92,4 +90,3 @@ export function ModerationWarning({
     </AnimatePresence>
   );
 }
-

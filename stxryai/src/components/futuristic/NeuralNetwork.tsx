@@ -17,10 +17,10 @@ interface Connection {
   strength: number;
 }
 
-const NeuralNetwork = ({ 
+const NeuralNetwork = ({
   nodeCount = 20,
   connectionDistance = 150,
-  className = '' 
+  className = '',
 }: {
   nodeCount?: number;
   connectionDistance?: number;
@@ -104,14 +104,7 @@ const NeuralNetwork = ({
       // Draw nodes
       ctx.globalAlpha = 1;
       updatedNodes.forEach((node) => {
-        const gradient = ctx.createRadialGradient(
-          node.x,
-          node.y,
-          0,
-          node.x,
-          node.y,
-          8
-        );
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 8);
         gradient.addColorStop(0, 'rgba(139, 92, 246, 1)');
         gradient.addColorStop(1, 'rgba(139, 92, 246, 0)');
 
@@ -146,4 +139,3 @@ const NeuralNetwork = ({
 };
 
 export default NeuralNetwork;
-

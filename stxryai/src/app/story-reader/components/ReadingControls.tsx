@@ -41,12 +41,15 @@ const ReadingControls = ({
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       className="sticky top-6 z-40 mb-8"
     >
-      <PrismPanel tone="glass" className="mx-auto max-w-4xl backdrop-blur-xl border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+      <PrismPanel
+        tone="glass"
+        className="mx-auto max-w-4xl backdrop-blur-xl border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)]"
+      >
         <div className="flex items-center justify-between gap-3 px-4 py-2 md:px-6">
           {/* Progress ring */}
           <div className="flex items-center gap-4">
@@ -120,7 +123,7 @@ const ReadingControls = ({
                 className="group-hover:drop-shadow-[0_0_8px_rgba(253,224,71,0.5)]"
               />
             </button>
-            
+
             <button
               onClick={onBookmark}
               className={`flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-300 ${

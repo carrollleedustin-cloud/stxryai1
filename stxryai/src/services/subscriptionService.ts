@@ -263,7 +263,7 @@ class SubscriptionService {
    */
   async getUserTier(userId: string): Promise<SubscriptionTier> {
     const subscription = await this.getUserSubscription(userId);
-    
+
     if (!subscription) return 'free';
     if (subscription.status !== 'active' && subscription.status !== 'trialing') {
       return 'free';
@@ -285,7 +285,7 @@ class SubscriptionService {
   async hasFeature(userId: string, feature: keyof TierFeatures): Promise<boolean> {
     const tier = await this.getUserTier(userId);
     const config = this.getTierConfig(tier);
-    
+
     const value = config.features[feature];
     if (typeof value === 'boolean') return value;
     if (typeof value === 'number') return value > 0;
@@ -307,17 +307,28 @@ class SubscriptionService {
       { count: downloadedStories },
       { data: streakData },
     ] = await Promise.all([
-      supabase.from('user_activity').select('*', { count: 'exact' })
-        .eq('user_id', userId).eq('activity_type', 'story_read')
+      supabase
+        .from('user_activity')
+        .select('*', { count: 'exact' })
+        .eq('user_id', userId)
+        .eq('activity_type', 'story_read')
         .gte('created_at', today),
-      supabase.from('stories').select('*', { count: 'exact' })
-        .eq('author_id', userId).gte('created_at', monthStart),
-      supabase.from('ai_generations').select('*', { count: 'exact' })
-        .eq('user_id', userId).gte('created_at', today),
-      supabase.from('offline_downloads').select('*', { count: 'exact' })
-        .eq('user_id', userId),
-      supabase.from('reading_streaks').select('streak_freezes_used_this_month')
-        .eq('user_id', userId).single(),
+      supabase
+        .from('stories')
+        .select('*', { count: 'exact' })
+        .eq('author_id', userId)
+        .gte('created_at', monthStart),
+      supabase
+        .from('ai_generations')
+        .select('*', { count: 'exact' })
+        .eq('user_id', userId)
+        .gte('created_at', today),
+      supabase.from('offline_downloads').select('*', { count: 'exact' }).eq('user_id', userId),
+      supabase
+        .from('reading_streaks')
+        .select('streak_freezes_used_this_month')
+        .eq('user_id', userId)
+        .single(),
     ]);
 
     return {
@@ -375,7 +386,7 @@ class SubscriptionService {
     const order = ['free', 'premium', 'creator_pro', 'enterprise'];
     const idx1 = order.indexOf(tier1);
     const idx2 = order.indexOf(tier2);
-    
+
     if (idx1 < idx2) return -1;
     if (idx1 > idx2) return 1;
     return 0;
@@ -387,10 +398,8 @@ class SubscriptionService {
   getUpgradeOptions(currentTier: SubscriptionTier): TierConfig[] {
     const order: SubscriptionTier[] = ['free', 'premium', 'creator_pro'];
     const currentIndex = order.indexOf(currentTier);
-    
-    return order
-      .slice(currentIndex + 1)
-      .map(tier => TIER_CONFIGS[tier]);
+
+    return order.slice(currentIndex + 1).map((tier) => TIER_CONFIGS[tier]);
   }
 
   /**
@@ -405,19 +414,17 @@ class SubscriptionService {
     const currentConfig = TIER_CONFIGS[currentTier];
     const targetConfig = TIER_CONFIGS[targetTier];
 
-    const targetPrice = period === 'yearly' 
-      ? targetConfig.yearlyPrice 
-      : targetConfig.monthlyPrice;
+    const targetPrice = period === 'yearly' ? targetConfig.yearlyPrice : targetConfig.monthlyPrice;
 
     // If upgrading mid-cycle, calculate proration
     if (currentPeriodEnd && currentTier !== 'free') {
       const remaining = new Date(currentPeriodEnd).getTime() - Date.now();
-      const periodLength = period === 'yearly' ? 365 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
+      const periodLength =
+        period === 'yearly' ? 365 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000;
       const percentRemaining = remaining / periodLength;
 
-      const currentPrice = period === 'yearly'
-        ? currentConfig.yearlyPrice
-        : currentConfig.monthlyPrice;
+      const currentPrice =
+        period === 'yearly' ? currentConfig.yearlyPrice : currentConfig.monthlyPrice;
 
       const prorated = (targetPrice - currentPrice) * percentRemaining;
 
@@ -510,4 +517,3 @@ class SubscriptionService {
 }
 
 export const subscriptionService = new SubscriptionService();
-

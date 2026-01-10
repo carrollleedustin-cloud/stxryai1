@@ -37,22 +37,19 @@ export async function POST(request: NextRequest) {
     const supabase = await getSupabaseClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { clubId } = body;
 
     if (!clubId) {
-      return NextResponse.json(
-        { error: 'Missing clubId' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing clubId' }, { status: 400 });
     }
 
     // Check if already a member
@@ -64,27 +61,19 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (existingMember) {
-      return NextResponse.json(
-        { error: 'Already a member of this club' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Already a member of this club' }, { status: 400 });
     }
 
     // Add user to club
-    const { error: joinError } = await supabase
-      .from('club_members')
-      .insert({
-        club_id: clubId,
-        user_id: user.id,
-        role: 'member',
-      });
+    const { error: joinError } = await supabase.from('club_members').insert({
+      club_id: clubId,
+      user_id: user.id,
+      role: 'member',
+    });
 
     if (joinError) {
       console.error('Error joining club:', joinError);
-      return NextResponse.json(
-        { error: 'Failed to join club' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to join club' }, { status: 500 });
     }
 
     // Increment member count
@@ -102,15 +91,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Log activity
-    await supabase
-      .from('user_activity')
-      .insert({
-        user_id: user.id,
-        activity_type: 'club_joined',
-        metadata: {
-          club_id: clubId,
-        },
-      });
+    await supabase.from('user_activity').insert({
+      user_id: user.id,
+      activity_type: 'club_joined',
+      metadata: {
+        club_id: clubId,
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -130,22 +117,19 @@ export async function DELETE(request: NextRequest) {
     const supabase = await getSupabaseClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
     const { clubId } = body;
 
     if (!clubId) {
-      return NextResponse.json(
-        { error: 'Missing clubId' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing clubId' }, { status: 400 });
     }
 
     // Remove user from club
@@ -157,10 +141,7 @@ export async function DELETE(request: NextRequest) {
 
     if (leaveError) {
       console.error('Error leaving club:', leaveError);
-      return NextResponse.json(
-        { error: 'Failed to leave club' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to leave club' }, { status: 500 });
     }
 
     // Decrement member count

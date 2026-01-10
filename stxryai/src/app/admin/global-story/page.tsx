@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Globe, 
-  Plus, 
-  Play, 
-  Pause, 
-  Archive, 
-  Edit, 
-  Users, 
+import {
+  Globe,
+  Plus,
+  Play,
+  Pause,
+  Archive,
+  Edit,
+  Users,
   BookOpen,
   MessageSquare,
   Trophy,
@@ -19,7 +19,13 @@ import {
   Sparkles,
   RefreshCw,
 } from 'lucide-react';
-import { globalStoryService, GlobalStory, GlobalStoryChapter, GlobalStoryStats, AIChoice } from '@/services/globalStoryService';
+import {
+  globalStoryService,
+  GlobalStory,
+  GlobalStoryChapter,
+  GlobalStoryStats,
+  AIChoice,
+} from '@/services/globalStoryService';
 
 export default function AdminGlobalStoryPage() {
   const [stories, setStories] = useState<GlobalStory[]>([]);
@@ -83,14 +89,10 @@ export default function AdminGlobalStoryPage() {
 
   const handleCreateStory = async () => {
     try {
-      await globalStoryService.createStory(
-        newStory.title,
-        newStory.startingPremise,
-        {
-          description: newStory.description,
-          theme: newStory.theme,
-        }
-      );
+      await globalStoryService.createStory(newStory.title, newStory.startingPremise, {
+        description: newStory.description,
+        theme: newStory.theme,
+      });
       setShowCreateForm(false);
       setNewStory({ title: '', description: '', theme: 'fantasy', startingPremise: '' });
       loadData();
@@ -101,7 +103,7 @@ export default function AdminGlobalStoryPage() {
 
   const handleActivateStory = async (storyId: string) => {
     if (!confirm('This will end the current active story. Continue?')) return;
-    
+
     try {
       await globalStoryService.activateStory(storyId);
       loadData();
@@ -112,7 +114,7 @@ export default function AdminGlobalStoryPage() {
 
   const handleArchiveStory = async (storyId: string) => {
     if (!confirm('Archive this story? It will no longer be accessible.')) return;
-    
+
     try {
       await globalStoryService.archiveStory(storyId);
       loadData();
@@ -128,7 +130,7 @@ export default function AdminGlobalStoryPage() {
       await globalStoryService.createChapter(
         activeStory.id,
         newChapter.content,
-        newChapter.choices.filter(c => c.text.trim()),
+        newChapter.choices.filter((c) => c.text.trim()),
         {
           title: newChapter.title,
           votingDurationHours: newChapter.votingHours,
@@ -153,11 +155,16 @@ export default function AdminGlobalStoryPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-500';
-      case 'draft': return 'bg-yellow-500';
-      case 'completed': return 'bg-blue-500';
-      case 'archived': return 'bg-gray-500';
-      default: return 'bg-gray-500';
+      case 'active':
+        return 'bg-green-500';
+      case 'draft':
+        return 'bg-yellow-500';
+      case 'completed':
+        return 'bg-blue-500';
+      case 'archived':
+        return 'bg-gray-500';
+      default:
+        return 'bg-gray-500';
     }
   };
 
@@ -258,14 +265,11 @@ export default function AdminGlobalStoryPage() {
             <div className="space-y-3">
               <h3 className="text-lg font-semibold mb-2">Chapters</h3>
               {chapters.map((chapter) => (
-                <div
-                  key={chapter.id}
-                  className="bg-gray-700 rounded-lg overflow-hidden"
-                >
+                <div key={chapter.id} className="bg-gray-700 rounded-lg overflow-hidden">
                   <button
-                    onClick={() => setExpandedChapter(
-                      expandedChapter === chapter.id ? null : chapter.id
-                    )}
+                    onClick={() =>
+                      setExpandedChapter(expandedChapter === chapter.id ? null : chapter.id)
+                    }
                     className="w-full flex items-center justify-between p-4 hover:bg-gray-600 transition-colors"
                   >
                     <div className="flex items-center gap-3">
@@ -297,8 +301,10 @@ export default function AdminGlobalStoryPage() {
                         exit={{ height: 0, opacity: 0 }}
                         className="px-4 pb-4"
                       >
-                        <p className="text-gray-300 text-sm mb-3">{chapter.content.substring(0, 300)}...</p>
-                        
+                        <p className="text-gray-300 text-sm mb-3">
+                          {chapter.content.substring(0, 300)}...
+                        </p>
+
                         {chapter.aiGeneratedChoices.length > 0 && (
                           <div className="mt-3">
                             <p className="text-sm text-gray-400 mb-2">AI Choices:</p>
@@ -358,7 +364,7 @@ export default function AdminGlobalStoryPage() {
         {/* All Stories */}
         <div className="bg-gray-800 rounded-xl p-6">
           <h2 className="text-xl font-bold mb-4">All Stories</h2>
-          
+
           <div className="space-y-3">
             {stories.map((story) => (
               <div
@@ -429,7 +435,7 @@ export default function AdminGlobalStoryPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <h2 className="text-xl font-bold mb-4">Create Global Story</h2>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm text-gray-400 mb-1">Title</label>
@@ -472,7 +478,9 @@ export default function AdminGlobalStoryPage() {
                     <label className="block text-sm text-gray-400 mb-1">Starting Premise</label>
                     <textarea
                       value={newStory.startingPremise}
-                      onChange={(e) => setNewStory({ ...newStory, startingPremise: e.target.value })}
+                      onChange={(e) =>
+                        setNewStory({ ...newStory, startingPremise: e.target.value })
+                      }
                       className="w-full bg-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none resize-none"
                       rows={4}
                       placeholder="The story begins when..."
@@ -518,7 +526,7 @@ export default function AdminGlobalStoryPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <h2 className="text-xl font-bold mb-4">Add New Chapter</h2>
-                
+
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -532,11 +540,15 @@ export default function AdminGlobalStoryPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-400 mb-1">Voting Duration (hours)</label>
+                      <label className="block text-sm text-gray-400 mb-1">
+                        Voting Duration (hours)
+                      </label>
                       <input
                         type="number"
                         value={newChapter.votingHours}
-                        onChange={(e) => setNewChapter({ ...newChapter, votingHours: parseInt(e.target.value) })}
+                        onChange={(e) =>
+                          setNewChapter({ ...newChapter, votingHours: parseInt(e.target.value) })
+                        }
                         className="w-full bg-gray-700 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500 outline-none"
                         min={1}
                         max={168}
@@ -607,4 +619,3 @@ export default function AdminGlobalStoryPage() {
     </div>
   );
 }
-

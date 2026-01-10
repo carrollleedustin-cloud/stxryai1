@@ -30,7 +30,13 @@ export interface StoryAdaptation {
   userId: string;
   storyId: string;
   chapterId?: string;
-  adaptationType: 'pacing' | 'tone' | 'complexity' | 'content' | 'narrative_style' | 'choice_prediction';
+  adaptationType:
+    | 'pacing'
+    | 'tone'
+    | 'complexity'
+    | 'content'
+    | 'narrative_style'
+    | 'choice_prediction';
   originalContent?: string;
   adaptedContent?: string;
   adaptationReason?: string;
@@ -111,24 +117,27 @@ export class AdaptiveStorytellingService {
   ): Promise<UserReadingPreferences> {
     const { data, error } = await this.supabase
       .from('user_reading_preferences')
-      .upsert({
-        user_id: userId,
-        preferred_pacing: preferences.preferredPacing,
-        preferred_narrative_style: preferences.preferredNarrativeStyle,
-        preferred_genre_tags: preferences.preferredGenreTags,
-        preferred_content_rating: preferences.preferredContentRating,
-        preferred_themes: preferences.preferredThemes,
-        preferred_tone: preferences.preferredTone,
-        preferred_choice_frequency: preferences.preferredChoiceFrequency,
-        preferred_choice_complexity: preferences.preferredChoiceComplexity,
-        preferred_branching_depth: preferences.preferredBranchingDepth,
-        ai_personality_profile: preferences.aiPersonalityProfile,
-        reading_patterns: preferences.readingPatterns,
-        engagement_patterns: preferences.engagementPatterns,
-        metadata: preferences.metadata,
-      }, {
-        onConflict: 'user_id',
-      })
+      .upsert(
+        {
+          user_id: userId,
+          preferred_pacing: preferences.preferredPacing,
+          preferred_narrative_style: preferences.preferredNarrativeStyle,
+          preferred_genre_tags: preferences.preferredGenreTags,
+          preferred_content_rating: preferences.preferredContentRating,
+          preferred_themes: preferences.preferredThemes,
+          preferred_tone: preferences.preferredTone,
+          preferred_choice_frequency: preferences.preferredChoiceFrequency,
+          preferred_choice_complexity: preferences.preferredChoiceComplexity,
+          preferred_branching_depth: preferences.preferredBranchingDepth,
+          ai_personality_profile: preferences.aiPersonalityProfile,
+          reading_patterns: preferences.readingPatterns,
+          engagement_patterns: preferences.engagementPatterns,
+          metadata: preferences.metadata,
+        },
+        {
+          onConflict: 'user_id',
+        }
+      )
       .select()
       .single();
 
@@ -184,10 +193,7 @@ export class AdaptiveStorytellingService {
   /**
    * Get user's adaptation history
    */
-  async getUserAdaptations(
-    userId: string,
-    storyId?: string
-  ): Promise<StoryAdaptation[]> {
+  async getUserAdaptations(userId: string, storyId?: string): Promise<StoryAdaptation[]> {
     let query = this.supabase
       .from('story_adaptation_log')
       .select('*')
@@ -473,7 +479,9 @@ export class AdaptiveStorytellingService {
       choiceOptions: data.choice_options || [],
       predictedChoiceIndex: data.predicted_choice_index,
       predictedChoiceText: data.predicted_choice_text,
-      predictionConfidence: data.prediction_confidence ? parseFloat(data.prediction_confidence) : undefined,
+      predictionConfidence: data.prediction_confidence
+        ? parseFloat(data.prediction_confidence)
+        : undefined,
       actualChoiceIndex: data.actual_choice_index,
       actualChoiceText: data.actual_choice_text,
       wasCorrect: data.was_correct,
@@ -497,7 +505,9 @@ export class AdaptiveStorytellingService {
       currentChapterId: data.current_chapter_id,
       pathProgress: parseFloat(data.path_progress || '0'),
       engagementScore: parseFloat(data.engagement_score || '0'),
-      completionLikelihood: data.completion_likelihood ? parseFloat(data.completion_likelihood) : undefined,
+      completionLikelihood: data.completion_likelihood
+        ? parseFloat(data.completion_likelihood)
+        : undefined,
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };
@@ -505,4 +515,3 @@ export class AdaptiveStorytellingService {
 }
 
 export const adaptiveStorytellingService = new AdaptiveStorytellingService();
-

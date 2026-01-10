@@ -62,21 +62,20 @@ class EnhancedAIService {
       // Fetch user data
       const [userResult, progressResult, ratingsResult, petResult] = await Promise.all([
         supabase.from('users').select('username, xp, level').eq('id', userId).single(),
-        supabase.from('user_progress')
+        supabase
+          .from('user_progress')
           .select('story_id, stories(id, title, genre)')
           .eq('user_id', userId)
           .eq('is_completed', true)
           .order('last_read_at', { ascending: false })
           .limit(10),
-        supabase.from('ratings')
+        supabase
+          .from('ratings')
           .select('rating')
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
           .limit(20),
-        supabase.from('user_pets')
-          .select('name, personality')
-          .eq('user_id', userId)
-          .single(),
+        supabase.from('user_pets').select('name, personality').eq('user_id', userId).single(),
       ]);
 
       const user = userResult.data;
@@ -91,24 +90,23 @@ class EnhancedAIService {
       else if (xp > 1000) readingLevel = 'intermediate';
 
       // Extract genres from completed stories
-      const genres = progress
-        .map((p: any) => p.stories?.genre)
-        .filter(Boolean) as string[];
-      
+      const genres = progress.map((p: any) => p.stories?.genre).filter(Boolean) as string[];
+
       const genreCounts = genres.reduce((acc: Record<string, number>, genre: string) => {
         acc[genre] = (acc[genre] || 0) + 1;
         return acc;
       }, {});
-      
+
       const favoriteGenres = Object.entries(genreCounts)
         .sort(([, a], [, b]) => (b as number) - (a as number))
         .slice(0, 3)
         .map(([genre]) => genre);
 
       // Calculate average rating
-      const avgRating = ratings.length > 0
-        ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length
-        : 0;
+      const avgRating =
+        ratings.length > 0
+          ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length
+          : 0;
 
       return {
         userId,
@@ -134,10 +132,7 @@ class EnhancedAIService {
   /**
    * Generate personalized story recommendations
    */
-  async getSmartRecommendations(
-    userId: string,
-    count: number = 5
-  ): Promise<SmartRecommendation[]> {
+  async getSmartRecommendations(userId: string, count: number = 5): Promise<SmartRecommendation[]> {
     try {
       const context = await this.getUserContext(userId);
       if (!context) return [];
@@ -147,36 +142,34 @@ class EnhancedAIService {
         .from('stories')
         .select('id, title, genre, description, rating, view_count')
         .eq('is_published', true)
-        .not('id', 'in', `(${context.recentStories.map(s => s.id).join(',') || 'null'})`)
+        .not('id', 'in', `(${context.recentStories.map((s) => s.id).join(',') || 'null'})`)
         .order('rating', { ascending: false })
         .limit(50);
 
       if (!unreadStories || unreadStories.length === 0) return [];
 
       // Score stories based on user preferences
-      const scoredStories = unreadStories.map(story => {
+      const scoredStories = unreadStories.map((story) => {
         let score = story.rating * 20; // Base score from rating
-        
+
         // Boost if matches favorite genre
         if (context.favoriteGenres.includes(story.genre)) {
           score += 30;
         }
-        
+
         // Adjust based on user's typical ratings
         if (context.averageRating > 4 && story.rating >= 4.5) {
           score += 15;
         }
-        
+
         // Add some variety
         score += Math.random() * 10;
-        
+
         return { ...story, score };
       });
 
       // Sort by score and take top recommendations
-      const topStories = scoredStories
-        .sort((a, b) => b.score - a.score)
-        .slice(0, count);
+      const topStories = scoredStories.sort((a, b) => b.score - a.score).slice(0, count);
 
       // Generate personalized messages
       const recommendations: SmartRecommendation[] = await Promise.all(
@@ -212,9 +205,9 @@ class EnhancedAIService {
   ): Promise<WritingFeedback> {
     try {
       const context = userId ? await this.getUserContext(userId) : null;
-      
+
       let systemPrompt = `You are an encouraging and insightful writing coach. Analyze the following ${genre} story content and provide constructive feedback.`;
-      
+
       if (context) {
         systemPrompt += `\n\nThe writer's profile:
 - Reading level: ${context.readingLevel}
@@ -245,7 +238,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
           strengths: feedback.strengths || ['Good effort!'],
           improvements: feedback.improvements || [],
           suggestions: feedback.suggestions || [],
-          encouragement: feedback.encouragement || 'Keep writing, you\'re doing great!',
+          encouragement: feedback.encouragement || "Keep writing, you're doing great!",
         };
       } catch {
         // Fallback if parsing fails
@@ -253,7 +246,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
           overallScore: 75,
           strengths: ['Creative storytelling', 'Engaging narrative'],
           improvements: ['Consider pacing', 'Develop characters further'],
-          suggestions: ['Add more sensory details', 'Show don\'t tell'],
+          suggestions: ['Add more sensory details', "Show don't tell"],
           encouragement: 'Your writing shows promise! Keep developing your voice.',
         };
       }
@@ -280,9 +273,9 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
   ): Promise<string[]> {
     try {
       const context = userId ? await this.getUserContext(userId) : null;
-      
+
       let systemPrompt = `You are a creative story assistant helping write a ${genre} story.`;
-      
+
       if (context) {
         systemPrompt += ` The reader enjoys ${context.favoriteGenres.join(', ')} stories`;
         if (context.preferredTone) {
@@ -303,17 +296,19 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
       );
 
       // Parse the suggestions
-      const lines = result.split('\n').filter(line => line.trim());
+      const lines = result.split('\n').filter((line) => line.trim());
       const suggestions = lines
-        .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
-        .filter(line => line.length > 10)
+        .map((line) => line.replace(/^\d+[\.\)]\s*/, '').trim())
+        .filter((line) => line.length > 10)
         .slice(0, count);
 
-      return suggestions.length > 0 ? suggestions : [
-        'The protagonist discovers an unexpected ally.',
-        'A mysterious object reveals a hidden truth.',
-        'The path ahead splits into two dangerous choices.',
-      ];
+      return suggestions.length > 0
+        ? suggestions
+        : [
+            'The protagonist discovers an unexpected ally.',
+            'A mysterious object reveals a hidden truth.',
+            'The path ahead splits into two dangerous choices.',
+          ];
     } catch (error) {
       console.error('Error getting continuation suggestions:', error);
       return [
@@ -334,7 +329,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
   ): Promise<string> {
     try {
       const context = await this.getUserContext(userId);
-      
+
       const { data: story } = await supabase
         .from('stories')
         .select('title, genre')
@@ -344,7 +339,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
       if (!story) return 'Your reading journey awaits...';
 
       let systemPrompt = `You are a storyteller creating a personalized recap of a reader's journey through "${story.title}" (${story.genre}).`;
-      
+
       if (context?.petName) {
         systemPrompt += ` Their companion ${context.petName} (${context.petPersonality}) was with them.`;
       }
@@ -360,7 +355,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
       return result || `You've completed an incredible journey through "${story.title}"!`;
     } catch (error) {
       console.error('Error generating reading recap:', error);
-      return 'What an adventure you\'ve had!';
+      return "What an adventure you've had!";
     }
   }
 
@@ -398,7 +393,7 @@ ${context.petName ? `- Has a companion named ${context.petName} who is ${context
         reading: 'Your companion just started reading a new story',
         achievement: 'Your companion just unlocked an achievement',
         streak: `Your companion maintained their reading streak (${pet.stats?.currentStreak || 1} days)`,
-        idle: 'Your companion hasn\'t interacted in a while',
+        idle: "Your companion hasn't interacted in a while",
         story_complete: 'Your companion just finished a story',
       };
 
@@ -422,19 +417,12 @@ Keep responses short (1-2 sentences max), charming, and in character. Use asteri
   /**
    * Generate smart search suggestions
    */
-  async getSearchSuggestions(
-    query: string,
-    userId?: string
-  ): Promise<string[]> {
+  async getSearchSuggestions(query: string, userId?: string): Promise<string[]> {
     try {
       const context = userId ? await this.getUserContext(userId) : null;
-      
+
       // Base suggestions from query
-      const baseSuggestions = [
-        `${query} stories`,
-        `${query} adventure`,
-        `best ${query}`,
-      ];
+      const baseSuggestions = [`${query} stories`, `${query} adventure`, `best ${query}`];
 
       // Add personalized suggestions
       if (context && context.favoriteGenres.length > 0) {
@@ -457,23 +445,22 @@ Keep responses short (1-2 sentences max), charming, and in character. Use asteri
 
   private generateReasonText(story: any, context: UserContext): string {
     const reasons: string[] = [];
-    
+
     if (context.favoriteGenres.includes(story.genre)) {
       reasons.push(`Matches your love for ${story.genre}`);
     }
-    
+
     if (story.rating >= 4.5) {
       reasons.push('Highly rated by readers');
     }
-    
+
     if (story.view_count > 10000) {
       reasons.push('Popular choice');
     }
-    
+
     return reasons.length > 0 ? reasons[0] : 'New adventure awaits';
   }
 }
 
 // Export singleton
 export const enhancedAIService = new EnhancedAIService();
-

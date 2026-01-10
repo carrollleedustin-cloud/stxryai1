@@ -9,15 +9,15 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 // TYPES
 // ========================================
 
-export type ChallengeType = 
-  | 'read_stories' 
-  | 'read_chapters' 
-  | 'read_time' 
-  | 'make_choices' 
-  | 'explore_genre' 
-  | 'complete_story' 
-  | 'social_share' 
-  | 'leave_review' 
+export type ChallengeType =
+  | 'read_stories'
+  | 'read_chapters'
+  | 'read_time'
+  | 'make_choices'
+  | 'explore_genre'
+  | 'complete_story'
+  | 'social_share'
+  | 'leave_review'
   | 'bookmark_story'
   | 'reading_streak';
 
@@ -65,7 +65,10 @@ export interface ChallengeProgress {
 // CHALLENGE TEMPLATES
 // ========================================
 
-const CHALLENGE_TEMPLATES: Omit<DailyChallenge, 'id' | 'challengeDate' | 'isActive' | 'createdAt'>[] = [
+const CHALLENGE_TEMPLATES: Omit<
+  DailyChallenge,
+  'id' | 'challengeDate' | 'isActive' | 'createdAt'
+>[] = [
   // Easy challenges
   {
     challengeType: 'read_chapters',
@@ -232,8 +235,8 @@ class DailyChallengeService {
     const supabase = this.getSupabase();
     const today = new Date().toISOString().split('T')[0];
 
-    const challengeIds = challenges.map(c => c.id);
-    
+    const challengeIds = challenges.map((c) => c.id);
+
     const { data: userChallenges, error } = await supabase
       .from('user_daily_challenges')
       .select('*')
@@ -254,10 +257,10 @@ class DailyChallengeService {
     const minutesRemaining = Math.floor((msRemaining % (1000 * 60 * 60)) / (1000 * 60));
     const timeRemaining = `${hoursRemaining}h ${minutesRemaining}m`;
 
-    return challenges.map(challenge => {
-      const userChallenge = (userChallenges || []).find(uc => uc.challenge_id === challenge.id);
-      
-      const userProgress: UserDailyChallenge = userChallenge 
+    return challenges.map((challenge) => {
+      const userChallenge = (userChallenges || []).find((uc) => uc.challenge_id === challenge.id);
+
+      const userProgress: UserDailyChallenge = userChallenge
         ? this.mapUserChallenge(userChallenge)
         : {
             id: '',
@@ -273,7 +276,10 @@ class DailyChallengeService {
       return {
         challenge,
         userProgress,
-        percentComplete: Math.min(100, Math.round((userProgress.progress / challenge.requirement) * 100)),
+        percentComplete: Math.min(
+          100,
+          Math.round((userProgress.progress / challenge.requirement) * 100)
+        ),
         timeRemaining,
       };
     });
@@ -319,15 +325,21 @@ class DailyChallengeService {
 
       const { data, error } = await supabase
         .from('user_daily_challenges')
-        .upsert({
-          user_id: userId,
-          challenge_id: challenge.id,
-          progress: newProgress,
-          completed,
-          completed_at: completed && !existingProgress?.completed ? new Date().toISOString() : existingProgress?.completed_at,
-        }, {
-          onConflict: 'user_id,challenge_id',
-        })
+        .upsert(
+          {
+            user_id: userId,
+            challenge_id: challenge.id,
+            progress: newProgress,
+            completed,
+            completed_at:
+              completed && !existingProgress?.completed
+                ? new Date().toISOString()
+                : existingProgress?.completed_at,
+          },
+          {
+            onConflict: 'user_id,challenge_id',
+          }
+        )
         .select()
         .single();
 
@@ -342,7 +354,10 @@ class DailyChallengeService {
   /**
    * Claim challenge reward
    */
-  async claimReward(userId: string, challengeId: string): Promise<{ success: boolean; xpAwarded: number; bonusReward?: DailyChallenge['bonusReward'] }> {
+  async claimReward(
+    userId: string,
+    challengeId: string
+  ): Promise<{ success: boolean; xpAwarded: number; bonusReward?: DailyChallenge['bonusReward'] }> {
     const supabase = this.getSupabase();
 
     // Get user challenge
@@ -377,7 +392,7 @@ class DailyChallengeService {
     }
 
     const challenge = userChallenge.daily_challenges;
-    
+
     // Award XP
     await supabase.rpc('add_user_xp', {
       p_user_id: userId,
@@ -417,28 +432,30 @@ class DailyChallengeService {
 
     // Select challenges: 2 easy, 2 medium, 1 hard, 1 legendary (rotating)
     const shuffled = [...CHALLENGE_TEMPLATES].sort(() => Math.random() - 0.5);
-    
+
     const selected = [
-      ...shuffled.filter(c => c.difficulty === 'easy').slice(0, 2),
-      ...shuffled.filter(c => c.difficulty === 'medium').slice(0, 2),
-      ...shuffled.filter(c => c.difficulty === 'hard').slice(0, 1),
-      ...shuffled.filter(c => c.difficulty === 'legendary').slice(0, 1),
+      ...shuffled.filter((c) => c.difficulty === 'easy').slice(0, 2),
+      ...shuffled.filter((c) => c.difficulty === 'medium').slice(0, 2),
+      ...shuffled.filter((c) => c.difficulty === 'hard').slice(0, 1),
+      ...shuffled.filter((c) => c.difficulty === 'legendary').slice(0, 1),
     ];
 
     // Insert challenges
     const { data, error } = await supabase
       .from('daily_challenges')
-      .insert(selected.map(template => ({
-        challenge_date: dateStr,
-        challenge_type: template.challengeType,
-        difficulty: template.difficulty,
-        title: template.title,
-        description: template.description,
-        requirement: template.requirement,
-        xp_reward: template.xpReward,
-        bonus_reward: template.bonusReward,
-        is_active: true,
-      })))
+      .insert(
+        selected.map((template) => ({
+          challenge_date: dateStr,
+          challenge_type: template.challengeType,
+          difficulty: template.difficulty,
+          title: template.title,
+          description: template.description,
+          requirement: template.requirement,
+          xp_reward: template.xpReward,
+          bonus_reward: template.bonusReward,
+          is_active: true,
+        }))
+      )
       .select();
 
     if (error) {
@@ -480,18 +497,22 @@ class DailyChallengeService {
     }
 
     const completed = data || [];
-    const totalXpEarned = completed.reduce((sum, c) => sum + (c.daily_challenges?.xp_reward || 0), 0);
+    const totalXpEarned = completed.reduce(
+      (sum, c) => sum + (c.daily_challenges?.xp_reward || 0),
+      0
+    );
 
     // Count by type
     const typeCounts: Record<string, number> = {};
-    completed.forEach(c => {
+    completed.forEach((c) => {
       const type = c.daily_challenges?.challenge_type;
       if (type) {
         typeCounts[type] = (typeCounts[type] || 0) + 1;
       }
     });
 
-    const favoriteType = Object.entries(typeCounts).sort(([, a], [, b]) => b - a)[0]?.[0] as ChallengeType || null;
+    const favoriteType =
+      (Object.entries(typeCounts).sort(([, a], [, b]) => b - a)[0]?.[0] as ChallengeType) || null;
 
     // Calculate streak based on consecutive days with completed challenges
     let currentStreak = 0;
@@ -509,16 +530,18 @@ class DailyChallengeService {
       // Calculate current streak (consecutive days from today backwards)
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       let expectedDate = new Date(today);
       let streakBroken = false;
 
       for (const challenge of sorted) {
         const completedDate = new Date(challenge.completed_at || challenge.created_at);
         completedDate.setHours(0, 0, 0, 0);
-        
-        const daysDiff = Math.floor((expectedDate.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24));
-        
+
+        const daysDiff = Math.floor(
+          (expectedDate.getTime() - completedDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
         if (!streakBroken && daysDiff === 0) {
           // Perfect match - continue streak
           currentStreak++;
@@ -534,7 +557,7 @@ class DailyChallengeService {
       }
 
       // Calculate longest streak (any consecutive period)
-      const dates = sorted.map(c => {
+      const dates = sorted.map((c) => {
         const date = new Date(c.completed_at || c.created_at);
         date.setHours(0, 0, 0, 0);
         return date.getTime();
@@ -548,8 +571,10 @@ class DailyChallengeService {
         longestStreak = 1;
 
         for (let i = 1; i < uniqueDates.length; i++) {
-          const daysDiff = Math.floor((uniqueDates[i - 1] - uniqueDates[i]) / (1000 * 60 * 60 * 24));
-          
+          const daysDiff = Math.floor(
+            (uniqueDates[i - 1] - uniqueDates[i]) / (1000 * 60 * 60 * 24)
+          );
+
           if (daysDiff === 1) {
             // Consecutive day
             tempStreak++;
@@ -573,7 +598,10 @@ class DailyChallengeService {
 
   // ==================== PRIVATE METHODS ====================
 
-  private async awardBonusReward(userId: string, reward: NonNullable<DailyChallenge['bonusReward']>) {
+  private async awardBonusReward(
+    userId: string,
+    reward: NonNullable<DailyChallenge['bonusReward']>
+  ) {
     const supabase = this.getSupabase();
 
     switch (reward.type) {
@@ -639,4 +667,3 @@ class DailyChallengeService {
 }
 
 export const dailyChallengeService = new DailyChallengeService();
-

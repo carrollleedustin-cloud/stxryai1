@@ -29,13 +29,28 @@ type WizardStep = 'basics' | 'themes' | 'structure' | 'tone' | 'review';
 
 const GENRES = [
   { id: 'fantasy', name: 'Fantasy', icon: '🐉', desc: 'Magic, mythical creatures, epic quests' },
-  { id: 'sci-fi', name: 'Sci-Fi', icon: '🚀', desc: 'Future technology, space, alternate realities' },
+  {
+    id: 'sci-fi',
+    name: 'Sci-Fi',
+    icon: '🚀',
+    desc: 'Future technology, space, alternate realities',
+  },
   { id: 'mystery', name: 'Mystery', icon: '🔍', desc: 'Crime, investigation, suspense' },
   { id: 'romance', name: 'Romance', icon: '💕', desc: 'Love, relationships, emotional journeys' },
-  { id: 'thriller', name: 'Thriller', icon: '🎭', desc: 'High stakes, danger, psychological tension' },
+  {
+    id: 'thriller',
+    name: 'Thriller',
+    icon: '🎭',
+    desc: 'High stakes, danger, psychological tension',
+  },
   { id: 'horror', name: 'Horror', icon: '👻', desc: 'Fear, supernatural, dark themes' },
   { id: 'adventure', name: 'Adventure', icon: '⚔️', desc: 'Exploration, action, discovery' },
-  { id: 'historical', name: 'Historical', icon: '🏛️', desc: 'Past eras, real events, period drama' },
+  {
+    id: 'historical',
+    name: 'Historical',
+    icon: '🏛️',
+    desc: 'Past eras, real events, period drama',
+  },
 ];
 
 const TONES = [
@@ -86,8 +101,8 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
   const steps: WizardStep[] = ['basics', 'themes', 'structure', 'tone', 'review'];
   const currentStepIndex = steps.indexOf(step);
 
-  const updateField = <K extends keyof typeof formData>(key: K, value: typeof formData[K]) => {
-    setFormData(prev => ({ ...prev, [key]: value }));
+  const updateField = <K extends keyof typeof formData>(key: K, value: (typeof formData)[K]) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const addTheme = (type: 'primary' | 'secondary') => {
@@ -101,7 +116,10 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
 
   const removeTheme = (type: 'primary' | 'secondary', theme: string) => {
     const key = type === 'primary' ? 'primaryThemes' : 'secondaryThemes';
-    updateField(key, formData[key].filter(t => t !== theme));
+    updateField(
+      key,
+      formData[key].filter((t) => t !== theme)
+    );
   };
 
   const canProceed = () => {
@@ -185,10 +203,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           {steps.map((s, i) => (
-            <div
-              key={s}
-              className={`flex items-center ${i < steps.length - 1 ? 'flex-1' : ''}`}
-            >
+            <div key={s} className={`flex items-center ${i < steps.length - 1 ? 'flex-1' : ''}`}>
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                   i <= currentStepIndex
@@ -309,9 +324,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             className="space-y-6"
           >
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
-                Themes & Motifs
-              </h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Themes & Motifs</h2>
               <p className="text-text-secondary">
                 Define the recurring themes that will weave through your series.
               </p>
@@ -401,12 +414,8 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             className="space-y-6"
           >
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
-                Series Structure
-              </h2>
-              <p className="text-text-secondary">
-                Plan the scope and organization of your series.
-              </p>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Series Structure</h2>
+              <p className="text-text-secondary">Plan the scope and organization of your series.</p>
             </div>
 
             <div>
@@ -434,7 +443,9 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             </div>
 
             <div className="p-4 rounded-lg bg-void-depth border border-void-mist">
-              <h3 className="font-medium text-text-primary mb-3">What you get with the Narrative Engine:</h3>
+              <h3 className="font-medium text-text-primary mb-3">
+                What you get with the Narrative Engine:
+              </h3>
               <ul className="space-y-2 text-sm text-text-secondary">
                 <li className="flex items-center gap-2">
                   <span className="text-green-400">✓</span>
@@ -470,9 +481,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             className="space-y-6"
           >
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
-                Tone & Audience
-              </h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Tone & Audience</h2>
               <p className="text-text-secondary">
                 Set the mood and target readership for your series.
               </p>
@@ -501,9 +510,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-primary mb-3">
-                Pacing
-              </label>
+              <label className="block text-sm font-medium text-text-primary mb-3">Pacing</label>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {PACING.map((pace) => (
                   <button
@@ -555,9 +562,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
             className="space-y-6"
           >
             <div>
-              <h2 className="text-2xl font-bold text-text-primary mb-2">
-                Review Your Series
-              </h2>
+              <h2 className="text-2xl font-bold text-text-primary mb-2">Review Your Series</h2>
               <p className="text-text-secondary">
                 Everything looks good? Let&apos;s bring your series to life!
               </p>
@@ -565,7 +570,7 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
 
             <div className="p-6 rounded-xl bg-gradient-to-br from-spectral-cyan/10 to-spectral-violet/10 border border-spectral-cyan/30">
               <h3 className="text-xl font-bold text-text-primary mb-4">{formData.title}</h3>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-text-tertiary">Genre:</span>
@@ -585,7 +590,9 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
                 </div>
                 <div>
                   <span className="text-text-tertiary">Audience:</span>
-                  <span className="ml-2 text-text-primary capitalize">{formData.targetAudience.replace('_', ' ')}</span>
+                  <span className="ml-2 text-text-primary capitalize">
+                    {formData.targetAudience.replace('_', ' ')}
+                  </span>
                 </div>
               </div>
 
@@ -600,7 +607,10 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
                   <span className="text-text-tertiary text-sm">Themes: </span>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {formData.primaryThemes.map((theme) => (
-                      <span key={theme} className="px-2 py-1 bg-spectral-violet/20 text-spectral-violet rounded text-xs">
+                      <span
+                        key={theme}
+                        className="px-2 py-1 bg-spectral-violet/20 text-spectral-violet rounded text-xs"
+                      >
                         {theme}
                       </span>
                     ))}
@@ -648,4 +658,3 @@ export default function SeriesCreationWizard({ onComplete, onCancel }: SeriesCre
     </div>
   );
 }
-

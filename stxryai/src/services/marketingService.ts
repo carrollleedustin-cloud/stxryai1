@@ -10,7 +10,13 @@ export interface MarketingCampaign {
   creatorId: string;
   storyId?: string;
   campaignName: string;
-  campaignType: 'story_launch' | 'chapter_release' | 'promotion' | 'event' | 'newsletter' | 'social_media';
+  campaignType:
+    | 'story_launch'
+    | 'chapter_release'
+    | 'promotion'
+    | 'event'
+    | 'newsletter'
+    | 'social_media';
   description?: string;
   scheduledStart?: string;
   scheduledEnd?: string;
@@ -368,4 +374,3 @@ export class MarketingService {
 }
 
 export const marketingService = new MarketingService();
-

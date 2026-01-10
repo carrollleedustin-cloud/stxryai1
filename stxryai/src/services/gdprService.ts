@@ -179,10 +179,7 @@ class GDPRService {
   /**
    * Withdraw consent
    */
-  async withdrawConsent(
-    userId: string,
-    consentType: UserConsent['consentType']
-  ): Promise<void> {
+  async withdrawConsent(userId: string, consentType: UserConsent['consentType']): Promise<void> {
     const supabase = this.getSupabase();
 
     const { error } = await supabase
@@ -376,10 +373,7 @@ class GDPRService {
   /**
    * Verify deletion request
    */
-  async verifyDeletionRequest(
-    requestId: string,
-    token: string
-  ): Promise<boolean> {
+  async verifyDeletionRequest(requestId: string, token: string): Promise<boolean> {
     const supabase = this.getSupabase();
 
     const { data, error } = await supabase
@@ -473,16 +467,13 @@ class GDPRService {
       updateData.show_reading_activity = settings.showReadingActivity;
     if (settings.showAchievements !== undefined)
       updateData.show_achievements = settings.showAchievements;
-    if (settings.showFollowers !== undefined)
-      updateData.show_followers = settings.showFollowers;
+    if (settings.showFollowers !== undefined) updateData.show_followers = settings.showFollowers;
     if (settings.allowDataSharing !== undefined)
       updateData.allow_data_sharing = settings.allowDataSharing;
-    if (settings.allowAnalytics !== undefined)
-      updateData.allow_analytics = settings.allowAnalytics;
+    if (settings.allowAnalytics !== undefined) updateData.allow_analytics = settings.allowAnalytics;
     if (settings.allowPersonalization !== undefined)
       updateData.allow_personalization = settings.allowPersonalization;
-    if (settings.showInSearch !== undefined)
-      updateData.show_in_search = settings.showInSearch;
+    if (settings.showInSearch !== undefined) updateData.show_in_search = settings.showInSearch;
     if (settings.showEmailInSearch !== undefined)
       updateData.show_email_in_search = settings.showEmailInSearch;
     if (settings.allowThirdPartySharing !== undefined)
@@ -664,4 +655,3 @@ class GDPRService {
 
 // Export singleton instance
 export const gdprService = new GDPRService();
-

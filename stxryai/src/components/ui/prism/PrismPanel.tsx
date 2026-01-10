@@ -17,10 +17,16 @@ const toneClasses: Record<PrismPanelTone, string> = {
   void: 'bg-black/80 border-white/5',
 };
 
-export function PrismPanel({ tone = 'card', hoverEffect = false, className, children, ...props }: PrismPanelProps) {
+export function PrismPanel({
+  tone = 'card',
+  hoverEffect = false,
+  className,
+  children,
+  ...props
+}: PrismPanelProps) {
   const base = 'relative rounded-3xl border overflow-hidden transition-all duration-500';
-  const hover = hoverEffect 
-    ? 'hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] group' 
+  const hover = hoverEffect
+    ? 'hover:border-violet-500/30 hover:shadow-[0_0_30px_rgba(139,92,246,0.15)] group'
     : '';
 
   const classes = [base, toneClasses[tone], hover, className].filter(Boolean).join(' ');
@@ -29,13 +35,11 @@ export function PrismPanel({ tone = 'card', hoverEffect = false, className, chil
     <div className={classes} {...props}>
       {/* Subtle gradient noise/texture could go here */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5 pointer-events-none" />
-      
+
       {/* Top highlight */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
-      
-      <div className="relative z-10">
-        {children}
-      </div>
+
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }

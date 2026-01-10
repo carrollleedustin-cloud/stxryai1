@@ -64,10 +64,10 @@ Provide:
 
       // Use AI Story Assistant service for Plot Doctor analysis
       const { aiStoryAssistantService } = await import('@/services/aiStoryAssistantService');
-      
+
       // Get user ID from context or auth
       const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : 'anonymous';
-      
+
       // Run Plot Doctor analysis
       const plotAnalysis = await aiStoryAssistantService.runPlotDoctorAnalysis(
         userId,
@@ -79,21 +79,25 @@ Provide:
       // Transform Plot Doctor analysis to StoryAnalysis format
       const analysis: StoryAnalysis = {
         overallScore: plotAnalysis.overallScore || 70,
-        strengths: (plotAnalysis.strengths || []).map((s: any) => 
+        strengths: (plotAnalysis.strengths || []).map((s: any) =>
           typeof s === 'string' ? s : s.description || s.aspect || String(s)
         ),
-        weaknesses: (plotAnalysis.issuesFound || []).map((i: any) => 
+        weaknesses: (plotAnalysis.issuesFound || []).map((i: any) =>
           typeof i === 'string' ? i : i.description || String(i)
         ),
-        suggestions: (plotAnalysis.suggestions || []).map((s: any) => 
+        suggestions: (plotAnalysis.suggestions || []).map((s: any) =>
           typeof s === 'string' ? s : s.description || String(s)
         ),
         pacing: {
-          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 5)) : 75,
+          score: plotAnalysis.overallScore
+            ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 5))
+            : 75,
           feedback: plotAnalysis.overallFeedback || 'Analysis completed',
         },
         character: {
-          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 5)) : 80,
+          score: plotAnalysis.overallScore
+            ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 5))
+            : 80,
           feedback: plotAnalysis.overallFeedback || 'Character analysis completed',
         },
         plot: {
@@ -101,14 +105,18 @@ Provide:
           feedback: plotAnalysis.overallFeedback || 'Plot analysis completed',
         },
         dialogue: {
-          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 10)) : 70,
+          score: plotAnalysis.overallScore
+            ? Math.max(0, Math.min(100, plotAnalysis.overallScore - 10))
+            : 70,
           feedback: plotAnalysis.overallFeedback || 'Dialogue analysis completed',
         },
         grammar: {
-          score: plotAnalysis.overallScore ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 10)) : 85,
-          issues: (plotAnalysis.issuesFound || []).slice(0, 5).map((i: any) => 
-            typeof i === 'string' ? i : i.description || String(i)
-          ),
+          score: plotAnalysis.overallScore
+            ? Math.max(0, Math.min(100, plotAnalysis.overallScore + 10))
+            : 85,
+          issues: (plotAnalysis.issuesFound || [])
+            .slice(0, 5)
+            .map((i: any) => (typeof i === 'string' ? i : i.description || String(i))),
         },
       };
       setAnalysis(analysis);
@@ -145,188 +153,191 @@ Provide:
             </h2>
             <p className="text-muted-foreground">Get detailed AI-powered feedback on your story</p>
           </div>
-        <motion.button
-          onClick={analyzeStory}
-          disabled={isAnalyzing || !storyContent.trim()}
-          whileHover={!isAnalyzing ? { scale: 1.05 } : {}}
-          whileTap={!isAnalyzing ? { scale: 0.95 } : {}}
-          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
-        >
-          {isAnalyzing ? (
-            <>
-              <motion.div
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <Icon name="SparklesIcon" size={20} />
-              Analyze Story
-            </>
-          )}
-        </motion.button>
-      </div>
-
-      <AnimatePresence>
-        {analysis && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+          <motion.button
+            onClick={analyzeStory}
+            disabled={isAnalyzing || !storyContent.trim()}
+            whileHover={!isAnalyzing ? { scale: 1.05 } : {}}
+            whileTap={!isAnalyzing ? { scale: 0.95 } : {}}
+            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"
           >
-            {/* Overall Score */}
-            <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-foreground">Overall Score</h3>
-                <div className="text-right">
+            {isAnalyzing ? (
+              <>
+                <motion.div
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Icon name="SparklesIcon" size={20} />
+                Analyze Story
+              </>
+            )}
+          </motion.button>
+        </div>
+
+        <AnimatePresence>
+          {analysis && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              {/* Overall Score */}
+              <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-foreground">Overall Score</h3>
+                  <div className="text-right">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className={`text-5xl font-bold bg-gradient-to-r ${getScoreColor(analysis.overallScore)} bg-clip-text text-transparent`}
+                    >
+                      {analysis.overallScore}
+                    </motion.div>
+                    <div className="text-sm text-muted-foreground">out of 100</div>
+                  </div>
+                </div>
+                <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className={`text-5xl font-bold bg-gradient-to-r ${getScoreColor(analysis.overallScore)} bg-clip-text text-transparent`}
-                  >
-                    {analysis.overallScore}
-                  </motion.div>
-                  <div className="text-sm text-muted-foreground">out of 100</div>
+                    className={`h-full bg-gradient-to-r ${getScoreColor(analysis.overallScore)}`}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${analysis.overallScore}%` }}
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                  />
                 </div>
               </div>
-              <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className={`h-full bg-gradient-to-r ${getScoreColor(analysis.overallScore)}`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${analysis.overallScore}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
-                />
-              </div>
-            </div>
 
-            {/* Category Scores */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {categories.map((category) => (
-                <motion.div
-                  key={category.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    selectedCategory === category.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-card hover:border-primary/50'
-                  }`}
-                >
-                  <div className="text-3xl mb-2">{category.icon}</div>
-                  <div className="text-sm font-medium text-foreground mb-1">{category.label}</div>
-                  {category.score !== undefined && (
-                    <div className={`text-2xl font-bold bg-gradient-to-r ${getScoreColor(category.score)} bg-clip-text text-transparent`}>
-                      {category.score}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Strengths & Weaknesses */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800">
-                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Icon name="CheckCircleIcon" size={20} className="text-green-600" />
-                  Strengths
-                </h3>
-                <ul className="space-y-2">
-                  {analysis.strengths.map((strength, idx) => (
-                    <motion.li
-                      key={idx}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="flex items-start gap-2 text-sm text-foreground"
-                    >
-                      <span className="text-green-600 mt-1">✓</span>
-                      <span>{strength}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="p-6 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800">
-                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Icon name="ExclamationTriangleIcon" size={20} className="text-red-600" />
-                  Areas for Improvement
-                </h3>
-                <ul className="space-y-2">
-                  {analysis.weaknesses.map((weakness, idx) => (
-                    <motion.li
-                      key={idx}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="flex items-start gap-2 text-sm text-foreground"
-                    >
-                      <span className="text-red-600 mt-1">!</span>
-                      <span>{weakness}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Suggestions */}
-            <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800">
-              <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                <Icon name="LightBulbIcon" size={20} className="text-blue-600" />
-                Suggestions
-              </h3>
-              <ul className="space-y-2">
-                {analysis.suggestions.map((suggestion, idx) => (
-                  <motion.li
-                    key={idx}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="flex items-start gap-2 text-sm text-foreground"
+              {/* Category Scores */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {categories.map((category) => (
+                  <motion.div
+                    key={category.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      selectedCategory === category.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    }`}
                   >
-                    <span className="text-blue-600 mt-1">💡</span>
-                    <span>{suggestion}</span>
-                  </motion.li>
+                    <div className="text-3xl mb-2">{category.icon}</div>
+                    <div className="text-sm font-medium text-foreground mb-1">{category.label}</div>
+                    {category.score !== undefined && (
+                      <div
+                        className={`text-2xl font-bold bg-gradient-to-r ${getScoreColor(category.score)} bg-clip-text text-transparent`}
+                      >
+                        {category.score}
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
-              </ul>
-            </div>
+              </div>
 
-            {/* Category Details */}
-            {selectedCategory && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-6 bg-card border border-border rounded-xl"
-              >
-                <h3 className="font-bold text-foreground mb-4">
-                  {categories.find((c) => c.id === selectedCategory)?.label} Analysis
+              {/* Strengths & Weaknesses */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-6 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Icon name="CheckCircleIcon" size={20} className="text-green-600" />
+                    Strengths
+                  </h3>
+                  <ul className="space-y-2">
+                    {analysis.strengths.map((strength, idx) => (
+                      <motion.li
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-start gap-2 text-sm text-foreground"
+                      >
+                        <span className="text-green-600 mt-1">✓</span>
+                        <span>{strength}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="p-6 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-200 dark:border-red-800">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Icon name="ExclamationTriangleIcon" size={20} className="text-red-600" />
+                    Areas for Improvement
+                  </h3>
+                  <ul className="space-y-2">
+                    {analysis.weaknesses.map((weakness, idx) => (
+                      <motion.li
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-start gap-2 text-sm text-foreground"
+                      >
+                        <span className="text-red-600 mt-1">!</span>
+                        <span>{weakness}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* Suggestions */}
+              <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800">
+                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Icon name="LightBulbIcon" size={20} className="text-blue-600" />
+                  Suggestions
                 </h3>
-                <p className="text-foreground">
-                  {selectedCategory === 'pacing' && analysis.pacing.feedback}
-                  {selectedCategory === 'character' && analysis.character.feedback}
-                  {selectedCategory === 'plot' && analysis.plot.feedback}
-                  {selectedCategory === 'dialogue' && analysis.dialogue.feedback}
-                  {selectedCategory === 'grammar' && (
-                    <div>
-                      <p className="mb-2">{analysis.grammar.feedback}</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        {analysis.grammar.issues.map((issue, idx) => (
-                          <li key={idx} className="text-sm text-muted-foreground">{issue}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </p>
-              </motion.div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <ul className="space-y-2">
+                  {analysis.suggestions.map((suggestion, idx) => (
+                    <motion.li
+                      key={idx}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="flex items-start gap-2 text-sm text-foreground"
+                    >
+                      <span className="text-blue-600 mt-1">💡</span>
+                      <span>{suggestion}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Category Details */}
+              {selectedCategory && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 bg-card border border-border rounded-xl"
+                >
+                  <h3 className="font-bold text-foreground mb-4">
+                    {categories.find((c) => c.id === selectedCategory)?.label} Analysis
+                  </h3>
+                  <p className="text-foreground">
+                    {selectedCategory === 'pacing' && analysis.pacing.feedback}
+                    {selectedCategory === 'character' && analysis.character.feedback}
+                    {selectedCategory === 'plot' && analysis.plot.feedback}
+                    {selectedCategory === 'dialogue' && analysis.dialogue.feedback}
+                    {selectedCategory === 'grammar' && (
+                      <div>
+                        <p className="mb-2">{analysis.grammar.feedback}</p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {analysis.grammar.issues.map((issue, idx) => (
+                            <li key={idx} className="text-sm text-muted-foreground">
+                              {issue}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </p>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </PremiumGate>
   );
 }
-

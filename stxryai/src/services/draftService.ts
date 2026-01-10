@@ -231,10 +231,7 @@ export class DraftService {
   /**
    * Update chapter draft
    */
-  async updateChapterDraft(
-    draftId: string,
-    updates: Partial<ChapterDraft>
-  ): Promise<ChapterDraft> {
+  async updateChapterDraft(draftId: string, updates: Partial<ChapterDraft>): Promise<ChapterDraft> {
     const { data, error } = await this.supabase
       .from('chapter_drafts')
       .update({
@@ -255,10 +252,7 @@ export class DraftService {
   /**
    * Auto-save chapter draft
    */
-  async autoSaveChapterDraft(
-    draftId: string,
-    content: string
-  ): Promise<ChapterDraft> {
+  async autoSaveChapterDraft(draftId: string, content: string): Promise<ChapterDraft> {
     return this.updateChapterDraft(draftId, { content });
   }
 
@@ -409,4 +403,3 @@ export class DraftService {
 }
 
 export const draftService = new DraftService();
-

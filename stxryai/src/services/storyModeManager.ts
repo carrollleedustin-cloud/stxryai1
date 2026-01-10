@@ -121,7 +121,7 @@ export class StoryModeManager {
     premise: string
   ): Promise<BookOutline> {
     const context = await this.engine.compileGenerationContext(seriesId, bookId);
-    
+
     switch (config.mode) {
       case 'book':
         return this.generateBookOutline(context, config as BookModeConfig, premise);
@@ -176,15 +176,15 @@ export class StoryModeManager {
       premise,
       threeActStructure: {
         actOne: {
-          chapters: chapters.filter(c => c.act === 1),
+          chapters: chapters.filter((c) => c.act === 1),
           goal: 'Establish world, characters, and inciting incident',
         },
         actTwo: {
-          chapters: chapters.filter(c => c.act === 2),
+          chapters: chapters.filter((c) => c.act === 2),
           goal: 'Rising action, complications, midpoint shift',
         },
         actThree: {
-          chapters: chapters.filter(c => c.act === 3),
+          chapters: chapters.filter((c) => c.act === 3),
           goal: 'Climax and resolution',
         },
       },
@@ -203,14 +203,21 @@ export class StoryModeManager {
   ): Promise<BookOutline> {
     const baseOutline = await this.generateBookOutline(
       context,
-      { ...DEFAULT_BOOK_CONFIG, targetChapterCount: config.targetChapterCount, targetWordCount: config.targetWordCount },
+      {
+        ...DEFAULT_BOOK_CONFIG,
+        targetChapterCount: config.targetChapterCount,
+        targetWordCount: config.targetWordCount,
+      },
       premise
     );
 
     // Enhance with novel-specific features
-    const povCharacters = config.primaryPOVCharacters.length > 0 
-      ? config.primaryPOVCharacters 
-      : context.activeCharacters.filter(c => c.role === 'protagonist' || c.role === 'deuteragonist').map(c => c.id);
+    const povCharacters =
+      config.primaryPOVCharacters.length > 0
+        ? config.primaryPOVCharacters
+        : context.activeCharacters
+            .filter((c) => c.role === 'protagonist' || c.role === 'deuteragonist')
+            .map((c) => c.id);
 
     // Assign POV characters in rotation if rotating POV
     if (config.povStyle === 'rotating' && povCharacters.length > 0) {
@@ -233,7 +240,7 @@ export class StoryModeManager {
     // Add thematic callbacks
     if (config.thematicResonance) {
       const themeCheckpoints = this.calculateThemeCheckpoints(baseOutline.chapters.length);
-      themeCheckpoints.forEach(checkpoint => {
+      themeCheckpoints.forEach((checkpoint) => {
         if (baseOutline.chapters[checkpoint]) {
           baseOutline.chapters[checkpoint].thematicMoment = true;
         }
@@ -265,19 +272,23 @@ export class StoryModeManager {
       ...DEFAULT_NOVEL_CONFIG,
       targetWordCount: config.averageWordsPerBook,
       // Map series structure to subplot integration
-      subplotIntegration: config.seriesStructure === 'episodic' ? 'episodic' : 
-                          config.seriesStructure === 'anthology' ? 'loose' : 'tight',
+      subplotIntegration:
+        config.seriesStructure === 'episodic'
+          ? 'episodic'
+          : config.seriesStructure === 'anthology'
+            ? 'loose'
+            : 'tight',
       // Use full character evolution for series with full persistence
-      characterEvolutionDepth: config.characterPersistenceLevel === 'full' ? 'dramatic' :
-                               config.characterPersistenceLevel === 'selective' ? 'moderate' : 'subtle',
+      characterEvolutionDepth:
+        config.characterPersistenceLevel === 'full'
+          ? 'dramatic'
+          : config.characterPersistenceLevel === 'selective'
+            ? 'moderate'
+            : 'subtle',
       enableSlowBurn: config.enableLongForeshadowing,
     };
-    
-    const baseOutline = await this.generateNovelOutline(
-      context,
-      novelConfig,
-      premise
-    );
+
+    const baseOutline = await this.generateNovelOutline(context, novelConfig, premise);
 
     // Series-specific enhancements
     const activeArcs = context.activeArcs || [];
@@ -285,17 +296,25 @@ export class StoryModeManager {
 
     // Plan foreshadowing
     const foreshadowingPlan = config.enableLongForeshadowing
-      ? this.planForeshadowing(baseOutline.chapters.length, config.foreshadowingHorizon, seriesPosition)
+      ? this.planForeshadowing(
+          baseOutline.chapters.length,
+          config.foreshadowingHorizon,
+          seriesPosition
+        )
       : [];
 
     // Plan arc progression
-    const arcProgression = this.planArcProgression(activeArcs, baseOutline.chapters.length, seriesPosition);
+    const arcProgression = this.planArcProgression(
+      activeArcs,
+      baseOutline.chapters.length,
+      seriesPosition
+    );
 
     // Add series-level considerations
     baseOutline.chapters.forEach((chapter, index) => {
-      chapter.foreshadowing = foreshadowingPlan.filter(f => f.chapterIndex === index);
-      chapter.arcBeats = arcProgression.filter(a => a.chapterIndex === index);
-      
+      chapter.foreshadowing = foreshadowingPlan.filter((f) => f.chapterIndex === index);
+      chapter.arcBeats = arcProgression.filter((a) => a.chapterIndex === index);
+
       // Mark chapters that should reference previous books
       if (seriesPosition.bookNumber > 1 && index < 3) {
         chapter.shouldReferenceHistory = true;
@@ -343,7 +362,7 @@ export class StoryModeManager {
     if (process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY) {
       try {
         const { generateCompletion } = await import('@/lib/ai/client');
-        
+
         const systemPrompt = `Expert narrative writer. Generate story content.
 Requirements:
 - Follow chapter outline
@@ -400,8 +419,8 @@ Return ONLY narrative text.`;
         chapterOutline.chapterNumber,
         result.content,
         {
-          charactersInvolved: result.charactersInvolved.map(c => c.id),
-          worldElementsReferenced: result.worldElementsReferenced.map(e => e.id),
+          charactersInvolved: result.charactersInvolved.map((c) => c.id),
+          worldElementsReferenced: result.worldElementsReferenced.map((e) => e.id),
         }
       );
       result.potentialViolations = violations;
@@ -428,7 +447,7 @@ Return ONLY narrative text.`;
 
     // POV
     if (outline.povCharacter) {
-      const povChar = context.activeCharacters.find(c => c.id === outline.povCharacter);
+      const povChar = context.activeCharacters.find((c) => c.id === outline.povCharacter);
       if (povChar) {
         parts.push(`\nPOV Character: ${povChar.name}`);
         parts.push(`- Role: ${povChar.role}`);
@@ -446,7 +465,7 @@ Return ONLY narrative text.`;
 
     // Active characters in this chapter
     parts.push('\n=== ACTIVE CHARACTERS ===');
-    context.activeCharacters.forEach(char => {
+    context.activeCharacters.forEach((char) => {
       parts.push(`- ${char.name} (${char.role}): ${char.status}`);
     });
 
@@ -459,7 +478,7 @@ Return ONLY narrative text.`;
     // Active arcs
     if (context.activeArcs.length > 0) {
       parts.push('\n=== ACTIVE NARRATIVE ARCS ===');
-      context.activeArcs.forEach(arc => {
+      context.activeArcs.forEach((arc) => {
         parts.push(`- ${arc.name} (${arc.type}): ${arc.status} - ${arc.completion}% complete`);
       });
     }
@@ -467,7 +486,7 @@ Return ONLY narrative text.`;
     // Canon constraints
     if (context.canonRules.length > 0) {
       parts.push('\n=== CANON RULES (MUST RESPECT) ===');
-      context.canonRules.forEach(rule => {
+      context.canonRules.forEach((rule) => {
         parts.push(`- [${rule.lockLevel}] ${rule.ruleName}: ${rule.ruleDescription}`);
       });
     }
@@ -483,7 +502,7 @@ Return ONLY narrative text.`;
     // Thematic reminders
     if (context.themeReminders.length > 0) {
       parts.push('\n=== THEMES TO REINFORCE ===');
-      context.themeReminders.forEach(theme => {
+      context.themeReminders.forEach((theme) => {
         parts.push(`- ${theme}`);
       });
     }
@@ -491,7 +510,7 @@ Return ONLY narrative text.`;
     // Pending payoffs
     if (context.pendingPayoffs.length > 0) {
       parts.push('\n=== FORESHADOWING TO POTENTIALLY PAY OFF ===');
-      context.pendingPayoffs.forEach(payoff => {
+      context.pendingPayoffs.forEach((payoff) => {
         parts.push(`- ${payoff}`);
       });
     }
@@ -531,7 +550,7 @@ Return ONLY narrative text.`;
     content: string
   ): Promise<ConsistencyReport> {
     const context = await this.engine.compileGenerationContext(seriesId, bookId);
-    
+
     const issues: ConsistencyIssue[] = [];
     const contentLower = content.toLowerCase();
 
@@ -566,20 +585,19 @@ Return ONLY narrative text.`;
       chapterId,
       issueCount: issues.length,
       issues,
-      isConsistent: issues.filter(i => i.severity === 'error').length === 0,
+      isConsistent: issues.filter((i) => i.severity === 'error').length === 0,
     };
   }
 
   /**
    * Suggest revisions for consistency
    */
-  async suggestRevisions(
-    report: ConsistencyReport
-  ): Promise<RevisionSuggestion[]> {
-    return report.issues.map(issue => ({
+  async suggestRevisions(report: ConsistencyReport): Promise<RevisionSuggestion[]> {
+    return report.issues.map((issue) => ({
       issueId: issue.type,
       suggestion: this.generateRevisionSuggestion(issue),
-      priority: issue.severity === 'error' ? 'high' : issue.severity === 'warning' ? 'medium' : 'low',
+      priority:
+        issue.severity === 'error' ? 'high' : issue.severity === 'warning' ? 'medium' : 'low',
       autoApplicable: issue.severity === 'warning',
     }));
   }
@@ -601,32 +619,28 @@ Return ONLY narrative text.`;
   // HELPER METHODS
   // ==========================================================================
 
-  private getChapterType(
-    chapterNum: number,
-    totalChapters: number,
-    act: number
-  ): ChapterType {
+  private getChapterType(chapterNum: number, totalChapters: number, act: number): ChapterType {
     // Opening
     if (chapterNum === 1) return 'opening';
-    
+
     // Closing
     if (chapterNum === totalChapters) return 'climax';
-    
+
     // Inciting incident (usually chapter 2-3)
     if (chapterNum <= 3 && act === 1) return 'inciting_incident';
-    
+
     // First plot point (end of act 1)
     if (act === 1 && chapterNum === Math.floor(totalChapters * 0.25)) return 'plot_point';
-    
+
     // Midpoint
     if (chapterNum === Math.floor(totalChapters * 0.5)) return 'midpoint';
-    
+
     // Second plot point (end of act 2)
     if (act === 2 && chapterNum === Math.floor(totalChapters * 0.75)) return 'plot_point';
-    
+
     // Dark moment (just before climax)
     if (act === 3 && chapterNum === totalChapters - 2) return 'dark_moment';
-    
+
     return 'development';
   }
 
@@ -684,7 +698,7 @@ Return ONLY narrative text.`;
     integration: 'tight' | 'loose' | 'episodic'
   ): (number | undefined)[] {
     const result: (number | undefined)[] = new Array(totalChapters).fill(undefined);
-    
+
     switch (integration) {
       case 'tight':
         // Subplots appear frequently
@@ -729,11 +743,12 @@ Return ONLY narrative text.`;
     emotionalRange: string[]
   ): Record<number, string> {
     const beats: Record<number, string> = {};
-    
+
     // Handle empty emotional range - provide sensible defaults
-    const effectiveRange = emotionalRange.length > 0 
-      ? emotionalRange 
-      : ['tension', 'hope', 'despair', 'determination', 'triumph'];
+    const effectiveRange =
+      emotionalRange.length > 0
+        ? emotionalRange
+        : ['tension', 'hope', 'despair', 'determination', 'triumph'];
     const rangeLength = effectiveRange.length;
 
     for (let i = 0; i < totalChapters; i++) {
@@ -803,7 +818,7 @@ Return ONLY narrative text.`;
   ): ArcProgressionPlan[] {
     const plans: ArcProgressionPlan[] = [];
 
-    activeArcs.forEach(arc => {
+    activeArcs.forEach((arc) => {
       const progressNeeded = 100 - arc.completion;
       const chaptersForArc = Math.ceil((progressNeeded / 100) * totalChapters);
       const beatInterval = Math.floor(totalChapters / Math.max(chaptersForArc, 1));
@@ -905,7 +920,7 @@ export interface Beat {
   description: string;
 }
 
-export type ChapterType = 
+export type ChapterType =
   | 'opening'
   | 'inciting_incident'
   | 'development'
@@ -961,24 +976,30 @@ export interface RevisionSuggestion {
 // Add helper methods to StoryModeManager class
 // These methods are used by the AI generation integration
 const addHelperMethods = (manager: StoryModeManager) => {
-  (manager as any).extractCharactersFromContent = function(content: string, context: GenerationContext): string[] {
+  (manager as any).extractCharactersFromContent = function (
+    content: string,
+    context: GenerationContext
+  ): string[] {
     const mentioned: string[] = [];
     const contentLower = content.toLowerCase();
-    
+
     for (const character of context.activeCharacters) {
       const nameLower = character.name.toLowerCase();
       if (contentLower.includes(nameLower)) {
         mentioned.push(character.id);
       }
     }
-    
+
     return mentioned;
   };
 
-  (manager as any).extractWorldElementsFromContent = function(content: string, context: GenerationContext): string[] {
+  (manager as any).extractWorldElementsFromContent = function (
+    content: string,
+    context: GenerationContext
+  ): string[] {
     const mentioned: string[] = [];
     const contentLower = content.toLowerCase();
-    
+
     // Check for world elements (locations, items, concepts) from context
     if (context.worldElements) {
       for (const element of context.worldElements) {
@@ -988,13 +1009,16 @@ const addHelperMethods = (manager: StoryModeManager) => {
         }
       }
     }
-    
+
     return mentioned;
   };
 
-  (manager as any).identifyArcProgressFromContent = function(content: string, context: GenerationContext): string[] {
+  (manager as any).identifyArcProgressFromContent = function (
+    content: string,
+    context: GenerationContext
+  ): string[] {
     const advanced: string[] = [];
-    
+
     // Simple heuristic: if content mentions arc-related keywords or characters
     // In a full implementation, this would use more sophisticated analysis
     if (context.activeArcs) {
@@ -1005,7 +1029,7 @@ const addHelperMethods = (manager: StoryModeManager) => {
         }
       }
     }
-    
+
     return advanced;
   };
 };
@@ -1013,4 +1037,3 @@ const addHelperMethods = (manager: StoryModeManager) => {
 // Export singleton
 export const storyModeManager = new StoryModeManager();
 addHelperMethods(storyModeManager);
-

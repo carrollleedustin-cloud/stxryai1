@@ -28,29 +28,24 @@ interface NebulaNavProps {
   className?: string;
 }
 
-export function NebulaNav({
-  items,
-  logo,
-  cta,
-  className = '',
-}: NebulaNavProps) {
+export function NebulaNav({ items, logo, cta, className = '' }: NebulaNavProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
-  
+
   const { scrollY } = useScroll();
   const navOpacity = useTransform(scrollY, [0, 100], [0.8, 1]);
   const navBlur = useTransform(scrollY, [0, 100], [20, 40]);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
@@ -74,7 +69,7 @@ export function NebulaNav({
             opacity: navOpacity,
           }}
         />
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -93,12 +88,12 @@ export function NebulaNav({
                 </motion.div>
               )}
             </Link>
-            
+
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-1">
               {items.map((item) => {
                 const isActive = pathname === item.href;
-                
+
                 return (
                   <Link key={item.href} href={item.href}>
                     <motion.div
@@ -113,7 +108,7 @@ export function NebulaNav({
                       >
                         {item.label}
                       </span>
-                      
+
                       {/* Active indicator */}
                       {isActive && (
                         <motion.div
@@ -130,23 +125,25 @@ export function NebulaNav({
                 );
               })}
             </div>
-            
+
             {/* CTA Button */}
             {cta && (
               <Link href={cta.href} className="hidden md:block">
                 <motion.button
                   className="px-6 py-2.5 rounded-lg font-medium text-sm tracking-wide"
                   style={{
-                    background: cta.variant === 'secondary'
-                      ? 'linear-gradient(135deg, #8020ff, #c020ff)'
-                      : '#00ffd5',
+                    background:
+                      cta.variant === 'secondary'
+                        ? 'linear-gradient(135deg, #8020ff, #c020ff)'
+                        : '#00ffd5',
                     color: cta.variant === 'secondary' ? '#ffffff' : '#000000',
                   }}
                   whileHover={{
                     scale: 1.05,
-                    boxShadow: cta.variant === 'secondary'
-                      ? '0 0 30px rgba(128,32,255,0.4)'
-                      : '0 0 30px rgba(0,255,213,0.4)',
+                    boxShadow:
+                      cta.variant === 'secondary'
+                        ? '0 0 30px rgba(128,32,255,0.4)'
+                        : '0 0 30px rgba(0,255,213,0.4)',
                   }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -154,7 +151,7 @@ export function NebulaNav({
                 </motion.button>
               </Link>
             )}
-            
+
             {/* Mobile Menu Button */}
             <motion.button
               className="md:hidden relative z-10 w-10 h-10 flex flex-col items-center justify-center gap-1.5"
@@ -184,7 +181,7 @@ export function NebulaNav({
             </motion.button>
           </div>
         </div>
-        
+
         {/* Border glow when scrolled */}
         {isScrolled && (
           <div
@@ -195,7 +192,7 @@ export function NebulaNav({
           />
         )}
       </motion.nav>
-      
+
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileOpen && (
@@ -213,7 +210,7 @@ export function NebulaNav({
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
             />
-            
+
             {/* Menu Content */}
             <motion.div
               className="absolute inset-x-4 top-24 bg-[#0c0c1e] rounded-2xl border border-white/10 overflow-hidden"
@@ -225,7 +222,7 @@ export function NebulaNav({
               <div className="p-4 space-y-2">
                 {items.map((item, index) => {
                   const isActive = pathname === item.href;
-                  
+
                   return (
                     <motion.div
                       key={item.href}
@@ -241,9 +238,7 @@ export function NebulaNav({
                             borderLeft: isActive ? '3px solid #00ffd5' : '3px solid transparent',
                           }}
                         >
-                          {item.icon && (
-                            <span className="text-xl">{item.icon}</span>
-                          )}
+                          {item.icon && <span className="text-xl">{item.icon}</span>}
                           <span
                             className="font-medium"
                             style={{
@@ -257,7 +252,7 @@ export function NebulaNav({
                     </motion.div>
                   );
                 })}
-                
+
                 {cta && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -288,5 +283,3 @@ export function NebulaNav({
 }
 
 export default NebulaNav;
-
-

@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
     );
 
     // Get user (optional for donations)
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     const body = await request.json();
     const { amount, message, isAnonymous, successUrl, cancelUrl } = body;
@@ -48,10 +50,7 @@ export async function POST(request: NextRequest) {
     // Create a one-time payment checkout session
     const stripe = getStripe();
     if (!stripe) {
-      return NextResponse.json(
-        { error: 'Payment processing is not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'Payment processing is not configured' }, { status: 503 });
     }
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -62,7 +61,9 @@ export async function POST(request: NextRequest) {
             currency: 'usd',
             product_data: {
               name: 'Donation to StxryAI',
-              description: message ? `Message: ${message.slice(0, 100)}` : 'Thank you for your support!',
+              description: message
+                ? `Message: ${message.slice(0, 100)}`
+                : 'Thank you for your support!',
             },
             unit_amount: Math.round(amount * 100), // Convert to cents
           },
@@ -83,10 +84,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Create donation checkout error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create donation checkout' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create donation checkout' }, { status: 500 });
   }
 }
-

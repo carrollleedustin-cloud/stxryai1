@@ -9,7 +9,7 @@ function initStripe(): Stripe | null {
     return null;
   }
   stripeInstance = new Stripe(key, {
-    apiVersion: '2023-10-16',
+    apiVersion: '2025-12-15.clover',
     typescript: true,
   });
   return stripeInstance;

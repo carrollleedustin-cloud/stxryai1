@@ -36,9 +36,9 @@ export function PortalEffect({
   const colors = COLORS[color];
   const intensityOpacity = { low: 0.3, medium: 0.5, high: 0.8 };
   const opacity = intensityOpacity[intensity];
-  
+
   return (
-    <div 
+    <div
       className={`relative inline-flex items-center justify-center ${className}`}
       style={{ width: size, height: size }}
     >
@@ -53,7 +53,7 @@ export function PortalEffect({
         animate={spinning ? { rotate: 360 } : {}}
         transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
       />
-      
+
       {/* Middle ring */}
       <motion.div
         className="absolute rounded-full"
@@ -66,7 +66,7 @@ export function PortalEffect({
         animate={spinning ? { rotate: -360 } : {}}
         transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
       />
-      
+
       {/* Inner glow */}
       <motion.div
         className="absolute rounded-full"
@@ -80,17 +80,12 @@ export function PortalEffect({
         }}
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       />
-      
+
       {/* Center mask */}
-      <div 
-        className="absolute rounded-full bg-[#03030a]"
-        style={{ inset: '25%' }}
-      />
-      
+      <div className="absolute rounded-full bg-[#03030a]" style={{ inset: '25%' }} />
+
       {/* Content */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
@@ -114,7 +109,7 @@ export function ParticleSystem({
 }: ParticleSystemProps) {
   const speeds = { slow: 20, medium: 12, fast: 6 };
   const duration = speeds[speed];
-  
+
   return (
     <div className={`fixed inset-0 pointer-events-none overflow-hidden ${className}`}>
       {Array.from({ length: count }).map((_, i) => {
@@ -122,7 +117,7 @@ export function ParticleSystem({
         const left = Math.random() * 100;
         const delay = Math.random() * duration;
         const particleDuration = duration + Math.random() * 10;
-        
+
         return (
           <motion.div
             key={i}
@@ -154,5 +149,3 @@ export function ParticleSystem({
 }
 
 export default PortalEffect;
-
-

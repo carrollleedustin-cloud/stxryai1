@@ -6,18 +6,18 @@ import { performanceMonitor, errorTracker, userAnalytics } from './index';
 
 /**
  * React hook for monitoring integration
- * 
+ *
  * Usage:
  * ```tsx
  * function MyComponent() {
  *   const { trackEvent, trackError, measureAsync } = useMonitoring();
- * 
+ *
  *   const handleClick = async () => {
  *     await measureAsync('button_click_action', async () => {
  *       // Do something
  *     });
  *   };
- * 
+ *
  *   return <button onClick={handleClick}>Click me</button>;
  * }
  * ```
@@ -35,7 +35,9 @@ export function useMonitoring(userId?: string) {
   // Track component mount time
   useEffect(() => {
     const mountTime = performance.now();
-    performanceMonitor.recordMetric('component_mount', mountTime, 'ms', { path: pathname || 'unknown' });
+    performanceMonitor.recordMetric('component_mount', mountTime, 'ms', {
+      path: pathname || 'unknown',
+    });
   }, [pathname]);
 
   /**
@@ -66,8 +68,15 @@ export function useMonitoring(userId?: string) {
    * Measure async function performance
    */
   const measureAsync = useCallback(
-    async <T>(name: string, fn: () => Promise<T>, metadata?: Record<string, string | number | boolean>): Promise<T> => {
-      return performanceMonitor.measureAsync(name, fn, { ...metadata, path: pathname || 'unknown' });
+    async <T>(
+      name: string,
+      fn: () => Promise<T>,
+      metadata?: Record<string, string | number | boolean>
+    ): Promise<T> => {
+      return performanceMonitor.measureAsync(name, fn, {
+        ...metadata,
+        path: pathname || 'unknown',
+      });
     },
     [pathname]
   );
@@ -106,10 +115,13 @@ export function withErrorMonitoring<P extends object>(
   return function MonitoredComponent(props: P) {
     useEffect(() => {
       const startTime = performance.now();
-      performanceMonitor.recordMetric(`${componentName}_render`, performance.now() - startTime, 'ms');
+      performanceMonitor.recordMetric(
+        `${componentName}_render`,
+        performance.now() - startTime,
+        'ms'
+      );
     });
 
     return React.createElement(WrappedComponent, props);
   };
 }
-

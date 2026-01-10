@@ -29,7 +29,7 @@ export default function TemporalReveal({
 }: TemporalRevealProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once, amount: threshold });
-  
+
   const directionConfig = {
     up: { y: 60, x: 0, scale: 1 },
     down: { y: -60, x: 0, scale: 1 },
@@ -38,9 +38,9 @@ export default function TemporalReveal({
     scale: { y: 0, x: 0, scale: 0.9 },
     fade: { y: 0, x: 0, scale: 1 },
   };
-  
+
   const config = directionConfig[direction];
-  
+
   return (
     <motion.div
       ref={ref}
@@ -50,12 +50,16 @@ export default function TemporalReveal({
         x: config.x,
         scale: config.scale,
       }}
-      animate={isInView ? {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        scale: 1,
-      } : {}}
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              y: 0,
+              x: 0,
+              scale: 1,
+            }
+          : {}
+      }
       transition={{
         duration,
         delay,
@@ -86,15 +90,11 @@ export function ParallaxDepth({
     target: ref,
     offset: ['start end', 'end start'],
   });
-  
+
   const y = useTransform(scrollYProgress, [0, 1], [-100 * depth, 100 * depth]);
-  
+
   return (
-    <motion.div
-      ref={ref}
-      style={{ y }}
-      className={className}
-    >
+    <motion.div ref={ref} style={{ y }} className={className}>
       {children}
     </motion.div>
   );
@@ -117,7 +117,7 @@ export function StaggerContainer({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  
+
   return (
     <motion.div
       ref={ref}
@@ -189,16 +189,12 @@ export function ScrollFade({
     target: ref,
     offset: ['start start', 'end start'],
   });
-  
+
   const opacity = useTransform(scrollYProgress, [0, fadeStart, fadeEnd], [1, 1, 0]);
   const scale = useTransform(scrollYProgress, [0, fadeStart, fadeEnd], [1, 1, 0.95]);
-  
+
   return (
-    <motion.div
-      ref={ref}
-      style={{ opacity, scale }}
-      className={className}
-    >
+    <motion.div ref={ref} style={{ opacity, scale }} className={className}>
       {children}
     </motion.div>
   );
@@ -222,20 +218,11 @@ export function DimensionalLayer({
     target: ref,
     offset: ['start end', 'end start'],
   });
-  
-  const z = useTransform(scrollYProgress, [0, 0.5, 1], [
-    -50 * layer,
-    0,
-    50 * layer,
-  ]);
-  
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [
-    0.5,
-    1,
-    1,
-    0.5,
-  ]);
-  
+
+  const z = useTransform(scrollYProgress, [0, 0.5, 1], [-50 * layer, 0, 50 * layer]);
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.5, 1, 1, 0.5]);
+
   return (
     <motion.div
       ref={ref}
@@ -250,4 +237,3 @@ export function DimensionalLayer({
     </motion.div>
   );
 }
-

@@ -60,7 +60,7 @@ export function generateMetadata(config: SEOConfig): Metadata {
     authors: author ? [{ name: author }] : undefined,
     creator: 'StxryAI',
     publisher: 'StxryAI',
-    
+
     // Open Graph
     openGraph: {
       title,
@@ -157,7 +157,8 @@ export function generateProfileMetadata(user: {
 }): Metadata {
   return generateMetadata({
     title: `${user.displayName} (@${user.username}) | StxryAI`,
-    description: user.bio || `${user.displayName} has created ${user.storyCount} stories on StxryAI`,
+    description:
+      user.bio || `${user.displayName} has created ${user.storyCount} stories on StxryAI`,
     image: user.avatar,
     url: `/profile/${user.username}`,
     type: 'profile',
@@ -375,10 +376,10 @@ export function getAlternateUrls(path: string): Record<string, string> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://stxryai.com';
 
   return {
-    'en': `${baseUrl}${path}`,
-    'es': `${baseUrl}/es${path}`,
-    'fr': `${baseUrl}/fr${path}`,
-    'de': `${baseUrl}/de${path}`,
+    en: `${baseUrl}${path}`,
+    es: `${baseUrl}/es${path}`,
+    fr: `${baseUrl}/fr${path}`,
+    de: `${baseUrl}/de${path}`,
   };
 }
 

@@ -1,9 +1,9 @@
 /**
  * Error Tracking Service
- * 
+ *
  * Lightweight error tracking abstraction that can be configured with Sentry
  * or fall back to console/API logging when Sentry is not configured.
- * 
+ *
  * Setup instructions for Sentry:
  * 1. Install: npm install @sentry/nextjs
  * 2. Run: npx @sentry/wizard@latest -i nextjs
@@ -200,10 +200,13 @@ class ErrorTrackingService {
     try {
       // Use sendBeacon for reliability
       if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/analytics/errors', JSON.stringify({
-          ...data,
-          timestamp: Date.now(),
-        }));
+        navigator.sendBeacon(
+          '/api/analytics/errors',
+          JSON.stringify({
+            ...data,
+            timestamp: Date.now(),
+          })
+        );
       } else {
         // Fallback to fetch
         fetch('/api/analytics/errors', {
@@ -231,7 +234,7 @@ export const errorTracking = new ErrorTrackingService();
 export type { BreadcrumbData };
 
 // Convenience functions
-export const captureException = (error: Error | unknown, context?: ErrorContext) => 
+export const captureException = (error: Error | unknown, context?: ErrorContext) =>
   errorTracking.captureException(error, context);
 
 export const captureMessage = (message: string, context?: ErrorContext) =>
@@ -240,5 +243,4 @@ export const captureMessage = (message: string, context?: ErrorContext) =>
 export const setUser = (userId: string | null, email?: string | null) =>
   errorTracking.setUser(userId, email);
 
-export const addBreadcrumb = (data: BreadcrumbData) =>
-  errorTracking.addBreadcrumb(data);
+export const addBreadcrumb = (data: BreadcrumbData) => errorTracking.addBreadcrumb(data);

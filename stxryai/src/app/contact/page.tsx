@@ -21,7 +21,7 @@ function ContactPageInner() {
   useEffect(() => {
     const urlSubject = searchParams?.get('subject');
     if (urlSubject && !formData.subject) {
-      setFormData(prev => ({ ...prev, subject: urlSubject }));
+      setFormData((prev) => ({ ...prev, subject: urlSubject }));
     }
   }, [searchParams]);
 
@@ -31,7 +31,7 @@ function ContactPageInner() {
 
     try {
       // In a real app, this would send to your backend/email service
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setSubmitted(true);
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
@@ -41,8 +41,10 @@ function ContactPageInner() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -70,7 +72,9 @@ function ContactPageInner() {
           >
             <Mail className="w-8 h-8 text-purple-400 mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">Email Us</h3>
-            <p className="text-gray-300 mb-4">Send us an email and we'll get back to you as soon as possible.</p>
+            <p className="text-gray-300 mb-4">
+              Send us an email and we'll get back to you as soon as possible.
+            </p>
             <a href="mailto:support@stxryai.com" className="text-purple-400 hover:text-purple-300">
               support@stxryai.com
             </a>
@@ -83,7 +87,9 @@ function ContactPageInner() {
           >
             <MessageSquare className="w-8 h-8 text-purple-400 mb-4" />
             <h3 className="text-xl font-bold text-white mb-2">Support</h3>
-            <p className="text-gray-300 mb-4">Need help? Check out our help center or contact support.</p>
+            <p className="text-gray-300 mb-4">
+              Need help? Check out our help center or contact support.
+            </p>
             <Link href="/support" className="text-purple-400 hover:text-purple-300">
               Visit Support Center →
             </Link>
@@ -211,4 +217,3 @@ export default function ContactPage() {
     </Suspense>
   );
 }
-

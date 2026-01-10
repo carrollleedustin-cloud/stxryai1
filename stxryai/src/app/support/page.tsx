@@ -12,78 +12,117 @@ const FAQ_ITEMS = [
   {
     category: 'Getting Started',
     items: [
-      { 
-        question: 'How do I create an account?', 
-        answer: 'Click "Begin" in the navigation bar and fill out the registration form. You can also sign up with Google, GitHub, or Discord for faster access.'
+      {
+        question: 'How do I create an account?',
+        answer:
+          'Click "Begin" in the navigation bar and fill out the registration form. You can also sign up with Google, GitHub, or Discord for faster access.',
       },
-      { 
-        question: 'Is StxryAI free to use?', 
-        answer: 'Yes! StxryAI offers a free tier with access to all stories and basic features. Premium subscriptions unlock unlimited choices, ad-free reading, and exclusive content.'
+      {
+        question: 'Is StxryAI free to use?',
+        answer:
+          'Yes! StxryAI offers a free tier with access to all stories and basic features. Premium subscriptions unlock unlimited choices, ad-free reading, and exclusive content.',
       },
-      { 
-        question: 'What devices can I use StxryAI on?', 
-        answer: 'StxryAI works on any modern web browser - desktop, tablet, or mobile. Your reading progress syncs across all your devices.'
+      {
+        question: 'What devices can I use StxryAI on?',
+        answer:
+          'StxryAI works on any modern web browser - desktop, tablet, or mobile. Your reading progress syncs across all your devices.',
       },
-    ]
+    ],
   },
   {
     category: 'Reading & Stories',
     items: [
-      { 
-        question: 'How do interactive stories work?', 
-        answer: 'At key moments in each story, you\'ll be presented with choices that affect the narrative. Your decisions shape the story\'s direction, leading to different outcomes and endings.'
+      {
+        question: 'How do interactive stories work?',
+        answer:
+          "At key moments in each story, you'll be presented with choices that affect the narrative. Your decisions shape the story's direction, leading to different outcomes and endings.",
       },
-      { 
-        question: 'Can I replay stories with different choices?', 
-        answer: 'Absolutely! You can restart any story or use chapter bookmarks to explore different paths. Discovering all endings is part of the fun!'
+      {
+        question: 'Can I replay stories with different choices?',
+        answer:
+          'Absolutely! You can restart any story or use chapter bookmarks to explore different paths. Discovering all endings is part of the fun!',
       },
-      { 
-        question: 'How do I save my reading progress?', 
-        answer: 'Your progress is automatically saved as you read. Just make sure you\'re signed in to your account.'
+      {
+        question: 'How do I save my reading progress?',
+        answer:
+          "Your progress is automatically saved as you read. Just make sure you're signed in to your account.",
       },
-    ]
+    ],
   },
   {
     category: 'Account & Premium',
     items: [
-      { 
-        question: 'How do I upgrade to Premium?', 
-        answer: 'Visit the Pricing page and select the plan that works for you. Premium gives you unlimited choices, no ads, exclusive stories, and early access to new features.'
+      {
+        question: 'How do I upgrade to Premium?',
+        answer:
+          'Visit the Pricing page and select the plan that works for you. Premium gives you unlimited choices, no ads, exclusive stories, and early access to new features.',
       },
-      { 
-        question: 'Can I cancel my subscription?', 
-        answer: 'Yes, you can cancel anytime from your account settings. You\'ll keep access to premium features until the end of your billing period.'
+      {
+        question: 'Can I cancel my subscription?',
+        answer:
+          "Yes, you can cancel anytime from your account settings. You'll keep access to premium features until the end of your billing period.",
       },
-      { 
-        question: 'How do I reset my password?', 
-        answer: 'Click "Forgot Password" on the sign-in page. We\'ll send you a link to reset your password via email.'
+      {
+        question: 'How do I reset my password?',
+        answer:
+          'Click "Forgot Password" on the sign-in page. We\'ll send you a link to reset your password via email.',
       },
-    ]
+    ],
   },
   {
     category: 'Technical Support',
     items: [
-      { 
-        question: 'The page isn\'t loading properly', 
-        answer: 'Try clearing your browser cache and cookies, then refresh the page. If the issue persists, try a different browser or contact support.'
+      {
+        question: "The page isn't loading properly",
+        answer:
+          'Try clearing your browser cache and cookies, then refresh the page. If the issue persists, try a different browser or contact support.',
       },
-      { 
-        question: 'I\'m having trouble with payments', 
-        answer: 'Payment issues are usually resolved by trying a different payment method or clearing your browser data. If problems continue, contact support with your order details.'
+      {
+        question: "I'm having trouble with payments",
+        answer:
+          'Payment issues are usually resolved by trying a different payment method or clearing your browser data. If problems continue, contact support with your order details.',
       },
-      { 
-        question: 'How do I report a bug?', 
-        answer: 'Use the feedback form below or email support@stxry.ai with a description of the issue, your browser/device info, and screenshots if possible.'
+      {
+        question: 'How do I report a bug?',
+        answer:
+          'Use the feedback form below or email support@stxry.ai with a description of the issue, your browser/device info, and screenshots if possible.',
       },
-    ]
+    ],
   },
 ];
 
 const CONTACT_METHODS = [
-  { icon: 'MailIcon', title: 'Email Support', description: 'Get help via email', contact: 'support@stxry.ai', color: 'text-spectral-cyan' },
-  { icon: 'MessageCircleIcon', title: 'Community Forums', description: 'Ask the community', contact: 'Visit Forums', href: '/forums', color: 'text-purple-400' },
-  { icon: 'TwitterIcon', title: 'Twitter/X', description: 'Follow for updates', contact: '@StxryAI', href: 'https://twitter.com/StxryAI', color: 'text-blue-400' },
-  { icon: 'DiscIcon', title: 'Discord', description: 'Join our community', contact: 'Join Server', href: 'https://discord.gg/stxryai', color: 'text-indigo-400' },
+  {
+    icon: 'MailIcon',
+    title: 'Email Support',
+    description: 'Get help via email',
+    contact: 'support@stxry.ai',
+    color: 'text-spectral-cyan',
+  },
+  {
+    icon: 'MessageCircleIcon',
+    title: 'Community Forums',
+    description: 'Ask the community',
+    contact: 'Visit Forums',
+    href: '/forums',
+    color: 'text-purple-400',
+  },
+  {
+    icon: 'TwitterIcon',
+    title: 'Twitter/X',
+    description: 'Follow for updates',
+    contact: '@StxryAI',
+    href: 'https://twitter.com/StxryAI',
+    color: 'text-blue-400',
+  },
+  {
+    icon: 'DiscIcon',
+    title: 'Discord',
+    description: 'Join our community',
+    contact: 'Join Server',
+    href: 'https://discord.gg/stxryai',
+    color: 'text-indigo-400',
+  },
 ];
 
 export default function SupportPage() {
@@ -96,7 +135,7 @@ export default function SupportPage() {
     e.preventDefault();
     setIsSubmitting(true);
     // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSubmitting(false);
     setSubmitSuccess(true);
     setFormData({ name: '', email: '', subject: '', message: '' });
@@ -137,7 +176,12 @@ export default function SupportPage() {
                   <h3 className="text-lg font-bold text-aurora mb-1">{method.title}</h3>
                   <p className="text-sm text-text-secondary mb-3">{method.description}</p>
                   {method.href ? (
-                    <a href={method.href} target="_blank" rel="noopener noreferrer" className={`${method.color} hover:underline text-sm font-medium`}>
+                    <a
+                      href={method.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${method.color} hover:underline text-sm font-medium`}
+                    >
                       {method.contact}
                     </a>
                   ) : (
@@ -162,12 +206,14 @@ export default function SupportPage() {
             {FAQ_ITEMS.map((category, catIndex) => (
               <RevealOnScroll key={category.category} threshold={0.1}>
                 <div className="mb-8">
-                  <h3 className="text-xl font-semibold text-purple-400 mb-4">{category.category}</h3>
+                  <h3 className="text-xl font-semibold text-purple-400 mb-4">
+                    {category.category}
+                  </h3>
                   <div className="space-y-3">
                     {category.items.map((item, itemIndex) => {
                       const faqId = `${catIndex}-${itemIndex}`;
                       const isOpen = openFAQ === faqId;
-                      
+
                       return (
                         <motion.div
                           key={faqId}
@@ -179,7 +225,11 @@ export default function SupportPage() {
                           >
                             <span className="font-medium text-text-primary">{item.question}</span>
                             <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-                              <Icon name="ChevronDownIcon" className="text-spectral-cyan" size={20} />
+                              <Icon
+                                name="ChevronDownIcon"
+                                className="text-spectral-cyan"
+                                size={20}
+                              />
                             </motion.div>
                           </button>
                           <AnimatePresence>
@@ -190,9 +240,7 @@ export default function SupportPage() {
                                 exit={{ height: 0, opacity: 0 }}
                                 transition={{ duration: 0.3 }}
                               >
-                                <div className="px-6 pb-4 text-text-secondary">
-                                  {item.answer}
-                                </div>
+                                <div className="px-6 pb-4 text-text-secondary">{item.answer}</div>
                               </motion.div>
                             )}
                           </AnimatePresence>

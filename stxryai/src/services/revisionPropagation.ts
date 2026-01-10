@@ -211,7 +211,7 @@ export class RevisionPropagationService {
       .from('revision_requests')
       .update({
         propagation_status: 'ready',
-        affected_chapters: affectedChapters.map(c => c.id),
+        affected_chapters: affectedChapters.map((c) => c.id),
         required_changes: analysis.requiredChanges,
         ai_analysis: JSON.stringify(analysis),
         updated_at: new Date().toISOString(),
@@ -240,7 +240,11 @@ export class RevisionPropagationService {
     for (const chapter of chapters || []) {
       // Check if chapter is in affected books
       const book = await this.getBookForChapter(chapter.story_id);
-      if (request.affectsBooks.length > 0 && book && !request.affectsBooks.includes(book.bookNumber)) {
+      if (
+        request.affectsBooks.length > 0 &&
+        book &&
+        !request.affectsBooks.includes(book.bookNumber)
+      ) {
         continue;
       }
 
@@ -271,7 +275,9 @@ export class RevisionPropagationService {
       const { data: relationships } = await this.supabase
         .from('character_relationships')
         .select('*')
-        .or(`character_a_id.eq.${request.affectsEntityId},character_b_id.eq.${request.affectsEntityId}`);
+        .or(
+          `character_a_id.eq.${request.affectsEntityId},character_b_id.eq.${request.affectsEntityId}`
+        );
 
       for (const rel of relationships || []) {
         affected.push({
@@ -286,7 +292,9 @@ export class RevisionPropagationService {
       const { data: arcs } = await this.supabase
         .from('narrative_arcs')
         .select('*')
-        .or(`primary_characters.cs.{${request.affectsEntityId}},secondary_characters.cs.{${request.affectsEntityId}}`);
+        .or(
+          `primary_characters.cs.{${request.affectsEntityId}},secondary_characters.cs.{${request.affectsEntityId}}`
+        );
 
       for (const arc of arcs || []) {
         affected.push({
@@ -409,7 +417,7 @@ export class RevisionPropagationService {
     if (oldValues.physicalDescription && newValues.physicalDescription) {
       const oldFeatures = oldValues.physicalDescription.distinguishingFeatures || [];
       const newFeatures = newValues.physicalDescription.distinguishingFeatures || [];
-      
+
       for (const feature of oldFeatures) {
         if (!newFeatures.includes(feature)) {
           const featureLower = feature.toLowerCase();
@@ -574,7 +582,10 @@ export class RevisionPropagationService {
   /**
    * Execute the propagation of changes
    */
-  async executePropagation(requestId: string, options: PropagationOptions = {}): Promise<PropagationResult> {
+  async executePropagation(
+    requestId: string,
+    options: PropagationOptions = {}
+  ): Promise<PropagationResult> {
     await this.updateRequestStatus(requestId, 'in_progress');
 
     const request = await this.getRevisionRequest(requestId);
@@ -596,16 +607,24 @@ export class RevisionPropagationService {
       for (const [chapterId, changes] of Object.entries(request.requiredChanges)) {
         for (const change of changes) {
           const changeResult = await this.applyChange(chapterId, change, options);
-          
+
           if (changeResult.status === 'applied') {
             result.changesApplied++;
             result.appliedChanges.push({ chapterId, change: changeResult });
           } else if (changeResult.status === 'failed') {
             result.changesFailed++;
-            result.failedChanges.push({ chapterId, change: changeResult, error: changeResult.error });
+            result.failedChanges.push({
+              chapterId,
+              change: changeResult,
+              error: changeResult.error,
+            });
           } else {
             result.changesSkipped++;
-            result.skippedChanges.push({ chapterId, change: changeResult, reason: changeResult.reason });
+            result.skippedChanges.push({
+              chapterId,
+              change: changeResult,
+              reason: changeResult.reason,
+            });
           }
         }
       }
@@ -683,17 +702,15 @@ export class RevisionPropagationService {
         .eq('id', chapterId);
 
       // Record the propagated change
-      await this.supabase
-        .from('propagated_changes')
-        .insert({
-          revision_request_id: options.requestId,
-          chapter_id: chapterId,
-          change_type: change.changeType,
-          original_content: chapter.content,
-          updated_content: newContent,
-          status: 'applied',
-          applied_at: new Date().toISOString(),
-        });
+      await this.supabase.from('propagated_changes').insert({
+        revision_request_id: options.requestId,
+        chapter_id: chapterId,
+        change_type: change.changeType,
+        original_content: chapter.content,
+        updated_content: newContent,
+        status: 'applied',
+        applied_at: new Date().toISOString(),
+      });
 
       return {
         status: 'applied',
@@ -714,19 +731,16 @@ export class RevisionPropagationService {
    */
   private async applyEntityUpdate(request: RevisionRequest): Promise<void> {
     const table = this.getTableForEntityType(request.affectsEntityType);
-    
+
     const updateData: Record<string, any> = {};
     for (const [key, value] of Object.entries(request.newValue)) {
       // Convert camelCase to snake_case
-      const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
       updateData[snakeKey] = value;
     }
     updateData.updated_at = new Date().toISOString();
 
-    await this.supabase
-      .from(table)
-      .update(updateData)
-      .eq('id', request.affectsEntityId);
+    await this.supabase.from(table).update(updateData).eq('id', request.affectsEntityId);
   }
 
   // ==========================================================================
@@ -756,14 +770,10 @@ export class RevisionPropagationService {
 
   private async getEntityName(entityType: string, entityId: string): Promise<string | null> {
     const table = this.getTableForEntityType(entityType);
-    const nameField = entityType === 'character' ? 'name' : 
-                      entityType === 'world_element' ? 'name' : 'name';
+    const nameField =
+      entityType === 'character' ? 'name' : entityType === 'world_element' ? 'name' : 'name';
 
-    const { data } = await this.supabase
-      .from(table)
-      .select(nameField)
-      .eq('id', entityId)
-      .single();
+    const { data } = await this.supabase.from(table).select(nameField).eq('id', entityId).single();
 
     return data?.[nameField] || null;
   }
@@ -788,21 +798,28 @@ export class RevisionPropagationService {
     return data?.content || null;
   }
 
-  private extractRelevantContext(content: string, term: string, contextLength: number = 200): string {
+  private extractRelevantContext(
+    content: string,
+    term: string,
+    contextLength: number = 200
+  ): string {
     const index = content.toLowerCase().indexOf(term.toLowerCase());
     if (index === -1) return '';
 
     const start = Math.max(0, index - contextLength / 2);
     const end = Math.min(content.length, index + term.length + contextLength / 2);
-    
+
     let context = content.substring(start, end);
     if (start > 0) context = '...' + context;
     if (end < content.length) context = context + '...';
-    
+
     return context;
   }
 
-  private extractCharacterValues(character: PersistentCharacter, fields: string[]): Record<string, any> {
+  private extractCharacterValues(
+    character: PersistentCharacter,
+    fields: string[]
+  ): Record<string, any> {
     const values: Record<string, any> = {};
     for (const field of fields) {
       values[field] = (character as any)[field];
@@ -833,7 +850,9 @@ export class RevisionPropagationService {
   private calculateRiskLevel(analysis: ImpactAnalysis): 'low' | 'medium' | 'high' | 'critical' {
     const totalChanges = analysis.estimatedChanges;
     const cascadingCount = analysis.cascadingEffects.length;
-    const criticalEffects = analysis.cascadingEffects.filter(e => e.severity === 'critical').length;
+    const criticalEffects = analysis.cascadingEffects.filter(
+      (e) => e.severity === 'critical'
+    ).length;
 
     if (criticalEffects > 0) return 'critical';
     if (totalChanges > 50 || cascadingCount > 10) return 'high';
@@ -927,7 +946,12 @@ export interface AffectedElement {
 }
 
 export interface ChapterChange {
-  changeType: 'text_replacement' | 'dialogue_style' | 'description_update' | 'retcon' | 'consistency_fix';
+  changeType:
+    | 'text_replacement'
+    | 'dialogue_style'
+    | 'description_update'
+    | 'retcon'
+    | 'consistency_fix';
   description: string;
   originalText: string;
   suggestedText: string;
@@ -974,4 +998,3 @@ export interface ChangeResult {
 
 // Export singleton
 export const revisionPropagation = new RevisionPropagationService();
-

@@ -351,9 +351,7 @@ export class FamilyCollaborationManager {
 
     if (uploadError) throw uploadError;
 
-    const { data: urlData } = this.supabase.storage
-      .from('voice-recordings')
-      .getPublicUrl(fileName);
+    const { data: urlData } = this.supabase.storage.from('voice-recordings').getPublicUrl(fileName);
 
     const recording: VoiceRecording = {
       id: crypto.randomUUID(),

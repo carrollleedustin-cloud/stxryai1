@@ -15,7 +15,7 @@ export const metadata: Metadata = {
  */
 export default function StoryReaderPage() {
   return (
-    <Suspense 
+    <Suspense
       fallback={
         <div className="min-h-screen bg-void-absolute flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">

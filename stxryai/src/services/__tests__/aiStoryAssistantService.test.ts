@@ -55,7 +55,9 @@ describe('AIStoryAssistantService', () => {
         }),
       });
 
-      const suggestions = await aiStoryAssistantService.generateSuggestions(userId, content, { storyId });
+      const suggestions = await aiStoryAssistantService.generateSuggestions(userId, content, {
+        storyId,
+      });
 
       expect(aiClient.generateCompletion).toHaveBeenCalled();
       expect(supabase.from).toHaveBeenCalledWith('ai_writing_suggestions');
@@ -98,7 +100,12 @@ describe('AIStoryAssistantService', () => {
         }),
       });
 
-      const analysis = await aiStoryAssistantService.runPlotDoctorAnalysis(userId, storyId, 'full_story', content);
+      const analysis = await aiStoryAssistantService.runPlotDoctorAnalysis(
+        userId,
+        storyId,
+        'full_story',
+        content
+      );
 
       expect(analysis.id).toBe('analysis-1');
       expect(aiClient.generateCompletion).toHaveBeenCalled();
@@ -126,7 +133,11 @@ describe('AIStoryAssistantService', () => {
         }),
       });
 
-      const ideas = await aiStoryAssistantService.generateIdeas(userId, 'story_concept', 'Space adventures');
+      const ideas = await aiStoryAssistantService.generateIdeas(
+        userId,
+        'story_concept',
+        'Space adventures'
+      );
 
       expect(ideas.id).toBe('idea-1');
       expect(aiClient.generateCompletion).toHaveBeenCalled();

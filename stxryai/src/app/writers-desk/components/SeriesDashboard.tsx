@@ -34,7 +34,7 @@ export default function SeriesDashboard({
   onCreateSeries,
   onRefresh,
 }: SeriesDashboardProps) {
-  const selectedSeries = series.find(s => s.id === selectedSeriesId);
+  const selectedSeries = series.find((s) => s.id === selectedSeriesId);
 
   if (series.length === 0) {
     return (
@@ -50,7 +50,8 @@ export default function SeriesDashboard({
           </h2>
           <p className="text-text-secondary mb-8">
             Create your first story series to unlock powerful features like persistent characters,
-            worldbuilding archives, canon enforcement, and AI-assisted writing with full context awareness.
+            worldbuilding archives, canon enforcement, and AI-assisted writing with full context
+            awareness.
           </p>
           <button
             onClick={onCreateSeries}
@@ -85,9 +86,7 @@ export default function SeriesDashboard({
                 {s.coverImageUrl ? (
                   <img src={s.coverImageUrl} alt={s.title} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl">
-                    📖
-                  </div>
+                  <div className="w-full h-full flex items-center justify-center text-3xl">📖</div>
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -96,16 +95,22 @@ export default function SeriesDashboard({
                   <span className="text-xs px-2 py-0.5 rounded-full bg-spectral-violet/20 text-spectral-violet">
                     {s.genre}
                   </span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    s.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                    s.status === 'completed' ? 'bg-spectral-gold/20 text-spectral-gold' :
-                    'bg-void-mist text-text-tertiary'
-                  }`}>
+                  <span
+                    className={`text-xs px-2 py-0.5 rounded-full ${
+                      s.status === 'active'
+                        ? 'bg-green-500/20 text-green-400'
+                        : s.status === 'completed'
+                          ? 'bg-spectral-gold/20 text-spectral-gold'
+                          : 'bg-void-mist text-text-tertiary'
+                    }`}
+                  >
                     {s.status}
                   </span>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-text-tertiary">
-                  <div>📚 {s.bookCount}/{s.targetBooks} books</div>
+                  <div>
+                    📚 {s.bookCount}/{s.targetBooks} books
+                  </div>
                   <div>👥 {s.characterCount} chars</div>
                   <div>🌍 {s.worldElementCount} elements</div>
                   <div>📈 {s.activeArcs} arcs</div>
@@ -160,10 +165,30 @@ export default function SeriesDashboard({
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: '📝', label: 'Continue Writing', desc: 'Pick up where you left off', action: 'write' },
-              { icon: '👤', label: 'Add Character', desc: 'Create a new persistent character', action: 'character' },
-              { icon: '🗺️', label: 'New Location', desc: 'Add to your worldbuilding', action: 'location' },
-              { icon: '📊', label: 'View Timeline', desc: 'See your story events', action: 'timeline' },
+              {
+                icon: '📝',
+                label: 'Continue Writing',
+                desc: 'Pick up where you left off',
+                action: 'write',
+              },
+              {
+                icon: '👤',
+                label: 'Add Character',
+                desc: 'Create a new persistent character',
+                action: 'character',
+              },
+              {
+                icon: '🗺️',
+                label: 'New Location',
+                desc: 'Add to your worldbuilding',
+                action: 'location',
+              },
+              {
+                icon: '📊',
+                label: 'View Timeline',
+                desc: 'See your story events',
+                action: 'timeline',
+              },
             ].map((item, i) => (
               <motion.button
                 key={item.action}
@@ -185,7 +210,9 @@ export default function SeriesDashboard({
           <div className="mt-6 p-4 rounded-lg bg-void-depth border border-void-mist">
             <h3 className="font-semibold text-text-secondary mb-3">Recent Activity</h3>
             <div className="space-y-2 text-sm text-text-tertiary">
-              <p className="italic">Activity tracking will appear here as you work on your series...</p>
+              <p className="italic">
+                Activity tracking will appear here as you work on your series...
+              </p>
             </div>
           </div>
         </motion.div>
@@ -193,4 +220,3 @@ export default function SeriesDashboard({
     </div>
   );
 }
-

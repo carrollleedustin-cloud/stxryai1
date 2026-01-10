@@ -39,26 +39,140 @@ export class BingoService {
   public generateBoard(userId: string, size: 3 | 4 = 3): BingoBoard {
     const tiles: BingoTile[] = [];
     const tilePool: Omit<BingoTile, 'id' | 'current' | 'completed'>[] = [
-      { label: 'Read a Story', description: 'Complete 1 story', type: 'read', target: 1, xpReward: 50 },
-      { label: 'Quick Creator', description: 'Start a new draft', type: 'create', target: 1, xpReward: 30 },
-      { label: 'Word Smith', description: 'Write 500 words', type: 'create', target: 500, xpReward: 100 },
-      { label: 'Social Butterfly', description: 'Share a story link', type: 'share', target: 1, xpReward: 40 },
-      { label: 'Feedback Loop', description: 'Post 2 comments', type: 'social', target: 2, xpReward: 60 },
-      { label: 'Pathfinder', description: 'Make 10 choices', type: 'read', target: 10, xpReward: 50 },
-      { label: 'Deep Reader', description: 'Read for 15 minutes', type: 'read', target: 15, xpReward: 80 },
-      { label: 'Trendsetter', description: 'Get 5 likes on your story', type: 'social', target: 5, xpReward: 150 },
-      { label: 'Diverse Tastes', description: 'Read stories from 2 genres', type: 'read', target: 2, xpReward: 70 },
-      { label: 'Daily Habit', description: 'Log in 2 days in a row', type: 'special', target: 2, xpReward: 50 },
-      { label: 'Cover Artist', description: 'Generate a story cover', type: 'create', target: 1, xpReward: 40 },
-      { label: 'Conversation Starter', description: 'Reply to a comment', type: 'social', target: 1, xpReward: 30 },
+      {
+        label: 'Read a Story',
+        description: 'Complete 1 story',
+        type: 'read',
+        target: 1,
+        xpReward: 50,
+      },
+      {
+        label: 'Quick Creator',
+        description: 'Start a new draft',
+        type: 'create',
+        target: 1,
+        xpReward: 30,
+      },
+      {
+        label: 'Word Smith',
+        description: 'Write 500 words',
+        type: 'create',
+        target: 500,
+        xpReward: 100,
+      },
+      {
+        label: 'Social Butterfly',
+        description: 'Share a story link',
+        type: 'share',
+        target: 1,
+        xpReward: 40,
+      },
+      {
+        label: 'Feedback Loop',
+        description: 'Post 2 comments',
+        type: 'social',
+        target: 2,
+        xpReward: 60,
+      },
+      {
+        label: 'Pathfinder',
+        description: 'Make 10 choices',
+        type: 'read',
+        target: 10,
+        xpReward: 50,
+      },
+      {
+        label: 'Deep Reader',
+        description: 'Read for 15 minutes',
+        type: 'read',
+        target: 15,
+        xpReward: 80,
+      },
+      {
+        label: 'Trendsetter',
+        description: 'Get 5 likes on your story',
+        type: 'social',
+        target: 5,
+        xpReward: 150,
+      },
+      {
+        label: 'Diverse Tastes',
+        description: 'Read stories from 2 genres',
+        type: 'read',
+        target: 2,
+        xpReward: 70,
+      },
+      {
+        label: 'Daily Habit',
+        description: 'Log in 2 days in a row',
+        type: 'special',
+        target: 2,
+        xpReward: 50,
+      },
+      {
+        label: 'Cover Artist',
+        description: 'Generate a story cover',
+        type: 'create',
+        target: 1,
+        xpReward: 40,
+      },
+      {
+        label: 'Conversation Starter',
+        description: 'Reply to a comment',
+        type: 'social',
+        target: 1,
+        xpReward: 30,
+      },
       { label: 'Critique', description: 'Rate 3 stories', type: 'read', target: 3, xpReward: 40 },
-      { label: 'Marathoner', description: 'Read 3 stories in one session', type: 'read', target: 3, xpReward: 120 },
-      { label: 'Niche Explorer', description: 'Read a story with < 100 views', type: 'read', target: 1, xpReward: 60 },
-      { label: 'Early Adopter', description: 'Follow a new creator', type: 'social', target: 1, xpReward: 30 },
-      { label: 'Group Story', description: 'Contribute to a collaborative story', type: 'social', target: 1, xpReward: 100 },
-      { label: 'Story Gift', description: 'Gift a story access to a friend', type: 'social', target: 1, xpReward: 150 },
-      { label: 'Guild Member', description: 'Join or create a story club', type: 'social', target: 1, xpReward: 50 },
-      { label: 'Fan Favorite', description: 'Get shared 3 times by others', type: 'special', target: 3, xpReward: 200 },
+      {
+        label: 'Marathoner',
+        description: 'Read 3 stories in one session',
+        type: 'read',
+        target: 3,
+        xpReward: 120,
+      },
+      {
+        label: 'Niche Explorer',
+        description: 'Read a story with < 100 views',
+        type: 'read',
+        target: 1,
+        xpReward: 60,
+      },
+      {
+        label: 'Early Adopter',
+        description: 'Follow a new creator',
+        type: 'social',
+        target: 1,
+        xpReward: 30,
+      },
+      {
+        label: 'Group Story',
+        description: 'Contribute to a collaborative story',
+        type: 'social',
+        target: 1,
+        xpReward: 100,
+      },
+      {
+        label: 'Story Gift',
+        description: 'Gift a story access to a friend',
+        type: 'social',
+        target: 1,
+        xpReward: 150,
+      },
+      {
+        label: 'Guild Member',
+        description: 'Join or create a story club',
+        type: 'social',
+        target: 1,
+        xpReward: 50,
+      },
+      {
+        label: 'Fan Favorite',
+        description: 'Get shared 3 times by others',
+        type: 'special',
+        target: 3,
+        xpReward: 200,
+      },
     ];
 
     // Randomly pick tiles for the board
@@ -91,14 +205,18 @@ export class BingoService {
   /**
    * Updates progress on a specific tile type
    */
-  public updateTileProgress(board: BingoBoard, type: BingoTile['type'], amount: number = 1): BingoBoard {
-    const updatedTiles = board.tiles.map(tile => {
+  public updateTileProgress(
+    board: BingoBoard,
+    type: BingoTile['type'],
+    amount: number = 1
+  ): BingoBoard {
+    const updatedTiles = board.tiles.map((tile) => {
       if (tile.type === type && !tile.completed) {
         const newCurrent = tile.current + amount;
         return {
           ...tile,
           current: newCurrent,
-          completed: newCurrent >= tile.target
+          completed: newCurrent >= tile.target,
         };
       }
       return tile;
@@ -106,7 +224,7 @@ export class BingoService {
 
     return {
       ...board,
-      tiles: updatedTiles
+      tiles: updatedTiles,
     };
   }
 
@@ -126,7 +244,7 @@ export class BingoService {
 
     // Check rows
     for (let i = 0; i < size; i++) {
-      if (grid[i].every(val => val)) return true;
+      if (grid[i].every((val) => val)) return true;
     }
 
     // Check columns

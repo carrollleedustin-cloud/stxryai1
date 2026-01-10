@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  milestoneCelebrationService, 
+import {
+  milestoneCelebrationService,
   CelebrationEvent,
-  Milestone 
+  Milestone,
 } from '@/services/milestoneCelebrationService';
 
 // ========================================
@@ -140,24 +140,26 @@ function Particle({ type, delay }: ParticleProps) {
 
 function CelebrationBackground({ type }: { type: CelebrationEvent['animationType'] }) {
   const particleCount = type === 'epic' ? 100 : type === 'fireworks' ? 30 : 50;
-  const particleType = type === 'fireworks' || type === 'epic' ? 'fireworks' : type === 'sparkle' || type === 'glow' ? 'sparkle' : 'confetti';
+  const particleType =
+    type === 'fireworks' || type === 'epic'
+      ? 'fireworks'
+      : type === 'sparkle' || type === 'glow'
+        ? 'sparkle'
+        : 'confetti';
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       {[...Array(particleCount)].map((_, i) => (
-        <Particle 
-          key={i} 
-          type={particleType}
-          delay={i * 0.02} 
-        />
+        <Particle key={i} type={particleType} delay={i * 0.02} />
       ))}
-      
+
       {/* Glow effect for epic celebrations */}
       {(type === 'epic' || type === 'glow') && (
         <motion.div
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(183, 148, 246, 0.3), transparent 70%)',
+            background:
+              'radial-gradient(circle at 50% 50%, rgba(183, 148, 246, 0.3), transparent 70%)',
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 0.8, 0.4] }}
@@ -172,7 +174,7 @@ function CelebrationBackground({ type }: { type: CelebrationEvent['animationType
 // MAIN COMPONENT
 // ========================================
 
-export function MilestoneCelebration({ 
+export function MilestoneCelebration({
   className = '',
   onClose,
   onClaimReward,
@@ -184,7 +186,7 @@ export function MilestoneCelebration({
   useEffect(() => {
     const unsubscribe = milestoneCelebrationService.onCelebration((event) => {
       if (currentCelebration) {
-        setQueue(prev => [...prev, event]);
+        setQueue((prev) => [...prev, event]);
       } else {
         setCurrentCelebration(event);
       }
@@ -204,7 +206,7 @@ export function MilestoneCelebration({
     // Show next celebration or close
     if (queue.length > 0) {
       setCurrentCelebration(queue[0]);
-      setQueue(prev => prev.slice(1));
+      setQueue((prev) => prev.slice(1));
     } else {
       setCurrentCelebration(null);
       onClose?.();
@@ -249,15 +251,18 @@ export function MilestoneCelebration({
           exit={{ scale: 0.8, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 20, stiffness: 300 }}
         >
-          <div className={`
+          <div
+            className={`
             rounded-2xl overflow-hidden
-            ${animationType === 'epic' 
-              ? 'bg-gradient-to-br from-yellow-500/20 via-void-900 to-purple-500/20 border-2 border-yellow-500/50'
-              : animationType === 'fireworks'
-                ? 'bg-gradient-to-br from-pink-500/20 via-void-900 to-cyan-500/20 border border-pink-500/30'
-                : 'bg-void-900 border border-void-700'
+            ${
+              animationType === 'epic'
+                ? 'bg-gradient-to-br from-yellow-500/20 via-void-900 to-purple-500/20 border-2 border-yellow-500/50'
+                : animationType === 'fireworks'
+                  ? 'bg-gradient-to-br from-pink-500/20 via-void-900 to-cyan-500/20 border border-pink-500/30'
+                  : 'bg-void-900 border border-void-700'
             }
-          `}>
+          `}
+          >
             {/* Icon */}
             <div className="pt-8 pb-4 text-center">
               <motion.div
@@ -274,9 +279,11 @@ export function MilestoneCelebration({
             <div className="px-6 pb-6 text-center">
               <motion.h2
                 className={`text-2xl font-bold mb-2 ${
-                  animationType === 'epic' ? 'text-yellow-400' :
-                  animationType === 'legendary' ? 'text-purple-400' :
-                  'text-void-100'
+                  animationType === 'epic'
+                    ? 'text-yellow-400'
+                    : animationType === 'legendary'
+                      ? 'text-purple-400'
+                      : 'text-void-100'
                 }`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -328,9 +335,10 @@ export function MilestoneCelebration({
                   onClick={handleClaimReward}
                   className={`
                     flex-1 px-4 py-3 rounded-xl font-semibold transition-all
-                    ${animationType === 'epic'
-                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-void-950 hover:from-yellow-400 hover:to-orange-400'
-                      : 'bg-gradient-to-r from-spectral-cyan to-spectral-violet text-void-950 hover:from-spectral-cyan/90 hover:to-spectral-violet/90'
+                    ${
+                      animationType === 'epic'
+                        ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-void-950 hover:from-yellow-400 hover:to-orange-400'
+                        : 'bg-gradient-to-r from-spectral-cyan to-spectral-violet text-void-950 hover:from-spectral-cyan/90 hover:to-spectral-violet/90'
                     }
                   `}
                   whileHover={{ scale: 1.02 }}
@@ -369,17 +377,23 @@ interface MilestoneProgressProps {
   className?: string;
 }
 
-export function MilestoneProgress({ milestone, currentValue, className = '' }: MilestoneProgressProps) {
+export function MilestoneProgress({
+  milestone,
+  currentValue,
+  className = '',
+}: MilestoneProgressProps) {
   const progress = Math.min(100, (currentValue / milestone.value) * 100);
   const isComplete = currentValue >= milestone.value;
 
   return (
     <div className={`p-3 rounded-lg bg-void-800/50 border border-void-700/50 ${className}`}>
       <div className="flex items-center gap-3">
-        <div className={`
+        <div
+          className={`
           w-10 h-10 rounded-lg flex items-center justify-center text-xl
           ${isComplete ? 'bg-green-500/20' : 'bg-void-700'}
-        `}>
+        `}
+        >
           {isComplete ? '✓' : milestone.icon}
         </div>
         <div className="flex-1 min-w-0">
@@ -411,4 +425,3 @@ export function MilestoneProgress({ milestone, currentValue, className = '' }: M
 }
 
 export default MilestoneCelebration;
-

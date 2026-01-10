@@ -75,7 +75,7 @@ const MILESTONES: Omit<Milestone, 'id' | 'createdAt'>[] = [
     xpReward: 100,
     badgeId: 'first-story',
   },
-  
+
   // Stories read milestones
   {
     type: 'stories_read',
@@ -383,7 +383,7 @@ class MilestoneCelebrationService {
     const supabase = this.getSupabase();
 
     // Get milestones of this type that the user hasn't achieved
-    const relevantMilestones = MILESTONES.filter(m => m.type === type && m.value <= currentValue);
+    const relevantMilestones = MILESTONES.filter((m) => m.type === type && m.value <= currentValue);
 
     // Get user's already achieved milestones
     const { data: achievedMilestones } = await supabase
@@ -391,7 +391,7 @@ class MilestoneCelebrationService {
       .select('milestone_id')
       .eq('user_id', userId);
 
-    const achievedIds = new Set((achievedMilestones || []).map(m => m.milestone_id));
+    const achievedIds = new Set((achievedMilestones || []).map((m) => m.milestone_id));
 
     // Find new milestones
     const newEvents: CelebrationEvent[] = [];
@@ -399,7 +399,7 @@ class MilestoneCelebrationService {
     for (const milestone of relevantMilestones) {
       // Check if already achieved (by type+value since we don't have real IDs)
       const milestoneKey = `${milestone.type}-${milestone.value}`;
-      
+
       const { data: existing } = await supabase
         .from('milestones')
         .select('id')
@@ -410,7 +410,7 @@ class MilestoneCelebrationService {
       if (existing && !achievedIds.has(existing.id)) {
         // New milestone achieved!
         await this.recordMilestone(userId, existing.id);
-        
+
         const event: CelebrationEvent = {
           milestone: { ...milestone, id: existing.id, createdAt: new Date().toISOString() },
           isNew: true,
@@ -479,10 +479,12 @@ class MilestoneCelebrationService {
 
     const { data, error } = await supabase
       .from('user_milestones')
-      .select(`
+      .select(
+        `
         *,
         milestones (*)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('achieved_at', { ascending: false });
 
@@ -506,7 +508,7 @@ class MilestoneCelebrationService {
       .select('milestone_id')
       .eq('user_id', userId);
 
-    const achievedIds = new Set((achieved || []).map(m => m.milestone_id));
+    const achievedIds = new Set((achieved || []).map((m) => m.milestone_id));
 
     // Get user stats to find relevant next milestones
     const { data: stats } = await supabase
@@ -541,13 +543,16 @@ class MilestoneCelebrationService {
     return nextMilestones
       .sort((a, b) => a.distance - b.distance)
       .slice(0, limit)
-      .map(m => m.milestone);
+      .map((m) => m.milestone);
   }
 
   /**
    * Claim milestone reward
    */
-  async claimMilestoneReward(userId: string, milestoneId: string): Promise<{ success: boolean; xpAwarded: number; badgeId?: string }> {
+  async claimMilestoneReward(
+    userId: string,
+    milestoneId: string
+  ): Promise<{ success: boolean; xpAwarded: number; badgeId?: string }> {
     const supabase = this.getSupabase();
 
     // Get user milestone
@@ -664,7 +669,7 @@ class MilestoneCelebrationService {
 
   private triggerCelebration(event: CelebrationEvent): void {
     this.pendingCelebrations.push(event);
-    this.celebrationCallbacks.forEach(callback => callback(event));
+    this.celebrationCallbacks.forEach((callback) => callback(event));
   }
 
   private getCurrentValueForType(type: MilestoneType, stats: any): number {
@@ -697,18 +702,20 @@ class MilestoneCelebrationService {
       id: data.id,
       userId: data.user_id,
       milestoneId: data.milestone_id,
-      milestone: data.milestones ? {
-        id: data.milestones.id,
-        type: data.milestones.type,
-        value: data.milestones.value,
-        title: data.milestones.title,
-        description: data.milestones.description,
-        icon: data.milestones.icon,
-        celebrationType: data.milestones.celebration_type,
-        xpReward: data.milestones.xp_reward,
-        badgeId: data.milestones.badge_id,
-        createdAt: data.milestones.created_at,
-      } : undefined,
+      milestone: data.milestones
+        ? {
+            id: data.milestones.id,
+            type: data.milestones.type,
+            value: data.milestones.value,
+            title: data.milestones.title,
+            description: data.milestones.description,
+            icon: data.milestones.icon,
+            celebrationType: data.milestones.celebration_type,
+            xpReward: data.milestones.xp_reward,
+            badgeId: data.milestones.badge_id,
+            createdAt: data.milestones.created_at,
+          }
+        : undefined,
       achievedAt: data.achieved_at,
       celebrated: data.celebrated,
       rewardClaimed: data.reward_claimed,
@@ -717,4 +724,3 @@ class MilestoneCelebrationService {
 }
 
 export const milestoneCelebrationService = new MilestoneCelebrationService();
-

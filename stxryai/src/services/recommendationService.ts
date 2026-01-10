@@ -204,10 +204,7 @@ export const recommendationService = {
   /**
    * Get "Because you read X" recommendations
    */
-  async getSimilarStories(
-    storyId: string,
-    limit: number = 5
-  ): Promise<RecommendedStory[]> {
+  async getSimilarStories(storyId: string, limit: number = 5): Promise<RecommendedStory[]> {
     // Get the source story
     const { data: sourceStory } = await supabase
       .from('stories')
@@ -244,10 +241,7 @@ export const recommendationService = {
   /**
    * Get friend activity recommendations
    */
-  async getFriendsReading(
-    userId: string,
-    limit: number = 5
-  ): Promise<RecommendedStory[]> {
+  async getFriendsReading(userId: string, limit: number = 5): Promise<RecommendedStory[]> {
     // Get user's friends/following
     const { data: following } = await supabase
       .from('user_follows')
@@ -304,9 +298,7 @@ export const recommendationService = {
    * Get completion-based recommendations
    * "You're almost done with genre X, try these next"
    */
-  async getCompletionRecommendations(
-    userId: string
-  ): Promise<RecommendedStory[]> {
+  async getCompletionRecommendations(userId: string): Promise<RecommendedStory[]> {
     // Get recently completed stories
     const { data: completed } = await supabase
       .from('user_progress')
@@ -355,8 +347,7 @@ export const recommendationService = {
     url: string;
     text: string;
   } {
-    const baseMessage =
-      data.custom_message || `Check out "${data.story_title}" on StxryAI!`;
+    const baseMessage = data.custom_message || `Check out "${data.story_title}" on StxryAI!`;
     const shareUrl = encodeURIComponent(data.story_url);
     const shareText = encodeURIComponent(baseMessage);
 
@@ -380,12 +371,8 @@ export const recommendationService = {
         };
 
       case 'email':
-        const subject = encodeURIComponent(
-          `Check out this story: ${data.story_title}`
-        );
-        const body = encodeURIComponent(
-          `${baseMessage}\n\nRead it here: ${data.story_url}`
-        );
+        const subject = encodeURIComponent(`Check out this story: ${data.story_title}`);
+        const body = encodeURIComponent(`${baseMessage}\n\nRead it here: ${data.story_url}`);
         return {
           url: `mailto:?subject=${subject}&body=${body}`,
           text: baseMessage,
@@ -439,10 +426,7 @@ export const recommendationService = {
   /**
    * Save user preferences for better recommendations
    */
-  async saveUserPreferences(
-    userId: string,
-    preferences: UserPreferences
-  ): Promise<boolean> {
+  async saveUserPreferences(userId: string, preferences: UserPreferences): Promise<boolean> {
     const { error } = await supabase.from('user_preferences').upsert({
       user_id: userId,
       ...preferences,

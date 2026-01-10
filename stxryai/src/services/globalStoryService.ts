@@ -140,7 +140,9 @@ class GlobalStoryService {
     } = {}
   ): Promise<GlobalStory> {
     const supabase = this.getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Not authenticated');
 
@@ -327,7 +329,9 @@ class GlobalStoryService {
     presetIndex?: number
   ): Promise<{ success: boolean; message: string; actionId?: string }> {
     const supabase = this.getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Not authenticated');
 
@@ -353,18 +357,17 @@ class GlobalStoryService {
   /**
    * Get actions for a chapter
    */
-  async getChapterActions(
-    chapterId: string,
-    userId?: string
-  ): Promise<GlobalStoryAction[]> {
+  async getChapterActions(chapterId: string, userId?: string): Promise<GlobalStoryAction[]> {
     const supabase = this.getSupabase();
 
     const { data: actions, error } = await supabase
       .from('global_story_actions')
-      .select(`
+      .select(
+        `
         *,
         users:user_id (username, avatar_url)
-      `)
+      `
+      )
       .eq('chapter_id', chapterId)
       .order('vote_count', { ascending: false });
 
@@ -377,10 +380,10 @@ class GlobalStoryService {
         .from('global_story_action_votes')
         .select('action_id')
         .eq('user_id', userId);
-      userVotes = (votes || []).map(v => v.action_id);
+      userVotes = (votes || []).map((v) => v.action_id);
     }
 
-    return (actions || []).map(a => ({
+    return (actions || []).map((a) => ({
       ...this.mapAction(a),
       hasUserVoted: userVotes.includes(a.id),
     }));
@@ -391,7 +394,9 @@ class GlobalStoryService {
    */
   async voteForAction(actionId: string): Promise<void> {
     const supabase = this.getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Not authenticated');
 
@@ -409,7 +414,9 @@ class GlobalStoryService {
    */
   async unvoteAction(actionId: string): Promise<void> {
     const supabase = this.getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Not authenticated');
 
@@ -450,10 +457,12 @@ class GlobalStoryService {
     // Top contributors
     const { data: contributors } = await supabase
       .from('global_story_user_cooldowns')
-      .select(`
+      .select(
+        `
         total_contributions,
         users:user_id (id, username, avatar_url)
-      `)
+      `
+      )
       .eq('global_story_id', storyId)
       .order('total_contributions', { ascending: false })
       .limit(10);
@@ -463,7 +472,7 @@ class GlobalStoryService {
       uniqueContributors: story?.unique_contributors || 0,
       chapterCount: story?.chapter_count || 0,
       currentChapterActions,
-      topContributors: (contributors || []).map(c => ({
+      topContributors: (contributors || []).map((c) => ({
         userId: c.users?.id,
         username: c.users?.username || 'Anonymous',
         avatarUrl: c.users?.avatar_url,
@@ -529,4 +538,3 @@ class GlobalStoryService {
 }
 
 export const globalStoryService = new GlobalStoryService();
-

@@ -59,9 +59,12 @@ class ServiceWorkerManager {
       };
 
       // Check for updates periodically
-      setInterval(() => {
-        registration.update();
-      }, 60 * 60 * 1000); // Every hour
+      setInterval(
+        () => {
+          registration.update();
+        },
+        60 * 60 * 1000
+      ); // Every hour
 
       return true;
     } catch (error) {
@@ -113,9 +116,11 @@ class ServiceWorkerManager {
     }
 
     try {
-      await (this.registration as ServiceWorkerRegistration & {
-        sync: { register: (tag: string) => Promise<void> };
-      }).sync.register(tag);
+      await (
+        this.registration as ServiceWorkerRegistration & {
+          sync: { register: (tag: string) => Promise<void> };
+        }
+      ).sync.register(tag);
       return true;
     } catch (error) {
       console.error('Background sync registration failed:', error);

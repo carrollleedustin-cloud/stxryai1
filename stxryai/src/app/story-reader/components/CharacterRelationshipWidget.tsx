@@ -10,7 +10,15 @@ export interface CharacterRelationship {
   avatar?: string;
   dynamic: string;
   affinity: number; // 0-100
-  status: 'Stranger' | 'Acquaintance' | 'Friend' | 'Ally' | 'Confidant' | 'Soulmate' | 'Rival' | 'Enemy';
+  status:
+    | 'Stranger'
+    | 'Acquaintance'
+    | 'Friend'
+    | 'Ally'
+    | 'Confidant'
+    | 'Soulmate'
+    | 'Rival'
+    | 'Enemy';
   lastEncounter: string;
 }
 
@@ -19,21 +27,31 @@ interface CharacterRelationshipWidgetProps {
   theme?: 'void' | 'sepia' | 'light';
 }
 
-export function CharacterRelationshipWidget({ characters, theme = 'void' }: CharacterRelationshipWidgetProps) {
+export function CharacterRelationshipWidget({
+  characters,
+  theme = 'void',
+}: CharacterRelationshipWidgetProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Soulmate': return 'text-pink-500';
-      case 'Ally': return 'text-blue-500';
-      case 'Enemy': return 'text-red-500';
-      case 'Rival': return 'text-orange-500';
-      default: return 'text-spectral-cyan';
+      case 'Soulmate':
+        return 'text-pink-500';
+      case 'Ally':
+        return 'text-blue-500';
+      case 'Enemy':
+        return 'text-red-500';
+      case 'Rival':
+        return 'text-orange-500';
+      default:
+        return 'text-spectral-cyan';
     }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
-        <h3 className={`text-sm font-ui tracking-widest uppercase flex items-center gap-2 ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-ghost'}`}>
+        <h3
+          className={`text-sm font-ui tracking-widest uppercase flex items-center gap-2 ${theme === 'light' ? 'text-[#6b4423]/60' : 'text-text-ghost'}`}
+        >
           <Users size={16} />
           Key Relationships
         </h3>
@@ -46,8 +64,8 @@ export function CharacterRelationshipWidget({ characters, theme = 'void' }: Char
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={`p-4 rounded-xl border transition-all ${
-              theme === 'light' 
-                ? 'bg-[#f0ebe0] border-[#6b4423]/10' 
+              theme === 'light'
+                ? 'bg-[#f0ebe0] border-[#6b4423]/10'
                 : 'bg-void-elevated border-membrane'
             }`}
           >
@@ -59,15 +77,17 @@ export function CharacterRelationshipWidget({ characters, theme = 'void' }: Char
                   <span className="text-xl font-literary">{char.name[0]}</span>
                 )}
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <h4 className="font-bold text-foreground truncate">{char.name}</h4>
-                  <span className={`text-[10px] font-bold uppercase ${getStatusColor(char.status)}`}>
+                  <span
+                    className={`text-[10px] font-bold uppercase ${getStatusColor(char.status)}`}
+                  >
                     {char.status}
                   </span>
                 </div>
-                
+
                 <p className="text-xs text-muted-foreground mb-3 line-clamp-1 italic">
                   "{char.dynamic}"
                 </p>
@@ -75,7 +95,10 @@ export function CharacterRelationshipWidget({ characters, theme = 'void' }: Char
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-[10px]">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Heart size={10} className={char.affinity > 50 ? 'text-red-500' : 'text-gray-400'} />
+                      <Heart
+                        size={10}
+                        className={char.affinity > 50 ? 'text-red-500' : 'text-gray-400'}
+                      />
                       Affinity
                     </span>
                     <span className="text-foreground font-mono">{char.affinity}%</span>

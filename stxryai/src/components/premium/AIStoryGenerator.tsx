@@ -127,165 +127,166 @@ export function AIStoryGenerator({ onStoryGenerated }: AIStoryGeneratorProps) {
           </span>
         </div>
 
-      {/* Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-3">Genre</label>
-          <div className="flex flex-wrap gap-2">
-            {genres.map((genre) => (
-              <motion.button
-                key={genre}
-                onClick={() => setOptions({ ...options, genre: genre.toLowerCase() })}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  options.genre === genre.toLowerCase()
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground hover:bg-muted/80'
-                }`}
-              >
-                {genre}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-3">Tone</label>
-          <div className="flex flex-wrap gap-2">
-            {tones.map((tone) => (
-              <motion.button
-                key={tone}
-                onClick={() => setOptions({ ...options, tone: tone.toLowerCase() })}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  options.tone === tone.toLowerCase()
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground hover:bg-muted/80'
-                }`}
-              >
-                {tone}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-3">Length</label>
-          <div className="flex gap-2">
-            {lengths.map((length) => (
-              <motion.button
-                key={length.id}
-                onClick={() => setOptions({ ...options, length: length.id })}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
-                  options.length === length.id
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground hover:bg-muted/80'
-                }`}
-              >
-                <div>{length.label}</div>
-                <div className="text-xs opacity-75">{length.words} words</div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-3">Complexity</label>
-          <div className="flex gap-2">
-            {(['simple', 'moderate', 'complex'] as const).map((comp) => (
-              <motion.button
-                key={comp}
-                onClick={() => setOptions({ ...options, complexity: comp })}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
-                  options.complexity === comp
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground hover:bg-muted/80'
-                }`}
-              >
-                {comp.charAt(0).toUpperCase() + comp.slice(1)}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Generate Button */}
-      <motion.button
-        onClick={generateStory}
-        disabled={isGenerating}
-        whileHover={!isGenerating ? { scale: 1.02 } : {}}
-        whileTap={!isGenerating ? { scale: 0.98 } : {}}
-        className={`w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-3`}
-      >
-        {isGenerating ? (
-          <>
-            <motion.div
-              className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            />
-            <span>Generating Story...</span>
-          </>
-        ) : (
-          <>
-            <Icon name="SparklesIcon" size={24} />
-            <span>Generate Story</span>
-          </>
-        )}
-      </motion.button>
-
-      {/* Progress */}
-      <AnimatePresence>
-        {isGenerating && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-          >
-            <AIStreamingProgress
-              isStreaming={isGenerating}
-              progress={progress}
-              message="AI is crafting your story..."
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Generated Story */}
-      <AnimatePresence>
-        {generatedStory && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800"
-          >
-            <h3 className="text-2xl font-bold text-foreground mb-4">{generatedStory.title}</h3>
-            <div className="prose dark:prose-invert max-w-none mb-4">
-              <p className="text-foreground whitespace-pre-wrap leading-relaxed">
-                {generatedStory.content}
-              </p>
+        {/* Options */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-3">Genre</label>
+            <div className="flex flex-wrap gap-2">
+              {genres.map((genre) => (
+                <motion.button
+                  key={genre}
+                  onClick={() => setOptions({ ...options, genre: genre.toLowerCase() })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    options.genre === genre.toLowerCase()
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {genre}
+                </motion.button>
+              ))}
             </div>
-            {generatedStory.choices && (
-              <div className="mt-4 pt-4 border-t border-purple-200 dark:border-purple-800">
-                <h4 className="font-semibold text-foreground mb-2">Story Choices:</h4>
-                <ul className="space-y-2">
-                  {generatedStory.choices.map((choice, idx) => (
-                    <li key={idx} className="text-foreground">• {choice}</li>
-                  ))}
-                </ul>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-3">Tone</label>
+            <div className="flex flex-wrap gap-2">
+              {tones.map((tone) => (
+                <motion.button
+                  key={tone}
+                  onClick={() => setOptions({ ...options, tone: tone.toLowerCase() })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    options.tone === tone.toLowerCase()
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {tone}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-3">Length</label>
+            <div className="flex gap-2">
+              {lengths.map((length) => (
+                <motion.button
+                  key={length.id}
+                  onClick={() => setOptions({ ...options, length: length.id })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                    options.length === length.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  <div>{length.label}</div>
+                  <div className="text-xs opacity-75">{length.words} words</div>
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-3">Complexity</label>
+            <div className="flex gap-2">
+              {(['simple', 'moderate', 'complex'] as const).map((comp) => (
+                <motion.button
+                  key={comp}
+                  onClick={() => setOptions({ ...options, complexity: comp })}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
+                    options.complexity === comp
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  {comp.charAt(0).toUpperCase() + comp.slice(1)}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Generate Button */}
+        <motion.button
+          onClick={generateStory}
+          disabled={isGenerating}
+          whileHover={!isGenerating ? { scale: 1.02 } : {}}
+          whileTap={!isGenerating ? { scale: 0.98 } : {}}
+          className={`w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-3`}
+        >
+          {isGenerating ? (
+            <>
+              <motion.div
+                className="w-6 h-6 border-2 border-white border-t-transparent rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              />
+              <span>Generating Story...</span>
+            </>
+          ) : (
+            <>
+              <Icon name="SparklesIcon" size={24} />
+              <span>Generate Story</span>
+            </>
+          )}
+        </motion.button>
+
+        {/* Progress */}
+        <AnimatePresence>
+          {isGenerating && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <AIStreamingProgress
+                isStreaming={isGenerating}
+                progress={progress}
+                message="AI is crafting your story..."
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Generated Story */}
+        <AnimatePresence>
+          {generatedStory && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800"
+            >
+              <h3 className="text-2xl font-bold text-foreground mb-4">{generatedStory.title}</h3>
+              <div className="prose dark:prose-invert max-w-none mb-4">
+                <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+                  {generatedStory.content}
+                </p>
               </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {generatedStory.choices && (
+                <div className="mt-4 pt-4 border-t border-purple-200 dark:border-purple-800">
+                  <h4 className="font-semibold text-foreground mb-2">Story Choices:</h4>
+                  <ul className="space-y-2">
+                    {generatedStory.choices.map((choice, idx) => (
+                      <li key={idx} className="text-foreground">
+                        • {choice}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </PremiumGate>
   );
 }
-

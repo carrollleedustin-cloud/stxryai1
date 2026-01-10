@@ -19,7 +19,8 @@ const MOCK_STORIES = [
     genre: 'Horror',
     rating: 4.8,
     reads: 15420,
-    description: 'Step into a carnival that only appears at midnight, where every attraction hides a terrifying secret...',
+    description:
+      'Step into a carnival that only appears at midnight, where every attraction hides a terrifying secret...',
   },
   {
     id: '2',
@@ -29,7 +30,8 @@ const MOCK_STORIES = [
     genre: 'Sci-Fi',
     rating: 4.6,
     reads: 12890,
-    description: 'In a world where memories can be shared, one scientist discovers echoes of a future that must never happen...',
+    description:
+      'In a world where memories can be shared, one scientist discovers echoes of a future that must never happen...',
   },
   {
     id: '3',
@@ -39,7 +41,8 @@ const MOCK_STORIES = [
     genre: 'Fantasy',
     rating: 4.9,
     reads: 23450,
-    description: 'A fallen prince must reclaim his throne in a world where magic comes at the ultimate price...',
+    description:
+      'A fallen prince must reclaim his throne in a world where magic comes at the ultimate price...',
   },
   {
     id: '4',
@@ -49,7 +52,8 @@ const MOCK_STORIES = [
     genre: 'Cyberpunk',
     rating: 4.7,
     reads: 18760,
-    description: 'In the neon-soaked streets of Neo Tokyo, a hacker uncovers a conspiracy that blurs the line between reality and simulation...',
+    description:
+      'In the neon-soaked streets of Neo Tokyo, a hacker uncovers a conspiracy that blurs the line between reality and simulation...',
   },
   {
     id: '5',
@@ -59,7 +63,8 @@ const MOCK_STORIES = [
     genre: 'Mystery',
     rating: 4.5,
     reads: 9870,
-    description: 'A detective investigates a series of disappearances in a small town where everyone has something to hide...',
+    description:
+      'A detective investigates a series of disappearances in a small town where everyone has something to hide...',
   },
   {
     id: '6',
@@ -69,17 +74,28 @@ const MOCK_STORIES = [
     genre: 'Romance',
     rating: 4.4,
     reads: 21340,
-    description: 'Two storm chasers find love in the most unlikely places as they pursue the perfect storm across the plains...',
+    description:
+      'Two storm chasers find love in the most unlikely places as they pursue the perfect storm across the plains...',
   },
 ];
 
-const GENRES = ['All', 'Horror', 'Sci-Fi', 'Fantasy', 'Cyberpunk', 'Mystery', 'Romance', 'Thriller', 'Adventure'];
+const GENRES = [
+  'All',
+  'Horror',
+  'Sci-Fi',
+  'Fantasy',
+  'Cyberpunk',
+  'Mystery',
+  'Romance',
+  'Thriller',
+  'Adventure',
+];
 
 function SearchResultsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('q') || '';
-  
+
   const [searchQuery, setSearchQuery] = useState(query);
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [sortBy, setSortBy] = useState<'relevance' | 'rating' | 'reads' | 'newest'>('relevance');
@@ -98,15 +114,16 @@ function SearchResultsContent() {
   };
 
   // Filter and sort results
-  const filteredResults = MOCK_STORIES.filter(story => {
-    const matchesQuery = query === '' || 
+  const filteredResults = MOCK_STORIES.filter((story) => {
+    const matchesQuery =
+      query === '' ||
       story.title.toLowerCase().includes(query.toLowerCase()) ||
       story.author.toLowerCase().includes(query.toLowerCase()) ||
       story.description.toLowerCase().includes(query.toLowerCase()) ||
       story.genre.toLowerCase().includes(query.toLowerCase());
-    
+
     const matchesGenre = selectedGenre === 'All' || story.genre === selectedGenre;
-    
+
     return matchesQuery && matchesGenre;
   }).sort((a, b) => {
     switch (sortBy) {
@@ -182,7 +199,7 @@ function SearchResultsContent() {
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
             {/* Genre Pills */}
             <div className="flex flex-wrap gap-2">
-              {GENRES.map(genre => (
+              {GENRES.map((genre) => (
                 <button
                   key={genre}
                   onClick={() => setSelectedGenre(genre)}
@@ -214,8 +231,14 @@ function SearchResultsContent() {
         {/* Results Count */}
         <RevealOnScroll threshold={0.1}>
           <div className="mb-6 text-text-secondary">
-            Found <span className="text-spectral-cyan font-bold">{filteredResults.length}</span> stories
-            {query && <> matching "<span className="text-aurora">{query}</span>"</>}
+            Found <span className="text-spectral-cyan font-bold">{filteredResults.length}</span>{' '}
+            stories
+            {query && (
+              <>
+                {' '}
+                matching "<span className="text-aurora">{query}</span>"
+              </>
+            )}
           </div>
         </RevealOnScroll>
 
@@ -231,8 +254,8 @@ function SearchResultsContent() {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 layout
               >
-                <div 
-                  className="h-full group cursor-pointer" 
+                <div
+                  className="h-full group cursor-pointer"
                   onClick={() => router.push(`/story-reader?id=${story.id}`)}
                 >
                   <HolographicCard className="h-full">
@@ -251,12 +274,12 @@ function SearchResultsContent() {
                         <p className="text-sm text-white/80">by {story.author}</p>
                       </div>
                     </div>
-                    
+
                     <div className="p-4">
                       <p className="text-text-secondary text-sm mb-4 line-clamp-2">
                         {story.description}
                       </p>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="flex items-center text-amber-400">
@@ -268,7 +291,7 @@ function SearchResultsContent() {
                             <span>{(story.reads / 1000).toFixed(1)}K</span>
                           </div>
                         </div>
-                        
+
                         <SpectralButton variant="secondary" className="px-4 py-2 text-sm">
                           <Icon name="BookOpenIcon" className="mr-1" size={14} />
                           Read
@@ -289,10 +312,17 @@ function SearchResultsContent() {
               <div className="text-6xl mb-4">🔍</div>
               <h3 className="text-2xl font-bold text-aurora mb-2">No Stories Found</h3>
               <p className="text-text-secondary mb-6 max-w-md mx-auto">
-                We couldn't find any stories matching your search. Try different keywords or browse all stories.
+                We couldn't find any stories matching your search. Try different keywords or browse
+                all stories.
               </p>
               <div className="flex justify-center gap-4">
-                <SpectralButton onClick={() => { setSearchQuery(''); setSelectedGenre('All'); router.push('/search'); }}>
+                <SpectralButton
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedGenre('All');
+                    router.push('/search');
+                  }}
+                >
                   <Icon name="RefreshCwIcon" className="mr-2" size={18} />
                   Clear Filters
                 </SpectralButton>
@@ -322,10 +352,24 @@ function SearchResultsContent() {
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-aurora mb-6 text-center">Popular Searches</h2>
             <div className="flex flex-wrap justify-center gap-3">
-              {['Horror', 'Sci-Fi', 'Mystery', 'Fantasy', 'Cyberpunk', 'Romance', 'Thriller', 'Dark Fantasy', 'Space Opera', 'Detective'].map(term => (
+              {[
+                'Horror',
+                'Sci-Fi',
+                'Mystery',
+                'Fantasy',
+                'Cyberpunk',
+                'Romance',
+                'Thriller',
+                'Dark Fantasy',
+                'Space Opera',
+                'Detective',
+              ].map((term) => (
                 <button
                   key={term}
-                  onClick={() => { setSearchQuery(term); router.push(`/search?q=${term}`); }}
+                  onClick={() => {
+                    setSearchQuery(term);
+                    router.push(`/search?q=${term}`);
+                  }}
                   className="px-4 py-2 rounded-full bg-void-100/30 border border-void-border text-text-secondary hover:text-spectral-cyan hover:border-spectral-cyan transition-all"
                 >
                   {term}
@@ -341,14 +385,16 @@ function SearchResultsContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-t-4 border-spectral-cyan border-t-transparent rounded-full mx-auto mb-4 animate-spin" />
-          <p className="text-xl text-text-primary">Loading...</p>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-t-4 border-spectral-cyan border-t-transparent rounded-full mx-auto mb-4 animate-spin" />
+            <p className="text-xl text-text-primary">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <SearchResultsContent />
     </Suspense>
   );

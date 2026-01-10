@@ -126,9 +126,21 @@ interface AnimatedInputProps extends React.InputHTMLAttributes<HTMLInputElement>
   success?: boolean;
 }
 
-export function AnimatedInput({ label, error, success, className = '', ...props }: AnimatedInputProps) {
+export function AnimatedInput({
+  label,
+  error,
+  success,
+  className = '',
+  ...props
+}: AnimatedInputProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const borderColor = error ? 'border-destructive' : success ? 'border-green-500' : isFocused ? 'border-primary' : 'border-border';
+  const borderColor = error
+    ? 'border-destructive'
+    : success
+      ? 'border-green-500'
+      : isFocused
+        ? 'border-primary'
+        : 'border-border';
 
   return (
     <div className="space-y-1">
@@ -213,7 +225,13 @@ export function ToggleSwitch({ checked, onChange, label, disabled = false }: Tog
 /**
  * Ripple effect on click
  */
-export function RippleEffect({ children, className = '' }: { children: ReactNode; className?: string }) {
+export function RippleEffect({
+  children,
+  className = '',
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const [ripples, setRipples] = useState<Array<{ x: number; y: number; id: number }>>([]);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -311,4 +329,3 @@ export function FloatingActionButton({
     </motion.button>
   );
 }
-

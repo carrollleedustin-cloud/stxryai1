@@ -150,7 +150,9 @@ class DonationService {
     newBadgeEarned: boolean;
   }> {
     const supabase = this.getSupabase();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Not authenticated');
 
@@ -170,10 +172,12 @@ class DonationService {
     // Fetch the full donation record
     const { data: donation } = await supabase
       .from('donations')
-      .select(`
+      .select(
+        `
         *,
         donation_tiers:tier_id (name, badge_emoji)
-      `)
+      `
+      )
       .eq('id', result.donation_id)
       .single();
 
@@ -193,7 +197,9 @@ class DonationService {
 
     let targetUserId = userId;
     if (!targetUserId) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       targetUserId = user?.id;
     }
 
@@ -201,10 +207,12 @@ class DonationService {
 
     const { data, error } = await supabase
       .from('donations')
-      .select(`
+      .select(
+        `
         *,
         donation_tiers:tier_id (name, badge_emoji)
-      `)
+      `
+      )
       .eq('user_id', targetUserId)
       .order('created_at', { ascending: false });
 
@@ -220,7 +228,9 @@ class DonationService {
 
     let targetUserId = userId;
     if (!targetUserId) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       targetUserId = user?.id;
     }
 
@@ -245,7 +255,9 @@ class DonationService {
 
     let targetUserId = userId;
     if (!targetUserId) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       targetUserId = user?.id;
     }
 
@@ -253,10 +265,12 @@ class DonationService {
 
     const { data, error } = await supabase
       .from('user_donation_badges')
-      .select(`
+      .select(
+        `
         *,
         donation_tiers:tier_id (name, display_name, badge_emoji, badge_color)
-      `)
+      `
+      )
       .eq('user_id', targetUserId)
       .order('total_donated', { ascending: false });
 
@@ -306,7 +320,7 @@ class DonationService {
     ]);
 
     const totalDonated = donations
-      .filter(d => d.paymentStatus === 'completed')
+      .filter((d) => d.paymentStatus === 'completed')
       .reduce((sum, d) => sum + d.amount, 0);
 
     const highestBadge = badges[0];
@@ -316,10 +330,10 @@ class DonationService {
       username: user.username,
       avatarUrl: user.avatar_url,
       totalDonated,
-      donationCount: donations.filter(d => d.paymentStatus === 'completed').length,
+      donationCount: donations.filter((d) => d.paymentStatus === 'completed').length,
       highestBadge: highestBadge?.badgeEmoji,
       highestTier: highestBadge?.tierDisplayName,
-      badges: badges.filter(b => b.isDisplayed),
+      badges: badges.filter((b) => b.isDisplayed),
       lastDonationAt: donations[0]?.createdAt,
     };
   }
@@ -332,10 +346,7 @@ class DonationService {
   async getLeaderboard(limit: number = 20): Promise<LeaderboardEntry[]> {
     const supabase = this.getSupabase();
 
-    const { data, error } = await supabase
-      .from('donation_leaderboard')
-      .select('*')
-      .limit(limit);
+    const { data, error } = await supabase.from('donation_leaderboard').select('*').limit(limit);
 
     if (error) return [];
 
@@ -366,14 +377,14 @@ class DonationService {
 
     const donations = allDonations || [];
     const totalRaised = donations.reduce((sum, d) => sum + parseFloat(d.amount), 0);
-    const donorCount = new Set(donations.map(d => d.user_id)).size;
+    const donorCount = new Set(donations.map((d) => d.user_id)).size;
     const averageDonation = donations.length > 0 ? totalRaised / donations.length : 0;
 
     // This month
     const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-    const thisMonthDonations = donations.filter(d => new Date(d.created_at) >= monthStart);
+    const thisMonthDonations = donations.filter((d) => new Date(d.created_at) >= monthStart);
     const thisMonthRaised = thisMonthDonations.reduce((sum, d) => sum + parseFloat(d.amount), 0);
-    const thisMonthDonors = new Set(thisMonthDonations.map(d => d.user_id)).size;
+    const thisMonthDonors = new Set(thisMonthDonations.map((d) => d.user_id)).size;
 
     // Top tier
     const { data: topTierData } = await supabase
@@ -382,7 +393,7 @@ class DonationService {
       .order('total_donated', { ascending: false });
 
     const tierCounts: Record<string, number> = {};
-    (topTierData || []).forEach(b => {
+    (topTierData || []).forEach((b) => {
       const name = (b.donation_tiers as any)?.name;
       if (name) tierCounts[name] = (tierCounts[name] || 0) + 1;
     });
@@ -482,4 +493,3 @@ class DonationService {
 }
 
 export const donationService = new DonationService();
-

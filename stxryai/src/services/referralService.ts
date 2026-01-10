@@ -349,4 +349,3 @@ class ReferralService {
 
 // Export singleton instance
 export const referralService = new ReferralService();
-

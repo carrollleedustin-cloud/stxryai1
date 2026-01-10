@@ -4,95 +4,104 @@
  */
 
 // Base creature types that determine the fundamental shape
-export type PetBaseType = 
-  | 'wisp'      // Ethereal floating orb creature
-  | 'sprite'    // Small fairy-like being
-  | 'dragon'    // Scaled serpentine creature
-  | 'phoenix'   // Bird of flame and light
-  | 'wolf'      // Canine spirit guide
-  | 'cat'       // Feline mystical companion
-  | 'owl'       // Wise feathered friend
-  | 'fox'       // Cunning trickster spirit
-  | 'bunny'     // Fluffy companion creature
-  | 'slime'     // Amorphous blob friend
-  | 'crystal'   // Crystalline entity
-  | 'shadow';   // Dark spectral being
+export type PetBaseType =
+  | 'wisp' // Ethereal floating orb creature
+  | 'sprite' // Small fairy-like being
+  | 'dragon' // Scaled serpentine creature
+  | 'phoenix' // Bird of flame and light
+  | 'wolf' // Canine spirit guide
+  | 'cat' // Feline mystical companion
+  | 'owl' // Wise feathered friend
+  | 'fox' // Cunning trickster spirit
+  | 'bunny' // Fluffy companion creature
+  | 'slime' // Amorphous blob friend
+  | 'crystal' // Crystalline entity
+  | 'shadow'; // Dark spectral being
 
 // Element that influences colors and effects
-export type PetElement = 
-  | 'fire'      // Warm reds, oranges, ember particles
-  | 'water'     // Cool blues, teals, bubble particles
-  | 'earth'     // Greens, browns, leaf particles
-  | 'air'       // Whites, sky blues, wind particles
+export type PetElement =
+  | 'fire' // Warm reds, oranges, ember particles
+  | 'water' // Cool blues, teals, bubble particles
+  | 'earth' // Greens, browns, leaf particles
+  | 'air' // Whites, sky blues, wind particles
   | 'lightning' // Yellows, electric, spark particles
-  | 'ice'       // Light blues, whites, snowflake particles
-  | 'nature'    // Greens, pinks, flower particles
-  | 'shadow'    // Purples, blacks, smoke particles
-  | 'light'     // Golds, whites, star particles
-  | 'cosmic'    // Deep purples, galaxy effects
-  | 'void';     // Black with spectral highlights
+  | 'ice' // Light blues, whites, snowflake particles
+  | 'nature' // Greens, pinks, flower particles
+  | 'shadow' // Purples, blacks, smoke particles
+  | 'light' // Golds, whites, star particles
+  | 'cosmic' // Deep purples, galaxy effects
+  | 'void'; // Black with spectral highlights
 
 // Personality affects behavior animations and dialogue
-export type PetPersonality = 
-  | 'energetic'   // Bouncy, excited animations
-  | 'calm'        // Slow, peaceful movements
-  | 'curious'     // Looks around, investigates
-  | 'playful'     // Silly expressions, games
-  | 'wise'        // Thoughtful poses, sage advice
+export type PetPersonality =
+  | 'energetic' // Bouncy, excited animations
+  | 'calm' // Slow, peaceful movements
+  | 'curious' // Looks around, investigates
+  | 'playful' // Silly expressions, games
+  | 'wise' // Thoughtful poses, sage advice
   | 'mischievous' // Sneaky, pranky behaviors
-  | 'shy'         // Hides, blushes
-  | 'brave'       // Confident poses
-  | 'dreamy'      // Floaty, stargazing
-  | 'loyal';      // Affectionate, protective
+  | 'shy' // Hides, blushes
+  | 'brave' // Confident poses
+  | 'dreamy' // Floaty, stargazing
+  | 'loyal'; // Affectionate, protective
 
 // Evolution stages based on activity
-export type PetEvolutionStage = 
-  | 'egg'         // Level 0-1: Just hatched
-  | 'baby'        // Level 2-5: Small and cute
-  | 'juvenile'    // Level 6-15: Growing up
-  | 'adult'       // Level 16-30: Mature form
-  | 'elder'       // Level 31-50: Wise and powerful
-  | 'legendary';  // Level 51+: Maximum evolution
+export type PetEvolutionStage =
+  | 'egg' // Level 0-1: Just hatched
+  | 'baby' // Level 2-5: Small and cute
+  | 'juvenile' // Level 6-15: Growing up
+  | 'adult' // Level 16-30: Mature form
+  | 'elder' // Level 31-50: Wise and powerful
+  | 'legendary'; // Level 51+: Maximum evolution
 
 // Mood affects current animations and appearance
-export type PetMood = 
-  | 'happy'       // Bright colors, bouncy
-  | 'excited'     // Extra particles, glowing
-  | 'content'     // Relaxed, smiling
-  | 'sleepy'      // Eyes drooping, yawning
-  | 'hungry'      // Looking for attention
-  | 'bored'       // Low energy, sighing
-  | 'curious'     // Alert, looking around
-  | 'proud'       // Puffed up, showing off
-  | 'sad';        // Muted colors, droopy
+export type PetMood =
+  | 'happy' // Bright colors, bouncy
+  | 'excited' // Extra particles, glowing
+  | 'content' // Relaxed, smiling
+  | 'sleepy' // Eyes drooping, yawning
+  | 'hungry' // Looking for attention
+  | 'bored' // Low energy, sighing
+  | 'curious' // Alert, looking around
+  | 'proud' // Puffed up, showing off
+  | 'sad'; // Muted colors, droopy
 
 // Traits that affect appearance - each pet has unique combination
 export interface PetTraits {
   // Physical modifiers (0-100 scale)
-  fluffiness: number;      // How fluffy/smooth
-  sparkle: number;         // How much shimmer
-  glow: number;            // Aura intensity
-  size: number;            // Relative size
-  roundness: number;       // Body shape roundness
-  
+  fluffiness: number; // How fluffy/smooth
+  sparkle: number; // How much shimmer
+  glow: number; // Aura intensity
+  size: number; // Relative size
+  roundness: number; // Body shape roundness
+
   // Pattern traits
   hasWings: boolean;
   hasHorns: boolean;
   hasTail: boolean;
   hasHalo: boolean;
   hasMarkings: boolean;
-  
+
   // Color modifiers (hex values)
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
   eyeColor: string;
-  
+
   // Pattern type
   pattern: 'solid' | 'gradient' | 'spotted' | 'striped' | 'galaxy' | 'iridescent';
-  
+
   // Special effects
-  particleType: 'none' | 'sparkles' | 'flames' | 'bubbles' | 'leaves' | 'snow' | 'stars' | 'hearts' | 'lightning';
+  particleType:
+    | 'none'
+    | 'sparkles'
+    | 'flames'
+    | 'bubbles'
+    | 'leaves'
+    | 'snow'
+    | 'stars'
+    | 'hearts'
+    | 'lightning';
   auraType: 'none' | 'soft' | 'pulsing' | 'rainbow' | 'electric' | 'cosmic';
 }
 
@@ -114,7 +123,7 @@ export interface PetStats {
   experience: number;
   experienceToNextLevel: number;
   totalExperience: number;
-  
+
   // Activity-based stats
   storiesRead: number;
   choicesMade: number;
@@ -123,11 +132,11 @@ export interface PetStats {
   daysActive: number;
   currentStreak: number;
   longestStreak: number;
-  
+
   // Pet care stats (0-100)
   happiness: number;
   energy: number;
-  
+
   // Special stats
   wordsRead: number;
   genresExplored: string[];
@@ -150,33 +159,33 @@ export interface PetMemory {
 export interface StoryPet {
   id: string;
   userId: string;
-  
+
   // Identity
   name: string;
   baseType: PetBaseType;
   element: PetElement;
   personality: PetPersonality;
   evolutionStage: PetEvolutionStage;
-  
+
   // Appearance
   traits: PetTraits;
   currentMood: PetMood;
   accessories: PetAccessory[];
-  
+
   // Stats
   stats: PetStats;
-  
+
   // Memory
   memories: PetMemory[];
-  
+
   // Metadata
   bornAt: string;
   lastInteraction: string;
   lastFed: string; // When user last read a story
-  
+
   // Unique seed for procedural generation
   geneticSeed: string;
-  
+
   // Evolution history
   evolutionHistory: {
     stage: PetEvolutionStage;
@@ -188,7 +197,15 @@ export interface StoryPet {
 // Pet dialogue based on context
 export interface PetDialogue {
   id: string;
-  trigger: 'greeting' | 'reading_start' | 'reading_end' | 'choice_made' | 'milestone' | 'idle' | 'encouragement' | 'celebration';
+  trigger:
+    | 'greeting'
+    | 'reading_start'
+    | 'reading_end'
+    | 'choice_made'
+    | 'milestone'
+    | 'idle'
+    | 'encouragement'
+    | 'celebration';
   messages: string[];
   mood: PetMood;
   requiresLevel?: number;
@@ -245,4 +262,3 @@ export function getEvolutionStage(level: number): PetEvolutionStage {
 export function calculateXpToNextLevel(level: number): number {
   return Math.floor(100 * Math.pow(1.15, level));
 }
-

@@ -42,7 +42,10 @@ export const userService = {
       return (data || []) as UserProfile[];
     } catch (error) {
       // Re-throw validation errors as-is
-      if (error instanceof Error && (error.message.includes('required') || error.message.includes('characters'))) {
+      if (
+        error instanceof Error &&
+        (error.message.includes('required') || error.message.includes('characters'))
+      ) {
         throw error;
       }
 

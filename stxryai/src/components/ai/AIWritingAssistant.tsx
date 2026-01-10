@@ -38,7 +38,7 @@ export function AIWritingAssistant({
     setIsLoading(true);
     setProgress(0);
     setLastAction('Getting suggestions...');
-    
+
     // Simulate progress
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + 10, 90));
@@ -66,7 +66,7 @@ export function AIWritingAssistant({
     setIsLoading(true);
     setProgress(0);
     setLastAction(`Enhancing content (${type})...`);
-    
+
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + 8, 90));
     }, 200);
@@ -91,7 +91,7 @@ export function AIWritingAssistant({
     setIsLoading(true);
     setProgress(0);
     setLastAction('Generating dialogue...');
-    
+
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + 7, 90));
     }, 200);

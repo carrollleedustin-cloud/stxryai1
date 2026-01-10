@@ -128,7 +128,7 @@ export function CollaborativeEditor({
           className="w-full min-h-[400px] p-6 bg-background border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none font-mono text-sm leading-relaxed"
           placeholder="Start writing your story... Collaborators can see your changes in real-time!"
         />
-        
+
         {/* Cursor Indicators */}
         <AnimatePresence>
           {activeCollaborators.map((collab) => {
@@ -145,10 +145,7 @@ export function CollaborativeEditor({
                   top: `${collab.cursor.line * 24}px`,
                 }}
               >
-                <div
-                  className="w-0.5 h-5"
-                  style={{ backgroundColor: collab.color }}
-                />
+                <div className="w-0.5 h-5" style={{ backgroundColor: collab.color }} />
                 <div
                   className="absolute top-0 left-0 px-2 py-0.5 rounded text-xs text-white whitespace-nowrap"
                   style={{ backgroundColor: collab.color }}
@@ -183,4 +180,3 @@ export function CollaborativeEditor({
     </div>
   );
 }
-

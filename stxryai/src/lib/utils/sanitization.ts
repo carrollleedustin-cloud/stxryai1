@@ -23,7 +23,7 @@ export function sanitizeHtml(dirty: string, options: SanitizationOptions = {}): 
   const config = {
     ALLOWED_TAGS: options.allowedTags || ['p', 'br', 'strong', 'em', 'u', 'a', 'ul', 'ol', 'li'],
     ALLOWED_ATTR: options.allowedAttributes || {
-      'a': ['href', 'target', 'rel'],
+      a: ['href', 'target', 'rel'],
     },
   };
 
@@ -96,5 +96,5 @@ export function containsSuspiciousContent(text: string): boolean {
     /<embed/i,
   ];
 
-  return suspiciousPatterns.some(pattern => pattern.test(text));
+  return suspiciousPatterns.some((pattern) => pattern.test(text));
 }

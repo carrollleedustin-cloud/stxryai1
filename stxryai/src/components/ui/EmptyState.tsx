@@ -29,11 +29,12 @@ export function EmptyState({
   illustration,
   className = '',
 }: EmptyStateProps) {
-  const iconElement = typeof icon === 'string' ? (
-    <div className="text-6xl mb-4">{icon}</div>
-  ) : (
-    <div className="mb-4">{icon}</div>
-  );
+  const iconElement =
+    typeof icon === 'string' ? (
+      <div className="text-6xl mb-4">{icon}</div>
+    ) : (
+      <div className="mb-4">{icon}</div>
+    );
 
   return (
     <motion.div
@@ -121,7 +122,13 @@ export function EmptyStories({ onCreateStory }: { onCreateStory: () => void }) {
   );
 }
 
-export function EmptySearchResults({ query, onClearSearch }: { query: string; onClearSearch: () => void }) {
+export function EmptySearchResults({
+  query,
+  onClearSearch,
+}: {
+  query: string;
+  onClearSearch: () => void;
+}) {
   return (
     <EmptyState
       icon="🔍"
@@ -179,4 +186,3 @@ export function EmptyAchievements({ onViewLeaderboard }: { onViewLeaderboard?: (
     />
   );
 }
-

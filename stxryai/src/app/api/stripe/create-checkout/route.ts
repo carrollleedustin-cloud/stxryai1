@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { createCheckoutSession, getOrCreateCustomer, SUBSCRIPTION_TIERS, StripeTier, getStripe } from '@/lib/stripe/server';
+import {
+  createCheckoutSession,
+  getOrCreateCustomer,
+  SUBSCRIPTION_TIERS,
+  StripeTier,
+  getStripe,
+} from '@/lib/stripe/server';
 export const runtime = 'edge';
 
 // Map frontend tier names to Stripe tier keys
@@ -40,12 +46,12 @@ export async function POST(request: NextRequest) {
     );
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -62,10 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Check if Stripe is configured
     if (!getStripe()) {
-      return NextResponse.json(
-        { error: 'Stripe is not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
     }
 
     // Get or create Stripe customer
@@ -85,10 +88,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Create checkout error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }
-

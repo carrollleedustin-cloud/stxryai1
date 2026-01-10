@@ -90,7 +90,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => (window.location.href = '/')}
                   className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-200"
                 >
                   Go Home
@@ -105,7 +105,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                   className="mb-8 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 text-left"
                 >
                   <h3 className="text-sm font-semibold text-red-400 mb-2">Error Details:</h3>
-                  <p className="text-sm text-gray-300 font-mono break-words">{this.state.error.message}</p>
+                  <p className="text-sm text-gray-300 font-mono break-words">
+                    {this.state.error.message}
+                  </p>
                 </motion.div>
               )}
             </motion.div>

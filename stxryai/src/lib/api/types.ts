@@ -243,12 +243,7 @@ export interface AIGenerationResponse {
 }
 
 // Report types
-export type ReportReason =
-  | 'spam'
-  | 'harassment'
-  | 'inappropriate_content'
-  | 'copyright'
-  | 'other';
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate_content' | 'copyright' | 'other';
 
 export interface ContentReport {
   id: string;

@@ -31,35 +31,30 @@ export async function POST(request: NextRequest) {
     );
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Check if AI is available
     if (!isAIAvailable()) {
-      return NextResponse.json(
-        { error: 'AI service is not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'AI service is not configured' }, { status: 503 });
     }
 
     const body = await request.json();
     const { context, count = 3 } = body;
 
     if (!context?.situation) {
-      return NextResponse.json(
-        { error: 'Situation context is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Situation context is required' }, { status: 400 });
     }
 
-    const characterContext = context.characters?.length > 0
-      ? `Characters involved: ${context.characters.map((c: any) => c.name || c).join(', ')}`
-      : '';
+    const characterContext =
+      context.characters?.length > 0
+        ? `Characters involved: ${context.characters.map((c: any) => c.name || c).join(', ')}`
+        : '';
 
     const systemPrompt = `You are a creative writing assistant helping to create meaningful choices for an interactive story.
 
@@ -91,7 +86,7 @@ Generate ${count} meaningful choices for the reader.`;
 
     try {
       const response = await generateText(prompt, systemPrompt, 0.8);
-      
+
       // Parse the JSON response
       let choices;
       try {
@@ -138,17 +133,10 @@ Generate ${count} meaningful choices for the reader.`;
       return NextResponse.json({ choices });
     } catch (aiError) {
       console.error('AI generation failed:', aiError);
-      return NextResponse.json(
-        { error: 'AI generation failed', choices: [] },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'AI generation failed', choices: [] }, { status: 500 });
     }
   } catch (error) {
     console.error('Generate choices error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate choices' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to generate choices' }, { status: 500 });
   }
 }
-

@@ -20,7 +20,15 @@ export interface ContentTier {
 
 export interface LearningSkill {
   id: string;
-  category: 'phonics' | 'vocabulary' | 'comprehension' | 'fluency' | 'writing' | 'math' | 'science' | 'social-emotional';
+  category:
+    | 'phonics'
+    | 'vocabulary'
+    | 'comprehension'
+    | 'fluency'
+    | 'writing'
+    | 'math'
+    | 'science'
+    | 'social-emotional';
   name: string;
   description: string;
   gradeLevel: string[];
@@ -124,7 +132,13 @@ export interface ScienceConcept {
 
 export interface SocialEmotionalScenario {
   id: string;
-  skill: 'empathy' | 'conflict-resolution' | 'self-awareness' | 'friendship' | 'responsibility' | 'resilience';
+  skill:
+    | 'empathy'
+    | 'conflict-resolution'
+    | 'self-awareness'
+    | 'friendship'
+    | 'responsibility'
+    | 'resilience';
   title: string;
   scenario: string;
   characters: string[];
@@ -414,7 +428,7 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
       },
       {
         id: 'choice-2',
-        action: 'Tell them it\'s just a toy and not important',
+        action: "Tell them it's just a toy and not important",
         outcome: 'Your friend feels dismissed and more upset',
         emotionalImpact: [
           {
@@ -424,7 +438,7 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
           },
         ],
         isPositive: false,
-        teachingPoint: 'Everyone\'s feelings are valid and deserve respect',
+        teachingPoint: "Everyone's feelings are valid and deserve respect",
       },
       {
         id: 'choice-3',
@@ -441,7 +455,7 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
         teachingPoint: 'Taking action to help shows true empathy',
       },
     ],
-    learningObjective: 'Understand and respond to others\' emotions with kindness',
+    learningObjective: "Understand and respond to others' emotions with kindness",
     discussionPrompts: [
       'How do you think your friend felt?',
       'What would you want someone to do if you were sad?',
@@ -463,7 +477,7 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
           {
             character: 'Friend 1',
             emotion: 'Satisfied',
-            explanation: 'They get their turn and feel it\'s fair',
+            explanation: "They get their turn and feel it's fair",
           },
           {
             character: 'Friend 2',
@@ -505,7 +519,7 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
     id: 'self-awareness-1',
     skill: 'self-awareness',
     title: 'Knowing Your Feelings',
-    scenario: 'You didn\'t do well on a test. How do you feel and what can you do?',
+    scenario: "You didn't do well on a test. How do you feel and what can you do?",
     characters: ['You'],
     choices: [
       {
@@ -520,11 +534,11 @@ export const socialEmotionalScenarios: SocialEmotionalScenario[] = [
           },
         ],
         isPositive: true,
-        teachingPoint: 'It\'s okay to feel disappointed and ask for help',
+        teachingPoint: "It's okay to feel disappointed and ask for help",
       },
       {
         id: 'choice-2',
-        action: 'Give up and think you can\'t do it',
+        action: "Give up and think you can't do it",
         outcome: 'You miss the chance to grow',
         emotionalImpact: [
           {
@@ -639,10 +653,7 @@ export const fineMotorActivities: FineMotorActivity[] = [
 /**
  * Adjust content difficulty based on performance
  */
-export function adjustDifficulty(
-  currentLevel: number,
-  recentScores: number[]
-): number {
+export function adjustDifficulty(currentLevel: number, recentScores: number[]): number {
   if (recentScores.length < 3) return currentLevel;
 
   const avgScore = recentScores.reduce((a, b) => a + b, 0) / recentScores.length;
@@ -664,8 +675,8 @@ export function getAppropriateContent(
   gradeLevel: string,
   performanceHistory: number[]
 ): ContentTier {
-  const tier = contentTiers.find(t => t.gradeLevel === gradeLevel);
-  
+  const tier = contentTiers.find((t) => t.gradeLevel === gradeLevel);
+
   if (!tier) {
     return contentTiers[0]; // Default to pre-k
   }

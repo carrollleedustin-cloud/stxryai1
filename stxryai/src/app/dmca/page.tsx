@@ -31,23 +31,30 @@ export default function DMCAPage() {
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">Copyright Protection</h2>
             <p>
-              StxryAI respects the intellectual property rights of others and expects our users to do the same.
-              In accordance with the Digital Millennium Copyright Act (DMCA), we will respond to clear notices
-              of alleged copyright infringement.
+              StxryAI respects the intellectual property rights of others and expects our users to
+              do the same. In accordance with the Digital Millennium Copyright Act (DMCA), we will
+              respond to clear notices of alleged copyright infringement.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">Filing a DMCA Takedown Notice</h2>
             <p className="mb-4">
-              If you believe that content on StxryAI infringes your copyright, please provide the following information:
+              If you believe that content on StxryAI infringes your copyright, please provide the
+              following information:
             </p>
             <ol className="list-decimal list-inside space-y-2 ml-4">
               <li>Identification of the copyrighted work claimed to have been infringed</li>
               <li>Identification of the material that is claimed to be infringing</li>
               <li>Your contact information (name, address, phone, email)</li>
-              <li>A statement that you have a good faith belief that use of the material is not authorized</li>
-              <li>A statement that the information is accurate and you are authorized to act on behalf of the copyright owner</li>
+              <li>
+                A statement that you have a good faith belief that use of the material is not
+                authorized
+              </li>
+              <li>
+                A statement that the information is accurate and you are authorized to act on behalf
+                of the copyright owner
+              </li>
               <li>Your physical or electronic signature</li>
             </ol>
           </section>
@@ -72,16 +79,16 @@ export default function DMCAPage() {
             <h2 className="text-2xl font-bold text-white mb-4">Counter-Notification</h2>
             <p>
               If you believe your content was removed in error, you may file a counter-notification.
-              Please include the same information as above, plus a statement under penalty of perjury
-              that you have a good faith belief the material was removed by mistake.
+              Please include the same information as above, plus a statement under penalty of
+              perjury that you have a good faith belief the material was removed by mistake.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-4">Repeat Infringers</h2>
             <p>
-              StxryAI reserves the right to terminate accounts of users who are repeat copyright infringers
-              in appropriate circumstances.
+              StxryAI reserves the right to terminate accounts of users who are repeat copyright
+              infringers in appropriate circumstances.
             </p>
           </section>
 
@@ -99,4 +106,3 @@ export default function DMCAPage() {
     </div>
   );
 }
-

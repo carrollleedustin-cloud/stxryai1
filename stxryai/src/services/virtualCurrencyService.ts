@@ -39,17 +39,17 @@ export interface Transaction {
   createdAt: string;
 }
 
-export type TransactionType = 
-  | 'purchase'          // Bought coins
-  | 'tip_sent'          // Tipped an author
-  | 'tip_received'      // Received a tip
-  | 'story_unlock'      // Unlocked premium story
+export type TransactionType =
+  | 'purchase' // Bought coins
+  | 'tip_sent' // Tipped an author
+  | 'tip_received' // Received a tip
+  | 'story_unlock' // Unlocked premium story
   | 'collection_unlock' // Unlocked story collection
-  | 'character_pack'    // Bought character pack
-  | 'gift_sent'         // Sent coins to friend
-  | 'gift_received'     // Received coins from friend
-  | 'reward'            // Earned from challenge/achievement
-  | 'refund'            // Refund
+  | 'character_pack' // Bought character pack
+  | 'gift_sent' // Sent coins to friend
+  | 'gift_received' // Received coins from friend
+  | 'reward' // Earned from challenge/achievement
+  | 'refund' // Refund
   | 'admin_adjustment'; // Admin adjustment
 
 export interface TransactionMetadata {
@@ -127,8 +127,8 @@ export const TIP_OPTIONS: TipOptions = {
 };
 
 // Creator revenue share from tips
-export const CREATOR_TIP_SHARE = 0.80; // 80% to creator
-export const PLATFORM_TIP_FEE = 0.20;  // 20% platform fee
+export const CREATOR_TIP_SHARE = 0.8; // 80% to creator
+export const PLATFORM_TIP_FEE = 0.2; // 20% platform fee
 
 // ========================================
 // SERVICE CLASS
@@ -220,7 +220,7 @@ class VirtualCurrencyService {
     packageId: string,
     paymentId: string
   ): Promise<{ success: boolean; newBalance: number; transaction: Transaction }> {
-    const coinPackage = COIN_PACKAGES.find(p => p.id === packageId);
+    const coinPackage = COIN_PACKAGES.find((p) => p.id === packageId);
     if (!coinPackage) {
       throw new Error('Invalid package');
     }
@@ -362,7 +362,14 @@ class VirtualCurrencyService {
       authorReceived,
       authorNewBalance,
       `Received tip from ${sender?.username || 'reader'}${storyTitle ? ` for "${storyTitle}"` : ''}`,
-      { senderId, senderName: sender?.username, storyId, storyTitle, message, originalAmount: amount }
+      {
+        senderId,
+        senderName: sender?.username,
+        storyId,
+        storyTitle,
+        message,
+        originalAmount: amount,
+      }
     );
 
     return {
@@ -385,9 +392,12 @@ class VirtualCurrencyService {
     const supabase = this.getSupabase();
 
     // Get content details
-    const tableName = contentType === 'story' ? 'stories' :
-                      contentType === 'collection' ? 'story_collections' :
-                      'character_packs';
+    const tableName =
+      contentType === 'story'
+        ? 'stories'
+        : contentType === 'collection'
+          ? 'story_collections'
+          : 'character_packs';
 
     const { data: content, error: contentError } = await supabase
       .from(tableName)
@@ -443,9 +453,12 @@ class VirtualCurrencyService {
     });
 
     // Record transaction
-    const transactionType = contentType === 'story' ? 'story_unlock' :
-                            contentType === 'collection' ? 'collection_unlock' :
-                            'character_pack';
+    const transactionType =
+      contentType === 'story'
+        ? 'story_unlock'
+        : contentType === 'collection'
+          ? 'collection_unlock'
+          : 'character_pack';
 
     await this.recordTransaction(
       userId,
@@ -457,7 +470,7 @@ class VirtualCurrencyService {
     );
 
     // Credit author (revenue share)
-    const authorShare = Math.floor(price * 0.70); // 70% to author
+    const authorShare = Math.floor(price * 0.7); // 70% to author
     if (content.author_id && authorShare > 0) {
       const authorWallet = await this.getWallet(content.author_id);
       await supabase
@@ -528,9 +541,15 @@ class VirtualCurrencyService {
 
     // Get user info
     const { data: sender } = await supabase
-      .from('users').select('username').eq('id', senderId).single();
+      .from('users')
+      .select('username')
+      .eq('id', senderId)
+      .single();
     const { data: recipient } = await supabase
-      .from('users').select('username').eq('id', recipientId).single();
+      .from('users')
+      .select('username')
+      .eq('id', recipientId)
+      .single();
 
     // Debit sender
     const senderNewBalance = senderWallet.balance - amount;
@@ -600,14 +619,7 @@ class VirtualCurrencyService {
       })
       .eq('user_id', userId);
 
-    await this.recordTransaction(
-      userId,
-      'reward',
-      amount,
-      newBalance,
-      reason,
-      metadata || {}
-    );
+    await this.recordTransaction(userId, 'reward', amount, newBalance, reason, metadata || {});
 
     return { newBalance };
   }
@@ -656,9 +668,15 @@ class VirtualCurrencyService {
 
     const cutoff = new Date();
     switch (period) {
-      case 'week': cutoff.setDate(cutoff.getDate() - 7); break;
-      case 'month': cutoff.setMonth(cutoff.getMonth() - 1); break;
-      case 'year': cutoff.setFullYear(cutoff.getFullYear() - 1); break;
+      case 'week':
+        cutoff.setDate(cutoff.getDate() - 7);
+        break;
+      case 'month':
+        cutoff.setMonth(cutoff.getMonth() - 1);
+        break;
+      case 'year':
+        cutoff.setFullYear(cutoff.getFullYear() - 1);
+        break;
     }
 
     const { data } = await supabase
@@ -670,12 +688,20 @@ class VirtualCurrencyService {
     const transactions = data || [];
 
     return {
-      totalEarned: transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0),
-      totalSpent: Math.abs(transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0)),
-      tipsReceived: transactions.filter(t => t.type === 'tip_received').reduce((sum, t) => sum + t.amount, 0),
-      tipsSent: Math.abs(transactions.filter(t => t.type === 'tip_sent').reduce((sum, t) => sum + t.amount, 0)),
-      purchaseRevenue: transactions.filter(t => ['story_unlock', 'collection_unlock'].includes(t.type))
-        .filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0),
+      totalEarned: transactions.filter((t) => t.amount > 0).reduce((sum, t) => sum + t.amount, 0),
+      totalSpent: Math.abs(
+        transactions.filter((t) => t.amount < 0).reduce((sum, t) => sum + t.amount, 0)
+      ),
+      tipsReceived: transactions
+        .filter((t) => t.type === 'tip_received')
+        .reduce((sum, t) => sum + t.amount, 0),
+      tipsSent: Math.abs(
+        transactions.filter((t) => t.type === 'tip_sent').reduce((sum, t) => sum + t.amount, 0)
+      ),
+      purchaseRevenue: transactions
+        .filter((t) => ['story_unlock', 'collection_unlock'].includes(t.type))
+        .filter((t) => t.amount > 0)
+        .reduce((sum, t) => sum + t.amount, 0),
     };
   }
 
@@ -738,4 +764,3 @@ class VirtualCurrencyService {
 }
 
 export const virtualCurrencyService = new VirtualCurrencyService();
-

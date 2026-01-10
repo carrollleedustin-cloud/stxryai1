@@ -49,22 +49,22 @@ interface Particle {
   emoji?: string;
 }
 
-function ParticleEffect({ 
-  type, 
-  color, 
+function ParticleEffect({
+  type,
+  color,
   active = true,
   intensity = 1,
-}: { 
-  type: PetTraits['particleType']; 
+}: {
+  type: PetTraits['particleType'];
   color: string;
   active?: boolean;
   intensity?: number;
 }) {
   const [particles, setParticles] = useState<Particle[]>([]);
-  
+
   useEffect(() => {
     if (!active || type === 'none') return;
-    
+
     const emojis: Record<NonNullable<PetTraits['particleType']>, string> = {
       none: '',
       sparkles: '✨',
@@ -76,10 +76,10 @@ function ParticleEffect({
       hearts: '💖',
       lightning: '⚡',
     };
-    
+
     const particleCount = Math.floor(15 * intensity);
     const intervalTime = Math.max(100, 300 / intensity);
-    
+
     const interval = setInterval(() => {
       const newParticle: Particle = {
         id: Date.now() + Math.random(),
@@ -90,17 +90,17 @@ function ParticleEffect({
         rotation: Math.random() * 360,
         emoji: emojis[type] || '✨',
       };
-      
-      setParticles(prev => [...prev.slice(-particleCount), newParticle]);
+
+      setParticles((prev) => [...prev.slice(-particleCount), newParticle]);
     }, intervalTime);
-    
+
     return () => clearInterval(interval);
   }, [type, active, intensity]);
-  
+
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <AnimatePresence>
-        {particles.map(particle => (
+        {particles.map((particle) => (
           <motion.div
             key={particle.id}
             initial={{
@@ -139,19 +139,19 @@ function ParticleEffect({
 // AURA EFFECT
 // =============================================================================
 
-function AuraEffect({ 
-  type, 
+function AuraEffect({
+  type,
   color,
   glowIntensity = 1,
   animationSpeed = 1,
-}: { 
-  type: PetTraits['auraType']; 
+}: {
+  type: PetTraits['auraType'];
   color: string;
   glowIntensity?: number;
   animationSpeed?: number;
 }) {
   if (type === 'none') return null;
-  
+
   const auraVariants = {
     soft: {
       animate: {
@@ -190,7 +190,13 @@ function AuraEffect({
     electric: {
       animate: {
         scale: [1, 1.15 * glowIntensity, 1, 1.1 * glowIntensity, 1],
-        opacity: [0.5 * glowIntensity, 0.8 * glowIntensity, 0.3 * glowIntensity, 0.7 * glowIntensity, 0.5 * glowIntensity],
+        opacity: [
+          0.5 * glowIntensity,
+          0.8 * glowIntensity,
+          0.3 * glowIntensity,
+          0.7 * glowIntensity,
+          0.5 * glowIntensity,
+        ],
       },
       transition: {
         duration: 0.5 / animationSpeed,
@@ -210,16 +216,17 @@ function AuraEffect({
       },
     },
   };
-  
+
   const variant = auraVariants[type] || auraVariants.soft;
-  
+
   return (
     <motion.div
       className="absolute inset-0 rounded-full"
       style={{
-        background: type === 'rainbow'
-          ? 'conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red)'
-          : `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
+        background:
+          type === 'rainbow'
+            ? 'conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red)'
+            : `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
         filter: 'blur(15px)',
       }}
       animate={variant.animate}
@@ -240,7 +247,7 @@ interface PetBodyProps {
 
 function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
   const { traits, baseType, evolutionStage, currentMood } = pet;
-  
+
   // Get size multiplier based on evolution stage
   const sizeMultiplier = useMemo(() => {
     const sizes: Record<PetEvolutionStage, number> = {
@@ -253,50 +260,56 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
     };
     return sizes[evolutionStage];
   }, [evolutionStage]);
-  
+
   // Body shape based on base type
   const getBodyShape = (type: PetBaseType): React.ReactNode => {
     const scale = sizeMultiplier * (traits.size / 100);
     const roundness = traits.roundness;
-    
+
     // Enhanced visual effects based on traits
-    const sparkleEffect = traits.sparkle > 70 ? {
-      backgroundImage: `radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%),
+    const sparkleEffect =
+      traits.sparkle > 70
+        ? {
+            backgroundImage: `radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%),
                         radial-gradient(circle at 80% 70%, rgba(255,255,255,0.3) 0%, transparent 50%),
                         radial-gradient(circle at 50% 50%, rgba(255,255,255,0.2) 0%, transparent 60%)`,
-      backgroundSize: '100% 100%',
-    } : {};
-    
+            backgroundSize: '100% 100%',
+          }
+        : {};
+
     // Enhanced body styles with more visual appeal
     const bodyStyle: React.CSSProperties = {
-      background: traits.pattern === 'gradient'
-        ? `linear-gradient(135deg, ${traits.primaryColor} 0%, ${traits.secondaryColor} 50%, ${traits.accentColor} 100%)`
-        : traits.pattern === 'galaxy'
-        ? `radial-gradient(ellipse at 30% 30%, ${traits.primaryColor} 0%, ${traits.secondaryColor} 40%, ${traits.accentColor} 70%, ${traits.primaryColor} 100%)`
-        : traits.pattern === 'iridescent'
-        ? `linear-gradient(45deg, ${traits.primaryColor} 0%, ${traits.secondaryColor} 25%, ${traits.accentColor} 50%, ${traits.secondaryColor} 75%, ${traits.primaryColor} 100%)`
-        : traits.pattern === 'spotted'
-        ? `radial-gradient(circle at 20% 30%, ${traits.accentColor} 3px, transparent 3px),
+      background:
+        traits.pattern === 'gradient'
+          ? `linear-gradient(135deg, ${traits.primaryColor} 0%, ${traits.secondaryColor} 50%, ${traits.accentColor} 100%)`
+          : traits.pattern === 'galaxy'
+            ? `radial-gradient(ellipse at 30% 30%, ${traits.primaryColor} 0%, ${traits.secondaryColor} 40%, ${traits.accentColor} 70%, ${traits.primaryColor} 100%)`
+            : traits.pattern === 'iridescent'
+              ? `linear-gradient(45deg, ${traits.primaryColor} 0%, ${traits.secondaryColor} 25%, ${traits.accentColor} 50%, ${traits.secondaryColor} 75%, ${traits.primaryColor} 100%)`
+              : traits.pattern === 'spotted'
+                ? `radial-gradient(circle at 20% 30%, ${traits.accentColor} 3px, transparent 3px),
            radial-gradient(circle at 80% 70%, ${traits.accentColor} 3px, transparent 3px),
            radial-gradient(circle at 50% 50%, ${traits.accentColor} 2px, transparent 2px),
            ${traits.primaryColor}`
-        : traits.pattern === 'striped'
-        ? `repeating-linear-gradient(45deg, ${traits.primaryColor} 0px, ${traits.primaryColor} 12px, ${traits.secondaryColor} 12px, ${traits.secondaryColor} 24px)`
-        : traits.primaryColor,
-      boxShadow: traits.glow > 50
-        ? `0 0 ${traits.glow / 2}px ${traits.primaryColor}, 
+                : traits.pattern === 'striped'
+                  ? `repeating-linear-gradient(45deg, ${traits.primaryColor} 0px, ${traits.primaryColor} 12px, ${traits.secondaryColor} 12px, ${traits.secondaryColor} 24px)`
+                  : traits.primaryColor,
+      boxShadow:
+        traits.glow > 50
+          ? `0 0 ${traits.glow / 2}px ${traits.primaryColor}, 
            0 0 ${traits.glow}px ${traits.primaryColor}40,
            inset 0 0 ${traits.glow / 3}px ${traits.accentColor}60,
            0 4px 12px ${traits.primaryColor}20`
-        : `0 2px 8px ${traits.primaryColor}20`,
-      filter: traits.sparkle > 80 
-        ? 'brightness(1.15) saturate(1.3) contrast(1.1)' 
-        : traits.sparkle > 50
-        ? 'brightness(1.05) saturate(1.1)'
-        : 'none',
+          : `0 2px 8px ${traits.primaryColor}20`,
+      filter:
+        traits.sparkle > 80
+          ? 'brightness(1.15) saturate(1.3) contrast(1.1)'
+          : traits.sparkle > 50
+            ? 'brightness(1.05) saturate(1.1)'
+            : 'none',
       ...sparkleEffect,
     };
-    
+
     // Creature shapes using CSS
     const shapes: Record<PetBaseType, React.ReactNode> = {
       wisp: (
@@ -323,7 +336,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           />
         </div>
       ),
-      
+
       sprite: (
         <div className="relative" style={{ width: 70 * scale, height: 90 * scale }}>
           {/* Body */}
@@ -366,7 +379,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       dragon: (
         <div className="relative" style={{ width: 100 * scale, height: 80 * scale }}>
           {/* Body */}
@@ -419,7 +432,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       phoenix: (
         <div className="relative" style={{ width: 90 * scale, height: 100 * scale }}>
           {/* Body */}
@@ -471,7 +484,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           />
         </div>
       ),
-      
+
       wolf: (
         <div className="relative" style={{ width: 90 * scale, height: 80 * scale }}>
           {/* Body */}
@@ -512,9 +525,10 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
               style={{
                 width: 45 * scale,
                 height: 20,
-                background: traits.fluffiness > 50
-                  ? `linear-gradient(to right, ${traits.primaryColor}, ${traits.secondaryColor})`
-                  : traits.primaryColor,
+                background:
+                  traits.fluffiness > 50
+                    ? `linear-gradient(to right, ${traits.primaryColor}, ${traits.secondaryColor})`
+                    : traits.primaryColor,
                 borderRadius: '10px 50% 50% 10px',
               }}
               animate={{ rotate: [0, 20, -10, 20, 0] }}
@@ -523,7 +537,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       cat: (
         <div className="relative" style={{ width: 75 * scale, height: 70 * scale }}>
           {/* Body */}
@@ -576,7 +590,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       owl: (
         <div className="relative" style={{ width: 70 * scale, height: 85 * scale }}>
           {/* Body */}
@@ -635,7 +649,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       fox: (
         <div className="relative" style={{ width: 80 * scale, height: 70 * scale }}>
           {/* Body */}
@@ -687,7 +701,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           )}
         </div>
       ),
-      
+
       bunny: (
         <div className="relative" style={{ width: 65 * scale, height: 80 * scale }}>
           {/* Body */}
@@ -735,7 +749,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           />
         </div>
       ),
-      
+
       slime: (
         <motion.div
           className="relative"
@@ -757,7 +771,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
       ),
-      
+
       crystal: (
         <div className="relative" style={{ width: 70 * scale, height: 90 * scale }}>
           {/* Main crystal */}
@@ -789,7 +803,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           />
         </div>
       ),
-      
+
       shadow: (
         <motion.div
           className="relative"
@@ -813,29 +827,36 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           {/* Shadow tendrils */}
           <motion.div
             className="absolute bottom-0 left-1/4 w-2 h-16"
-            style={{ background: `linear-gradient(to bottom, ${traits.primaryColor}, transparent)` }}
+            style={{
+              background: `linear-gradient(to bottom, ${traits.primaryColor}, transparent)`,
+            }}
             animate={{ scaleY: [1, 1.3, 1], x: [0, 5, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
           />
           <motion.div
             className="absolute bottom-0 right-1/4 w-2 h-12"
-            style={{ background: `linear-gradient(to bottom, ${traits.primaryColor}, transparent)` }}
+            style={{
+              background: `linear-gradient(to bottom, ${traits.primaryColor}, transparent)`,
+            }}
             animate={{ scaleY: [1, 1.5, 1], x: [0, -3, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
           />
         </motion.div>
       ),
     };
-    
+
     return shapes[type] || shapes.wisp;
   };
-  
+
   // Eye expressions based on mood
   const getEyes = (mood: PetMood): React.ReactNode => {
     const eyeSize = 12 * sizeMultiplier;
     const eyeSpacing = 20 * sizeMultiplier;
-    
-    const eyeStyles: Record<PetMood, { left: React.CSSProperties; right: React.CSSProperties; content?: string }> = {
+
+    const eyeStyles: Record<
+      PetMood,
+      { left: React.CSSProperties; right: React.CSSProperties; content?: string }
+    > = {
       happy: {
         left: { borderRadius: '50% 50% 50% 50%', height: eyeSize * 0.7 },
         right: { borderRadius: '50% 50% 50% 50%', height: eyeSize * 0.7 },
@@ -874,11 +895,14 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
         right: { height: eyeSize * 0.5, transform: 'rotate(-10deg)' },
       },
     };
-    
+
     const style = eyeStyles[mood] || eyeStyles.content;
-    
+
     return (
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 flex gap-4" style={{ gap: eyeSpacing }}>
+      <div
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 flex gap-4"
+        style={{ gap: eyeSpacing }}
+      >
         <motion.div
           className="relative"
           style={{
@@ -913,7 +937,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
             }}
           />
         </motion.div>
-        
+
         <motion.div
           className="relative"
           style={{
@@ -946,20 +970,18 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
             }}
           />
         </motion.div>
-        
+
         {style.content && (
-          <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-sm">
-            {style.content}
-          </span>
+          <span className="absolute -top-4 left-1/2 -translate-x-1/2 text-sm">{style.content}</span>
         )}
       </div>
     );
   };
-  
+
   // Halo for special pets
   const getHalo = (): React.ReactNode => {
     if (!traits.hasHalo) return null;
-    
+
     return (
       <motion.div
         className="absolute -top-8 left-1/2 -translate-x-1/2"
@@ -970,7 +992,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
           borderRadius: '50%',
           boxShadow: `0 0 15px ${traits.accentColor}`,
         }}
-        animate={{ 
+        animate={{
           opacity: [0.6, 1, 0.6],
           y: [0, -3, 0],
         }}
@@ -978,7 +1000,7 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
       />
     );
   };
-  
+
   // Main animation variants
   const bodyVariants = {
     idle: {
@@ -1010,11 +1032,11 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
       transition: { duration: 0.6, repeat: Infinity },
     },
   };
-  
+
   // Markings overlay for pets with markings
   const getMarkings = (): React.ReactNode => {
     if (!traits.hasMarkings) return null;
-    
+
     return (
       <div
         className="absolute inset-0 pointer-events-none"
@@ -1028,31 +1050,28 @@ function PetBody({ pet, isInteracting, animation }: PetBodyProps) {
   };
 
   return (
-    <motion.div
-      className="relative"
-      variants={bodyVariants}
-      animate={animation}
-    >
+    <motion.div className="relative" variants={bodyVariants} animate={animation}>
       {getHalo()}
       {getBodyShape(baseType)}
       {getMarkings()}
       {getEyes(currentMood)}
-      
+
       {/* Markings overlay */}
       {traits.hasMarkings && (
         <div
           className="absolute inset-0 pointer-events-none opacity-30"
           style={{
-            background: traits.pattern === 'spotted'
-              ? `radial-gradient(circle at 30% 40%, ${traits.secondaryColor} 10%, transparent 10%), radial-gradient(circle at 70% 60%, ${traits.secondaryColor} 8%, transparent 8%)`
-              : traits.pattern === 'striped'
-              ? `repeating-linear-gradient(45deg, transparent, transparent 10px, ${traits.secondaryColor}40 10px, ${traits.secondaryColor}40 20px)`
-              : 'none',
+            background:
+              traits.pattern === 'spotted'
+                ? `radial-gradient(circle at 30% 40%, ${traits.secondaryColor} 10%, transparent 10%), radial-gradient(circle at 70% 60%, ${traits.secondaryColor} 8%, transparent 8%)`
+                : traits.pattern === 'striped'
+                  ? `repeating-linear-gradient(45deg, transparent, transparent 10px, ${traits.secondaryColor}40 10px, ${traits.secondaryColor}40 20px)`
+                  : 'none',
             borderRadius: 'inherit',
           }}
         />
       )}
-      
+
       {/* Fluffiness indicator */}
       {traits.fluffiness > 70 && (
         <div
@@ -1085,8 +1104,10 @@ export default function StoryPetDisplay({
   className = '',
 }: StoryPetDisplayProps) {
   const { pet, petPet, feedPet, playWithPet, talkToPet, lastResponse } = usePet();
-  
-  const [animation, setAnimation] = useState<'idle' | 'happy' | 'excited' | 'sleepy' | 'eating' | 'playing'>('idle');
+
+  const [animation, setAnimation] = useState<
+    'idle' | 'happy' | 'excited' | 'sleepy' | 'eating' | 'playing'
+  >('idle');
   const [isInteracting, setIsInteracting] = useState(false);
   const [showDialogue, setShowDialogue] = useState(false);
   const [dialogue, setDialogue] = useState('');
@@ -1096,11 +1117,11 @@ export default function StoryPetDisplay({
     animationSpeed: 1,
     colorShift: 0,
   });
-  
+
   const sizeClasses = {
-    sm: 'w-[72px] h-[72px]',      // 3x: 24*3 = 72
-    md: 'w-[120px] h-[120px]',    // 3x: 40*3 = 120
-    lg: 'w-[168px] h-[168px]',    // 3x: 56*3 = 168
+    sm: 'w-[72px] h-[72px]', // 3x: 24*3 = 72
+    md: 'w-[120px] h-[120px]', // 3x: 40*3 = 120
+    lg: 'w-[168px] h-[168px]', // 3x: 56*3 = 168
   };
 
   // Get visual effects based on reading patterns (if pet exists)
@@ -1108,16 +1129,25 @@ export default function StoryPetDisplay({
     if (pet) {
       // Calculate patterns from pet stats
       const patterns = {
-        averageReadingSpeed: pet.stats.wordsRead > 0 && pet.stats.daysActive > 0 
-          ? pet.stats.wordsRead / (pet.stats.daysActive * 60) 
-          : 200,
+        averageReadingSpeed:
+          pet.stats.wordsRead > 0 && pet.stats.daysActive > 0
+            ? pet.stats.wordsRead / (pet.stats.daysActive * 60)
+            : 200,
         preferredTimeOfDay: 'afternoon' as const,
-        readingFrequency: pet.stats.currentStreak > 7 ? 'consistent' as const : 
-                         pet.stats.storiesRead > 20 ? 'binge' as const : 'sporadic' as const,
+        readingFrequency:
+          pet.stats.currentStreak > 7
+            ? ('consistent' as const)
+            : pet.stats.storiesRead > 20
+              ? ('binge' as const)
+              : ('sporadic' as const),
         favoriteGenres: pet.stats.genresExplored,
         averageSessionLength: 30,
-        interactionFrequency: pet.stats.happiness > 70 ? 'high' as const : 
-                             pet.stats.happiness > 40 ? 'medium' as const : 'low' as const,
+        interactionFrequency:
+          pet.stats.happiness > 70
+            ? ('high' as const)
+            : pet.stats.happiness > 40
+              ? ('medium' as const)
+              : ('low' as const),
         prefersLongStories: false,
         prefersShortStories: false,
         exploresManyGenres: pet.stats.genresExplored.length >= 5,
@@ -1126,11 +1156,11 @@ export default function StoryPetDisplay({
       setVisualEffects(getVisualEffects(patterns));
     }
   }, [pet]);
-  
+
   // Update animation based on mood
   useEffect(() => {
     if (!pet) return;
-    
+
     switch (pet.currentMood) {
       case 'excited':
         setAnimation('excited');
@@ -1145,40 +1175,40 @@ export default function StoryPetDisplay({
         setAnimation('idle');
     }
   }, [pet?.currentMood]);
-  
+
   // Handle interactions
   const handleInteraction = async (type: 'pet' | 'feed' | 'play' | 'talk') => {
     if (isInteracting) return;
-    
+
     setIsInteracting(true);
-    
+
     const actions = {
       pet: { fn: petPet, anim: 'happy' as const },
       feed: { fn: feedPet, anim: 'eating' as const },
       play: { fn: playWithPet, anim: 'playing' as const },
       talk: { fn: talkToPet, anim: 'happy' as const },
     };
-    
+
     const action = actions[type];
     setAnimation(action.anim);
-    
+
     const response = await action.fn();
     if (response) {
       setDialogue(response);
       setShowDialogue(true);
       setTimeout(() => setShowDialogue(false), 3000);
     }
-    
+
     setTimeout(() => {
       setAnimation('idle');
       setIsInteracting(false);
     }, 1500);
   };
-  
+
   if (!pet) {
     return null;
   }
-  
+
   return (
     <div className={`relative ${className}`}>
       {/* Pet Container */}
@@ -1189,42 +1219,38 @@ export default function StoryPetDisplay({
         onClick={() => handleInteraction('pet')}
       >
         {/* Background aura - with intensity from reading patterns */}
-        <AuraEffect 
-          type={pet.traits.auraType} 
+        <AuraEffect
+          type={pet.traits.auraType}
           color={pet.traits.primaryColor}
           glowIntensity={visualEffects.glowIntensity}
           animationSpeed={visualEffects.animationSpeed}
         />
-        
+
         {/* Particles - with intensity from reading patterns */}
-        <ParticleEffect 
-          type={pet.traits.particleType} 
+        <ParticleEffect
+          type={pet.traits.particleType}
           color={pet.traits.primaryColor}
           active={!isInteracting}
           intensity={visualEffects.particleIntensity}
         />
-        
+
         {/* Pet body */}
-        <PetBody 
-          pet={pet} 
-          isInteracting={isInteracting}
-          animation={animation}
-        />
-        
+        <PetBody pet={pet} isInteracting={isInteracting} animation={animation} />
+
         {/* Render equipped accessories */}
-        <PetAccessoryRenderer 
+        <PetAccessoryRenderer
           accessories={pet.accessories}
           traits={pet.traits}
           scale={size === 'sm' ? 0.6 : size === 'md' ? 1 : 1.4}
         />
-        
+
         {/* Level indicator - 3x bigger */}
         {size !== 'sm' && (
           <div className="absolute -top-4 -right-4 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full w-16 h-16 flex items-center justify-center shadow-lg border-4 border-white">
             <span className="text-xl font-bold text-white">{pet.stats.level}</span>
           </div>
         )}
-        
+
         {/* Evolution badge for legendary - 3x bigger */}
         {pet.evolutionStage === 'legendary' && (
           <motion.div
@@ -1236,7 +1262,7 @@ export default function StoryPetDisplay({
           </motion.div>
         )}
       </motion.div>
-      
+
       {/* Dialogue bubble - 3x bigger */}
       <AnimatePresence>
         {showDialogue && (
@@ -1251,15 +1277,17 @@ export default function StoryPetDisplay({
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Pet name */}
       {size !== 'sm' && (
         <div className="text-center mt-2">
           <p className="font-bold text-white">{pet.name}</p>
-          <p className="text-xs text-gray-400 capitalize">{pet.evolutionStage} {pet.baseType}</p>
+          <p className="text-xs text-gray-400 capitalize">
+            {pet.evolutionStage} {pet.baseType}
+          </p>
         </div>
       )}
-      
+
       {/* Stats bars */}
       {showStats && size !== 'sm' && (
         <div className="mt-6 space-y-4 w-full max-w-96">
@@ -1267,25 +1295,31 @@ export default function StoryPetDisplay({
           <div>
             <div className="flex justify-between text-lg mb-2">
               <span className="flex items-center gap-2">
-                <Star className="w-6 h-6 text-amber-400" /> <span className="font-semibold">XP</span>
+                <Star className="w-6 h-6 text-amber-400" />{' '}
+                <span className="font-semibold">XP</span>
               </span>
-              <span className="font-bold">{pet.stats.experience}/{pet.stats.experienceToNextLevel}</span>
+              <span className="font-bold">
+                {pet.stats.experience}/{pet.stats.experienceToNextLevel}
+              </span>
             </div>
             <div className="h-4 bg-gray-700 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-amber-400 to-orange-500"
                 initial={{ width: 0 }}
-                animate={{ width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%` }}
+                animate={{
+                  width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%`,
+                }}
                 transition={{ duration: 0.5 }}
               />
             </div>
           </div>
-          
+
           {/* Happiness - 3x bigger */}
           <div>
             <div className="flex justify-between text-lg mb-2">
               <span className="flex items-center gap-2">
-                <Heart className="w-6 h-6 text-pink-400" /> <span className="font-semibold">Happy</span>
+                <Heart className="w-6 h-6 text-pink-400" />{' '}
+                <span className="font-semibold">Happy</span>
               </span>
               <span className="font-bold">{pet.stats.happiness}%</span>
             </div>
@@ -1298,12 +1332,13 @@ export default function StoryPetDisplay({
               />
             </div>
           </div>
-          
+
           {/* Energy - 3x bigger */}
           <div>
             <div className="flex justify-between text-lg mb-2">
               <span className="flex items-center gap-2">
-                <Zap className="w-6 h-6 text-cyan-400" /> <span className="font-semibold">Energy</span>
+                <Zap className="w-6 h-6 text-cyan-400" />{' '}
+                <span className="font-semibold">Energy</span>
               </span>
               <span className="font-bold">{pet.stats.energy}%</span>
             </div>
@@ -1318,7 +1353,7 @@ export default function StoryPetDisplay({
           </div>
         </div>
       )}
-      
+
       {/* Interaction buttons - 3x bigger */}
       {showInteractions && size !== 'sm' && (
         <div className="mt-6 flex justify-center gap-4">
@@ -1360,15 +1395,19 @@ export default function StoryPetDisplay({
           </motion.button>
         </div>
       )}
-      
+
       {/* CSS for float animation */}
       <style jsx global>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
         }
       `}</style>
     </div>
   );
 }
-

@@ -9,20 +9,20 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 // TYPES
 // ========================================
 
-export type NotificationType = 
-  | 'streak_reminder'      // Your streak is about to expire!
-  | 'streak_lost'          // You lost your streak
-  | 'daily_challenge'      // New daily challenges available
-  | 'challenge_complete'   // You completed a challenge!
-  | 'story_update'         // A story you follow has a new chapter
-  | 'friend_activity'      // A friend started/completed a story
+export type NotificationType =
+  | 'streak_reminder' // Your streak is about to expire!
+  | 'streak_lost' // You lost your streak
+  | 'daily_challenge' // New daily challenges available
+  | 'challenge_complete' // You completed a challenge!
+  | 'story_update' // A story you follow has a new chapter
+  | 'friend_activity' // A friend started/completed a story
   | 'achievement_unlocked' // You earned a new achievement
-  | 'level_up'            // You leveled up!
-  | 'weekly_summary'       // Your weekly reading summary
-  | 'new_story'           // New story in your favorite genre
-  | 'milestone'           // You reached a milestone!
-  | 'social'              // Someone followed you, commented, etc.
-  | 'promotional';        // Special offers, new features
+  | 'level_up' // You leveled up!
+  | 'weekly_summary' // Your weekly reading summary
+  | 'new_story' // New story in your favorite genre
+  | 'milestone' // You reached a milestone!
+  | 'social' // Someone followed you, commented, etc.
+  | 'promotional'; // Special offers, new features
 
 export interface PushSubscription {
   id: string;
@@ -37,7 +37,7 @@ export interface PushSubscription {
 
 export interface NotificationPreferences {
   userId: string;
-  pushEnabled: boolean;
+  pushEnabled?: boolean;
   streakReminders: boolean;
   dailyChallenges: boolean;
   storyUpdates: boolean;
@@ -46,8 +46,9 @@ export interface NotificationPreferences {
   weeklySummary: boolean;
   newStories: boolean;
   promotional: boolean;
+  quietHoursEnabled?: boolean;
   quietHoursStart?: number; // Hour in 24h format (e.g., 22 for 10 PM)
-  quietHoursEnd?: number;   // Hour in 24h format (e.g., 8 for 8 AM)
+  quietHoursEnd?: number; // Hour in 24h format (e.g., 8 for 8 AM)
   timezone: string;
 }
 
@@ -91,7 +92,10 @@ export interface NotificationPayload {
 // NOTIFICATION TEMPLATES
 // ========================================
 
-const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unknown>) => NotificationPayload> = {
+const NOTIFICATION_TEMPLATES: Record<
+  NotificationType,
+  (data: Record<string, unknown>) => NotificationPayload
+> = {
   streak_reminder: (data) => ({
     title: '🔥 Your streak is in danger!',
     body: `You haven't read today. Your ${data.currentStreak}-day streak will reset at midnight!`,
@@ -112,9 +116,7 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
     icon: '/icons/streak-broken.png',
     tag: 'streak-lost',
     data: { url: '/story-library', type: 'streak_lost' },
-    actions: [
-      { action: 'restart', title: 'Start New Streak', icon: '/icons/refresh.png' },
-    ],
+    actions: [{ action: 'restart', title: 'Start New Streak', icon: '/icons/refresh.png' }],
   }),
 
   daily_challenge: () => ({
@@ -123,9 +125,7 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
     icon: '/icons/challenge.png',
     tag: 'daily-challenge',
     data: { url: '/achievements', type: 'daily_challenge' },
-    actions: [
-      { action: 'view', title: 'View Challenges', icon: '/icons/target.png' },
-    ],
+    actions: [{ action: 'view', title: 'View Challenges', icon: '/icons/target.png' }],
   }),
 
   challenge_complete: (data) => ({
@@ -139,20 +139,19 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
   story_update: (data) => ({
     title: '📖 New Chapter Available!',
     body: `"${data.storyTitle}" has a new chapter waiting for you.`,
-    icon: data.storyCover as string || '/icons/book.png',
+    icon: (data.storyCover as string) || '/icons/book.png',
     tag: `story-${data.storyId}`,
     data: { url: `/story-reader?id=${data.storyId}`, type: 'story_update', storyId: data.storyId },
-    actions: [
-      { action: 'read', title: 'Read Now', icon: '/icons/book-open.png' },
-    ],
+    actions: [{ action: 'read', title: 'Read Now', icon: '/icons/book-open.png' }],
   }),
 
   friend_activity: (data) => ({
     title: `👋 ${data.friendName} is reading!`,
-    body: data.activityType === 'started' 
-      ? `Started reading "${data.storyTitle}"`
-      : `Just completed "${data.storyTitle}"`,
-    icon: data.friendAvatar as string || '/icons/user.png',
+    body:
+      data.activityType === 'started'
+        ? `Started reading "${data.storyTitle}"`
+        : `Just completed "${data.storyTitle}"`,
+    icon: (data.friendAvatar as string) || '/icons/user.png',
     tag: 'friend-activity',
     data: { url: '/community-hub', type: 'friend_activity' },
   }),
@@ -186,7 +185,7 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
   new_story: (data) => ({
     title: `✨ New ${data.genre} Story!`,
     body: `"${data.storyTitle}" just launched. It looks like your kind of story!`,
-    icon: data.storyCover as string || '/icons/sparkle.png',
+    icon: (data.storyCover as string) || '/icons/sparkle.png',
     tag: 'new-story',
     data: { url: `/story-reader?id=${data.storyId}`, type: 'new_story', storyId: data.storyId },
     actions: [
@@ -197,7 +196,7 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
 
   milestone: (data) => ({
     title: '🎉 Milestone Reached!',
-    body: data.milestoneMessage as string || 'You achieved something amazing!',
+    body: (data.milestoneMessage as string) || 'You achieved something amazing!',
     icon: '/icons/star.png',
     tag: 'milestone',
     data: { url: '/user-profile', type: 'milestone' },
@@ -205,19 +204,19 @@ const NOTIFICATION_TEMPLATES: Record<NotificationType, (data: Record<string, unk
   }),
 
   social: (data) => ({
-    title: data.title as string || '👥 Social Update',
-    body: data.body as string || 'Someone interacted with you!',
-    icon: data.userAvatar as string || '/icons/users.png',
+    title: (data.title as string) || '👥 Social Update',
+    body: (data.body as string) || 'Someone interacted with you!',
+    icon: (data.userAvatar as string) || '/icons/users.png',
     tag: 'social',
-    data: { url: data.url as string || '/community-hub', type: 'social' },
+    data: { url: (data.url as string) || '/community-hub', type: 'social' },
   }),
 
   promotional: (data) => ({
-    title: data.title as string || '🎁 Special Offer!',
-    body: data.body as string || 'Check out what\'s new!',
+    title: (data.title as string) || '🎁 Special Offer!',
+    body: (data.body as string) || "Check out what's new!",
     icon: '/icons/gift.png',
     tag: 'promotional',
-    data: { url: data.url as string || '/pricing', type: 'promotional' },
+    data: { url: (data.url as string) || '/pricing', type: 'promotional' },
     silent: true, // Don't vibrate for promotional
   }),
 };
@@ -276,28 +275,31 @@ class PushNotificationService {
 
     try {
       const registration = await navigator.serviceWorker.ready;
-      
+
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey),
       });
 
       const subscriptionJson = subscription.toJSON();
-      
+
       // Save to database
       const supabase = this.getSupabase();
       const { data, error } = await supabase
         .from('push_subscriptions')
-        .upsert({
-          user_id: userId,
-          endpoint: subscription.endpoint,
-          p256dh: subscriptionJson.keys?.p256dh,
-          auth: subscriptionJson.keys?.auth,
-          user_agent: navigator.userAgent,
-          last_used_at: new Date().toISOString(),
-        }, {
-          onConflict: 'user_id,endpoint',
-        })
+        .upsert(
+          {
+            user_id: userId,
+            endpoint: subscription.endpoint,
+            p256dh: subscriptionJson.keys?.p256dh,
+            auth: subscriptionJson.keys?.auth,
+            user_agent: navigator.userAgent,
+            last_used_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'user_id,endpoint',
+          }
+        )
         .select()
         .single();
 
@@ -322,17 +324,14 @@ class PushNotificationService {
     try {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
-      
+
       if (subscription) {
         await subscription.unsubscribe();
       }
 
       // Remove from database
       const supabase = this.getSupabase();
-      await supabase
-        .from('push_subscriptions')
-        .delete()
-        .eq('user_id', userId);
+      await supabase.from('push_subscriptions').delete().eq('user_id', userId);
 
       return true;
     } catch (error) {
@@ -346,7 +345,7 @@ class PushNotificationService {
    */
   async getPreferences(userId: string): Promise<NotificationPreferences> {
     const supabase = this.getSupabase();
-    
+
     const { data, error } = await supabase
       .from('notification_preferences')
       .select('*')
@@ -388,12 +387,14 @@ class PushNotificationService {
   /**
    * Update notification preferences
    */
-  async updatePreferences(userId: string, preferences: Partial<NotificationPreferences>): Promise<void> {
+  async updatePreferences(
+    userId: string,
+    preferences: Partial<NotificationPreferences>
+  ): Promise<void> {
     const supabase = this.getSupabase();
 
-    await supabase
-      .from('notification_preferences')
-      .upsert({
+    await supabase.from('notification_preferences').upsert(
+      {
         user_id: userId,
         streak_reminders: preferences.streakReminders,
         daily_challenges: preferences.dailyChallenges,
@@ -407,9 +408,11 @@ class PushNotificationService {
         quiet_hours_end: preferences.quietHoursEnd,
         timezone: preferences.timezone,
         updated_at: new Date().toISOString(),
-      }, {
+      },
+      {
         onConflict: 'user_id',
-      });
+      }
+    );
   }
 
   /**
@@ -513,11 +516,11 @@ class PushNotificationService {
    */
   async scheduleStreakReminder(userId: string, currentStreak: number): Promise<void> {
     const now = new Date();
-    
+
     // Schedule reminder for 8 PM local time
     const reminderTime = new Date();
     reminderTime.setHours(20, 0, 0, 0);
-    
+
     if (reminderTime <= now) {
       // If it's past 8 PM, don't schedule
       return;
@@ -547,7 +550,10 @@ class PushNotificationService {
 
   // ==================== PRIVATE METHODS ====================
 
-  private shouldSendNotification(type: NotificationType, preferences: NotificationPreferences): boolean {
+  private shouldSendNotification(
+    type: NotificationType,
+    preferences: NotificationPreferences
+  ): boolean {
     const typeToPreference: Record<NotificationType, keyof NotificationPreferences> = {
       streak_reminder: 'streakReminders',
       streak_lost: 'streakReminders',
@@ -565,7 +571,7 @@ class PushNotificationService {
     };
 
     const prefKey = typeToPreference[type];
-    return preferences[prefKey] as boolean ?? true;
+    return (preferences[prefKey] as boolean) ?? true;
   }
 
   private isQuietHours(preferences: NotificationPreferences): boolean {
@@ -590,7 +596,7 @@ class PushNotificationService {
 
     if (preferences.quietHoursEnd !== undefined) {
       result.setHours(preferences.quietHoursEnd, 0, 0, 0);
-      
+
       // If quiet hours end is before current time, schedule for tomorrow
       if (result <= now) {
         result.setDate(result.getDate() + 1);

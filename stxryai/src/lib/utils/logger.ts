@@ -19,17 +19,23 @@ class Logger {
     const userInfo = userId ? ` [User: ${userId}]` : '';
     const sessionInfo = sessionId ? ` [Session: ${sessionId}]` : '';
     const contextStr = context ? ` ${JSON.stringify(context)}` : '';
-    const errorStr = error ? ` Error: ${error.message}${error.stack ? `\n${error.stack}` : ''}` : '';
+    const errorStr = error
+      ? ` Error: ${error.message}${error.stack ? `\n${error.stack}` : ''}`
+      : '';
 
     return `${prefix}${userInfo}${sessionInfo}: ${message}${contextStr}${errorStr}`;
   }
 
-  private log(level: LogLevel, message: string, options: {
-    context?: Record<string, any>;
-    userId?: string;
-    sessionId?: string;
-    error?: Error;
-  } = {}) {
+  private log(
+    level: LogLevel,
+    message: string,
+    options: {
+      context?: Record<string, any>;
+      userId?: string;
+      sessionId?: string;
+      error?: Error;
+    } = {}
+  ) {
     const entry: LogEntry = {
       level,
       message,
@@ -66,28 +72,46 @@ class Logger {
     }
   }
 
-  debug(message: string, options?: { context?: Record<string, any>; userId?: string; sessionId?: string }) {
+  debug(
+    message: string,
+    options?: { context?: Record<string, any>; userId?: string; sessionId?: string }
+  ) {
     this.log('debug', message, options);
   }
 
-  info(message: string, options?: { context?: Record<string, any>; userId?: string; sessionId?: string }) {
+  info(
+    message: string,
+    options?: { context?: Record<string, any>; userId?: string; sessionId?: string }
+  ) {
     this.log('info', message, options);
   }
 
-  warn(message: string, options?: { context?: Record<string, any>; userId?: string; sessionId?: string; error?: Error }) {
+  warn(
+    message: string,
+    options?: { context?: Record<string, any>; userId?: string; sessionId?: string; error?: Error }
+  ) {
     this.log('warn', message, options);
   }
 
-  error(message: string, options?: { context?: Record<string, any>; userId?: string; sessionId?: string; error?: Error }) {
+  error(
+    message: string,
+    options?: { context?: Record<string, any>; userId?: string; sessionId?: string; error?: Error }
+  ) {
     this.log('error', message, options);
   }
 
   // Specialized logging methods
-  apiCall(endpoint: string, method: string, statusCode: number, duration: number, options?: {
-    userId?: string;
-    sessionId?: string;
-    error?: Error;
-  }) {
+  apiCall(
+    endpoint: string,
+    method: string,
+    statusCode: number,
+    duration: number,
+    options?: {
+      userId?: string;
+      sessionId?: string;
+      error?: Error;
+    }
+  ) {
     const level: LogLevel = statusCode >= 400 ? 'error' : 'info';
     this.log(level, `API ${method} ${endpoint} - ${statusCode} (${duration}ms)`, {
       context: { endpoint, method, statusCode, duration },
@@ -95,20 +119,26 @@ class Logger {
     });
   }
 
-  userAction(action: string, options?: {
-    context?: Record<string, any>;
-    userId?: string;
-    sessionId?: string;
-  }) {
+  userAction(
+    action: string,
+    options?: {
+      context?: Record<string, any>;
+      userId?: string;
+      sessionId?: string;
+    }
+  ) {
     this.info(`User action: ${action}`, options);
   }
 
-  securityEvent(event: string, options?: {
-    context?: Record<string, any>;
-    userId?: string;
-    sessionId?: string;
-    error?: Error;
-  }) {
+  securityEvent(
+    event: string,
+    options?: {
+      context?: Record<string, any>;
+      userId?: string;
+      sessionId?: string;
+      error?: Error;
+    }
+  ) {
     this.warn(`Security event: ${event}`, options);
   }
 }

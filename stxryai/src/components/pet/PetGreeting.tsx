@@ -27,35 +27,45 @@ export default function PetGreeting({
   const { pet, hasPet, getDialogue } = usePet();
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState('');
-  
+
   useEffect(() => {
     if (!hasPet || !pet || !autoShow) return;
-    
+
     // Set appropriate message based on trigger
-    const triggerMap: Record<string, 'greeting' | 'reading_start' | 'reading_end' | 'choice_made' | 'milestone' | 'idle' | 'encouragement' | 'celebration'> = {
+    const triggerMap: Record<
+      string,
+      | 'greeting'
+      | 'reading_start'
+      | 'reading_end'
+      | 'choice_made'
+      | 'milestone'
+      | 'idle'
+      | 'encouragement'
+      | 'celebration'
+    > = {
       reading: 'reading_start',
       creating: 'encouragement',
       achievement: 'celebration',
       idle: 'idle',
       milestone: 'milestone',
     };
-    
+
     const dialogueTrigger = triggerMap[trigger] || 'greeting';
     const newMessage = getDialogue(dialogueTrigger);
-    
+
     if (newMessage) {
       setMessage(newMessage);
       setIsVisible(true);
-      
+
       if (autoHideDelay > 0) {
         const timer = setTimeout(() => setIsVisible(false), autoHideDelay);
         return () => clearTimeout(timer);
       }
     }
   }, [hasPet, pet, trigger, autoShow, autoHideDelay, getDialogue]);
-  
+
   if (!hasPet || !pet) return null;
-  
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -72,36 +82,47 @@ export default function PetGreeting({
           >
             <X className="w-3 h-3 text-ghost-500" />
           </button>
-          
+
           <div className="flex items-center gap-3">
             {/* Mini pet avatar */}
-            <div 
+            <div
               className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ 
+              style={{
                 background: `linear-gradient(135deg, ${pet.traits.primaryColor}40, ${pet.traits.secondaryColor}40)`,
                 boxShadow: `0 0 15px ${pet.traits.primaryColor}30`,
               }}
             >
-              <motion.span 
+              <motion.span
                 className="text-lg"
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
-                {pet.baseType === 'dragon' ? '🐲' :
-                 pet.baseType === 'cat' ? '🐱' :
-                 pet.baseType === 'wolf' ? '🐺' :
-                 pet.baseType === 'fox' ? '🦊' :
-                 pet.baseType === 'bunny' ? '🐰' :
-                 pet.baseType === 'owl' ? '🦉' :
-                 pet.baseType === 'phoenix' ? '🔥' :
-                 pet.baseType === 'crystal' ? '💎' :
-                 pet.baseType === 'slime' ? '🫧' :
-                 pet.baseType === 'shadow' ? '👻' :
-                 pet.baseType === 'wisp' ? '✨' :
-                 '🌟'}
+                {pet.baseType === 'dragon'
+                  ? '🐲'
+                  : pet.baseType === 'cat'
+                    ? '🐱'
+                    : pet.baseType === 'wolf'
+                      ? '🐺'
+                      : pet.baseType === 'fox'
+                        ? '🦊'
+                        : pet.baseType === 'bunny'
+                          ? '🐰'
+                          : pet.baseType === 'owl'
+                            ? '🦉'
+                            : pet.baseType === 'phoenix'
+                              ? '🔥'
+                              : pet.baseType === 'crystal'
+                                ? '💎'
+                                : pet.baseType === 'slime'
+                                  ? '🫧'
+                                  : pet.baseType === 'shadow'
+                                    ? '👻'
+                                    : pet.baseType === 'wisp'
+                                      ? '✨'
+                                      : '🌟'}
               </motion.span>
             </div>
-            
+
             {/* Message */}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium text-ghost-300 mb-0.5">{pet.name}</p>
@@ -113,4 +134,3 @@ export default function PetGreeting({
     </AnimatePresence>
   );
 }
-

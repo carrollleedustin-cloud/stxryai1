@@ -52,7 +52,9 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
   const [selectedSeries, setSelectedSeries] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'books' | 'characters' | 'world' | 'arcs' | 'canon'>('overview');
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'books' | 'characters' | 'world' | 'arcs' | 'canon'
+  >('overview');
 
   useEffect(() => {
     loadSeries();
@@ -80,11 +82,16 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-emerald-500';
-      case 'planning': return 'bg-amber-500';
-      case 'on_hold': return 'bg-slate-500';
-      case 'completed': return 'bg-blue-500';
-      default: return 'bg-slate-500';
+      case 'active':
+        return 'bg-emerald-500';
+      case 'planning':
+        return 'bg-amber-500';
+      case 'on_hold':
+        return 'bg-slate-500';
+      case 'completed':
+        return 'bg-blue-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
@@ -150,9 +157,11 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
-                    
+
                     {/* Status Badge */}
-                    <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(s.status)}`}>
+                    <div
+                      className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(s.status)}`}
+                    >
                       {s.status}
                     </div>
 
@@ -172,22 +181,22 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
                         {s.genre}
                       </span>
                     </div>
-                    
+
                     <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-purple-300 transition-colors">
                       {s.title}
                     </h3>
-                    
+
                     {s.description && (
-                      <p className="text-slate-400 text-sm line-clamp-2 mb-4">
-                        {s.description}
-                      </p>
+                      <p className="text-slate-400 text-sm line-clamp-2 mb-4">{s.description}</p>
                     )}
 
                     {/* Stats */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex items-center gap-2 text-sm">
                         <BookOpen className="w-4 h-4 text-purple-400" />
-                        <span className="text-slate-300">{s.bookCount}/{s.targetBooks} Books</span>
+                        <span className="text-slate-300">
+                          {s.bookCount}/{s.targetBooks} Books
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Users className="w-4 h-4 text-pink-400" />
@@ -232,7 +241,9 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
               >
                 <div className="border-2 border-dashed border-white/20 rounded-2xl p-12 text-center hover:border-purple-500/50 transition-colors">
                   <Sparkles className="w-12 h-12 mx-auto mb-4 text-purple-500/50" />
-                  <h3 className="text-xl font-semibold text-white mb-2">Create Your First Series</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Create Your First Series
+                  </h3>
                   <p className="text-slate-400 mb-6">
                     Start building a multi-book universe with persistent characters and world state
                   </p>
@@ -263,7 +274,7 @@ export default function SeriesManager({ authorId, onSeriesSelect }: SeriesManage
             authorId={authorId}
             onClose={() => setShowCreateModal(false)}
             onCreate={(newSeries) => {
-              setSeries(prev => [newSeries, ...prev]);
+              setSeries((prev) => [newSeries, ...prev]);
               setShowCreateModal(false);
               handleSeriesClick(newSeries.id);
             }}
@@ -321,10 +332,7 @@ function SeriesDetailView({
     <div>
       {/* Back Button & Title */}
       <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={onBack}
-          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-        >
+        <button onClick={onBack} className="p-2 rounded-lg hover:bg-white/5 transition-colors">
           <ChevronRight className="w-5 h-5 text-slate-400 rotate-180" />
         </button>
         <div>
@@ -390,7 +398,10 @@ function SeriesOverviewTab({ series }: { series: any }) {
           <h3 className="text-lg font-semibold text-white mb-3">Themes & Motifs</h3>
           <div className="flex flex-wrap gap-2">
             {(series.primaryThemes || []).map((theme: string, i: number) => (
-              <span key={i} className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm">
+              <span
+                key={i}
+                className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm"
+              >
                 {theme}
               </span>
             ))}
@@ -407,11 +418,15 @@ function SeriesOverviewTab({ series }: { series: any }) {
           <h3 className="text-lg font-semibold text-white mb-3">Series Arc</h3>
           <div className="space-y-4">
             <div>
-              <label className="text-xs text-slate-500 uppercase tracking-wider">Main Conflict</label>
+              <label className="text-xs text-slate-500 uppercase tracking-wider">
+                Main Conflict
+              </label>
               <p className="text-slate-300 mt-1">{series.mainConflict || 'Not defined'}</p>
             </div>
             <div>
-              <label className="text-xs text-slate-500 uppercase tracking-wider">Planned Ending</label>
+              <label className="text-xs text-slate-500 uppercase tracking-wider">
+                Planned Ending
+              </label>
               <p className="text-slate-300 mt-1">{series.plannedEnding || 'Not defined'}</p>
             </div>
           </div>
@@ -426,11 +441,15 @@ function SeriesOverviewTab({ series }: { series: any }) {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-slate-400">Books</span>
-              <span className="text-white font-medium">{series.currentBookCount || 0}/{series.targetBookCount || 1}</span>
+              <span className="text-white font-medium">
+                {series.currentBookCount || 0}/{series.targetBookCount || 1}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-400">Total Words</span>
-              <span className="text-white font-medium">{(series.totalWordCount || 0).toLocaleString()}</span>
+              <span className="text-white font-medium">
+                {(series.totalWordCount || 0).toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-400">Characters</span>
@@ -509,14 +528,20 @@ function BooksTab({ seriesId }: { seriesId: string }) {
             </div>
             <div className="flex-1">
               <h4 className="text-white font-medium">{book.title}</h4>
-              <p className="text-slate-400 text-sm">{book.status} • {book.currentWordCount?.toLocaleString() || 0} words</p>
+              <p className="text-slate-400 text-sm">
+                {book.status} • {book.currentWordCount?.toLocaleString() || 0} words
+              </p>
             </div>
             <div className="text-right">
-              <div className="text-sm text-slate-400">{book.currentChapterCount || 0}/{book.targetChapterCount || 0} chapters</div>
+              <div className="text-sm text-slate-400">
+                {book.currentChapterCount || 0}/{book.targetChapterCount || 0} chapters
+              </div>
               <div className="w-24 h-2 bg-white/10 rounded-full mt-2 overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                  style={{ width: `${(book.currentChapterCount / (book.targetChapterCount || 1)) * 100}%` }}
+                  style={{
+                    width: `${(book.currentChapterCount / (book.targetChapterCount || 1)) * 100}%`,
+                  }}
                 />
               </div>
             </div>
@@ -693,7 +718,9 @@ function CreateSeriesModal({
                 min="1"
                 max="20"
                 value={formData.targetBookCount}
-                onChange={(e) => setFormData({ ...formData, targetBookCount: parseInt(e.target.value) || 1 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, targetBookCount: parseInt(e.target.value) || 1 })
+                }
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-purple-500"
               />
             </div>
@@ -750,4 +777,3 @@ function CreateSeriesModal({
     </motion.div>
   );
 }
-

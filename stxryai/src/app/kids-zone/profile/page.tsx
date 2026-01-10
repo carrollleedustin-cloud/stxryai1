@@ -70,7 +70,7 @@ export default function KidsZoneProfilePage() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
       <MagicTopBar showCoins={coins} />
-      
+
       <div className="mt-20 mb-24">
         {/* Profile Header */}
         <section className="mb-8 text-center">
@@ -82,11 +82,11 @@ export default function KidsZoneProfilePage() {
             <div
               className="w-32 h-32 rounded-full flex items-center justify-center text-6xl"
               style={{
-                background: `linear-gradient(135deg, ${themeColors.find(t => t.id === selectedTheme)?.color}40, ${themeColors.find(t => t.id === selectedTheme)?.color}20)`,
-                border: `4px solid ${themeColors.find(t => t.id === selectedTheme)?.color}`,
+                background: `linear-gradient(135deg, ${themeColors.find((t) => t.id === selectedTheme)?.color}40, ${themeColors.find((t) => t.id === selectedTheme)?.color}20)`,
+                border: `4px solid ${themeColors.find((t) => t.id === selectedTheme)?.color}`,
               }}
             >
-              {avatarOptions.find(a => a.id === selectedAvatar)?.emoji}
+              {avatarOptions.find((a) => a.id === selectedAvatar)?.emoji}
             </div>
             <motion.div
               className="absolute -bottom-1 -right-1 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-xl border-4 border-nebula-deep"
@@ -117,10 +117,7 @@ export default function KidsZoneProfilePage() {
               className="mb-2"
               whileHover={{ scale: 1.05 }}
             >
-              <h1 
-                className="text-3xl font-bold"
-                style={{ fontFamily: 'var(--font-kids)' }}
-              >
+              <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-kids)' }}>
                 <MagicText>{nickname}</MagicText>
               </h1>
             </motion.button>
@@ -156,7 +153,7 @@ export default function KidsZoneProfilePage() {
         {/* Avatar Selection */}
         <section className="mb-8">
           <MagicCard color="purple">
-            <h2 
+            <h2
               className="text-xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-kids)' }}
             >
@@ -185,7 +182,7 @@ export default function KidsZoneProfilePage() {
         {/* Theme Selection */}
         <section className="mb-8">
           <MagicCard color="pink">
-            <h2 
+            <h2
               className="text-xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-kids)' }}
             >
@@ -197,9 +194,7 @@ export default function KidsZoneProfilePage() {
                   key={theme.id}
                   onClick={() => setSelectedTheme(theme.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-                    selectedTheme === theme.id
-                      ? 'ring-4'
-                      : 'opacity-70 hover:opacity-100'
+                    selectedTheme === theme.id ? 'ring-4' : 'opacity-70 hover:opacity-100'
                   }`}
                   style={{
                     background: theme.color,
@@ -219,7 +214,7 @@ export default function KidsZoneProfilePage() {
         {/* Recent Stories */}
         <section className="mb-8">
           <MagicCard color="cyan">
-            <h2 
+            <h2
               className="text-xl font-bold text-white mb-4"
               style={{ fontFamily: 'var(--font-kids)' }}
             >
@@ -264,7 +259,7 @@ export default function KidsZoneProfilePage() {
         <section className="mb-8">
           <MagicCard color="gold">
             <div className="flex items-center justify-between mb-4">
-              <h2 
+              <h2
                 className="text-xl font-bold text-white"
                 style={{ fontFamily: 'var(--font-kids)' }}
               >
@@ -300,4 +295,3 @@ export default function KidsZoneProfilePage() {
     </div>
   );
 }
-

@@ -45,7 +45,9 @@ export const GestureControls: React.FC<GestureControlsProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [touches, setTouches] = useState<TouchPoint[]>([]);
-  const [gestureStart, setGestureStart] = useState<{ x: number; y: number; time: number } | null>(null);
+  const [gestureStart, setGestureStart] = useState<{ x: number; y: number; time: number } | null>(
+    null
+  );
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawPath, setDrawPath] = useState<Array<{ x: number; y: number; time: number }>>([]);
   const [lastTap, setLastTap] = useState<number>(0);
@@ -116,7 +118,7 @@ export const GestureControls: React.FC<GestureControlsProps> = ({
 
     // Update draw path
     if (isDrawing) {
-      setDrawPath(prev => [...prev, currentPoint]);
+      setDrawPath((prev) => [...prev, currentPoint]);
     }
 
     // Pinch gesture detection
@@ -124,8 +126,7 @@ export const GestureControls: React.FC<GestureControlsProps> = ({
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
-        Math.pow(touch2.clientX - touch1.clientX, 2) +
-        Math.pow(touch2.clientY - touch1.clientY, 2)
+        Math.pow(touch2.clientX - touch1.clientX, 2) + Math.pow(touch2.clientY - touch1.clientY, 2)
       );
 
       // Compare with initial distance (simplified)
@@ -245,7 +246,7 @@ export const GestureControls: React.FC<GestureControlsProps> = ({
     setTouches([currentPoint]);
 
     if (isDrawing) {
-      setDrawPath(prev => [...prev, currentPoint]);
+      setDrawPath((prev) => [...prev, currentPoint]);
     }
   };
 
@@ -306,7 +307,7 @@ export const GestureControls: React.FC<GestureControlsProps> = ({
         style={{ width: '100vw', height: '100vh' }}
       >
         <motion.path
-          d={`M ${drawPath.map(p => `${p.x} ${p.y}`).join(' L ')}`}
+          d={`M ${drawPath.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
           stroke="rgba(0, 245, 212, 0.8)"
           strokeWidth="3"
           fill="none"

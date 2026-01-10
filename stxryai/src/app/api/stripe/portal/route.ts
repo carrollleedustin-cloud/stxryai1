@@ -29,12 +29,12 @@ export async function POST(request: NextRequest) {
     );
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user's Stripe customer ID
@@ -66,10 +66,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error('Create portal session error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create billing portal session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create billing portal session' }, { status: 500 });
   }
 }
-

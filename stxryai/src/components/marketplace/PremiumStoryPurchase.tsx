@@ -69,11 +69,7 @@ export function PremiumStoryPurchase({
 
       // TODO: Integrate with Stripe payment processing
       // For now, we'll simulate a successful payment
-      await marketplaceService.updatePurchaseStatus(
-        purchase.id,
-        `pi_${Date.now()}`,
-        'succeeded'
-      );
+      await marketplaceService.updatePurchaseStatus(purchase.id, `pi_${Date.now()}`, 'succeeded');
 
       toast.success('Purchase successful!');
       setHasAccess(true);
@@ -99,7 +95,9 @@ export function PremiumStoryPurchase({
 
   if (hasAccess) {
     return (
-      <div className={`bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 ${className}`}>
+      <div
+        className={`bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 ${className}`}
+      >
         <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
           <Icon name="CheckCircleIcon" size={20} />
           <span className="font-medium">You have access to this content</span>
@@ -108,9 +106,10 @@ export function PremiumStoryPurchase({
     );
   }
 
-  const finalPrice = pricing.discountPercentage > 0
-    ? pricing.priceAmount * (1 - pricing.discountPercentage / 100)
-    : pricing.priceAmount;
+  const finalPrice =
+    pricing.discountPercentage > 0
+      ? pricing.priceAmount * (1 - pricing.discountPercentage / 100)
+      : pricing.priceAmount;
 
   return (
     <motion.div
@@ -128,7 +127,8 @@ export function PremiumStoryPurchase({
             {pricing.pricingModel === 'one_time' && 'One-time purchase'}
             {pricing.pricingModel === 'chapter_based' && 'Pay per chapter'}
             {pricing.pricingModel === 'subscription' && 'Subscription access'}
-            {pricing.pricingModel === 'free_with_ads' && 'Free with ads (Premium users get ad-free)'}
+            {pricing.pricingModel === 'free_with_ads' &&
+              'Free with ads (Premium users get ad-free)'}
           </p>
         </div>
         {pricing.discountPercentage > 0 && (
@@ -145,15 +145,14 @@ export function PremiumStoryPurchase({
               ${pricing.priceAmount.toFixed(2)}
             </span>
           )}
-          <span className="text-3xl font-bold text-foreground">
-            ${finalPrice.toFixed(2)}
-          </span>
+          <span className="text-3xl font-bold text-foreground">${finalPrice.toFixed(2)}</span>
           <span className="text-muted-foreground">{pricing.currency}</span>
         </div>
 
         {pricing.pricingModel === 'chapter_based' && (
           <p className="text-sm text-muted-foreground">
-            First {pricing.freeChapters} chapters free • ${pricing.chapterPrice?.toFixed(2)} per chapter
+            First {pricing.freeChapters} chapters free • ${pricing.chapterPrice?.toFixed(2)} per
+            chapter
           </p>
         )}
 
@@ -190,5 +189,3 @@ export function PremiumStoryPurchase({
     </motion.div>
   );
 }
-
-

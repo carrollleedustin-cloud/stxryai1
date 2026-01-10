@@ -40,8 +40,18 @@ const SentientDashboard = ({ children }: SentientDashboardProps) => {
   }, []);
 
   const cards = [
-    { icon: BookOpen, label: 'CONTINUE READING', path: '/story-library', color: 'var(--neon-cyan)' },
-    { icon: Zap, label: 'CREATE STORY', path: '/story-creation-studio', color: 'var(--neon-magenta)' },
+    {
+      icon: BookOpen,
+      label: 'CONTINUE READING',
+      path: '/story-library',
+      color: 'var(--neon-cyan)',
+    },
+    {
+      icon: Zap,
+      label: 'CREATE STORY',
+      path: '/story-creation-studio',
+      color: 'var(--neon-magenta)',
+    },
     { icon: TrendingUp, label: 'ANALYTICS', path: '/analytics', color: 'var(--neon-green)' },
     { icon: Eye, label: 'EXPLORE', path: '/explore', color: 'var(--neon-yellow)' },
   ];
@@ -61,7 +71,10 @@ const SentientDashboard = ({ children }: SentientDashboardProps) => {
             exit={{ opacity: 0, scale: 0 }}
             className="fixed top-8 right-8 z-50"
           >
-            <div className="w-3 h-3 rounded-full bg-cyan-400" style={{ boxShadow: 'var(--glow-cyan)' }} />
+            <div
+              className="w-3 h-3 rounded-full bg-cyan-400"
+              style={{ boxShadow: 'var(--glow-cyan)' }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -75,10 +88,7 @@ const SentientDashboard = ({ children }: SentientDashboardProps) => {
       >
         <div className="sentient-container py-6">
           <div className="flex items-center justify-between">
-            <motion.h1
-              className="neon-text text-2xl font-mono"
-              whileHover={{ scale: 1.05 }}
-            >
+            <motion.h1 className="neon-text text-2xl font-mono" whileHover={{ scale: 1.05 }}>
               {profile?.display_name || user?.email || 'READER'}
             </motion.h1>
             <div className="flex items-center gap-4">
@@ -108,7 +118,7 @@ const SentientDashboard = ({ children }: SentientDashboardProps) => {
             const Icon = card.icon;
             const stalkX = (mousePosition.x / window.innerWidth - 0.5) * 20;
             const stalkY = (mousePosition.y / window.innerHeight - 0.5) * 20;
-            
+
             return (
               <motion.button
                 key={index}
@@ -169,4 +179,3 @@ const SentientDashboard = ({ children }: SentientDashboardProps) => {
 };
 
 export default SentientDashboard;
-

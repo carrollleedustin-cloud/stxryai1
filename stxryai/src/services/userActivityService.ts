@@ -58,10 +58,10 @@ export const userActivityService = {
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      const { data, error } = await withTimeout(
-        queryPromise,
-        { timeout: 8000, errorMessage: 'Request timed out while loading activities' }
-      );
+      const { data, error } = await withTimeout(queryPromise, {
+        timeout: 8000,
+        errorMessage: 'Request timed out while loading activities',
+      });
 
       if (error) {
         if (isConnectionError(error)) {

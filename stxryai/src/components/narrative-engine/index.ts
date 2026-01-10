@@ -7,5 +7,4 @@ export { default as SeriesManager } from './SeriesManager';
 export { default as CharacterEvolution } from './CharacterEvolution';
 
 // Re-export types
-export type { } from '@/types/narrativeEngine';
-
+export type {} from '@/types/narrativeEngine';

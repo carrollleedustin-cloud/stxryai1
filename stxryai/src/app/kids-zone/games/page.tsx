@@ -61,8 +61,8 @@ function WordScrambleGame({ onEarnCoins }: { onEarnCoins: (coins: number) => voi
     if (guess.toUpperCase() === currentWord.word) {
       setFeedback('correct');
       const points = showHint ? 5 : 10;
-      setScore(s => s + points);
-      setStreak(s => s + 1);
+      setScore((s) => s + points);
+      setStreak((s) => s + 1);
       onEarnCoins(points);
       setTimeout(newWord, 1500);
     } else {
@@ -168,7 +168,9 @@ function WordScrambleGame({ onEarnCoins }: { onEarnCoins: (coins: number) => voi
 const emojiPairs = ['🐉', '🦄', '🧚', '🏰', '⭐', '🌙', '🦋', '🌈'];
 
 function MemoryMatchGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }) {
-  const [cards, setCards] = useState<{ emoji: string; id: number; flipped: boolean; matched: boolean }[]>([]);
+  const [cards, setCards] = useState<
+    { emoji: string; id: number; flipped: boolean; matched: boolean }[]
+  >([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [matches, setMatches] = useState(0);
@@ -202,18 +204,18 @@ function MemoryMatchGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void
     setSelected(newSelected);
 
     if (newSelected.length === 2) {
-      setMoves(m => m + 1);
+      setMoves((m) => m + 1);
       const [first, second] = newSelected;
-      
+
       if (cards[first].emoji === cards[second].emoji) {
         setTimeout(() => {
           const matchedCards = [...cards];
           matchedCards[first].matched = true;
           matchedCards[second].matched = true;
           setCards(matchedCards);
-          setMatches(m => m + 1);
+          setMatches((m) => m + 1);
           setSelected([]);
-          
+
           if (matches + 1 === 6) {
             setGameComplete(true);
             onEarnCoins(Math.max(50 - moves * 2, 10));
@@ -262,17 +264,15 @@ function MemoryMatchGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void
           >
             <motion.span
               initial={false}
-              animate={{ 
+              animate={{
                 rotateY: card.flipped || card.matched ? 0 : 180,
-                opacity: card.flipped || card.matched ? 1 : 0
+                opacity: card.flipped || card.matched ? 1 : 0,
               }}
               transition={{ duration: 0.3 }}
             >
               {card.emoji}
             </motion.span>
-            {!card.flipped && !card.matched && (
-              <span className="text-white/20">?</span>
-            )}
+            {!card.flipped && !card.matched && <span className="text-white/20">?</span>}
           </motion.button>
         ))}
       </div>
@@ -299,33 +299,33 @@ function MemoryMatchGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void
 // ============================================
 const quizQuestions = [
   {
-    question: "What does the dragon breathe?",
-    emoji: "🐉",
-    options: ["Water", "Fire", "Ice", "Wind"],
+    question: 'What does the dragon breathe?',
+    emoji: '🐉',
+    options: ['Water', 'Fire', 'Ice', 'Wind'],
     correct: 1,
   },
   {
-    question: "Where does a princess live?",
-    emoji: "👸",
-    options: ["Cave", "Tree", "Castle", "Ocean"],
+    question: 'Where does a princess live?',
+    emoji: '👸',
+    options: ['Cave', 'Tree', 'Castle', 'Ocean'],
     correct: 2,
   },
   {
-    question: "What do fairies have on their backs?",
-    emoji: "🧚",
-    options: ["Fins", "Tails", "Wings", "Horns"],
+    question: 'What do fairies have on their backs?',
+    emoji: '🧚',
+    options: ['Fins', 'Tails', 'Wings', 'Horns'],
     correct: 2,
   },
   {
-    question: "What magical creature has one horn?",
-    emoji: "✨",
-    options: ["Dragon", "Unicorn", "Phoenix", "Griffin"],
+    question: 'What magical creature has one horn?',
+    emoji: '✨',
+    options: ['Dragon', 'Unicorn', 'Phoenix', 'Griffin'],
     correct: 1,
   },
   {
-    question: "What do heroes often save?",
-    emoji: "🦸",
-    options: ["Rocks", "The day", "Socks", "Chairs"],
+    question: 'What do heroes often save?',
+    emoji: '🦸',
+    options: ['Rocks', 'The day', 'Socks', 'Chairs'],
     correct: 1,
   },
 ];
@@ -345,13 +345,13 @@ function StoryQuizGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }
     setShowResult(true);
 
     if (optionIndex === currentQuestion.correct) {
-      setScore(s => s + 1);
+      setScore((s) => s + 1);
       onEarnCoins(10);
     }
 
     setTimeout(() => {
       if (questionIndex + 1 < quizQuestions.length) {
-        setQuestionIndex(i => i + 1);
+        setQuestionIndex((i) => i + 1);
         setSelected(null);
         setShowResult(false);
       } else {
@@ -378,18 +378,21 @@ function StoryQuizGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }
         <div className="text-6xl mb-4">
           {score === quizQuestions.length ? '🏆' : score >= 3 ? '🌟' : '💪'}
         </div>
-        <h3 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-kids)' }}>
-          {score === quizQuestions.length ? 'Perfect Score!' : score >= 3 ? 'Great Job!' : 'Good Try!'}
+        <h3
+          className="text-3xl font-bold text-white mb-2"
+          style={{ fontFamily: 'var(--font-kids)' }}
+        >
+          {score === quizQuestions.length
+            ? 'Perfect Score!'
+            : score >= 3
+              ? 'Great Job!'
+              : 'Good Try!'}
         </h3>
         <p className="text-xl text-white/70 mb-4">
           You got {score} out of {quizQuestions.length} correct!
         </p>
-        <p className="text-yellow-400 font-bold text-xl mb-6">
-          Total: +{score * 10} ⭐
-        </p>
-        <MagicButton onClick={restartQuiz}>
-          Play Again 🔄
-        </MagicButton>
+        <p className="text-yellow-400 font-bold text-xl mb-6">Total: +{score * 10} ⭐</p>
+        <MagicButton onClick={restartQuiz}>Play Again 🔄</MagicButton>
       </motion.div>
     );
   }
@@ -430,8 +433,8 @@ function StoryQuizGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }
                 ? index === currentQuestion.correct
                   ? 'bg-green-500/30 border-2 border-green-500'
                   : index === selected
-                  ? 'bg-red-500/30 border-2 border-red-500'
-                  : 'bg-white/5 border-2 border-white/10 opacity-50'
+                    ? 'bg-red-500/30 border-2 border-red-500'
+                    : 'bg-white/5 border-2 border-white/10 opacity-50'
                 : 'bg-white/5 border-2 border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10'
             }`}
             whileHover={selected === null ? { scale: 1.02 } : {}}
@@ -449,12 +452,12 @@ function StoryQuizGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }
 // DRAWING PROMPT GAME
 // ============================================
 const drawingPrompts = [
-  { prompt: "Draw a friendly dragon!", emoji: "🐉" },
-  { prompt: "Draw a magical castle!", emoji: "🏰" },
-  { prompt: "Draw your favorite animal!", emoji: "🐾" },
-  { prompt: "Draw a rocket in space!", emoji: "🚀" },
-  { prompt: "Draw a rainbow!", emoji: "🌈" },
-  { prompt: "Draw a superhero!", emoji: "🦸" },
+  { prompt: 'Draw a friendly dragon!', emoji: '🐉' },
+  { prompt: 'Draw a magical castle!', emoji: '🏰' },
+  { prompt: 'Draw your favorite animal!', emoji: '🐾' },
+  { prompt: 'Draw a rocket in space!', emoji: '🚀' },
+  { prompt: 'Draw a rainbow!', emoji: '🌈' },
+  { prompt: 'Draw a superhero!', emoji: '🦸' },
 ];
 
 function DrawingPromptGame({ onEarnCoins }: { onEarnCoins: (coins: number) => void }) {
@@ -473,7 +476,7 @@ function DrawingPromptGame({ onEarnCoins }: { onEarnCoins: (coins: number) => vo
 
   useEffect(() => {
     if (isDrawing && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(t => t - 1), 1000);
+      const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && isDrawing) {
       setIsDrawing(false);
@@ -492,12 +495,13 @@ function DrawingPromptGame({ onEarnCoins }: { onEarnCoins: (coins: number) => vo
     return (
       <div className="text-center py-12">
         <div className="text-8xl mb-6">🎨</div>
-        <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: 'var(--font-kids)' }}>
+        <h3
+          className="text-2xl font-bold text-white mb-4"
+          style={{ fontFamily: 'var(--font-kids)' }}
+        >
           Ready to draw?
         </h3>
-        <p className="text-white/60 mb-6">
-          Get a fun drawing prompt and show off your creativity!
-        </p>
+        <p className="text-white/60 mb-6">Get a fun drawing prompt and show off your creativity!</p>
         <MagicButton size="lg" onClick={startDrawing}>
           Get a Prompt! ✨
         </MagicButton>
@@ -513,15 +517,16 @@ function DrawingPromptGame({ onEarnCoins }: { onEarnCoins: (coins: number) => vo
         className="text-center py-12"
       >
         <div className="text-8xl mb-6">🎉</div>
-        <h3 className="text-2xl font-bold text-green-400 mb-4" style={{ fontFamily: 'var(--font-kids)' }}>
+        <h3
+          className="text-2xl font-bold text-green-400 mb-4"
+          style={{ fontFamily: 'var(--font-kids)' }}
+        >
           Amazing artwork!
         </h3>
         <p className="text-yellow-400 font-bold text-xl mb-6">
           +{20 + Math.floor(timeLeft / 2)} ⭐
         </p>
-        <MagicButton onClick={startDrawing}>
-          Draw Again! 🎨
-        </MagicButton>
+        <MagicButton onClick={startDrawing}>Draw Again! 🎨</MagicButton>
       </motion.div>
     );
   }
@@ -537,11 +542,7 @@ function DrawingPromptGame({ onEarnCoins }: { onEarnCoins: (coins: number) => vo
         </MagicButton>
       </div>
 
-      <motion.div
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        className="text-center py-8"
-      >
+      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center py-8">
         <motion.div
           className="text-8xl mb-4"
           animate={{ rotate: [0, 10, -10, 0] }}
@@ -612,34 +613,29 @@ const games = [
 export default function KidsZoneGamesPage() {
   const [coins, setCoins] = useState(150);
   const [activeGame, setActiveGame] = useState<string | null>(null);
-  
+
   const handleEarnCoins = (amount: number) => {
-    setCoins(c => c + amount);
+    setCoins((c) => c + amount);
   };
 
-  const activeGameData = games.find(g => g.id === activeGame);
+  const activeGameData = games.find((g) => g.id === activeGame);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <MagicTopBar showCoins={coins} />
-      
+
       <div className="mt-20">
         {!activeGame ? (
           <>
             <section className="mb-8 text-center">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <h1 
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                <h1
                   className="text-4xl sm:text-5xl font-bold mb-3"
                   style={{ fontFamily: 'var(--font-kids)' }}
                 >
                   <MagicText>Game Arcade</MagicText>
                 </h1>
-                <p className="text-lg text-white/70">
-                  Play games and earn stars! 🎮
-                </p>
+                <p className="text-lg text-white/70">Play games and earn stars! 🎮</p>
               </motion.div>
             </section>
 
@@ -660,19 +656,14 @@ export default function KidsZoneGamesPage() {
                         {game.emoji}
                       </motion.div>
                       <div className="flex-1">
-                        <h3 
+                        <h3
                           className="text-xl font-bold text-white mb-1"
                           style={{ fontFamily: 'var(--font-kids)' }}
                         >
                           {game.title}
                         </h3>
-                        <p className="text-sm text-white/60 mb-3">
-                          {game.description}
-                        </p>
-                        <MagicButton
-                          size="sm"
-                          onClick={() => setActiveGame(game.id)}
-                        >
+                        <p className="text-sm text-white/60 mb-3">{game.description}</p>
+                        <MagicButton size="sm" onClick={() => setActiveGame(game.id)}>
                           Play Now ▶️
                         </MagicButton>
                       </div>
@@ -696,7 +687,7 @@ export default function KidsZoneGamesPage() {
 
             <MagicCard color={activeGameData?.color}>
               <div className="mb-6">
-                <h2 
+                <h2
                   className="text-2xl font-bold text-white flex items-center gap-3"
                   style={{ fontFamily: 'var(--font-kids)' }}
                 >
@@ -704,7 +695,7 @@ export default function KidsZoneGamesPage() {
                   {activeGameData?.title}
                 </h2>
               </div>
-              
+
               {activeGameData && <activeGameData.component onEarnCoins={handleEarnCoins} />}
             </MagicCard>
           </>
@@ -713,4 +704,3 @@ export default function KidsZoneGamesPage() {
     </div>
   );
 }
-

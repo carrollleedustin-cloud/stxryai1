@@ -114,8 +114,12 @@ export default function ParticleField({
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size * 3, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.size * 3
+          particle.x,
+          particle.y,
+          0,
+          particle.x,
+          particle.y,
+          particle.size * 3
         );
         gradient.addColorStop(0, getColorWithOpacity(color, particle.opacity * 0.5));
         gradient.addColorStop(1, 'transparent');
@@ -129,7 +133,7 @@ export default function ParticleField({
           const dx = p1.x - p2.x;
           const dy = p1.y - p2.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          
+
           if (distance < 100) {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
@@ -213,7 +217,7 @@ export function AnimatedCounter({
 
   useEffect(() => {
     if (!hasStarted) return;
-    
+
     const numericEnd = typeof end === 'string' ? parseInt(end.replace(/\D/g, ''), 10) : end;
     if (isNaN(numericEnd)) {
       setCount(0);
@@ -224,7 +228,7 @@ export function AnimatedCounter({
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / (duration * 1000), 1);
-      
+
       // Easing function (ease-out-expo)
       const eased = 1 - Math.pow(2, -10 * progress);
       setCount(Math.floor(eased * numericEnd));
@@ -250,7 +254,9 @@ export function AnimatedCounter({
 
   return (
     <span ref={ref} className={className}>
-      {prefix}{formatNumber(count)}{suffix}
+      {prefix}
+      {formatNumber(count)}
+      {suffix}
     </span>
   );
 }
@@ -278,7 +284,7 @@ export function TypewriterText({
   useEffect(() => {
     setDisplayedText('');
     setIsComplete(false);
-    
+
     const startTimeout = setTimeout(() => {
       let currentIndex = 0;
       const interval = setInterval(() => {
@@ -367,14 +373,14 @@ export function MagneticButton({
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current) return;
-    
+
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const deltaX = (e.clientX - centerX) / (rect.width / 2);
     const deltaY = (e.clientY - centerY) / (rect.height / 2);
-    
+
     setPosition({
       x: deltaX * strength,
       y: deltaY * strength,
@@ -404,13 +410,7 @@ export function MagneticButton({
  * GLITCH TEXT
  * Text with a glitch effect
  */
-export function GlitchText({
-  children,
-  className = '',
-}: {
-  children: string;
-  className?: string;
-}) {
+export function GlitchText({ children, className = '' }: { children: string; className?: string }) {
   return (
     <span className={`relative inline-block ${className}`}>
       <span className="relative z-10">{children}</span>

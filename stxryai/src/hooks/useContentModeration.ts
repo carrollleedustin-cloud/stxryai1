@@ -4,7 +4,10 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { enhancedModerationService, type ModerationResult } from '@/services/enhancedModerationService';
+import {
+  enhancedModerationService,
+  type ModerationResult,
+} from '@/services/enhancedModerationService';
 import { debounce } from '@/lib/utils/debounce';
 
 interface UseContentModerationOptions {
@@ -136,4 +139,3 @@ export function useContentModeration(options: UseContentModerationOptions) {
     suggestions: lastResult?.suggestions || [],
   };
 }
-

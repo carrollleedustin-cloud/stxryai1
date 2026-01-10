@@ -165,9 +165,7 @@ export const LazyPatterns = {
   /**
    * Create a modal that loads only when opened
    */
-  modal: <P extends object>(
-    importFn: () => Promise<{ default: ComponentType<P> }>
-  ) =>
+  modal: <P extends object>(importFn: () => Promise<{ default: ComponentType<P> }>) =>
     createLazyComponent(importFn, {
       ssr: false,
       loading: (
@@ -180,9 +178,7 @@ export const LazyPatterns = {
   /**
    * Create a heavy component that loads with a delay
    */
-  heavy: <P extends object>(
-    importFn: () => Promise<{ default: ComponentType<P> }>
-  ) =>
+  heavy: <P extends object>(importFn: () => Promise<{ default: ComponentType<P> }>) =>
     createLazyComponent(importFn, {
       delay: 200,
       loading: <DefaultLoader />,
@@ -191,9 +187,7 @@ export const LazyPatterns = {
   /**
    * Create a client-only component
    */
-  clientOnly: <P extends object>(
-    importFn: () => Promise<{ default: ComponentType<P> }>
-  ) =>
+  clientOnly: <P extends object>(importFn: () => Promise<{ default: ComponentType<P> }>) =>
     createLazyComponent(importFn, {
       ssr: false,
     }),

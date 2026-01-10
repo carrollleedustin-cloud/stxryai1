@@ -2,7 +2,12 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { messagingService, type Conversation, type Message, type TypingIndicator } from '@/services/messagingService';
+import {
+  messagingService,
+  type Conversation,
+  type Message,
+  type TypingIndicator,
+} from '@/services/messagingService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -63,7 +68,7 @@ export function MessagingInterface({ className = '' }: MessagingInterfaceProps) 
     try {
       const data = await messagingService.getConversationMessages(selectedConversation.id);
       setMessages(data);
-      
+
       // Mark as read
       if (data.length > 0) {
         await messagingService.markMessagesRead(
@@ -82,7 +87,7 @@ export function MessagingInterface({ className = '' }: MessagingInterfaceProps) 
 
     try {
       const data = await messagingService.getTypingIndicators(selectedConversation.id);
-      setTypingIndicators(data.filter(t => t.userId !== user?.id));
+      setTypingIndicators(data.filter((t) => t.userId !== user?.id));
     } catch (error) {
       // Silently fail for typing indicators
     }
@@ -139,7 +144,9 @@ export function MessagingInterface({ className = '' }: MessagingInterfaceProps) 
   }
 
   return (
-    <div className={`flex h-[600px] bg-card border-2 border-border rounded-xl overflow-hidden ${className}`}>
+    <div
+      className={`flex h-[600px] bg-card border-2 border-border rounded-xl overflow-hidden ${className}`}
+    >
       {/* Conversations List */}
       <div className="w-80 border-r border-border flex flex-col">
         <div className="p-4 border-b border-border">
@@ -153,7 +160,10 @@ export function MessagingInterface({ className = '' }: MessagingInterfaceProps) 
           {loading ? (
             <div className="p-4 space-y-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
+                <div
+                  key={i}
+                  className="h-16 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"
+                />
               ))}
             </div>
           ) : conversations.length === 0 ? (
@@ -173,7 +183,8 @@ export function MessagingInterface({ className = '' }: MessagingInterfaceProps) 
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
                     {conversation.conversationType === 'direct'
-                      ? conversation.participants.find(p => p !== user.id)?.[0]?.toUpperCase() || 'U'
+                      ? conversation.participants.find((p) => p !== user.id)?.[0]?.toUpperCase() ||
+                        'U'
                       : conversation.conversationName?.[0]?.toUpperCase() || 'G'}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -313,20 +324,15 @@ function MessageItem({ message, isOwn }: MessageItemProps) {
         }`}
       >
         {message.replyToId && message.replyPreview && (
-          <div className="text-xs opacity-75 mb-1 border-l-2 pl-2">
-            {message.replyPreview}
-          </div>
+          <div className="text-xs opacity-75 mb-1 border-l-2 pl-2">{message.replyPreview}</div>
         )}
         <p className="whitespace-pre-wrap">{message.content}</p>
         <div className="flex items-center gap-2 mt-1 text-xs opacity-75">
           <span>{new Date(message.createdAt).toLocaleTimeString()}</span>
           {message.isEdited && <span>(edited)</span>}
-          {isOwn && message.readBy.length > 0 && (
-            <Icon name="CheckIcon" size={12} />
-          )}
+          {isOwn && message.readBy.length > 0 && <Icon name="CheckIcon" size={12} />}
         </div>
       </div>
     </motion.div>
   );
 }
-

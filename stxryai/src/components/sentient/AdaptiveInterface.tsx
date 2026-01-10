@@ -18,8 +18,10 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
     interactionCount: 0,
     readingPace: 1,
   });
-  
-  const [mood, setMood] = useState<'neutral' | 'aggressive' | 'contemplative' | 'predatory'>('neutral');
+
+  const [mood, setMood] = useState<'neutral' | 'aggressive' | 'contemplative' | 'predatory'>(
+    'neutral'
+  );
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0, time: Date.now() });
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -65,13 +67,13 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
       const currentScroll = typeof window !== 'undefined' ? window.scrollY : 0;
       const now = Date.now();
       const speed = Math.abs(currentScroll - lastScrollY) / (now - lastScrollTime);
-      
-      setBehavior(prev => ({
+
+      setBehavior((prev) => ({
         ...prev,
         scrollSpeed: speed,
         readingPace: speed > 0.5 ? 1.5 : speed < 0.1 ? 0.7 : 1,
       }));
-      
+
       lastScrollY = currentScroll;
       lastScrollTime = now;
     };
@@ -80,22 +82,21 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
       const now = Date.now();
       const timeDelta = now - lastMousePosition.time;
       const distance = Math.sqrt(
-        Math.pow(e.clientX - lastMousePosition.x, 2) +
-        Math.pow(e.clientY - lastMousePosition.y, 2)
+        Math.pow(e.clientX - lastMousePosition.x, 2) + Math.pow(e.clientY - lastMousePosition.y, 2)
       );
       const velocity = timeDelta > 0 ? distance / timeDelta : 0;
-      
-      setBehavior(prev => ({
+
+      setBehavior((prev) => ({
         ...prev,
         mouseVelocity: velocity,
         interactionCount: prev.interactionCount + 1,
       }));
-      
+
       setLastMousePosition({ x: e.clientX, y: e.clientY, time: now });
     };
 
     const trackTime = () => {
-      setBehavior(prev => ({
+      setBehavior((prev) => ({
         ...prev,
         timeOnPage: prev.timeOnPage + 1,
       }));
@@ -174,7 +175,8 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
               exit={{ opacity: 0 }}
               className="fixed inset-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 0, 255, 0.2) 0%, transparent 50%)',
+                background:
+                  'radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 0, 255, 0.2) 0%, transparent 50%)',
               }}
             />
           )}
@@ -187,4 +189,3 @@ const AdaptiveInterface = ({ children }: AdaptiveInterfaceProps) => {
 };
 
 export default AdaptiveInterface;
-

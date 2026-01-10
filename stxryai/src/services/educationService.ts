@@ -260,10 +260,7 @@ export class EducationService {
   /**
    * Join a class by enrollment code
    */
-  async joinClassByCode(
-    enrollmentCode: string,
-    studentId: string
-  ): Promise<Class> {
+  async joinClassByCode(enrollmentCode: string, studentId: string): Promise<Class> {
     const { data: classData, error: classError } = await this.supabase
       .from('classes')
       .select('*')
@@ -275,13 +272,11 @@ export class EducationService {
     if (!classData) throw new Error('Class not found');
 
     // Enroll student
-    const { error: enrollError } = await this.supabase
-      .from('class_enrollments')
-      .insert({
-        class_id: classData.id,
-        student_id: studentId,
-        enrollment_status: 'enrolled',
-      });
+    const { error: enrollError } = await this.supabase.from('class_enrollments').insert({
+      class_id: classData.id,
+      student_id: studentId,
+      enrollment_status: 'enrolled',
+    });
 
     if (enrollError) throw enrollError;
 
@@ -365,18 +360,21 @@ export class EducationService {
 
     const { data, error } = await this.supabase
       .from('assignment_submissions')
-      .upsert({
-        assignment_id: assignmentId,
-        student_id: studentId,
-        submission_text: submission.submissionText,
-        submission_story_id: submission.submissionStoryId,
-        attachment_urls: submission.attachmentUrls || [],
-        submission_status: 'submitted',
-        submitted_at: new Date().toISOString(),
-        is_late: isLate,
-      }, {
-        onConflict: 'assignment_id,student_id',
-      })
+      .upsert(
+        {
+          assignment_id: assignmentId,
+          student_id: studentId,
+          submission_text: submission.submissionText,
+          submission_story_id: submission.submissionStoryId,
+          attachment_urls: submission.attachmentUrls || [],
+          submission_status: 'submitted',
+          submitted_at: new Date().toISOString(),
+          is_late: isLate,
+        },
+        {
+          onConflict: 'assignment_id,student_id',
+        }
+      )
       .select()
       .single();
 
@@ -533,4 +531,3 @@ export class EducationService {
 }
 
 export const educationService = new EducationService();
-

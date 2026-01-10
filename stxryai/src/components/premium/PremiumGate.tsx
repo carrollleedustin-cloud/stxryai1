@@ -20,29 +20,29 @@ interface PremiumGateProps {
   showUpgradePrompt?: boolean;
 }
 
-export function PremiumGate({ 
-  feature, 
-  children, 
+export function PremiumGate({
+  feature,
+  children,
   fallback,
-  showUpgradePrompt = true 
+  showUpgradePrompt = true,
 }: PremiumGateProps) {
   const { user, profile } = useAuth();
   const router = useRouter();
-  
+
   const accessCheck = canAccessPremiumFeature(profile, feature);
-  
+
   if (accessCheck.allowed) {
     return <>{children}</>;
   }
-  
+
   if (fallback) {
     return <>{fallback}</>;
   }
-  
+
   if (!showUpgradePrompt) {
     return null;
   }
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,9 +58,11 @@ export function PremiumGate({
           🔒
         </motion.div>
         <h3 className="text-2xl font-bold text-white mb-2">Premium Feature Locked</h3>
-        <p className="text-ghost-400 mb-4">{accessCheck.reason || 'This feature requires a premium subscription.'}</p>
+        <p className="text-ghost-400 mb-4">
+          {accessCheck.reason || 'This feature requires a premium subscription.'}
+        </p>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <InteractiveButton
           onClick={() => router.push('/pricing')}
@@ -80,7 +82,7 @@ export function PremiumGate({
           Go to Dashboard
         </InteractiveButton>
       </div>
-      
+
       <div className="mt-6 pt-6 border-t border-white/10">
         <p className="text-sm text-ghost-500">
           Premium features include: AI Voice Narration, Story Export, AI Story Generator, and more!
@@ -89,4 +91,3 @@ export function PremiumGate({
     </motion.div>
   );
 }
-

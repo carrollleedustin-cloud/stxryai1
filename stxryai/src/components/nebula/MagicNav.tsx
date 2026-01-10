@@ -25,7 +25,7 @@ interface MagicNavProps {
 
 export function MagicNav({ items, className = '' }: MagicNavProps) {
   const pathname = usePathname();
-  
+
   return (
     <motion.nav
       className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 ${className}`}
@@ -44,7 +44,7 @@ export function MagicNav({ items, className = '' }: MagicNavProps) {
       >
         {items.map((item, index) => {
           const isActive = pathname.startsWith(item.href);
-          
+
           return (
             <Link key={item.href} href={item.href}>
               <motion.div
@@ -55,21 +55,25 @@ export function MagicNav({ items, className = '' }: MagicNavProps) {
                 <motion.div
                   className="relative w-14 h-14 rounded-full flex items-center justify-center"
                   style={{
-                    background: isActive 
+                    background: isActive
                       ? `linear-gradient(135deg, ${item.color || '#9b5de5'}, ${item.color ? item.color + '99' : '#f15bb5'})`
                       : 'rgba(255,255,255,0.05)',
                   }}
-                  animate={isActive ? {
-                    boxShadow: [
-                      `0 0 20px ${item.color || '#9b5de5'}50`,
-                      `0 0 40px ${item.color || '#9b5de5'}70`,
-                      `0 0 20px ${item.color || '#9b5de5'}50`,
-                    ],
-                  } : {}}
+                  animate={
+                    isActive
+                      ? {
+                          boxShadow: [
+                            `0 0 20px ${item.color || '#9b5de5'}50`,
+                            `0 0 40px ${item.color || '#9b5de5'}70`,
+                            `0 0 20px ${item.color || '#9b5de5'}50`,
+                          ],
+                        }
+                      : {}
+                  }
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <span className="text-2xl">{item.icon}</span>
-                  
+
                   {/* Active ring */}
                   {isActive && (
                     <motion.div
@@ -83,7 +87,7 @@ export function MagicNav({ items, className = '' }: MagicNavProps) {
                     />
                   )}
                 </motion.div>
-                
+
                 {/* Label (shows on hover or when active) */}
                 <motion.span
                   className="absolute -bottom-6 text-[10px] font-bold whitespace-nowrap"
@@ -127,16 +131,15 @@ export function MagicTopBar({
     <div
       className={`fixed top-0 left-0 right-0 z-50 ${className}`}
       style={{
-        background: 'linear-gradient(180deg, rgba(26,26,46,0.98) 0%, rgba(26,26,46,0.8) 70%, transparent 100%)',
+        background:
+          'linear-gradient(180deg, rgba(26,26,46,0.98) 0%, rgba(26,26,46,0.8) 70%, transparent 100%)',
         backdropFilter: 'blur(20px)',
       }}
     >
       <div className="flex items-center justify-between px-4 py-4">
         {/* Left action */}
-        <div className="w-20">
-          {leftAction}
-        </div>
-        
+        <div className="w-20">{leftAction}</div>
+
         {/* Center title */}
         {title && (
           <motion.h1
@@ -153,7 +156,7 @@ export function MagicTopBar({
             {title}
           </motion.h1>
         )}
-        
+
         {/* Right action / coins */}
         <div className="w-20 flex justify-end">
           {showCoins !== undefined && (
@@ -195,7 +198,7 @@ export function MagicBreadcrumb({ items, className = '' }: MagicBreadcrumbProps)
     <nav className={`flex items-center gap-2 ${className}`}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
-        
+
         return (
           <React.Fragment key={index}>
             {item.href && !isLast ? (
@@ -224,7 +227,7 @@ export function MagicBreadcrumb({ items, className = '' }: MagicBreadcrumbProps)
                 {item.label}
               </span>
             )}
-            
+
             {!isLast && (
               <motion.span
                 className="text-white/30"
@@ -242,5 +245,3 @@ export function MagicBreadcrumb({ items, className = '' }: MagicBreadcrumbProps)
 }
 
 export default MagicNav;
-
-

@@ -8,14 +8,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePet } from '@/contexts/PetContext';
-import {
-  Sparkles,
-  Wand2,
-  Heart,
-  Star,
-  ChevronRight,
-  Loader2,
-} from 'lucide-react';
+import { Sparkles, Wand2, Heart, Star, ChevronRight, Loader2 } from 'lucide-react';
 
 interface PetCreationWizardProps {
   onComplete?: () => void;
@@ -24,27 +17,41 @@ interface PetCreationWizardProps {
 
 export default function PetCreationWizard({ onComplete, onCancel }: PetCreationWizardProps) {
   const { createPet, hasPet } = usePet();
-  
+
   const [step, setStep] = useState(0);
   const [petName, setPetName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Magical name suggestions based on reading themes
   const nameSuggestions = [
-    'Nova', 'Luna', 'Ember', 'Sage', 'Echo',
-    'Pixel', 'Whisper', 'Comet', 'Zephyr', 'Blaze',
-    'Stardust', 'Nimbus', 'Glimmer', 'Frost', 'Nebula',
+    'Nova',
+    'Luna',
+    'Ember',
+    'Sage',
+    'Echo',
+    'Pixel',
+    'Whisper',
+    'Comet',
+    'Zephyr',
+    'Blaze',
+    'Stardust',
+    'Nimbus',
+    'Glimmer',
+    'Frost',
+    'Nebula',
   ];
-  
+
   // Animation for floating particles
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; emoji: string }>>([]);
-  
+  const [particles, setParticles] = useState<
+    Array<{ id: number; x: number; y: number; emoji: string }>
+  >([]);
+
   useEffect(() => {
     const interval = setInterval(() => {
       const emojis = ['✨', '⭐', '💫', '🌟', '✦', '★'];
-      setParticles(prev => [
+      setParticles((prev) => [
         ...prev.slice(-20),
         {
           id: Date.now(),
@@ -54,19 +61,19 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
         },
       ]);
     }, 200);
-    
+
     return () => clearInterval(interval);
   }, []);
-  
+
   const handleCreate = useCallback(async () => {
     if (!petName.trim()) {
       setError('Please give your companion a name!');
       return;
     }
-    
+
     setIsCreating(true);
     setError('');
-    
+
     try {
       const success = await createPet(petName.trim());
       if (success) {
@@ -83,11 +90,11 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
       setIsCreating(false);
     }
   }, [petName, createPet, onComplete]);
-  
+
   if (hasPet) {
     return null;
   }
-  
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -98,7 +105,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <AnimatePresence>
-          {particles.map(particle => (
+          {particles.map((particle) => (
             <motion.div
               key={particle.id}
               initial={{ x: `${particle.x}%`, y: `${particle.y}%`, opacity: 0, scale: 0 }}
@@ -112,7 +119,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
           ))}
         </AnimatePresence>
       </div>
-      
+
       {/* Main card */}
       <motion.div
         initial={{ scale: 0.8, y: 50 }}
@@ -122,7 +129,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
       >
         {/* Glowing top border */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-spectral-cyan via-spectral-violet to-spectral-rose" />
-        
+
         {/* Content */}
         <div className="p-8 relative">
           <AnimatePresence mode="wait">
@@ -143,7 +150,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                   >
                     <Wand2 className="w-10 h-10 text-spectral-violet" />
                   </motion.div>
-                  
+
                   <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -152,7 +159,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                   >
                     Summon Your Companion
                   </motion.h2>
-                  
+
                   <motion.p
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -162,7 +169,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                     A unique friend awaits, born from your story essence
                   </motion.p>
                 </div>
-                
+
                 {/* Name input */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -177,7 +184,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                     <input
                       type="text"
                       value={petName}
-                      onChange={e => {
+                      onChange={(e) => {
                         setPetName(e.target.value);
                         setError('');
                       }}
@@ -187,7 +194,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                     />
                     <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-spectral-cyan/50" />
                   </div>
-                  
+
                   {error && (
                     <motion.p
                       initial={{ opacity: 0, y: -10 }}
@@ -198,7 +205,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                     </motion.p>
                   )}
                 </motion.div>
-                
+
                 {/* Name suggestions */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -228,7 +235,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                     ))}
                   </div>
                 </motion.div>
-                
+
                 {/* Info card */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -239,15 +246,17 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                   <div className="flex gap-3">
                     <Star className="w-5 h-5 text-spectral-violet shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm text-white font-medium mb-1">Your pet will be unique!</p>
+                      <p className="text-sm text-white font-medium mb-1">
+                        Your pet will be unique!
+                      </p>
                       <p className="text-xs text-ghost-400">
-                        Based on your account, your companion will have a one-of-a-kind appearance, 
+                        Based on your account, your companion will have a one-of-a-kind appearance,
                         personality, and element. It will grow and evolve as you read and interact!
                       </p>
                     </div>
                   </div>
                 </motion.div>
-                
+
                 {/* Action buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -263,7 +272,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                       Maybe Later
                     </button>
                   )}
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -301,7 +310,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                 >
                   <Heart className="w-12 h-12 text-white" />
                 </motion.div>
-                
+
                 <motion.h2
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -310,7 +319,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                 >
                   {petName} Has Arrived!
                 </motion.h2>
-                
+
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -319,7 +328,7 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
                 >
                   Your unique companion is ready for adventure!
                 </motion.p>
-                
+
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -347,4 +356,3 @@ export default function PetCreationWizard({ onComplete, onCancel }: PetCreationW
     </motion.div>
   );
 }
-

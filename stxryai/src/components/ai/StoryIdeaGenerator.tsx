@@ -105,7 +105,7 @@ export default function StoryIdeaGenerator() {
 
     // Simulate progress updates
     let progressInterval: NodeJS.Timeout | null = null;
-    
+
     try {
       progressInterval = setInterval(() => {
         setGenerationProgress((prev) => {

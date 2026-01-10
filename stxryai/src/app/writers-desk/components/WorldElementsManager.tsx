@@ -12,7 +12,18 @@ interface WorldElementsManagerProps {
 }
 
 type ViewMode = 'grid' | 'create' | 'detail';
-type ElementCategory = 'all' | 'geography' | 'culture' | 'religion' | 'magic_system' | 'technology' | 'political' | 'economic' | 'historical' | 'myth' | 'custom';
+type ElementCategory =
+  | 'all'
+  | 'geography'
+  | 'culture'
+  | 'religion'
+  | 'magic_system'
+  | 'technology'
+  | 'political'
+  | 'economic'
+  | 'historical'
+  | 'myth'
+  | 'custom';
 
 const ELEMENT_TYPES = [
   { id: 'geography', name: 'Geography', icon: '🗺️', desc: 'Locations, regions, landmarks' },
@@ -74,12 +85,18 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
         authorId: user.id,
         elementType: createForm.elementType as WorldElement['elementType'],
         name: createForm.name,
-        aliases: createForm.aliases.split(',').map(a => a.trim()).filter(Boolean),
+        aliases: createForm.aliases
+          .split(',')
+          .map((a) => a.trim())
+          .filter(Boolean),
         shortDescription: createForm.shortDescription || undefined,
         fullDescription: createForm.fullDescription || undefined,
         visualDescription: createForm.visualDescription || undefined,
         category: createForm.category || undefined,
-        tags: createForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+        tags: createForm.tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
         introducedInBook: createForm.introducedInBook,
         rules: {
           rules: createForm.rules.split('\n').filter(Boolean),
@@ -108,20 +125,24 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
     }
   };
 
-  const filteredElements = elements.filter(e => {
+  const filteredElements = elements.filter((e) => {
     if (filterType !== 'all' && e.elementType !== filterType) return false;
     if (searchTerm && !e.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
 
-  const getTypeInfo = (type: string) => ELEMENT_TYPES.find(t => t.id === type) || ELEMENT_TYPES[9];
+  const getTypeInfo = (type: string) =>
+    ELEMENT_TYPES.find((t) => t.id === type) || ELEMENT_TYPES[9];
 
-  const groupedElements = filteredElements.reduce((acc, element) => {
-    const type = element.elementType;
-    if (!acc[type]) acc[type] = [];
-    acc[type].push(element);
-    return acc;
-  }, {} as Record<string, WorldElement[]>);
+  const groupedElements = filteredElements.reduce(
+    (acc, element) => {
+      const type = element.elementType;
+      if (!acc[type]) acc[type] = [];
+      acc[type].push(element);
+      return acc;
+    },
+    {} as Record<string, WorldElement[]>
+  );
 
   if (loading) {
     return (
@@ -165,8 +186,10 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
             className="px-4 py-2 bg-void-depth border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
           >
             <option value="all">All Types</option>
-            {ELEMENT_TYPES.map(type => (
-              <option key={type.id} value={type.id}>{type.icon} {type.name}</option>
+            {ELEMENT_TYPES.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.icon} {type.name}
+              </option>
             ))}
           </select>
         </div>
@@ -184,18 +207,27 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-text-primary">Create World Element</h3>
-              <button onClick={() => setViewMode('grid')} className="text-text-tertiary hover:text-text-secondary">✕</button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className="text-text-tertiary hover:text-text-secondary"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="space-y-6">
               {/* Type Selection */}
               <div>
-                <label className="block text-sm font-medium text-text-primary mb-3">Element Type *</label>
+                <label className="block text-sm font-medium text-text-primary mb-3">
+                  Element Type *
+                </label>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   {ELEMENT_TYPES.map((type) => (
                     <button
                       key={type.id}
-                      onClick={() => setCreateForm({ ...createForm, elementType: type.id as ElementCategory })}
+                      onClick={() =>
+                        setCreateForm({ ...createForm, elementType: type.id as ElementCategory })
+                      }
                       className={`p-3 rounded-lg border text-center transition-all ${
                         createForm.elementType === type.id
                           ? 'border-spectral-cyan bg-spectral-cyan/10'
@@ -224,7 +256,9 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Aliases (comma-separated)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Aliases (comma-separated)
+                    </label>
                     <input
                       type="text"
                       value={createForm.aliases}
@@ -235,11 +269,15 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Short Description</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Short Description
+                    </label>
                     <input
                       type="text"
                       value={createForm.shortDescription}
-                      onChange={(e) => setCreateForm({ ...createForm, shortDescription: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, shortDescription: e.target.value })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                       placeholder="A brief, one-line description"
                     />
@@ -257,19 +295,28 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-text-tertiary mb-1">Introduced in Book</label>
+                      <label className="block text-sm text-text-tertiary mb-1">
+                        Introduced in Book
+                      </label>
                       <input
                         type="number"
                         min="1"
                         value={createForm.introducedInBook}
-                        onChange={(e) => setCreateForm({ ...createForm, introducedInBook: parseInt(e.target.value) || 1 })}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            introducedInBook: parseInt(e.target.value) || 1,
+                          })
+                        }
                         className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Tags (comma-separated)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Tags (comma-separated)
+                    </label>
                     <input
                       type="text"
                       value={createForm.tags}
@@ -283,10 +330,14 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                 {/* Descriptions & Rules */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Full Description</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Full Description
+                    </label>
                     <textarea
                       value={createForm.fullDescription}
-                      onChange={(e) => setCreateForm({ ...createForm, fullDescription: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, fullDescription: e.target.value })
+                      }
                       rows={4}
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none"
                       placeholder="Detailed description of this world element..."
@@ -294,10 +345,14 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Visual Description</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Visual Description
+                    </label>
                     <textarea
                       value={createForm.visualDescription}
-                      onChange={(e) => setCreateForm({ ...createForm, visualDescription: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, visualDescription: e.target.value })
+                      }
                       rows={2}
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none"
                       placeholder="What does this look like?"
@@ -305,7 +360,9 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Rules (one per line)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Rules (one per line)
+                    </label>
                     <textarea
                       value={createForm.rules}
                       onChange={(e) => setCreateForm({ ...createForm, rules: e.target.value })}
@@ -316,10 +373,14 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                   </div>
 
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Constraints (one per line)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Constraints (one per line)
+                    </label>
                     <textarea
                       value={createForm.constraints}
-                      onChange={(e) => setCreateForm({ ...createForm, constraints: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, constraints: e.target.value })
+                      }
                       rows={2}
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none font-mono text-sm"
                       placeholder="No mortal can survive more than 3 days&#10;Requires blood sacrifice to activate"
@@ -329,7 +390,10 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
               </div>
 
               <div className="flex justify-end gap-3 pt-6 border-t border-void-mist">
-                <button onClick={() => setViewMode('grid')} className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors"
+                >
                   Cancel
                 </button>
                 <button
@@ -346,7 +410,13 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
 
         {/* Grid View */}
         {viewMode === 'grid' && (
-          <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+          <motion.div
+            key="grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-8"
+          >
             {Object.keys(groupedElements).length === 0 ? (
               <div className="text-center py-12 text-text-tertiary">
                 {elements.length === 0 ? (
@@ -391,7 +461,10 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                           )}
                           <div className="flex flex-wrap gap-1 mt-3">
                             {element.tags.slice(0, 3).map((tag) => (
-                              <span key={tag} className="text-xs px-2 py-0.5 rounded bg-void-mist text-text-tertiary">
+                              <span
+                                key={tag}
+                                className="text-xs px-2 py-0.5 rounded bg-void-mist text-text-tertiary"
+                              >
                                 {tag}
                               </span>
                             ))}
@@ -431,9 +504,14 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                 </div>
               </div>
               <button
-                onClick={() => { setSelectedElement(null); setViewMode('grid'); }}
+                onClick={() => {
+                  setSelectedElement(null);
+                  setViewMode('grid');
+                }}
                 className="text-text-tertiary hover:text-text-secondary"
-              >✕</button>
+              >
+                ✕
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -446,14 +524,22 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                 )}
                 {selectedElement.fullDescription && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Full Description</h4>
-                    <p className="text-text-secondary whitespace-pre-wrap">{selectedElement.fullDescription}</p>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Full Description
+                    </h4>
+                    <p className="text-text-secondary whitespace-pre-wrap">
+                      {selectedElement.fullDescription}
+                    </p>
                   </div>
                 )}
                 {selectedElement.visualDescription && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Visual Description</h4>
-                    <p className="text-text-secondary italic">{selectedElement.visualDescription}</p>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Visual Description
+                    </h4>
+                    <p className="text-text-secondary italic">
+                      {selectedElement.visualDescription}
+                    </p>
                   </div>
                 )}
               </div>
@@ -485,10 +571,15 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                 )}
                 {selectedElement.aliases.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Also Known As</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Also Known As
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedElement.aliases.map((alias) => (
-                        <span key={alias} className="px-2 py-1 bg-void-mist rounded text-sm text-text-secondary">
+                        <span
+                          key={alias}
+                          className="px-2 py-1 bg-void-mist rounded text-sm text-text-secondary"
+                        >
                           {alias}
                         </span>
                       ))}
@@ -500,7 +591,10 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
                     <h4 className="text-sm font-semibold text-text-secondary mb-2">Tags</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedElement.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-1 bg-spectral-violet/10 text-spectral-violet rounded text-xs">
+                        <span
+                          key={tag}
+                          className="px-2 py-1 bg-spectral-violet/10 text-spectral-violet rounded text-xs"
+                        >
                           {tag}
                         </span>
                       ))}
@@ -512,7 +606,8 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
 
             <div className="mt-6 pt-6 border-t border-void-mist flex items-center justify-between">
               <div className="text-xs text-text-tertiary">
-                Canon Lock: {selectedElement.canonLockLevel} • Introduced: Book {selectedElement.introducedInBook || 1}
+                Canon Lock: {selectedElement.canonLockLevel} • Introduced: Book{' '}
+                {selectedElement.introducedInBook || 1}
               </div>
               <button className="px-4 py-2 text-sm bg-spectral-cyan/10 text-spectral-cyan rounded-lg hover:bg-spectral-cyan/20 transition-colors">
                 Edit Element
@@ -524,4 +619,3 @@ export default function WorldElementsManager({ seriesId, seriesTitle }: WorldEle
     </div>
   );
 }
-

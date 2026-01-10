@@ -112,22 +112,19 @@ export default function CharacterSheetPage() {
   return (
     <div className="min-h-screen relative">
       <NebulaBackground variant="cosmos" />
-      
+
       <div className="relative z-10 px-4 py-8">
         {/* Navigation */}
         <nav className="max-w-6xl mx-auto flex items-center justify-between mb-8">
           <Link href="/">
-            <motion.div
-              className="flex items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-            >
+            <motion.div className="flex items-center gap-2" whileHover={{ scale: 1.05 }}>
               <span className="text-2xl">✨</span>
               <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
                 StxryAI
               </span>
             </motion.div>
           </Link>
-          
+
           <div className="flex items-center gap-4">
             <Link href="/user-profile">
               <motion.span
@@ -159,47 +156,62 @@ export default function CharacterSheetPage() {
                       className="w-20 h-20 mx-auto mb-6 relative"
                     >
                       <div className="absolute inset-0 border-4 border-transparent border-t-cyan-500 border-r-purple-500 rounded-full" />
-                      <div className="absolute inset-2 border-4 border-transparent border-b-pink-500 border-l-yellow-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }} />
-                      <span className="absolute inset-0 flex items-center justify-center text-3xl">✨</span>
+                      <div
+                        className="absolute inset-2 border-4 border-transparent border-b-pink-500 border-l-yellow-500 rounded-full animate-spin"
+                        style={{ animationDirection: 'reverse', animationDuration: '2s' }}
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center text-3xl">
+                        ✨
+                      </span>
                     </motion.div>
-                    <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-display)' }}>
+                    <h2
+                      className="text-2xl font-bold text-white mb-3"
+                      style={{ fontFamily: 'var(--font-display)' }}
+                    >
                       Consulting the Stars...
                     </h2>
                     <p className="text-white/60 max-w-sm mx-auto">
-                      Our AI is calculating your precise planetary positions and crafting your unique character sheet.
+                      Our AI is calculating your precise planetary positions and crafting your
+                      unique character sheet.
                     </p>
                     <motion.div
                       className="mt-6 flex justify-center gap-1"
                       animate={{ opacity: [0.5, 1, 0.5] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      {['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'].map((emoji, i) => (
-                        <motion.span
-                          key={i}
-                          className="text-xl"
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 0.5, delay: i * 0.1, repeat: Infinity }}
-                        >
-                          {emoji}
-                        </motion.span>
-                      ))}
+                      {['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'].map(
+                        (emoji, i) => (
+                          <motion.span
+                            key={i}
+                            className="text-xl"
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ duration: 0.5, delay: i * 0.1, repeat: Infinity }}
+                          >
+                            {emoji}
+                          </motion.span>
+                        )
+                      )}
                     </motion.div>
                   </div>
                 ) : (
                   <BirthChartWizard
                     onComplete={handleWizardComplete}
                     onCancel={() => setIsCreating(false)}
-                    initialData={characterSheet ? {
-                      name: characterSheet.name,
-                      birthDate: characterSheet.birthDate,
-                      birthTime: characterSheet.birthTime,
-                      birthCity: characterSheet.birthPlace.split(',')[0],
-                      birthState: characterSheet.birthPlace.split(',')[1]?.trim(),
-                      birthCountry: characterSheet.birthPlace.split(',').pop()?.trim() || '',
-                    } : undefined}
+                    initialData={
+                      characterSheet
+                        ? {
+                            name: characterSheet.name,
+                            birthDate: characterSheet.birthDate,
+                            birthTime: characterSheet.birthTime,
+                            birthCity: characterSheet.birthPlace.split(',')[0],
+                            birthState: characterSheet.birthPlace.split(',')[1]?.trim(),
+                            birthCountry: characterSheet.birthPlace.split(',').pop()?.trim() || '',
+                          }
+                        : undefined
+                    }
                   />
                 )}
-                
+
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -228,11 +240,7 @@ export default function CharacterSheetPage() {
             >
               {/* Action Buttons */}
               <div className="flex justify-end gap-3 mb-6">
-                <MagicButton
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsCreating(true)}
-                >
+                <MagicButton variant="secondary" size="sm" onClick={() => setIsCreating(true)}>
                   ✏️ Regenerate
                 </MagicButton>
                 <MagicButton
@@ -244,11 +252,8 @@ export default function CharacterSheetPage() {
                   🗑️ Delete
                 </MagicButton>
               </div>
-              
-              <CharacterSheetDisplay 
-                sheet={characterSheet} 
-                onPrivacyChange={handlePrivacyChange}
-              />
+
+              <CharacterSheetDisplay sheet={characterSheet} onPrivacyChange={handlePrivacyChange} />
             </motion.div>
           ) : (
             // No Character Sheet - Create Prompt
@@ -294,42 +299,46 @@ export default function CharacterSheetPage() {
                   </motion.div>
                 </div>
 
-                <h1 
+                <h1
                   className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-4"
                   style={{ fontFamily: 'var(--font-display)' }}
                 >
                   Discover Your Cosmic Blueprint
                 </h1>
-                
+
                 <p className="text-white/60 mb-8 max-w-md mx-auto">
-                  Create your personalized Character Sheet using AI-powered astrology. 
-                  Our system calculates your precise birth chart and crafts a deeply personal cosmic profile.
+                  Create your personalized Character Sheet using AI-powered astrology. Our system
+                  calculates your precise birth chart and crafts a deeply personal cosmic profile.
                 </p>
 
                 <div className="space-y-4 text-left max-w-sm mx-auto mb-8">
                   <div className="flex items-center gap-3 text-white/70">
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 flex items-center justify-center text-lg">☀️</span>
+                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 flex items-center justify-center text-lg">
+                      ☀️
+                    </span>
                     <span>Accurate Sun, Moon & Rising calculations</span>
                   </div>
                   <div className="flex items-center gap-3 text-white/70">
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 flex items-center justify-center text-lg">🎭</span>
+                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 flex items-center justify-center text-lg">
+                      🎭
+                    </span>
                     <span>Unique personality archetype</span>
                   </div>
                   <div className="flex items-center gap-3 text-white/70">
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500/20 to-red-500/20 flex items-center justify-center text-lg">💕</span>
+                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500/20 to-red-500/20 flex items-center justify-center text-lg">
+                      💕
+                    </span>
                     <span>Love & relationship profile</span>
                   </div>
                   <div className="flex items-center gap-3 text-white/70">
-                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 flex items-center justify-center text-lg">🔒</span>
+                    <span className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 flex items-center justify-center text-lg">
+                      🔒
+                    </span>
                     <span>Privacy controls for location</span>
                   </div>
                 </div>
 
-                <MagicButton
-                  variant="primary"
-                  size="lg"
-                  onClick={() => setIsCreating(true)}
-                >
+                <MagicButton variant="primary" size="lg" onClick={() => setIsCreating(true)}>
                   ✨ Create Your Character Sheet
                 </MagicButton>
 

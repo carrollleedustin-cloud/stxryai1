@@ -37,12 +37,12 @@ export async function POST(request: NextRequest) {
     const supabase = await getSupabaseClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -99,24 +99,19 @@ export async function POST(request: NextRequest) {
 
     if (storyError) {
       console.error('Error creating story:', storyError);
-      return NextResponse.json(
-        { error: 'Failed to create story' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create story' }, { status: 500 });
     }
 
     // Log activity
-    await supabase
-      .from('user_activity')
-      .insert({
-        user_id: user.id,
-        activity_type: 'story_created',
-        story_id: story.id,
-        metadata: {
-          story_title: title,
-          genre,
-        },
-      });
+    await supabase.from('user_activity').insert({
+      user_id: user.id,
+      activity_type: 'story_created',
+      story_id: story.id,
+      metadata: {
+        story_title: title,
+        genre,
+      },
+    });
 
     // Award XP using achievement service method
     try {
@@ -145,12 +140,12 @@ export async function GET(request: NextRequest) {
     const supabase = await getSupabaseClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -173,10 +168,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching stories:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch stories' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch stories' }, { status: 500 });
     }
 
     return NextResponse.json({

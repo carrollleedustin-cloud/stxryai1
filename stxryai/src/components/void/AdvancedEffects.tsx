@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+  AnimatePresence,
+} from 'framer-motion';
 
 /**
  * GLASS CARD
@@ -21,18 +28,22 @@ export function GlassCard({
   return (
     <motion.div
       className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl ${className}`}
-      whileHover={hoverEffect ? { 
-        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-        borderColor: 'rgba(255, 255, 255, 0.2)',
-        y: -5
-      } : {}}
+      whileHover={
+        hoverEffect
+          ? {
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              borderColor: 'rgba(255, 255, 255, 0.2)',
+              y: -5,
+            }
+          : {}
+      }
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Grain/Noise Overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-      
+
       {/* Light Streak */}
-      <motion.div 
+      <motion.div
         className="absolute -inset-[100%] opacity-20 pointer-events-none"
         animate={{
           rotate: [0, 360],
@@ -40,16 +51,15 @@ export function GlassCard({
         transition={{
           duration: 20,
           repeat: Infinity,
-          ease: "linear"
+          ease: 'linear',
         }}
         style={{
-          background: 'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent 20%, transparent 80%, rgba(255,255,255,0.1), transparent)',
+          background:
+            'conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent 20%, transparent 80%, rgba(255,255,255,0.1), transparent)',
         }}
       />
 
-      <div className="relative z-10 p-6">
-        {children}
-      </div>
+      <div className="relative z-10 p-6">{children}</div>
     </motion.div>
   );
 }
@@ -89,11 +99,7 @@ export function BentoItem({
     wide: 'col-span-1 md:col-span-3 row-span-1',
   };
 
-  return (
-    <GlassCard className={`${sizeClasses[size]} ${className}`}>
-      {children}
-    </GlassCard>
-  );
+  return <GlassCard className={`${sizeClasses[size]} ${className}`}>{children}</GlassCard>;
 }
 
 /**
@@ -102,7 +108,7 @@ export function BentoItem({
  */
 export function NoiseOverlay({ opacity = 0.05 }: { opacity?: number }) {
   return (
-    <div 
+    <div
       className="fixed inset-0 pointer-events-none z-[100] mix-blend-overlay"
       style={{
         opacity,
@@ -121,12 +127,20 @@ export function NarrativeConstellation({
   connections = [],
   className = '',
 }: {
-  nodes?: { id: string; x: number; y: number; label: string; type?: 'choice' | 'event' | 'outcome' }[];
+  nodes?: {
+    id: string;
+    x: number;
+    y: number;
+    label: string;
+    type?: 'choice' | 'event' | 'outcome';
+  }[];
   connections?: { from: string; to: string }[];
   className?: string;
 }) {
   return (
-    <div className={`relative w-full aspect-video bg-void-black/20 rounded-3xl overflow-hidden border border-white/5 ${className}`}>
+    <div
+      className={`relative w-full aspect-video bg-void-black/20 rounded-3xl overflow-hidden border border-white/5 ${className}`}
+    >
       <svg className="absolute inset-0 w-full h-full pointer-events-none">
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -136,8 +150,8 @@ export function NarrativeConstellation({
           </linearGradient>
         </defs>
         {connections.map((conn, i) => {
-          const from = nodes.find(n => n.id === conn.from);
-          const to = nodes.find(n => n.id === conn.to);
+          const from = nodes.find((n) => n.id === conn.from);
+          const to = nodes.find((n) => n.id === conn.to);
           if (!from || !to) return null;
           return (
             <motion.line
@@ -162,11 +176,11 @@ export function NarrativeConstellation({
           key={node.id}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ 
-            type: 'spring', 
-            stiffness: 260, 
+          transition={{
+            type: 'spring',
+            stiffness: 260,
             damping: 20,
-            delay: i * 0.1 
+            delay: i * 0.1,
           }}
           className="absolute group cursor-pointer"
           style={{ left: `${node.x}%`, top: `${node.y}%`, transform: 'translate(-50%, -50%)' }}
@@ -176,8 +190,11 @@ export function NarrativeConstellation({
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 4, repeat: Infinity }}
               className={`w-3 h-3 rounded-full blur-[2px] ${
-                node.type === 'choice' ? 'bg-spectral-cyan' : 
-                node.type === 'outcome' ? 'bg-spectral-rose' : 'bg-spectral-violet'
+                node.type === 'choice'
+                  ? 'bg-spectral-cyan'
+                  : node.type === 'outcome'
+                    ? 'bg-spectral-rose'
+                    : 'bg-spectral-violet'
               }`}
             />
             <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
@@ -188,17 +205,17 @@ export function NarrativeConstellation({
           </div>
         </motion.div>
       ))}
-      
+
       {/* Background Star Field Effect */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-px h-px bg-white rounded-full"
-            initial={{ 
-              x: `${Math.random() * 100}%`, 
+            initial={{
+              x: `${Math.random() * 100}%`,
               y: `${Math.random() * 100}%`,
-              opacity: Math.random() 
+              opacity: Math.random(),
             }}
             animate={{ opacity: [0.2, 1, 0.2] }}
             transition={{ duration: 2 + Math.random() * 3, repeat: Infinity }}
@@ -213,14 +230,14 @@ export function NarrativeConstellation({
  * HOLOGRAPHIC CARD
  * A card with holographic shimmer and parallax tilt effects
  */
-export function HolographicCard({ 
-  children, 
+export function HolographicCard({
+  children,
   className = '',
   glowColor = 'spectral-cyan',
   intensity = 1,
   enableTilt = true,
-}: { 
-  children: React.ReactNode; 
+}: {
+  children: React.ReactNode;
   className?: string;
   glowColor?: string;
   intensity?: number;
@@ -232,20 +249,20 @@ export function HolographicCard({
 
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
-  
+
   const springConfig = { stiffness: 300, damping: 30 };
   const springRotateX = useSpring(rotateX, springConfig);
   const springRotateY = useSpring(rotateY, springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
-    
+
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
-    
+
     setMousePos({ x, y });
-    
+
     if (enableTilt) {
       rotateX.set((y - 0.5) * 20 * intensity);
       rotateY.set((x - 0.5) * -20 * intensity);
@@ -286,7 +303,7 @@ export function HolographicCard({
           background: `radial-gradient(circle at ${mousePos.x * 100}% ${mousePos.y * 100}%, var(--${glowColor}) 0%, transparent 50%)`,
         }}
       />
-      
+
       {/* Rainbow shimmer */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -300,7 +317,7 @@ export function HolographicCard({
             transparent 100%)`,
         }}
       />
-      
+
       {/* Border glow */}
       <motion.div
         className="absolute inset-0 rounded-2xl pointer-events-none"
@@ -310,7 +327,7 @@ export function HolographicCard({
           boxShadow: `inset 0 0 30px var(--${glowColor})10, 0 0 20px var(--${glowColor})20`,
         }}
       />
-      
+
       <div className="relative z-10" style={{ transform: 'translateZ(20px)' }}>
         {children}
       </div>
@@ -390,7 +407,7 @@ export function AuroraBackdrop({ className = '' }: { className?: string }) {
           ease: 'easeInOut',
         }}
       />
-      
+
       {/* Secondary aurora */}
       <motion.div
         className="absolute -top-1/4 right-1/4 w-3/4 h-full opacity-20"
@@ -449,14 +466,18 @@ export function NeonText({
           0 0 ${40 * intensity}px var(--${color})
         `,
       }}
-      animate={flicker ? {
-        opacity: [1, 0.8, 1, 0.9, 1],
-        textShadow: [
-          `0 0 ${5 * intensity}px var(--${color}), 0 0 ${10 * intensity}px var(--${color}), 0 0 ${20 * intensity}px var(--${color}), 0 0 ${40 * intensity}px var(--${color})`,
-          `0 0 ${3 * intensity}px var(--${color}), 0 0 ${6 * intensity}px var(--${color}), 0 0 ${12 * intensity}px var(--${color}), 0 0 ${24 * intensity}px var(--${color})`,
-          `0 0 ${5 * intensity}px var(--${color}), 0 0 ${10 * intensity}px var(--${color}), 0 0 ${20 * intensity}px var(--${color}), 0 0 ${40 * intensity}px var(--${color})`,
-        ],
-      } : {}}
+      animate={
+        flicker
+          ? {
+              opacity: [1, 0.8, 1, 0.9, 1],
+              textShadow: [
+                `0 0 ${5 * intensity}px var(--${color}), 0 0 ${10 * intensity}px var(--${color}), 0 0 ${20 * intensity}px var(--${color}), 0 0 ${40 * intensity}px var(--${color})`,
+                `0 0 ${3 * intensity}px var(--${color}), 0 0 ${6 * intensity}px var(--${color}), 0 0 ${12 * intensity}px var(--${color}), 0 0 ${24 * intensity}px var(--${color})`,
+                `0 0 ${5 * intensity}px var(--${color}), 0 0 ${10 * intensity}px var(--${color}), 0 0 ${20 * intensity}px var(--${color}), 0 0 ${40 * intensity}px var(--${color})`,
+              ],
+            }
+          : {}
+      }
       transition={flicker ? { duration: 0.5, repeat: Infinity } : {}}
     >
       {children}
@@ -515,10 +536,10 @@ export function ParallaxSection({
  * CURSOR FOLLOWER
  * Custom cursor with trailing effect
  */
-export function CursorFollower({ 
+export function CursorFollower({
   enabled = true,
   color = 'spectral-cyan',
-}: { 
+}: {
   enabled?: boolean;
   color?: string;
 }) {
@@ -527,7 +548,7 @@ export function CursorFollower({
 
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
-  
+
   const springConfig = { damping: 25, stiffness: 700 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
@@ -585,7 +606,7 @@ export function CursorFollower({
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         />
       </motion.div>
-      
+
       {/* Trailing dot */}
       <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9998] mix-blend-difference"
@@ -594,10 +615,7 @@ export function CursorFollower({
           y: mousePos.y - 4,
         }}
       >
-        <div 
-          className="w-2 h-2 rounded-full"
-          style={{ backgroundColor: `var(--${color})` }}
-        />
+        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: `var(--${color})` }} />
       </motion.div>
     </>
   );
@@ -729,31 +747,34 @@ export function MagneticElement({
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   const springConfig = { stiffness: 150, damping: 15 };
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!ref.current) return;
-    
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const distanceX = e.clientX - centerX;
-    const distanceY = e.clientY - centerY;
-    const dist = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-    
-    if (dist < distance) {
-      const force = (distance - dist) / distance;
-      x.set(distanceX * strength * force);
-      y.set(distanceY * strength * force);
-    } else {
-      x.set(0);
-      y.set(0);
-    }
-  }, [distance, strength, x, y]);
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!ref.current) return;
+
+      const rect = ref.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const distanceX = e.clientX - centerX;
+      const distanceY = e.clientY - centerY;
+      const dist = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+      if (dist < distance) {
+        const force = (distance - dist) / distance;
+        x.set(distanceX * strength * force);
+        y.set(distanceY * strength * force);
+      } else {
+        x.set(0);
+        y.set(0);
+      }
+    },
+    [distance, strength, x, y]
+  );
 
   const handleMouseLeave = useCallback(() => {
     x.set(0);
@@ -795,7 +816,7 @@ export function SplitTextAnimation({
   type?: 'char' | 'word';
 }) {
   const parts = type === 'char' ? text.split('') : text.split(' ');
-  
+
   return (
     <span className={className}>
       {parts.map((part, i) => (
@@ -851,12 +872,9 @@ export function GradientBorder({
           ease: 'linear',
         }}
       />
-      
+
       {/* Content container */}
-      <div 
-        className="relative bg-void-black rounded-2xl"
-        style={{ margin: borderWidth }}
-      >
+      <div className="relative bg-void-black rounded-2xl" style={{ margin: borderWidth }}>
         {children}
       </div>
     </div>
@@ -885,18 +903,18 @@ export function RippleButton({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     const id = Date.now();
-    
+
     setRipples((prev) => [...prev, { x, y, id }]);
     setTimeout(() => {
       setRipples((prev) => prev.filter((ripple) => ripple.id !== id));
     }, 1000);
-    
+
     onClick?.();
   };
 
   return (
-    <button 
-      className={`relative overflow-hidden ${className}`} 
+    <button
+      className={`relative overflow-hidden ${className}`}
       onClick={handleClick}
       aria-label={typeof children === 'string' ? children : 'Interactive button'}
     >
@@ -922,4 +940,3 @@ export function RippleButton({
     </button>
   );
 }
-

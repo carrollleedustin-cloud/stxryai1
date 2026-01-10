@@ -25,11 +25,46 @@ const NonlinearNavigation = () => {
   useEffect(() => {
     const navigationNetwork: NavigationNode[] = [
       { id: 'home', label: 'HOME', path: '/', x: 50, y: 50, connections: ['stories', 'library'] },
-      { id: 'stories', label: 'STORIES', path: '/story-library', x: 30, y: 30, connections: ['home', 'reader'] },
-      { id: 'library', label: 'LIBRARY', path: '/story-library', x: 70, y: 30, connections: ['home', 'reader'] },
-      { id: 'reader', label: 'READER', path: '/story-reader', x: 50, y: 20, connections: ['stories', 'library'] },
-      { id: 'dashboard', label: 'DASH', path: '/user-dashboard', x: 20, y: 70, connections: ['home'] },
-      { id: 'create', label: 'CREATE', path: '/story-creation-studio', x: 80, y: 70, connections: ['home'] },
+      {
+        id: 'stories',
+        label: 'STORIES',
+        path: '/story-library',
+        x: 30,
+        y: 30,
+        connections: ['home', 'reader'],
+      },
+      {
+        id: 'library',
+        label: 'LIBRARY',
+        path: '/story-library',
+        x: 70,
+        y: 30,
+        connections: ['home', 'reader'],
+      },
+      {
+        id: 'reader',
+        label: 'READER',
+        path: '/story-reader',
+        x: 50,
+        y: 20,
+        connections: ['stories', 'library'],
+      },
+      {
+        id: 'dashboard',
+        label: 'DASH',
+        path: '/user-dashboard',
+        x: 20,
+        y: 70,
+        connections: ['home'],
+      },
+      {
+        id: 'create',
+        label: 'CREATE',
+        path: '/story-creation-studio',
+        x: 80,
+        y: 70,
+        connections: ['home'],
+      },
     ];
     setNodes(navigationNetwork);
   }, []);
@@ -51,11 +86,15 @@ const NonlinearNavigation = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <motion.div
-          animate={{ rotate: isOpen ? 45 : 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <motion.div animate={{ rotate: isOpen ? 45 : 0 }} transition={{ duration: 0.3 }}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
@@ -88,7 +127,7 @@ const NonlinearNavigation = () => {
                 <svg className="absolute inset-0 w-full h-full">
                   {nodes.map((node) =>
                     node.connections.map((connId) => {
-                      const connectedNode = nodes.find(n => n.id === connId);
+                      const connectedNode = nodes.find((n) => n.id === connId);
                       if (!connectedNode) return null;
                       return (
                         <motion.line
@@ -113,7 +152,7 @@ const NonlinearNavigation = () => {
                 {nodes.map((node) => {
                   const isActive = pathname === node.path;
                   const isSelected = selectedNode === node.id;
-                  
+
                   return (
                     <motion.button
                       key={node.id}
@@ -137,9 +176,7 @@ const NonlinearNavigation = () => {
                         damping: 20,
                       }}
                     >
-                      <span className="neon-text text-sm font-mono">
-                        {node.label}
-                      </span>
+                      <span className="neon-text text-sm font-mono">{node.label}</span>
                       {isActive && (
                         <motion.div
                           className="absolute inset-0 rounded-lg"
@@ -163,4 +200,3 @@ const NonlinearNavigation = () => {
 };
 
 export default NonlinearNavigation;
-

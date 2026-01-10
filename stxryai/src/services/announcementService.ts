@@ -102,7 +102,7 @@ class AnnouncementService {
   async update(id: string, updates: Partial<CreateAnnouncementDTO>): Promise<Announcement | null> {
     try {
       const updateData: Record<string, unknown> = {};
-      
+
       if (updates.title !== undefined) updateData.title = updates.title;
       if (updates.content !== undefined) updateData.content = updates.content;
       if (updates.type !== undefined) updateData.type = updates.type;
@@ -130,10 +130,7 @@ class AnnouncementService {
   // Delete announcement
   async delete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('announcements')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('announcements').delete().eq('id', id);
 
       if (error) throw error;
       return true;
@@ -197,7 +194,7 @@ class AnnouncementService {
   async getActiveForUser(userId?: string): Promise<Announcement[]> {
     try {
       const now = new Date().toISOString();
-      
+
       const { data, error } = await supabase
         .from('announcements')
         .select('*')
@@ -207,7 +204,7 @@ class AnnouncementService {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
+
       // Filter out dismissed announcements if userId provided
       if (userId) {
         const { data: dismissed } = await supabase
@@ -215,10 +212,8 @@ class AnnouncementService {
           .select('announcement_id')
           .eq('user_id', userId);
 
-        const dismissedIds = new Set((dismissed || []).map(d => d.announcement_id));
-        return (data || [])
-          .filter(a => !dismissedIds.has(a.id))
-          .map(this.transformAnnouncement);
+        const dismissedIds = new Set((dismissed || []).map((d) => d.announcement_id));
+        return (data || []).filter((a) => !dismissedIds.has(a.id)).map(this.transformAnnouncement);
       }
 
       return (data || []).map(this.transformAnnouncement);
@@ -290,10 +285,13 @@ class AnnouncementService {
   }
 
   // Get announcements for a specific user (used by EtherealNav)
-  async getForUser(userId: string, subscriptionTier: string): Promise<(Announcement & { readBy: string[] })[]> {
+  async getForUser(
+    userId: string,
+    subscriptionTier: string
+  ): Promise<(Announcement & { readBy: string[] })[]> {
     try {
       const now = new Date().toISOString();
-      
+
       const { data, error } = await supabase
         .from('announcements')
         .select('*')
@@ -310,15 +308,15 @@ class AnnouncementService {
         .select('announcement_id')
         .eq('user_id', userId);
 
-      const readIds = new Set((readData || []).map(r => r.announcement_id));
-      
-      return (data || []).map(a => ({
+      const readIds = new Set((readData || []).map((r) => r.announcement_id));
+
+      return (data || []).map((a) => ({
         ...this.transformAnnouncement(a),
         readBy: readIds.has(a.id) ? [userId] : [],
       }));
     } catch (error) {
       console.error('Error fetching user announcements:', error);
-      return this.getMockAnnouncements().map(a => ({ ...a, readBy: [] }));
+      return this.getMockAnnouncements().map((a) => ({ ...a, readBy: [] }));
     }
   }
 
@@ -326,7 +324,7 @@ class AnnouncementService {
   async getUnreadCount(userId: string, subscriptionTier: string): Promise<number> {
     try {
       const now = new Date().toISOString();
-      
+
       const { data: announcements, error: annError } = await supabase
         .from('announcements')
         .select('id')
@@ -340,9 +338,9 @@ class AnnouncementService {
         .select('announcement_id')
         .eq('user_id', userId);
 
-      const readIds = new Set((readData || []).map(r => r.announcement_id));
-      const unread = (announcements || []).filter(a => !readIds.has(a.id));
-      
+      const readIds = new Set((readData || []).map((r) => r.announcement_id));
+      const unread = (announcements || []).filter((a) => !readIds.has(a.id));
+
       return unread.length;
     } catch (error) {
       console.error('Error getting unread count:', error);
@@ -379,7 +377,8 @@ class AnnouncementService {
       {
         id: '1',
         title: '🎉 Welcome to StxryAI 2.0!',
-        content: 'We\'ve completely redesigned the platform with a stunning new void aesthetic, enhanced reading experience, and AI-powered storytelling features.',
+        content:
+          "We've completely redesigned the platform with a stunning new void aesthetic, enhanced reading experience, and AI-powered storytelling features.",
         type: 'feature',
         targetAudience: 'all',
         isActive: true,
@@ -388,12 +387,18 @@ class AnnouncementService {
         createdBy: 'admin',
         createdAt: new Date(Date.now() - 86400000).toISOString(),
         updatedAt: new Date(Date.now() - 86400000).toISOString(),
-        metadata: { viewCount: 1547, dismissCount: 234, linkUrl: '/story-library', linkText: 'Explore Stories' },
+        metadata: {
+          viewCount: 1547,
+          dismissCount: 234,
+          linkUrl: '/story-library',
+          linkText: 'Explore Stories',
+        },
       },
       {
         id: '2',
         title: '📚 New Story Collection: Winter Tales',
-        content: 'Discover our curated collection of winter-themed stories, perfect for cozy reading during the holiday season.',
+        content:
+          'Discover our curated collection of winter-themed stories, perfect for cozy reading during the holiday season.',
         type: 'info',
         targetAudience: 'all',
         isActive: true,
@@ -402,12 +407,18 @@ class AnnouncementService {
         createdBy: 'admin',
         createdAt: new Date(Date.now() - 172800000).toISOString(),
         updatedAt: new Date(Date.now() - 172800000).toISOString(),
-        metadata: { viewCount: 892, dismissCount: 156, linkUrl: '/story-library?collection=winter', linkText: 'View Collection' },
+        metadata: {
+          viewCount: 892,
+          dismissCount: 156,
+          linkUrl: '/story-library?collection=winter',
+          linkText: 'View Collection',
+        },
       },
       {
         id: '3',
         title: '⚠️ Scheduled Maintenance',
-        content: 'We will be performing scheduled maintenance on December 28th from 2:00 AM - 4:00 AM EST. The platform may be briefly unavailable during this time.',
+        content:
+          'We will be performing scheduled maintenance on December 28th from 2:00 AM - 4:00 AM EST. The platform may be briefly unavailable during this time.',
         type: 'maintenance',
         targetAudience: 'all',
         isActive: true,

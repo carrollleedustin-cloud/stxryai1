@@ -5,10 +5,7 @@ import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine'
  * GET /api/narrative-engine/series/[seriesId]/books
  * Get all books in a series
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { seriesId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
     const { seriesId } = params;
 
@@ -17,10 +14,7 @@ export async function GET(
     return NextResponse.json({ books });
   } catch (error) {
     console.error('Failed to fetch books:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch books' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch books' }, { status: 500 });
   }
 }
 
@@ -28,10 +22,7 @@ export async function GET(
  * POST /api/narrative-engine/series/[seriesId]/books
  * Create a new book in a series
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { seriesId: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
     const { seriesId } = params;
     const body = await request.json();
@@ -77,10 +68,6 @@ export async function POST(
     return NextResponse.json(book, { status: 201 });
   } catch (error) {
     console.error('Failed to create book:', error);
-    return NextResponse.json(
-      { error: 'Failed to create book' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create book' }, { status: 500 });
   }
 }
-

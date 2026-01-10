@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { referralService, type ReferralStats, type ReferralReward } from '@/services/referralService';
+import {
+  referralService,
+  type ReferralStats,
+  type ReferralReward,
+} from '@/services/referralService';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Icon from '@/components/ui/AppIcon';
@@ -52,7 +56,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
     if (!referralCode) return;
 
     const referralUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/?ref=${referralCode}`;
-    
+
     try {
       await navigator.clipboard.writeText(referralUrl);
       setCopied(true);
@@ -67,7 +71,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
     if (!referralCode || !user) return;
 
     const referralUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/?ref=${referralCode}`;
-    
+
     // Generate share card
     const shareCardData = shareCardService.generateMilestoneShareCard({
       title: 'Join StxryAI!',
@@ -78,7 +82,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
 
     try {
       const cardUrl = await shareCardService.generateShareCard(shareCardData);
-      
+
       if (navigator.share) {
         await navigator.share({
           title: 'Join StxryAI with my referral!',
@@ -123,9 +127,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-foreground mb-2">Referral Program</h2>
-        <p className="text-muted-foreground">
-          Share StxryAI with friends and earn rewards!
-        </p>
+        <p className="text-muted-foreground">Share StxryAI with friends and earn rewards!</p>
       </div>
 
       {/* Referral Code Card */}
@@ -234,9 +236,7 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
                   <div className="font-semibold text-foreground capitalize">
                     {reward.rewardType.replace('_', ' ')}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Value: {reward.rewardValue}
-                  </div>
+                  <div className="text-sm text-muted-foreground">Value: {reward.rewardValue}</div>
                   {reward.expiresAt && (
                     <div className="text-xs text-muted-foreground mt-1">
                       Expires: {new Date(reward.expiresAt).toLocaleDateString()}
@@ -304,4 +304,3 @@ export function ReferralDashboard({ className = '' }: ReferralDashboardProps) {
     </div>
   );
 }
-

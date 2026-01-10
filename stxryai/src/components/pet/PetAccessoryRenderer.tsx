@@ -15,12 +15,12 @@ interface PetAccessoryRendererProps {
   scale: number;
 }
 
-export default function PetAccessoryRenderer({ 
-  accessories, 
-  traits, 
-  scale 
+export default function PetAccessoryRenderer({
+  accessories,
+  traits,
+  scale,
 }: PetAccessoryRendererProps) {
-  const equipped = accessories.filter(a => a.equipped);
+  const equipped = accessories.filter((a) => a.equipped);
 
   if (equipped.length === 0) return null;
 
@@ -32,11 +32,12 @@ export default function PetAccessoryRenderer({
       transform: 'translateX(-50%)',
       width: `${60 * scale}%`,
       height: `${25 * scale}%`,
-      background: acc.rarity === 'legendary' 
-        ? 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700, #ffaa00)'
-        : acc.rarity === 'epic'
-        ? 'linear-gradient(135deg, #a855f7, #c084fc, #a855f7)'
-        : 'linear-gradient(135deg, #c0c0c0, #e8e8e8, #c0c0c0)',
+      background:
+        acc.rarity === 'legendary'
+          ? 'linear-gradient(135deg, #ffd700, #ffed4e, #ffd700, #ffaa00)'
+          : acc.rarity === 'epic'
+            ? 'linear-gradient(135deg, #a855f7, #c084fc, #a855f7)'
+            : 'linear-gradient(135deg, #c0c0c0, #e8e8e8, #c0c0c0)',
       clipPath: 'polygon(20% 0%, 80% 0%, 100% 50%, 80% 100%, 20% 100%, 0% 50%)',
       filter: `drop-shadow(0 4px 8px rgba(0,0,0,0.4)) ${acc.rarity === 'legendary' ? 'drop-shadow(0 0 10px #ffd700)' : ''}`,
       zIndex: 10,
@@ -119,9 +120,10 @@ export default function PetAccessoryRenderer({
       width: `${150 * scale}%`,
       height: `${150 * scale}%`,
       borderRadius: '50%',
-      background: acc.rarity === 'legendary'
-        ? 'radial-gradient(circle, rgba(255,215,0,0.3), rgba(255,215,0,0.1), transparent)'
-        : `radial-gradient(circle, ${traits.primaryColor}30, ${traits.primaryColor}10, transparent)`,
+      background:
+        acc.rarity === 'legendary'
+          ? 'radial-gradient(circle, rgba(255,215,0,0.3), rgba(255,215,0,0.1), transparent)'
+          : `radial-gradient(circle, ${traits.primaryColor}30, ${traits.primaryColor}10, transparent)`,
       filter: 'blur(10px)',
       zIndex: 0,
       pointerEvents: 'none',
@@ -130,7 +132,7 @@ export default function PetAccessoryRenderer({
 
   return (
     <>
-      {equipped.map(accessory => {
+      {equipped.map((accessory) => {
         const style = accessoryStyles[accessory.type]?.(accessory);
         if (!style) return null;
 
@@ -139,13 +141,13 @@ export default function PetAccessoryRenderer({
             key={accessory.id}
             style={style}
             animate={
-              accessory.type === 'wings' 
+              accessory.type === 'wings'
                 ? { rotate: [-5, 5, -5] }
                 : accessory.type === 'bow'
-                ? { rotate: [-2, 2, -2] }
-                : accessory.type === 'aura'
-                ? { scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }
-                : {}
+                  ? { rotate: [-2, 2, -2] }
+                  : accessory.type === 'aura'
+                    ? { scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }
+                    : {}
             }
             transition={
               accessory.type === 'aura'
@@ -155,36 +157,42 @@ export default function PetAccessoryRenderer({
           >
             {accessory.type === 'glasses' && (
               <>
-                <div style={{
-                  width: '48%',
-                  height: '100%',
-                  border: `4px solid ${traits.accentColor}`,
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: `inset 0 0 10px ${traits.accentColor}40`,
-                }} />
-                <div style={{
-                  width: '48%',
-                  height: '100%',
-                  border: `4px solid ${traits.accentColor}`,
-                  borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.15)',
-                  boxShadow: `inset 0 0 10px ${traits.accentColor}40`,
-                }} />
+                <div
+                  style={{
+                    width: '48%',
+                    height: '100%',
+                    border: `4px solid ${traits.accentColor}`,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.15)',
+                    boxShadow: `inset 0 0 10px ${traits.accentColor}40`,
+                  }}
+                />
+                <div
+                  style={{
+                    width: '48%',
+                    height: '100%',
+                    border: `4px solid ${traits.accentColor}`,
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.15)',
+                    boxShadow: `inset 0 0 10px ${traits.accentColor}40`,
+                  }}
+                />
                 {/* Bridge */}
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: '8%',
-                  height: '30%',
-                  background: traits.accentColor,
-                  borderRadius: '2px',
-                }} />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '8%',
+                    height: '30%',
+                    background: traits.accentColor,
+                    borderRadius: '2px',
+                  }}
+                />
               </>
             )}
-            
+
             {accessory.type === 'wings' && (
               <>
                 <motion.div
@@ -223,4 +231,3 @@ export default function PetAccessoryRenderer({
     </>
   );
 }
-

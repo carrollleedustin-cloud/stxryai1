@@ -26,7 +26,7 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
     const regex = /(\S+|\s+)/g;
     const matches = content.match(regex) || [];
     const wordArray = matches
-      .filter(m => m.trim().length > 0)
+      .filter((m) => m.trim().length > 0)
       .map((text, index) => ({ text, index }));
     setWords(wordArray);
   }, [content]);
@@ -39,18 +39,18 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
 
     const handleScroll = () => {
       if (!containerRef.current) return;
-      
+
       const currentScroll = containerRef.current.scrollTop;
       const now = Date.now();
       const timeDelta = now - lastTime;
-      
+
       if (timeDelta > 0) {
         const velocity = Math.abs(currentScroll - lastScrollTop) / timeDelta;
         velocityHistory.push(velocity);
         if (velocityHistory.length > 10) velocityHistory.shift();
-        
+
         const avgVelocity = velocityHistory.reduce((a, b) => a + b, 0) / velocityHistory.length;
-        
+
         // Calculate reading pace
         if (avgVelocity > 0.8) {
           setReadingPace(1.8);
@@ -59,29 +59,29 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
         } else {
           setReadingPace(1);
         }
-        
+
         // Calculate scroll tension
         const maxScroll = containerRef.current.scrollHeight - containerRef.current.clientHeight;
         const progress = currentScroll / maxScroll;
         setScrollTension(progress);
-        
+
         // Update visible word range
         const containerRect = containerRef.current.getBoundingClientRect();
         const wordElements = containerRef.current.querySelectorAll('.word-stalk');
         const visible: number[] = [];
-        
+
         wordElements.forEach((el, index) => {
           const rect = el.getBoundingClientRect();
           if (rect.top < containerRect.bottom && rect.bottom > containerRect.top) {
             visible.push(index);
           }
         });
-        
+
         if (visible.length > 0) {
           setVisibleRange({ start: visible[0], end: visible[visible.length - 1] });
         }
       }
-      
+
       lastScrollTop = currentScroll;
       lastTime = now;
     };
@@ -128,27 +128,30 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
   }, []);
 
   // Calculate stalk offset for each word
-  const getStalkOffset = useCallback((wordIndex: number, element: HTMLElement | null) => {
-    if (!element || !isStalking) return { x: 0, y: 0 };
-    
-    const rect = element.getBoundingClientRect();
-    const wordCenterX = rect.left + rect.width / 2;
-    const wordCenterY = rect.top + rect.height / 2;
-    
-    const deltaX = mousePosition.x - wordCenterX;
-    const deltaY = mousePosition.y - wordCenterY;
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const maxDistance = 400;
-    
-    if (distance > maxDistance) return { x: 0, y: 0 };
-    
-    const intensity = (1 - distance / maxDistance) * 8;
-    
-    return {
-      x: (deltaX / distance) * intensity,
-      y: (deltaY / distance) * intensity,
-    };
-  }, [mousePosition, isStalking]);
+  const getStalkOffset = useCallback(
+    (wordIndex: number, element: HTMLElement | null) => {
+      if (!element || !isStalking) return { x: 0, y: 0 };
+
+      const rect = element.getBoundingClientRect();
+      const wordCenterX = rect.left + rect.width / 2;
+      const wordCenterY = rect.top + rect.height / 2;
+
+      const deltaX = mousePosition.x - wordCenterX;
+      const deltaY = mousePosition.y - wordCenterY;
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const maxDistance = 400;
+
+      if (distance > maxDistance) return { x: 0, y: 0 };
+
+      const intensity = (1 - distance / maxDistance) * 8;
+
+      return {
+        x: (deltaX / distance) * intensity,
+        y: (deltaY / distance) * intensity,
+      };
+    },
+    [mousePosition, isStalking]
+  );
 
   // Word emergence delay
   const getWordDelay = (index: number) => {
@@ -207,14 +210,14 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
             const isVisible = index >= visibleRange.start && index <= visibleRange.end;
             const wordRef = useRef<HTMLSpanElement>(null);
             const stalk = getStalkOffset(index, wordRef.current);
-            
+
             return (
               <motion.span
                 key={index}
                 ref={wordRef}
                 className="word-stalk word-fracture inline-block mr-2"
-                initial={{ 
-                  opacity: 0, 
+                initial={{
+                  opacity: 0,
                   y: 30,
                   filter: 'blur(15px)',
                 }}
@@ -271,7 +274,10 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
                 <span className="neon-text text-lg font-mono flex items-center gap-3">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 group-hover:scale-150 transition-transform" />
                   {choice.text}
-                  <ArrowRight className="ml-auto group-hover:translate-x-2 transition-transform" size={20} />
+                  <ArrowRight
+                    className="ml-auto group-hover:translate-x-2 transition-transform"
+                    size={20}
+                  />
                 </span>
               </motion.button>
             ))}
@@ -296,4 +302,3 @@ const SentientReader = ({ content, title, choices = [] }: SentientReaderProps) =
 };
 
 export default SentientReader;
-

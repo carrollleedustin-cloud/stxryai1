@@ -52,7 +52,14 @@ export interface StoryRemix {
   originalStoryId: string;
   remixStoryId: string;
   remixerId: string;
-  remixType: 'alternate_ending' | 'prequel' | 'sequel' | 'spin_off' | 'genre_shift' | 'perspective_shift' | 'complete_remix';
+  remixType:
+    | 'alternate_ending'
+    | 'prequel'
+    | 'sequel'
+    | 'spin_off'
+    | 'genre_shift'
+    | 'perspective_shift'
+    | 'complete_remix';
   remixDescription?: string;
   creditsOriginalAuthor: boolean;
   remixLicense: 'remix' | 'derivative' | 'inspired_by';
@@ -103,7 +110,10 @@ export class CollaborativeCreationService {
         story_id: storyId,
         story_type: communityStory.storyType || 'community',
         original_story_id: communityStory.originalStoryId,
-        is_open_for_contributions: communityStory.isOpenForContributions !== undefined ? communityStory.isOpenForContributions : true,
+        is_open_for_contributions:
+          communityStory.isOpenForContributions !== undefined
+            ? communityStory.isOpenForContributions
+            : true,
         contribution_guidelines: communityStory.contributionGuidelines,
         moderation_level: communityStory.moderationLevel || 'moderate',
       })
@@ -244,16 +254,17 @@ export class CollaborativeCreationService {
     voterId: string,
     voteType: 'upvote' | 'downvote'
   ): Promise<void> {
-    const { error } = await this.supabase
-      .from('contribution_votes')
-      .upsert({
+    const { error } = await this.supabase.from('contribution_votes').upsert(
+      {
         contribution_id: contributionId,
         voter_id: voterId,
         vote_type: voteType,
         vote_weight: voteType === 'upvote' ? 1 : -1,
-      }, {
+      },
+      {
         onConflict: 'contribution_id,voter_id',
-      });
+      }
+    );
 
     if (error) throw error;
   }
@@ -279,7 +290,8 @@ export class CollaborativeCreationService {
         remixer_id: remixerId,
         remix_type: remix.remixType,
         remix_description: remix.remixDescription,
-        credits_original_author: remix.creditsOriginalAuthor !== undefined ? remix.creditsOriginalAuthor : true,
+        credits_original_author:
+          remix.creditsOriginalAuthor !== undefined ? remix.creditsOriginalAuthor : true,
         remix_license: remix.remixLicense || 'remix',
         is_approved: false,
       })
@@ -477,4 +489,3 @@ export class CollaborativeCreationService {
 }
 
 export const collaborativeCreationService = new CollaborativeCreationService();
-

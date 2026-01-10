@@ -23,7 +23,12 @@ export interface AuditLog {
 }
 
 export interface SecurityEvent {
-  type: 'login_attempt' | 'password_change' | 'permission_change' | 'data_access' | 'suspicious_activity';
+  type:
+    | 'login_attempt'
+    | 'password_change'
+    | 'permission_change'
+    | 'data_access'
+    | 'suspicious_activity';
   userId?: string;
   ipAddress: string;
   success: boolean;
@@ -77,12 +82,12 @@ export function verifyTOTP(secret: string, token: string, window: number = 1): b
       .digest();
 
     const offset = hash[hash.length - 1] & 0xf;
-    const code = (
-      ((hash[offset] & 0x7f) << 24) |
-      ((hash[offset + 1] & 0xff) << 16) |
-      ((hash[offset + 2] & 0xff) << 8) |
-      (hash[offset + 3] & 0xff)
-    ) % 1000000;
+    const code =
+      (((hash[offset] & 0x7f) << 24) |
+        ((hash[offset + 1] & 0xff) << 16) |
+        ((hash[offset + 2] & 0xff) << 8) |
+        (hash[offset + 3] & 0xff)) %
+      1000000;
 
     if (code.toString().padStart(6, '0') === token) {
       return true;
@@ -116,9 +121,7 @@ export async function setupMFA(userId: string, email: string): Promise<MFASetup>
 /**
  * Create audit log entry
  */
-export async function createAuditLog(
-  log: Omit<AuditLog, 'id' | 'timestamp'>
-): Promise<AuditLog> {
+export async function createAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>): Promise<AuditLog> {
   const auditLog: AuditLog = {
     id: crypto.randomUUID(),
     ...log,
@@ -281,10 +284,7 @@ export async function hashPassword(password: string): Promise<string> {
 /**
  * Verify password (use bcrypt in production)
  */
-export async function verifyPassword(
-  password: string,
-  hash: string
-): Promise<boolean> {
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   // In production, use bcrypt.compare
   const passwordHash = await hashPassword(password);
   return passwordHash === hash;
@@ -312,10 +312,7 @@ export function generateCSRFToken(): string {
  * Verify CSRF token
  */
 export function verifyCSRFToken(token: string, expected: string): boolean {
-  return crypto.timingSafeEqual(
-    Buffer.from(token),
-    Buffer.from(expected)
-  );
+  return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
 }
 
 // ============================================================================
@@ -327,11 +324,7 @@ export function verifyCSRFToken(token: string, expected: string): boolean {
  */
 export function encryptData(data: string, key: string): string {
   const iv = crypto.randomBytes(16);
-  const cipher = crypto.createCipheriv(
-    'aes-256-gcm',
-    Buffer.from(key, 'hex'),
-    iv
-  );
+  const cipher = crypto.createCipheriv('aes-256-gcm', Buffer.from(key, 'hex'), iv);
 
   let encrypted = cipher.update(data, 'utf8', 'hex');
   encrypted += cipher.final('hex');
@@ -385,10 +378,7 @@ export function hashAPIKey(apiKey: string): string {
  */
 export function verifyAPIKey(apiKey: string, hash: string): boolean {
   const keyHash = hashAPIKey(apiKey);
-  return crypto.timingSafeEqual(
-    Buffer.from(keyHash),
-    Buffer.from(hash)
-  );
+  return crypto.timingSafeEqual(Buffer.from(keyHash), Buffer.from(hash));
 }
 
 // ============================================================================
@@ -411,9 +401,7 @@ export async function isRateLimited(
 /**
  * Record rate limit attempt
  */
-export async function recordRateLimitAttempt(
-  identifier: string
-): Promise<void> {
+export async function recordRateLimitAttempt(identifier: string): Promise<void> {
   // In production, increment counter in Redis
   console.log(`Rate limit attempt recorded for: ${identifier}`);
 }
@@ -448,11 +436,7 @@ export async function detectSuspiciousActivity(
 /**
  * Block suspicious IP
  */
-export async function blockIP(
-  ipAddress: string,
-  reason: string,
-  duration?: number
-): Promise<void> {
+export async function blockIP(ipAddress: string, reason: string, duration?: number): Promise<void> {
   console.log(`Blocking IP ${ipAddress}: ${reason}`);
   // In production, add to blocklist in database or firewall
 }

@@ -77,7 +77,10 @@ export class CollaborationService {
   /**
    * Accept collaboration invitation
    */
-  async acceptInvitation(collaborationId: string, collaboratorId: string): Promise<StoryCollaborator> {
+  async acceptInvitation(
+    collaborationId: string,
+    collaboratorId: string
+  ): Promise<StoryCollaborator> {
     const { data, error } = await this.supabase
       .from('story_collaborators')
       .update({

@@ -10,7 +10,13 @@ export interface WritingTemplate {
   creatorId: string;
   name: string;
   description?: string;
-  category?: 'story_structure' | 'character_development' | 'plot_outline' | 'world_building' | 'dialogue' | 'custom';
+  category?:
+    | 'story_structure'
+    | 'character_development'
+    | 'plot_outline'
+    | 'world_building'
+    | 'dialogue'
+    | 'custom';
   templateContent: any; // JSONB structure
   templateType: 'outline' | 'checklist' | 'form' | 'guide';
   isPublic: boolean;
@@ -101,18 +107,12 @@ export class TemplateService {
   /**
    * Use a template (tracks usage)
    */
-  async useTemplate(
-    templateId: string,
-    userId: string,
-    storyId?: string
-  ): Promise<void> {
-    const { error } = await this.supabase
-      .from('template_usage')
-      .insert({
-        template_id: templateId,
-        user_id: userId,
-        story_id: storyId,
-      });
+  async useTemplate(templateId: string, userId: string, storyId?: string): Promise<void> {
+    const { error } = await this.supabase.from('template_usage').insert({
+      template_id: templateId,
+      user_id: userId,
+      story_id: storyId,
+    });
 
     if (error) throw error;
   }
@@ -147,10 +147,7 @@ export class TemplateService {
    * Delete template
    */
   async deleteTemplate(templateId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('writing_templates')
-      .delete()
-      .eq('id', templateId);
+    const { error } = await this.supabase.from('writing_templates').delete().eq('id', templateId);
 
     if (error) throw error;
   }
@@ -174,4 +171,3 @@ export class TemplateService {
 }
 
 export const templateService = new TemplateService();
-

@@ -133,9 +133,7 @@ export function QuickActions({ onAction }: QuickActionsProps) {
   const [selectedCategory, setSelectedCategory] = useState<(typeof categories)[number]>('all');
 
   const filteredActions =
-    selectedCategory === 'all'
-      ? actions
-      : actions.filter((a) => a.category === selectedCategory);
+    selectedCategory === 'all' ? actions : actions.filter((a) => a.category === selectedCategory);
 
   return (
     <>
@@ -252,8 +250,20 @@ export function QuickActions({ onAction }: QuickActionsProps) {
               {/* Footer */}
               <div className="p-4 border-t border-border bg-muted/50">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Press <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">Esc</kbd> to close</span>
-                  <span>Use <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">⌘K</kbd> to open</span>
+                  <span>
+                    Press{' '}
+                    <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">
+                      Esc
+                    </kbd>{' '}
+                    to close
+                  </span>
+                  <span>
+                    Use{' '}
+                    <kbd className="px-1.5 py-0.5 bg-background border border-border rounded">
+                      ⌘K
+                    </kbd>{' '}
+                    to open
+                  </span>
                 </div>
               </div>
             </motion.div>
@@ -263,4 +273,3 @@ export function QuickActions({ onAction }: QuickActionsProps) {
     </>
   );
 }
-

@@ -9,11 +9,7 @@ interface Floating3DCardProps {
   intensity?: number;
 }
 
-const Floating3DCard = ({ 
-  children, 
-  className = '',
-  intensity = 15 
-}: Floating3DCardProps) => {
+const Floating3DCard = ({ children, className = '', intensity = 15 }: Floating3DCardProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -86,4 +82,3 @@ const Floating3DCard = ({
 };
 
 export default Floating3DCard;
-

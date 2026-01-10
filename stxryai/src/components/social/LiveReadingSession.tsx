@@ -35,7 +35,9 @@ export function LiveReadingSession({
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isActive, setIsActive] = useState(false);
   const [currentChapter, setCurrentChapter] = useState(1);
-  const [chatMessages, setChatMessages] = useState<Array<{ user: string; message: string; time: string }>>([]);
+  const [chatMessages, setChatMessages] = useState<
+    Array<{ user: string; message: string; time: string }>
+  >([]);
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -98,7 +100,9 @@ export function LiveReadingSession({
             </div>
             {/* Story content would go here */}
             <div className="prose dark:prose-invert max-w-none">
-              <p className="text-foreground">Story content will appear here during the live session...</p>
+              <p className="text-foreground">
+                Story content will appear here during the live session...
+              </p>
             </div>
           </div>
 
@@ -107,7 +111,8 @@ export function LiveReadingSession({
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-foreground">Synchronized Progress</span>
               <span className="text-xs text-muted-foreground">
-                {participants.filter((p) => p.progress > 80).length} / {participants.length} caught up
+                {participants.filter((p) => p.progress > 80).length} / {participants.length} caught
+                up
               </span>
             </div>
             <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -115,7 +120,7 @@ export function LiveReadingSession({
                 className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
                 initial={{ width: 0 }}
                 animate={{
-                  width: `${(participants.reduce((acc, p) => acc + p.progress, 0) / participants.length) || 0}%`,
+                  width: `${participants.reduce((acc, p) => acc + p.progress, 0) / participants.length || 0}%`,
                 }}
                 transition={{ duration: 0.5 }}
               />
@@ -139,7 +144,9 @@ export function LiveReadingSession({
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">{participant.name}</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {participant.name}
+                      </span>
                       {participant.isHost && (
                         <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
                           Host
@@ -191,4 +198,3 @@ export function LiveReadingSession({
     </div>
   );
 }
-

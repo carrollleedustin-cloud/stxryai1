@@ -56,10 +56,10 @@ export function NebulaCard({
 }: NebulaCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  
+
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), {
     stiffness: 300,
     damping: 30,
@@ -68,24 +68,27 @@ export function NebulaCard({
     stiffness: 300,
     damping: 30,
   });
-  
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || !hover3D) return;
-    
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    
-    mouseX.set(x);
-    mouseY.set(y);
-  }, [hover3D, mouseX, mouseY]);
-  
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current || !hover3D) return;
+
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+      mouseX.set(x);
+      mouseY.set(y);
+    },
+    [hover3D, mouseX, mouseY]
+  );
+
   const handleMouseLeave = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
     setIsHovered(false);
   }, [mouseX, mouseY]);
-  
+
   const colors = GLOW_COLORS[glowColor];
   const opacityMultiplier = intensity === 'subtle' ? 0.5 : intensity === 'intense' ? 1.5 : 1;
 
@@ -112,9 +115,10 @@ export function NebulaCard({
         className="absolute inset-0 rounded-[20px]"
         style={{
           padding: '1px',
-          background: glowColor === 'rainbow'
-            ? `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 50%, #8020ff 100%)`
-            : `linear-gradient(135deg, ${colors.primary}40, transparent 50%, ${colors.secondary}40)`,
+          background:
+            glowColor === 'rainbow'
+              ? `linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 50%, #8020ff 100%)`
+              : `linear-gradient(135deg, ${colors.primary}40, transparent 50%, ${colors.secondary}40)`,
           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
           maskComposite: 'exclude',
@@ -122,7 +126,7 @@ export function NebulaCard({
           transition: 'opacity 0.3s ease',
         }}
       />
-      
+
       {/* Glow effect */}
       <motion.div
         className="absolute inset-0 rounded-[20px] pointer-events-none"
@@ -132,7 +136,7 @@ export function NebulaCard({
         }}
         transition={{ duration: 0.3 }}
       />
-      
+
       {/* Shimmer effect on hover */}
       <motion.div
         className="absolute inset-0 rounded-[20px] overflow-hidden pointer-events-none"
@@ -150,7 +154,7 @@ export function NebulaCard({
           transition={{ duration: 0.6, ease: 'easeInOut' }}
         />
       </motion.div>
-      
+
       {/* Card content */}
       <div
         className="relative rounded-[20px] p-8"
@@ -163,7 +167,7 @@ export function NebulaCard({
       >
         {children}
       </div>
-      
+
       {/* Spotlight effect following mouse */}
       {hover3D && (
         <motion.div
@@ -196,13 +200,13 @@ interface CardStackProps {
 
 export function NebulaCardStack({ children, className = '' }: CardStackProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  
+
   return (
     <div className={`relative ${className}`} style={{ perspective: '1500px' }}>
       {React.Children.map(children, (child, index) => {
         const offset = index - activeIndex;
         const isActive = index === activeIndex;
-        
+
         return (
           <motion.div
             key={index}
@@ -228,5 +232,3 @@ export function NebulaCardStack({ children, className = '' }: CardStackProps) {
 }
 
 export default NebulaCard;
-
-

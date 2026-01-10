@@ -18,18 +18,18 @@ export interface AccessCheckResult {
  */
 export function hasRole(user: UserProfile | null, role: UserRole): boolean {
   if (!user) return false;
-  
+
   const roleHierarchy: Record<UserRole, number> = {
     user: 0,
     moderator: 1,
     admin: 2,
     owner: 3,
   };
-  
+
   const userRole = (user.role || 'user') as UserRole;
   const requiredLevel = roleHierarchy[role];
   const userLevel = roleHierarchy[userRole] || 0;
-  
+
   return userLevel >= requiredLevel;
 }
 
@@ -59,7 +59,7 @@ export function isOwner(user: UserProfile | null): boolean {
  */
 export function hasPremiumAccess(user: UserProfile | null): boolean {
   if (!user) return false;
-  
+
   const premiumTiers: SubscriptionTier[] = ['premium', 'creator_pro', 'enterprise'];
   return premiumTiers.includes(user.tier as SubscriptionTier);
 }
@@ -77,12 +77,12 @@ export function canAccessPremiumFeature(
       reason: 'You must be logged in to access this feature',
     };
   }
-  
+
   // Owners and admins get all features
   if (isAdminOrAbove(user)) {
     return { allowed: true };
   }
-  
+
   // Check premium subscription
   if (!hasPremiumAccess(user)) {
     return {
@@ -90,7 +90,7 @@ export function canAccessPremiumFeature(
       reason: 'This feature requires a premium subscription. Upgrade to unlock premium features.',
     };
   }
-  
+
   return { allowed: true };
 }
 
@@ -104,14 +104,14 @@ export function canAccessAdminDashboard(user: UserProfile | null): AccessCheckRe
       reason: 'You must be logged in to access the admin dashboard',
     };
   }
-  
+
   if (!isModeratorOrAbove(user)) {
     return {
       allowed: false,
       reason: 'You do not have permission to access the admin dashboard',
     };
   }
-  
+
   return { allowed: true };
 }
 
@@ -125,14 +125,14 @@ export function canAccessOwnerDashboard(user: UserProfile | null): AccessCheckRe
       reason: 'You must be logged in to access the owner dashboard',
     };
   }
-  
+
   if (!isOwner(user)) {
     return {
       allowed: false,
       reason: 'Only owners can access this dashboard',
     };
   }
-  
+
   return { allowed: true };
 }
 
@@ -161,4 +161,3 @@ export function getRoleBadgeColor(role: UserRole): string {
   };
   return colors[role] || colors.user;
 }
-

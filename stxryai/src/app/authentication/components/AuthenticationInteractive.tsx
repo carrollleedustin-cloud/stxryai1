@@ -22,7 +22,7 @@ const AuthenticationInteractive = () => {
 
   useEffect(() => {
     setIsHydrated(true);
-    
+
     // Check URL params for mode
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -80,12 +80,13 @@ const AuthenticationInteractive = () => {
     try {
       await signIn(data.email, data.password);
       toast.success('Login successful!');
-      
+
       // Get redirect URL from query params or default to dashboard
-      const redirectUrl = typeof window !== 'undefined' 
-        ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
-        : '/user-dashboard';
-      
+      const redirectUrl =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+          : '/user-dashboard';
+
       // Wait a moment for auth state to propagate, then redirect
       setTimeout(() => {
         router.push(redirectUrl);

@@ -2,7 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { challengeService, type MonthlyChallenge, type CommunityCompetition, type CompetitionLeaderboardEntry } from '@/services/challengeService';
+import {
+  challengeService,
+  type MonthlyChallenge,
+  type CommunityCompetition,
+  type CompetitionLeaderboardEntry,
+} from '@/services/challengeService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -16,7 +21,9 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
   const [activeTab, setActiveTab] = useState<'monthly' | 'competitions' | 'weekly'>('monthly');
   const [monthlyChallenges, setMonthlyChallenges] = useState<MonthlyChallenge[]>([]);
   const [competitions, setCompetitions] = useState<CommunityCompetition[]>([]);
-  const [leaderboards, setLeaderboards] = useState<Record<string, CompetitionLeaderboardEntry[]>>({});
+  const [leaderboards, setLeaderboards] = useState<Record<string, CompetitionLeaderboardEntry[]>>(
+    {}
+  );
   const [loading, setLoading] = useState(true);
   const [userProgress, setUserProgress] = useState<Record<string, number>>({});
   const [userParticipations, setUserParticipations] = useState<Record<string, boolean>>({});
@@ -28,7 +35,7 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
 
   const loadData = async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       const [monthly, comps] = await Promise.all([
@@ -43,7 +50,10 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
       const progressMap: Record<string, number> = {};
       for (const challenge of monthly) {
         try {
-          const userChallenge = await challengeService.getOrCreateUserMonthlyChallenge(user.id, challenge.id);
+          const userChallenge = await challengeService.getOrCreateUserMonthlyChallenge(
+            user.id,
+            challenge.id
+          );
           progressMap[challenge.id] = userChallenge.progress;
         } catch (error) {
           console.error('Failed to load challenge progress:', error);
@@ -65,7 +75,7 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
 
       // Load leaderboards for active competitions
       const leaderboardMap: Record<string, CompetitionLeaderboardEntry[]> = {};
-      for (const comp of comps.filter(c => c.status === 'active')) {
+      for (const comp of comps.filter((c) => c.status === 'active')) {
         try {
           const leaderboard = await challengeService.getCompetitionLeaderboard(comp.id, 10);
           leaderboardMap[comp.id] = leaderboard;
@@ -130,7 +140,9 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
             <span>🏆</span>
             Reading Challenges & Competitions
           </h2>
-          <p className="text-muted-foreground">Complete challenges and compete with the community</p>
+          <p className="text-muted-foreground">
+            Complete challenges and compete with the community
+          </p>
         </div>
       </div>
 
@@ -163,12 +175,16 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
         <div className="space-y-4">
           {monthlyChallenges.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No monthly challenges available. Check back soon!</p>
+              <p className="text-muted-foreground">
+                No monthly challenges available. Check back soon!
+              </p>
             </div>
           ) : (
             monthlyChallenges.map((challenge, index) => {
               const progress = userProgress[challenge.id] || 0;
-              const goal = (challenge.challengeData.goal || challenge.challengeData.target || 100) as number;
+              const goal = (challenge.challengeData.goal ||
+                challenge.challengeData.target ||
+                100) as number;
               const percentage = Math.min(100, (progress / goal) * 100);
               const isComplete = progress >= goal;
 
@@ -182,8 +198,8 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                     isComplete
                       ? 'border-green-500 bg-green-50/50 dark:bg-green-900/10'
                       : challenge.isFeatured
-                      ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/10'
-                      : 'border-border'
+                        ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/10'
+                        : 'border-border'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-4">
@@ -197,16 +213,23 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                               FEATURED
                             </span>
                           )}
-                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                            challenge.difficulty === 'easy' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                            challenge.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                            challenge.difficulty === 'hard' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' :
-                            'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                          }`}>
+                          <span
+                            className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                              challenge.difficulty === 'easy'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                : challenge.difficulty === 'medium'
+                                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                                  : challenge.difficulty === 'hard'
+                                    ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
+                                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                            }`}
+                          >
                             {challenge.difficulty.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{challenge.description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {challenge.description}
+                        </p>
                       </div>
                     </div>
                     {isComplete && (
@@ -234,10 +257,10 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                           isComplete
                             ? 'from-green-500 to-emerald-500'
                             : percentage >= 75
-                            ? 'from-blue-500 to-cyan-500'
-                            : percentage >= 50
-                            ? 'from-yellow-500 to-orange-500'
-                            : 'from-gray-400 to-gray-500'
+                              ? 'from-blue-500 to-cyan-500'
+                              : percentage >= 50
+                                ? 'from-yellow-500 to-orange-500'
+                                : 'from-gray-400 to-gray-500'
                         }`}
                         initial={{ width: 0 }}
                         animate={{ width: `${percentage}%` }}
@@ -264,7 +287,9 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                       {challenge.rewardTitle && (
                         <div className="flex items-center gap-1">
                           <Icon name="TrophyIcon" size={16} className="text-yellow-500" />
-                          <span className="text-sm text-muted-foreground">{challenge.rewardTitle}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {challenge.rewardTitle}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -297,7 +322,7 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
             competitions.map((competition, index) => {
               const isParticipating = userParticipations[competition.id] || false;
               const leaderboard = leaderboards[competition.id] || [];
-              const userRank = leaderboard.findIndex(entry => entry.userId === user?.id) + 1;
+              const userRank = leaderboard.findIndex((entry) => entry.userId === user?.id) + 1;
 
               return (
                 <motion.div
@@ -328,15 +353,21 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                               OFFICIAL
                             </span>
                           )}
-                          <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                            competition.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                            competition.status === 'upcoming' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                            'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-                          }`}>
+                          <span
+                            className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                              competition.status === 'active'
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                : competition.status === 'upcoming'
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                  : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                            }`}
+                          >
                             {competition.status.toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{competition.description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {competition.description}
+                        </p>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
                           <span>👥 {competition.participantCount} participants</span>
                           <span>📅 Ends {new Date(competition.endDate).toLocaleDateString()}</span>
@@ -351,13 +382,12 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                       <h4 className="text-sm font-bold text-foreground mb-2">Top Participants</h4>
                       <div className="space-y-2">
                         {leaderboard.slice(0, 5).map((entry) => (
-                          <div
-                            key={entry.id}
-                            className="flex items-center justify-between text-sm"
-                          >
+                          <div key={entry.id} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-muted-foreground">#{entry.rank}</span>
-                              <span className="text-foreground">{entry.userDisplayName || 'Anonymous'}</span>
+                              <span className="text-foreground">
+                                {entry.userDisplayName || 'Anonymous'}
+                              </span>
                             </div>
                             <span className="font-medium text-foreground">{entry.score} pts</span>
                           </div>
@@ -393,7 +423,9 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
                     )}
                     {isParticipating && (
                       <motion.button
-                        onClick={() => {/* Navigate to competition detail page */}}
+                        onClick={() => {
+                          /* Navigate to competition detail page */
+                        }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-medium text-sm"
@@ -411,5 +443,3 @@ export function EnhancedReadingChallenges({ className = '' }: EnhancedReadingCha
     </div>
   );
 }
-
-

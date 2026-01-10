@@ -48,15 +48,18 @@ export function StoryExport({ storyId, storyTitle, storyContent, onExport }: Sto
   };
 
   return (
-    <PremiumGate feature="story_export" fallback={
-      <motion.button
-        disabled
-        className="px-4 py-2 bg-gray-600 text-white rounded-lg font-medium flex items-center gap-2 opacity-50 cursor-not-allowed"
-      >
-        <Icon name="ArrowDownTrayIcon" size={20} />
-        Export Story (Premium)
-      </motion.button>
-    }>
+    <PremiumGate
+      feature="story_export"
+      fallback={
+        <motion.button
+          disabled
+          className="px-4 py-2 bg-gray-600 text-white rounded-lg font-medium flex items-center gap-2 opacity-50 cursor-not-allowed"
+        >
+          <Icon name="ArrowDownTrayIcon" size={20} />
+          Export Story (Premium)
+        </motion.button>
+      }
+    >
       <motion.button
         onClick={() => setIsOpen(true)}
         whileHover={{ scale: 1.05 }}
@@ -145,4 +148,3 @@ export function StoryExport({ storyId, storyTitle, storyContent, onExport }: Sto
     </PremiumGate>
   );
 }
-

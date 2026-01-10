@@ -27,37 +27,37 @@ export default function DimensionalCard({
 }: DimensionalCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  
+
   const rotateX = useSpring(useMotionValue(0), { stiffness: 200, damping: 30 });
   const rotateY = useSpring(useMotionValue(0), { stiffness: 200, damping: 30 });
-  
+
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!ref.current || !enableTilt) return;
-    
+
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    
+
     const x = e.clientX - centerX;
     const y = e.clientY - centerY;
-    
+
     const maxRotation = 8;
     rotateX.set((y / (rect.height / 2)) * -maxRotation);
     rotateY.set((x / (rect.width / 2)) * maxRotation);
-    
+
     mouseX.set(e.clientX - rect.left);
     mouseY.set(e.clientY - rect.top);
   };
-  
+
   const handleMouseLeave = () => {
     setIsHovered(false);
     rotateX.set(0);
     rotateY.set(0);
   };
-  
+
   const glowBackground = useMotionTemplate`
     radial-gradient(
       400px circle at ${mouseX}px ${mouseY}px,
@@ -65,7 +65,7 @@ export default function DimensionalCard({
       transparent 70%
     )
   `;
-  
+
   return (
     <motion.div
       ref={ref}
@@ -100,7 +100,7 @@ export default function DimensionalCard({
           transition={{ duration: 0.3 }}
         />
       )}
-      
+
       {/* Shimmer effect on hover */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-0"
@@ -108,22 +108,21 @@ export default function DimensionalCard({
         animate={{ opacity: isHovered ? 0.5 : 0 }}
         transition={{ duration: 0.3 }}
         style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.02) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%, rgba(255,255,255,0.02) 100%)',
         }}
       />
-      
+
       {/* Top highlight edge */}
-      <div 
+      <div
         className="absolute inset-x-0 top-0 h-px pointer-events-none z-10"
         style={{
           background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
         }}
       />
-      
+
       {/* Content */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      <div className="relative z-10">{children}</div>
     </motion.div>
   );
 }
@@ -144,8 +143,8 @@ export function FloatingCard({
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
-      animate={{ 
-        opacity: 1, 
+      animate={{
+        opacity: 1,
         y: 0,
       }}
       transition={{
@@ -163,16 +162,15 @@ export function FloatingCard({
       `}
     >
       {/* Ambient glow */}
-      <div 
+      <div
         className="absolute -inset-px rounded-2xl opacity-20 pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, rgba(0, 245, 212, 0.2) 0%, transparent 50%, rgba(123, 44, 191, 0.1) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(0, 245, 212, 0.2) 0%, transparent 50%, rgba(123, 44, 191, 0.1) 100%)',
         }}
       />
-      
-      <div className="relative">
-        {children}
-      </div>
+
+      <div className="relative">{children}</div>
     </motion.div>
   );
 }
@@ -201,14 +199,9 @@ export function StoryCard({
   className?: string;
 }) {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
-    <DimensionalCard
-      onClick={onClick}
-      enableTilt
-      enableGlow
-      className={`group ${className}`}
-    >
+    <DimensionalCard onClick={onClick} enableTilt enableGlow className={`group ${className}`}>
       {/* Cover Image */}
       {coverImage && (
         <div className="relative h-48 overflow-hidden rounded-t-2xl -mx-px -mt-px">
@@ -220,46 +213,45 @@ export function StoryCard({
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-void-elevated via-transparent to-transparent" />
-          
+
           {/* Genre badge */}
-          {genre && (
-            <span className="absolute top-4 left-4 badge-spectral">
-              {genre}
-            </span>
-          )}
+          {genre && <span className="absolute top-4 left-4 badge-spectral">{genre}</span>}
         </div>
       )}
-      
+
       {/* Content */}
       <div className="p-6">
         {/* Title */}
         <h3 className="font-display text-xl tracking-wide text-text-primary mb-2 group-hover:text-spectral transition-colors duration-300">
           {title}
         </h3>
-        
+
         {/* Author */}
         <p className="text-sm text-text-tertiary mb-3">
           by <span className="text-spectral-cyan">{author}</span>
         </p>
-        
+
         {/* Excerpt */}
         {excerpt && (
-          <p className="font-prose text-sm text-text-ghost line-clamp-2 mb-4">
-            {excerpt}
-          </p>
+          <p className="font-prose text-sm text-text-ghost line-clamp-2 mb-4">{excerpt}</p>
         )}
-        
+
         {/* Meta */}
         {readTime && (
           <div className="flex items-center gap-2 text-xs text-text-whisper">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>{readTime}</span>
           </div>
         )}
       </div>
-      
+
       {/* Hover indicator */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-px"
@@ -273,4 +265,3 @@ export function StoryCard({
     </DimensionalCard>
   );
 }
-

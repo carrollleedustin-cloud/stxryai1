@@ -5,10 +5,10 @@
 
 // Core Components
 export { default as VoidText, TemporalHeading, GhostText } from './VoidText';
-export { 
-  default as TemporalReveal, 
-  ParallaxDepth, 
-  StaggerContainer, 
+export {
+  default as TemporalReveal,
+  ParallaxDepth,
+  StaggerContainer,
   StaggerItem,
   ScrollFade,
   DimensionalLayer,
@@ -20,7 +20,7 @@ export { default as SpectralButton } from './SpectralButton';
 export { default as ImmersiveReader } from './ImmersiveReader';
 
 // Particle & Animation Components
-export { 
+export {
   default as ParticleField,
   AnimatedCounter,
   TypewriterText,
@@ -52,4 +52,3 @@ export {
 // Global Components
 export { default as GlobalAnnouncementBanner } from './GlobalAnnouncementBanner';
 export { default as NotificationBell } from './NotificationBell';
-

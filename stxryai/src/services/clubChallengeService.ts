@@ -1,6 +1,11 @@
 import { supabase } from '@/lib/supabase/client';
 
-export type ChallengeGoalType = 'chapters_read' | 'stories_published' | 'total_xp' | 'reviews_written' | 'words_written';
+export type ChallengeGoalType =
+  | 'chapters_read'
+  | 'stories_published'
+  | 'total_xp'
+  | 'reviews_written'
+  | 'words_written';
 
 export interface ClubChallenge {
   id: string;
@@ -38,7 +43,10 @@ class ClubChallengeService {
 
       if (error) {
         // If table doesn't exist yet, return empty array for now
-        if (error.code === 'PGRST116' || error.message.includes('relation "club_challenges" does not exist')) {
+        if (
+          error.code === 'PGRST116' ||
+          error.message.includes('relation "club_challenges" does not exist')
+        ) {
           console.warn('club_challenges table not found, using mock data');
           return this.getMockChallenges(clubId);
         }
@@ -55,7 +63,9 @@ class ClubChallengeService {
   /**
    * Create a new challenge for a club
    */
-  async createChallenge(challengeData: Omit<ClubChallenge, 'id' | 'current_value' | 'status' | 'created_at'>) {
+  async createChallenge(
+    challengeData: Omit<ClubChallenge, 'id' | 'current_value' | 'status' | 'created_at'>
+  ) {
     try {
       const { data, error } = await supabase
         .from('club_challenges')
@@ -83,13 +93,16 @@ class ClubChallengeService {
       // 1. Update individual contribution
       const { data: contribution, error: contribError } = await supabase
         .from('challenge_contributions')
-        .upsert({
-          challenge_id: challengeId,
-          user_id: userId,
-          contribution_value: increment, // In a real scenario, this would be incremented in DB
-        }, {
-          onConflict: 'challenge_id,user_id'
-        })
+        .upsert(
+          {
+            challenge_id: challengeId,
+            user_id: userId,
+            contribution_value: increment, // In a real scenario, this would be incremented in DB
+          },
+          {
+            onConflict: 'challenge_id,user_id',
+          }
+        )
         .select()
         .single();
 
@@ -111,7 +124,7 @@ class ClubChallengeService {
         .from('club_challenges')
         .update({
           current_value: newValue,
-          status: isCompleted ? 'completed' : 'active'
+          status: isCompleted ? 'completed' : 'active',
         })
         .eq('id', challengeId);
 
@@ -158,7 +171,7 @@ class ClubChallengeService {
         end_date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
         reward_xp: 500,
         status: 'active',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
       {
         id: 'mock-2',
@@ -172,8 +185,8 @@ class ClubChallengeService {
         end_date: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString(),
         reward_xp: 2000,
         status: 'active',
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      },
     ];
   }
 }

@@ -13,76 +13,96 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-void-950 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <h1 className="text-4xl font-bold mb-6 text-void-100">Privacy Policy</h1>
-        <p className="text-sm text-void-400 mb-8">
-          Last updated: January 1, 2024
-        </p>
+        <p className="text-sm text-void-400 mb-8">Last updated: January 1, 2024</p>
 
         <div className="bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 mb-8">
           <p className="text-sm text-yellow-300">
-            <strong className="text-yellow-200">Legal Notice:</strong> This is a template Privacy Policy. Please review with legal counsel before
-            launching to production. Customize all sections to match your specific data practices, jurisdiction, and
-            compliance requirements (GDPR, CCPA, etc.).
+            <strong className="text-yellow-200">Legal Notice:</strong> This is a template Privacy
+            Policy. Please review with legal counsel before launching to production. Customize all
+            sections to match your specific data practices, jurisdiction, and compliance
+            requirements (GDPR, CCPA, etc.).
           </p>
         </div>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">1. Introduction</h2>
           <p className="text-void-300">
-            StxryAI (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This
-            Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our
-            interactive fiction platform and services.
+            StxryAI (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting
+            your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
+            your information when you use our interactive fiction platform and services.
           </p>
           <p className="mt-4 text-void-300">
-            By using StxryAI, you agree to the collection and use of information in accordance with this policy. If you
-            do not agree with our policies and practices, please do not use our Service.
+            By using StxryAI, you agree to the collection and use of information in accordance with
+            this policy. If you do not agree with our policies and practices, please do not use our
+            Service.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">2. Information We Collect</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            2. Information We Collect
+          </h2>
 
-          <h3 className="text-xl font-semibold mb-3 mt-4 text-spectral-violet">2.1 Information You Provide</h3>
-          <p className="text-void-300">We collect information that you provide directly to us, including:</p>
-          <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
-            <li>
-              <strong className="text-void-200">Account Information:</strong> Username, email address, password (hashed), and profile information
-            </li>
-            <li>
-              <strong className="text-void-200">Content:</strong> Stories, chapters, comments, reviews, and other content you create or post
-            </li>
-            <li>
-              <strong className="text-void-200">Payment Information:</strong> Billing address, payment method details (processed by third-party
-              payment processors)
-            </li>
-            <li>
-              <strong className="text-void-200">Communications:</strong> Messages you send to us, support requests, and feedback
-            </li>
-            <li>
-              <strong className="text-void-200">Preferences:</strong> Reading preferences, genre interests, and customization settings
-            </li>
-          </ul>
-
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">2.2 Automatically Collected Information</h3>
-          <p className="text-void-300">When you use our Service, we automatically collect certain information, including:</p>
-          <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
-            <li>
-              <strong className="text-void-200">Usage Data:</strong> Pages visited, features used, reading progress, time spent on pages
-            </li>
-            <li>
-              <strong className="text-void-200">Device Information:</strong> Device type, operating system, browser type, IP address, device
-              identifiers
-            </li>
-            <li>
-              <strong className="text-void-200">Log Data:</strong> Access times, error logs, and performance data
-            </li>
-            <li>
-              <strong className="text-void-200">Location Data:</strong> General location information (country/region level) based on IP address
-            </li>
-          </ul>
-
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">2.3 Cookies and Tracking Technologies</h3>
+          <h3 className="text-xl font-semibold mb-3 mt-4 text-spectral-violet">
+            2.1 Information You Provide
+          </h3>
           <p className="text-void-300">
-            We use cookies, web beacons, and similar tracking technologies to collect information. See our{' '}
+            We collect information that you provide directly to us, including:
+          </p>
+          <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
+            <li>
+              <strong className="text-void-200">Account Information:</strong> Username, email
+              address, password (hashed), and profile information
+            </li>
+            <li>
+              <strong className="text-void-200">Content:</strong> Stories, chapters, comments,
+              reviews, and other content you create or post
+            </li>
+            <li>
+              <strong className="text-void-200">Payment Information:</strong> Billing address,
+              payment method details (processed by third-party payment processors)
+            </li>
+            <li>
+              <strong className="text-void-200">Communications:</strong> Messages you send to us,
+              support requests, and feedback
+            </li>
+            <li>
+              <strong className="text-void-200">Preferences:</strong> Reading preferences, genre
+              interests, and customization settings
+            </li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            2.2 Automatically Collected Information
+          </h3>
+          <p className="text-void-300">
+            When you use our Service, we automatically collect certain information, including:
+          </p>
+          <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
+            <li>
+              <strong className="text-void-200">Usage Data:</strong> Pages visited, features used,
+              reading progress, time spent on pages
+            </li>
+            <li>
+              <strong className="text-void-200">Device Information:</strong> Device type, operating
+              system, browser type, IP address, device identifiers
+            </li>
+            <li>
+              <strong className="text-void-200">Log Data:</strong> Access times, error logs, and
+              performance data
+            </li>
+            <li>
+              <strong className="text-void-200">Location Data:</strong> General location information
+              (country/region level) based on IP address
+            </li>
+          </ul>
+
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            2.3 Cookies and Tracking Technologies
+          </h3>
+          <p className="text-void-300">
+            We use cookies, web beacons, and similar tracking technologies to collect information.
+            See our{' '}
             <a href="/cookies" className="text-spectral-cyan hover:underline">
               Cookie Policy
             </a>{' '}
@@ -91,101 +111,136 @@ export default function PrivacyPage() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">3. How We Use Your Information</h2>
-          <p className="text-void-300">We use the information we collect for the following purposes:</p>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            3. How We Use Your Information
+          </h2>
+          <p className="text-void-300">
+            We use the information we collect for the following purposes:
+          </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>
-              <strong className="text-void-200">Service Operation:</strong> To provide, maintain, and improve our Service
+              <strong className="text-void-200">Service Operation:</strong> To provide, maintain,
+              and improve our Service
             </li>
             <li>
-              <strong className="text-void-200">Account Management:</strong> To create and manage your account, process transactions, and send
-              account-related communications
+              <strong className="text-void-200">Account Management:</strong> To create and manage
+              your account, process transactions, and send account-related communications
             </li>
             <li>
-              <strong className="text-void-200">Content Delivery:</strong> To display your stories, enable reading features, and facilitate
-              content discovery
+              <strong className="text-void-200">Content Delivery:</strong> To display your stories,
+              enable reading features, and facilitate content discovery
             </li>
             <li>
-              <strong className="text-void-200">Personalization:</strong> To personalize your experience, recommend content, and customize
-              features
+              <strong className="text-void-200">Personalization:</strong> To personalize your
+              experience, recommend content, and customize features
             </li>
             <li>
-              <strong className="text-void-200">AI Services:</strong> To generate story content, provide writing assistance, and improve AI
-              capabilities
+              <strong className="text-void-200">AI Services:</strong> To generate story content,
+              provide writing assistance, and improve AI capabilities
             </li>
             <li>
-              <strong className="text-void-200">Communication:</strong> To send you updates, newsletters, and respond to your inquiries
+              <strong className="text-void-200">Communication:</strong> To send you updates,
+              newsletters, and respond to your inquiries
             </li>
             <li>
-              <strong className="text-void-200">Analytics:</strong> To analyze usage patterns, improve our Service, and conduct research
+              <strong className="text-void-200">Analytics:</strong> To analyze usage patterns,
+              improve our Service, and conduct research
             </li>
             <li>
-              <strong className="text-void-200">Security:</strong> To detect, prevent, and address security issues and fraudulent activity
+              <strong className="text-void-200">Security:</strong> To detect, prevent, and address
+              security issues and fraudulent activity
             </li>
             <li>
-              <strong className="text-void-200">Legal Compliance:</strong> To comply with legal obligations and enforce our Terms of Service
+              <strong className="text-void-200">Legal Compliance:</strong> To comply with legal
+              obligations and enforce our Terms of Service
             </li>
           </ul>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">4. Information Sharing and Disclosure</h2>
-          <p className="text-void-300">We do not sell your personal information. We may share your information in the following circumstances:</p>
-
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">4.1 Public Content</h3>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            4. Information Sharing and Disclosure
+          </h2>
           <p className="text-void-300">
-            Content you publish on StxryAI (stories, comments, reviews) is publicly visible and may be shared, indexed by
-            search engines, and accessed by other users.
+            We do not sell your personal information. We may share your information in the following
+            circumstances:
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">4.2 Service Providers</h3>
-          <p className="text-void-300">We share information with third-party service providers who perform services on our behalf:</p>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            4.1 Public Content
+          </h3>
+          <p className="text-void-300">
+            Content you publish on StxryAI (stories, comments, reviews) is publicly visible and may
+            be shared, indexed by search engines, and accessed by other users.
+          </p>
+
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            4.2 Service Providers
+          </h3>
+          <p className="text-void-300">
+            We share information with third-party service providers who perform services on our
+            behalf:
+          </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>
-              <strong className="text-void-200">Hosting & Infrastructure:</strong> Supabase (database and authentication)
+              <strong className="text-void-200">Hosting & Infrastructure:</strong> Supabase
+              (database and authentication)
             </li>
             <li>
-              <strong className="text-void-200">Payment Processing:</strong> Stripe (payment transactions)
+              <strong className="text-void-200">Payment Processing:</strong> Stripe (payment
+              transactions)
             </li>
             <li>
-              <strong className="text-void-200">AI Services:</strong> Anthropic, OpenAI (AI content generation)
+              <strong className="text-void-200">AI Services:</strong> Anthropic, OpenAI (AI content
+              generation)
             </li>
             <li>
-              <strong className="text-void-200">Analytics:</strong> Google Analytics, PostHog (usage analytics)
+              <strong className="text-void-200">Analytics:</strong> Google Analytics, PostHog (usage
+              analytics)
             </li>
             <li>
-              <strong className="text-void-200">Email Services:</strong> Resend (transactional emails)
+              <strong className="text-void-200">Email Services:</strong> Resend (transactional
+              emails)
             </li>
             <li>
-              <strong className="text-void-200">Advertising:</strong> Google AdSense (ad serving for free users)
+              <strong className="text-void-200">Advertising:</strong> Google AdSense (ad serving for
+              free users)
             </li>
           </ul>
           <p className="mt-4 text-void-300">
-            These service providers are contractually obligated to protect your information and use it only for the
-            purposes we specify.
+            These service providers are contractually obligated to protect your information and use
+            it only for the purposes we specify.
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">4.3 Legal Requirements</h3>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            4.3 Legal Requirements
+          </h3>
           <p className="text-void-300">
-            We may disclose information if required by law, court order, or government regulation, or to protect our
-            rights, property, or safety, or that of our users or others.
+            We may disclose information if required by law, court order, or government regulation,
+            or to protect our rights, property, or safety, or that of our users or others.
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">4.4 Business Transfers</h3>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            4.4 Business Transfers
+          </h3>
           <p className="text-void-300">
-            In the event of a merger, acquisition, or sale of assets, your information may be transferred to the new
-            entity.
+            In the event of a merger, acquisition, or sale of assets, your information may be
+            transferred to the new entity.
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">4.5 With Your Consent</h3>
-          <p className="text-void-300">We may share information with your explicit consent or at your direction.</p>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            4.5 With Your Consent
+          </h3>
+          <p className="text-void-300">
+            We may share information with your explicit consent or at your direction.
+          </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">5. Data Security</h2>
           <p className="text-void-300">
-            We implement appropriate technical and organizational security measures to protect your information,
-            including:
+            We implement appropriate technical and organizational security measures to protect your
+            information, including:
           </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>Encryption of data in transit (HTTPS/TLS)</li>
@@ -195,8 +250,9 @@ export default function PrivacyPage() {
             <li>Limited access to personal information on a need-to-know basis</li>
           </ul>
           <p className="mt-4 text-void-300">
-            However, no method of transmission over the Internet or electronic storage is 100% secure. While we strive
-            to protect your information, we cannot guarantee absolute security.
+            However, no method of transmission over the Internet or electronic storage is 100%
+            secure. While we strive to protect your information, we cannot guarantee absolute
+            security.
           </p>
         </section>
 
@@ -210,41 +266,57 @@ export default function PrivacyPage() {
             <li>Maintain business records</li>
           </ul>
           <p className="mt-4 text-void-300">
-            When you delete your account, we will delete or anonymize your personal information, except where we are
-            required to retain it for legal purposes. Public content may remain visible if it has been shared or
-            referenced by others.
+            When you delete your account, we will delete or anonymize your personal information,
+            except where we are required to retain it for legal purposes. Public content may remain
+            visible if it has been shared or referenced by others.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">7. Your Rights and Choices</h2>
-          <p className="text-void-300">Depending on your location, you may have the following rights regarding your personal information:</p>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            7. Your Rights and Choices
+          </h2>
+          <p className="text-void-300">
+            Depending on your location, you may have the following rights regarding your personal
+            information:
+          </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.1 Access and Portability</h3>
-          <p className="text-void-300">You can access and download your personal data through your account settings or by contacting us.</p>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            7.1 Access and Portability
+          </h3>
+          <p className="text-void-300">
+            You can access and download your personal data through your account settings or by
+            contacting us.
+          </p>
 
           <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.2 Correction</h3>
-          <p className="text-void-300">You can update your account information and preferences through your account settings.</p>
+          <p className="text-void-300">
+            You can update your account information and preferences through your account settings.
+          </p>
 
           <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.3 Deletion</h3>
           <p className="text-void-300">
-            You can delete your account and request deletion of your personal information, subject to legal retention
-            requirements.
+            You can delete your account and request deletion of your personal information, subject
+            to legal retention requirements.
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.4 Objection and Restriction</h3>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            7.4 Objection and Restriction
+          </h3>
           <p className="text-void-300">
-            You can object to certain processing of your information or request restriction of processing in certain
-            circumstances.
+            You can object to certain processing of your information or request restriction of
+            processing in certain circumstances.
           </p>
 
           <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.5 Opt-Out</h3>
           <p className="text-void-300">
-            You can opt out of marketing communications by using the unsubscribe link in emails or adjusting your
-            notification preferences in account settings.
+            You can opt out of marketing communications by using the unsubscribe link in emails or
+            adjusting your notification preferences in account settings.
           </p>
 
-          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">7.6 Cookie Preferences</h3>
+          <h3 className="text-xl font-semibold mb-3 mt-6 text-spectral-violet">
+            7.6 Cookie Preferences
+          </h3>
           <p className="text-void-300">
             You can manage cookie preferences through your browser settings. See our{' '}
             <a href="/cookies" className="text-spectral-cyan hover:underline">
@@ -254,51 +326,63 @@ export default function PrivacyPage() {
           </p>
 
           <p className="mt-4 text-void-300">
-            To exercise these rights, contact us at privacy@stxryai.com. We will respond to your request within 30 days
-            (or as required by applicable law).
+            To exercise these rights, contact us at privacy@stxryai.com. We will respond to your
+            request within 30 days (or as required by applicable law).
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">8. Children&apos;s Privacy</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            8. Children&apos;s Privacy
+          </h2>
           <p className="text-void-300">
-            StxryAI is designed to be family-friendly and welcomes users of all ages. For users under 13 (or the age of
-            majority in their jurisdiction), we:
+            StxryAI is designed to be family-friendly and welcomes users of all ages. For users
+            under 13 (or the age of majority in their jurisdiction), we:
           </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>Collect only information necessary to provide the Service</li>
-            <li>Do not knowingly collect personal information without parental consent where required</li>
+            <li>
+              Do not knowingly collect personal information without parental consent where required
+            </li>
             <li>Provide age-appropriate content and features</li>
             <li>Comply with applicable children&apos;s privacy laws (COPPA, GDPR-K, etc.)</li>
           </ul>
           <p className="mt-4 text-void-300">
-            Parents or guardians can review, request deletion of, or refuse further collection of their child&apos;s
-            information by contacting us at privacy@stxryai.com.
+            Parents or guardians can review, request deletion of, or refuse further collection of
+            their child&apos;s information by contacting us at privacy@stxryai.com.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">9. International Data Transfers</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            9. International Data Transfers
+          </h2>
           <p className="text-void-300">
-            Your information may be transferred to and processed in countries other than your country of residence. These
-            countries may have data protection laws that differ from those in your country. We ensure appropriate
-            safeguards are in place to protect your information in accordance with this Privacy Policy.
+            Your information may be transferred to and processed in countries other than your
+            country of residence. These countries may have data protection laws that differ from
+            those in your country. We ensure appropriate safeguards are in place to protect your
+            information in accordance with this Privacy Policy.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">10. Third-Party Links and Services</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            10. Third-Party Links and Services
+          </h2>
           <p className="text-void-300">
-            Our Service may contain links to third-party websites or integrate with third-party services. We are not
-            responsible for the privacy practices of these third parties. We encourage you to review their privacy
-            policies.
+            Our Service may contain links to third-party websites or integrate with third-party
+            services. We are not responsible for the privacy practices of these third parties. We
+            encourage you to review their privacy policies.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">11. Changes to This Privacy Policy</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            11. Changes to This Privacy Policy
+          </h2>
           <p className="text-void-300">
-            We may update this Privacy Policy from time to time. We will notify you of material changes by:
+            We may update this Privacy Policy from time to time. We will notify you of material
+            changes by:
           </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>Posting the updated policy on this page</li>
@@ -306,30 +390,40 @@ export default function PrivacyPage() {
             <li>Displaying a notice on our Service</li>
           </ul>
           <p className="mt-4 text-void-300">
-            Your continued use of the Service after such changes constitutes acceptance of the updated Privacy Policy.
+            Your continued use of the Service after such changes constitutes acceptance of the
+            updated Privacy Policy.
           </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">12. California Privacy Rights (CCPA)</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            12. California Privacy Rights (CCPA)
+          </h2>
           <p className="text-void-300">
-            If you are a California resident, you have additional rights under the California Consumer Privacy Act
-            (CCPA):
+            If you are a California resident, you have additional rights under the California
+            Consumer Privacy Act (CCPA):
           </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>Right to know what personal information is collected, used, and shared</li>
             <li>Right to delete personal information</li>
-            <li>Right to opt-out of the sale of personal information (we do not sell personal information)</li>
+            <li>
+              Right to opt-out of the sale of personal information (we do not sell personal
+              information)
+            </li>
             <li>Right to non-discrimination for exercising your privacy rights</li>
           </ul>
-          <p className="mt-4 text-void-300">To exercise these rights, contact us at privacy@stxryai.com.</p>
+          <p className="mt-4 text-void-300">
+            To exercise these rights, contact us at privacy@stxryai.com.
+          </p>
         </section>
 
         <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">13. European Privacy Rights (GDPR)</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">
+            13. European Privacy Rights (GDPR)
+          </h2>
           <p className="text-void-300">
-            If you are located in the European Economic Area (EEA), you have additional rights under the General Data
-            Protection Regulation (GDPR):
+            If you are located in the European Economic Area (EEA), you have additional rights under
+            the General Data Protection Regulation (GDPR):
           </p>
           <ul className="list-disc pl-6 mt-4 text-void-300 space-y-2">
             <li>Right of access to your personal data</li>
@@ -341,12 +435,17 @@ export default function PrivacyPage() {
             <li>Right to withdraw consent</li>
             <li>Right to lodge a complaint with a supervisory authority</li>
           </ul>
-          <p className="mt-4 text-void-300">To exercise these rights, contact us at privacy@stxryai.com.</p>
+          <p className="mt-4 text-void-300">
+            To exercise these rights, contact us at privacy@stxryai.com.
+          </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-spectral-cyan">14. Contact Us</h2>
-          <p className="text-void-300">If you have questions, concerns, or requests regarding this Privacy Policy, please contact us:</p>
+          <p className="text-void-300">
+            If you have questions, concerns, or requests regarding this Privacy Policy, please
+            contact us:
+          </p>
           <ul className="list-none pl-0 mt-4 text-void-300 space-y-2">
             <li>
               <strong className="text-void-200">Email:</strong> privacy@stxryai.com

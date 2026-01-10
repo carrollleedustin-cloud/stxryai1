@@ -2,18 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Heart, 
-  DollarSign, 
-  Users, 
-  TrendingUp, 
+import {
+  Heart,
+  DollarSign,
+  Users,
+  TrendingUp,
   Trophy,
   Calendar,
   RefreshCw,
   Eye,
   EyeOff,
 } from 'lucide-react';
-import { donationService, DonationTier, Donation, LeaderboardEntry, DonationStats } from '@/services/donationService';
+import {
+  donationService,
+  DonationTier,
+  Donation,
+  LeaderboardEntry,
+  DonationStats,
+} from '@/services/donationService';
 
 export default function AdminDonationsPage() {
   const [tiers, setTiers] = useState<DonationTier[]>([]);
@@ -96,7 +102,9 @@ export default function AdminDonationsPage() {
                 <DollarSign className="w-5 h-5 text-green-400" />
                 <span className="text-gray-300">Total Raised</span>
               </div>
-              <p className="text-3xl font-bold text-green-400">{formatCurrency(stats.totalRaised)}</p>
+              <p className="text-3xl font-bold text-green-400">
+                {formatCurrency(stats.totalRaised)}
+              </p>
             </motion.div>
 
             <motion.div
@@ -122,7 +130,9 @@ export default function AdminDonationsPage() {
                 <TrendingUp className="w-5 h-5 text-purple-400" />
                 <span className="text-gray-300">This Month</span>
               </div>
-              <p className="text-3xl font-bold text-purple-400">{formatCurrency(stats.thisMonthRaised)}</p>
+              <p className="text-3xl font-bold text-purple-400">
+                {formatCurrency(stats.thisMonthRaised)}
+              </p>
               <p className="text-sm text-gray-400 mt-1">{stats.thisMonthDonors} donors</p>
             </motion.div>
 
@@ -136,7 +146,9 @@ export default function AdminDonationsPage() {
                 <DollarSign className="w-5 h-5 text-yellow-400" />
                 <span className="text-gray-300">Average Donation</span>
               </div>
-              <p className="text-3xl font-bold text-yellow-400">{formatCurrency(stats.averageDonation)}</p>
+              <p className="text-3xl font-bold text-yellow-400">
+                {formatCurrency(stats.averageDonation)}
+              </p>
             </motion.div>
           </div>
         )}
@@ -207,11 +219,15 @@ export default function AdminDonationsPage() {
                       >
                         <td className="py-3 pr-4">
                           {entry.rank <= 3 ? (
-                            <span className={`text-lg ${
-                              entry.rank === 1 ? 'text-yellow-400' :
-                              entry.rank === 2 ? 'text-gray-300' :
-                              'text-amber-600'
-                            }`}>
+                            <span
+                              className={`text-lg ${
+                                entry.rank === 1
+                                  ? 'text-yellow-400'
+                                  : entry.rank === 2
+                                    ? 'text-gray-300'
+                                    : 'text-amber-600'
+                              }`}
+                            >
                               {entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉'}
                             </span>
                           ) : (
@@ -240,9 +256,7 @@ export default function AdminDonationsPage() {
                         <td className="py-3 pr-4 text-right font-medium text-green-400">
                           {formatCurrency(entry.totalDonated)}
                         </td>
-                        <td className="py-3 text-right text-gray-400">
-                          {entry.donationCount}
-                        </td>
+                        <td className="py-3 text-right text-gray-400">{entry.donationCount}</td>
                       </motion.tr>
                     ))}
                   </tbody>
@@ -261,18 +275,18 @@ export default function AdminDonationsPage() {
         {/* Quick Actions */}
         <div className="mt-6 bg-gray-800 rounded-xl p-6">
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button className="flex items-center justify-center gap-3 px-4 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
               <Calendar className="w-5 h-5 text-blue-400" />
               <span>Export Monthly Report</span>
             </button>
-            
+
             <button className="flex items-center justify-center gap-3 px-4 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
               <Heart className="w-5 h-5 text-pink-400" />
               <span>Send Thank You Emails</span>
             </button>
-            
+
             <button className="flex items-center justify-center gap-3 px-4 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
               <Trophy className="w-5 h-5 text-yellow-400" />
               <span>Manage Tiers</span>
@@ -287,10 +301,9 @@ export default function AdminDonationsPage() {
             About Donations
           </h3>
           <p className="text-gray-300">
-            Donations help support StxryAI during our early startup phase. 
-            Donors receive special badges displayed next to their username - 
-            nothing more, no gameplay advantages. Every contribution helps us build 
-            a better platform for everyone!
+            Donations help support StxryAI during our early startup phase. Donors receive special
+            badges displayed next to their username - nothing more, no gameplay advantages. Every
+            contribution helps us build a better platform for everyone!
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             {tiers.map((tier) => (
@@ -309,4 +322,3 @@ export default function AdminDonationsPage() {
     </div>
   );
 }
-

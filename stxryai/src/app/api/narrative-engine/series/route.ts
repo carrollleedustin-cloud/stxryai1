@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     const authorId = searchParams.get('authorId');
 
     if (!authorId) {
-      return NextResponse.json(
-        { error: 'authorId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'authorId is required' }, { status: 400 });
     }
 
     const series = await persistentNarrativeEngine.getAuthorSeries(authorId);
@@ -62,10 +59,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ series: seriesOverviews });
   } catch (error) {
     console.error('Failed to fetch series:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch series' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch series' }, { status: 500 });
   }
 }
 
@@ -121,10 +115,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(series, { status: 201 });
   } catch (error) {
     console.error('Failed to create series:', error);
-    return NextResponse.json(
-      { error: 'Failed to create series' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create series' }, { status: 500 });
   }
 }
-

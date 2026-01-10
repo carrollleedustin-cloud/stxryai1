@@ -179,23 +179,27 @@ export function calculateLiteracyProgress(
 ): LiteracyProgress['metrics'] {
   const totalWordsRead = sessions.reduce((sum, s) => sum + s.wordsRead, 0);
   const totalMinutes = sessions.reduce((sum, s) => sum + s.durationMinutes, 0);
-  const storiesCompleted = new Set(sessions.map(s => s.storyId)).size;
+  const storiesCompleted = new Set(sessions.map((s) => s.storyId)).size;
 
-  const avgComprehension = assessments.length > 0
-    ? assessments.reduce((sum, a) => sum + a.overallScore, 0) / assessments.length
-    : 0;
+  const avgComprehension =
+    assessments.length > 0
+      ? assessments.reduce((sum, a) => sum + a.overallScore, 0) / assessments.length
+      : 0;
 
-  const avgEngagement = sessions.length > 0
-    ? sessions.reduce((sum, s) => sum + (s.enjoymentRating || 3), 0) / sessions.length * 20
-    : 0;
+  const avgEngagement =
+    sessions.length > 0
+      ? (sessions.reduce((sum, s) => sum + (s.enjoymentRating || 3), 0) / sessions.length) * 20
+      : 0;
 
   // Calculate fluency (words per minute)
   const fluency = totalMinutes > 0 ? totalWordsRead / totalMinutes : 0;
 
   // Calculate phonics accuracy from assessments
-  const phonicsAccuracy = assessments.length > 0
-    ? assessments.reduce((sum, a) => sum + a.skillBreakdown.vocabularyInContext, 0) / assessments.length
-    : 0;
+  const phonicsAccuracy =
+    assessments.length > 0
+      ? assessments.reduce((sum, a) => sum + a.skillBreakdown.vocabularyInContext, 0) /
+        assessments.length
+      : 0;
 
   return {
     wordsRead: totalWordsRead,
@@ -235,17 +239,17 @@ export function identifyStrengths(
   }
 
   if (assessments.length > 0) {
-    const avgInferential = assessments.reduce(
-      (sum, a) => sum + a.skillBreakdown.inferentialThinking, 0
-    ) / assessments.length;
+    const avgInferential =
+      assessments.reduce((sum, a) => sum + a.skillBreakdown.inferentialThinking, 0) /
+      assessments.length;
 
     if (avgInferential >= 85) {
       strengths.push('Advanced inferential thinking');
     }
 
-    const avgCritical = assessments.reduce(
-      (sum, a) => sum + a.skillBreakdown.criticalAnalysis, 0
-    ) / assessments.length;
+    const avgCritical =
+      assessments.reduce((sum, a) => sum + a.skillBreakdown.criticalAnalysis, 0) /
+      assessments.length;
 
     if (avgCritical >= 85) {
       strengths.push('Strong critical analysis skills');
@@ -276,14 +280,15 @@ export function identifyAreasForGrowth(
     areas.push('Phonics skills need reinforcement');
   }
 
-  if (metrics.readingTimeMinutes < 100) { // Less than ~15 min/day for a week
+  if (metrics.readingTimeMinutes < 100) {
+    // Less than ~15 min/day for a week
     areas.push('Increase daily reading time');
   }
 
   if (assessments.length > 0) {
-    const avgLiteral = assessments.reduce(
-      (sum, a) => sum + a.skillBreakdown.literalUnderstanding, 0
-    ) / assessments.length;
+    const avgLiteral =
+      assessments.reduce((sum, a) => sum + a.skillBreakdown.literalUnderstanding, 0) /
+      assessments.length;
 
     if (avgLiteral < 75) {
       areas.push('Literal comprehension needs practice');
@@ -394,10 +399,7 @@ export function generateParentInsights(
 /**
  * Track vocabulary mastery
  */
-export function updateVocabularyMastery(
-  word: VocabularyWord,
-  wasCorrect: boolean
-): VocabularyWord {
+export function updateVocabularyMastery(word: VocabularyWord, wasCorrect: boolean): VocabularyWord {
   const updated = { ...word };
   updated.timesEncountered++;
 
@@ -500,8 +502,11 @@ export function generateProgressReport(
   }
 
   const summary = `${child.name} is making ${
-    weeklyProgress.metrics.comprehensionScore >= 80 ? 'excellent' : 
-    weeklyProgress.metrics.comprehensionScore >= 70 ? 'good' : 'steady'
+    weeklyProgress.metrics.comprehensionScore >= 80
+      ? 'excellent'
+      : weeklyProgress.metrics.comprehensionScore >= 70
+        ? 'good'
+        : 'steady'
   } progress in their literacy journey.`;
 
   const nextSteps = [
@@ -548,7 +553,7 @@ export function updateFamilyStreak(
   updated.lastReadingDate = readingDate;
 
   // Update participant contribution
-  const participant = updated.participants.find(p => p.userId === userId);
+  const participant = updated.participants.find((p) => p.userId === userId);
   if (participant) {
     participant.contributionDays++;
   } else {
@@ -589,7 +594,7 @@ export function getContentRecommendations(child: ChildProfile): {
       contentTypes: ['Interactive stories', 'Rhyming books', 'Counting stories'],
       learningFocus: ['Letter recognition', 'Phonemic awareness', 'Vocabulary building'],
     },
-    'k': {
+    k: {
       difficulty: 'Early readers with sight words',
       themes: ['Friendship', 'School', 'Nature', 'Community helpers', 'Celebrations'],
       contentTypes: ['Predictable text', 'Pattern books', 'Simple narratives'],

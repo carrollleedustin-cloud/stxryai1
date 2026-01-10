@@ -171,7 +171,12 @@ class EnhancedSocialService {
   // STORIES
   // ============================================================================
 
-  async createStory(storyData: Omit<Story, 'id' | 'created_at' | 'updated_at' | 'view_count' | 'play_count' | 'like_count'>) {
+  async createStory(
+    storyData: Omit<
+      Story,
+      'id' | 'created_at' | 'updated_at' | 'view_count' | 'play_count' | 'like_count'
+    >
+  ) {
     try {
       const response = await fetch('/api/stories', {
         method: 'POST',
@@ -191,10 +196,14 @@ class EnhancedSocialService {
     }
   }
 
-  async getUserStories(userId: string, filters?: { published?: boolean; limit?: number; offset?: number }) {
+  async getUserStories(
+    userId: string,
+    filters?: { published?: boolean; limit?: number; offset?: number }
+  ) {
     try {
       const params = new URLSearchParams();
-      if (filters?.published !== undefined) params.append('published', filters.published.toString());
+      if (filters?.published !== undefined)
+        params.append('published', filters.published.toString());
       if (filters?.limit) params.append('limit', filters.limit.toString());
       if (filters?.offset) params.append('offset', filters.offset.toString());
 
@@ -230,7 +239,9 @@ class EnhancedSocialService {
 
   async likeStory(storyId: string) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { error: likeError } = await supabase
@@ -262,7 +273,9 @@ class EnhancedSocialService {
 
   async bookmarkStory(storyId: string, folder: string = 'default') {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -289,7 +302,9 @@ class EnhancedSocialService {
 
   async followUser(userId: string) {
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
       if (!currentUser) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -319,7 +334,9 @@ class EnhancedSocialService {
 
   async unfollowUser(userId: string) {
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
       if (!currentUser) throw new Error('Not authenticated');
 
       const { error } = await supabase
@@ -370,9 +387,15 @@ class EnhancedSocialService {
   // DIRECT MESSAGING
   // ============================================================================
 
-  async sendDirectMessage(recipientId: string, content: string, messageType: 'text' | 'image' | 'file' = 'text') {
+  async sendDirectMessage(
+    recipientId: string,
+    content: string,
+    messageType: 'text' | 'image' | 'file' = 'text'
+  ) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -396,7 +419,9 @@ class EnhancedSocialService {
 
   async getDirectMessages(userId: string, limit: number = 50) {
     try {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
       if (!currentUser) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -421,7 +446,9 @@ class EnhancedSocialService {
 
   async createEvent(eventData: Omit<SocialEvent, 'id' | 'created_at' | 'participant_count'>) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -460,7 +487,9 @@ class EnhancedSocialService {
 
   async registerForEvent(eventId: string) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -486,7 +515,9 @@ class EnhancedSocialService {
 
   async getSocialFeed(limit: number = 20, offset: number = 0) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       // Get activities from followed users
@@ -495,7 +526,7 @@ class EnhancedSocialService {
         .select('following_id')
         .eq('follower_id', user.id);
 
-      const followedUserIds = followingIds?.map(f => f.following_id) || [];
+      const followedUserIds = followingIds?.map((f) => f.following_id) || [];
 
       const { data, error } = await supabase
         .from('user_activity')

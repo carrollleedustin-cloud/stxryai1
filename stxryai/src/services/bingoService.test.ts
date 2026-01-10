@@ -25,20 +25,20 @@ describe('BingoService', () => {
   it('should update tile progress', () => {
     let board = bingoService.generateBoard(userId);
     // Find a 'read' type tile
-    const readTileIndex = board.tiles.findIndex(t => t.type === 'read');
+    const readTileIndex = board.tiles.findIndex((t) => t.type === 'read');
     const initialTile = board.tiles[readTileIndex];
-    
+
     board = bingoService.updateTileProgress(board, 'read', 1);
-    
+
     expect(board.tiles[readTileIndex].current).toBe(initialTile.current + 1);
   });
 
   it('should mark tile as completed when target is reached', () => {
     let board = bingoService.generateBoard(userId);
     const tile = board.tiles[0];
-    
+
     board = bingoService.updateTileProgress(board, tile.type, tile.target);
-    
+
     expect(board.tiles[0].completed).toBe(true);
   });
 
@@ -48,7 +48,7 @@ describe('BingoService', () => {
     board.tiles[0].completed = true;
     board.tiles[1].completed = true;
     board.tiles[2].completed = true;
-    
+
     expect(bingoService.checkBingo(board)).toBe(true);
   });
 
@@ -58,7 +58,7 @@ describe('BingoService', () => {
     board.tiles[0].completed = true;
     board.tiles[3].completed = true;
     board.tiles[6].completed = true;
-    
+
     expect(bingoService.checkBingo(board)).toBe(true);
   });
 
@@ -68,7 +68,7 @@ describe('BingoService', () => {
     board.tiles[0].completed = true;
     board.tiles[4].completed = true;
     board.tiles[8].completed = true;
-    
+
     expect(bingoService.checkBingo(board)).toBe(true);
   });
 
@@ -77,7 +77,7 @@ describe('BingoService', () => {
     board.tiles[0].completed = true;
     board.tiles[1].completed = true;
     // Missing tile 2 for a row
-    
+
     expect(bingoService.checkBingo(board)).toBe(false);
   });
 });

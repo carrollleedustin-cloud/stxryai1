@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Analytics Metrics Endpoint
  * Receives performance metrics from the client-side monitoring system.
- * 
+ *
  * In production, these would be stored in a time-series database
  * or sent to a service like Datadog/New Relic.
  */
@@ -22,14 +22,11 @@ const MAX_BUFFER_SIZE = 1000;
 
 export async function POST(request: NextRequest) {
   try {
-    const metric = await request.json() as PerformanceMetric;
+    const metric = (await request.json()) as PerformanceMetric;
 
     // Validate metric structure
     if (!metric.name || typeof metric.value !== 'number') {
-      return NextResponse.json(
-        { error: 'Invalid metric format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid metric format' }, { status: 400 });
     }
 
     // Add to buffer (in production, send to analytics service)
@@ -51,20 +48,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to process metric:', error);
-    return NextResponse.json(
-      { error: 'Failed to process metric' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process metric' }, { status: 500 });
   }
 }
 
 export async function GET(request: NextRequest) {
   // Only allow in development or for admins
   if (process.env.NODE_ENV !== 'development') {
-    return NextResponse.json(
-      { error: 'Not available in production' },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -72,9 +63,9 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '100', 10);
 
   let filteredMetrics = metricsBuffer;
-  
+
   if (name) {
-    filteredMetrics = metricsBuffer.filter(m => m.name === name);
+    filteredMetrics = metricsBuffer.filter((m) => m.name === name);
   }
 
   // Get recent metrics
@@ -88,8 +79,8 @@ export async function GET(request: NextRequest) {
     }
     summary[metric.name].min = Math.min(summary[metric.name].min, metric.value);
     summary[metric.name].max = Math.max(summary[metric.name].max, metric.value);
-    summary[metric.name].avg = 
-      (summary[metric.name].avg * summary[metric.name].count + metric.value) / 
+    summary[metric.name].avg =
+      (summary[metric.name].avg * summary[metric.name].count + metric.value) /
       (summary[metric.name].count + 1);
     summary[metric.name].count++;
   }
@@ -100,4 +91,3 @@ export async function GET(request: NextRequest) {
     bufferSize: metricsBuffer.length,
   });
 }
-

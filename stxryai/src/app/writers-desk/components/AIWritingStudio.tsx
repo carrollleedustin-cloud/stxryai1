@@ -4,12 +4,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine';
-import type { 
-  GenerationContext, 
-  PersistentCharacter, 
+import type {
+  GenerationContext,
+  PersistentCharacter,
   NarrativeArc,
   CanonRule,
-  SeriesBook 
+  SeriesBook,
 } from '@/types/narrativeEngine';
 
 interface AIWritingStudioProps {
@@ -43,7 +43,7 @@ export default function AIWritingStudio({ seriesId, seriesTitle }: AIWritingStud
   const [prompt, setPrompt] = useState('');
   const [selectedCharacters, setSelectedCharacters] = useState<string[]>([]);
   const [canonViolations, setCanonViolations] = useState<string[]>([]);
-  
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-save functionality
@@ -124,7 +124,10 @@ export default function AIWritingStudio({ seriesId, seriesTitle }: AIWritingStud
   const fetchContext = async () => {
     if (!selectedBookId) return;
     try {
-      const ctx = await persistentNarrativeEngine.compileGenerationContext(seriesId, selectedBookId);
+      const ctx = await persistentNarrativeEngine.compileGenerationContext(
+        seriesId,
+        selectedBookId
+      );
       setContext(ctx);
       setContextSummary({
         activeCharacters: ctx.activeCharacters,
@@ -141,24 +144,29 @@ export default function AIWritingStudio({ seriesId, seriesTitle }: AIWritingStud
 
   const handleGenerate = async () => {
     if (!prompt.trim() && generationType !== 'continuation') return;
-    
+
     setGenerating(true);
     setCanonViolations([]);
 
     try {
       // Build the generation request with full context
-      const characterContext = selectedCharacters.length > 0
-        ? characters.filter(c => selectedCharacters.includes(c.id))
-            .map(c => `${c.name} (${c.characterRole}): ${c.dialogueStyle || 'standard speech'}, traits: ${c.corePersonality.traits?.join(', ') || 'none'}`)
-            .join('\n')
-        : '';
+      const characterContext =
+        selectedCharacters.length > 0
+          ? characters
+              .filter((c) => selectedCharacters.includes(c.id))
+              .map(
+                (c) =>
+                  `${c.name} (${c.characterRole}): ${c.dialogueStyle || 'standard speech'}, traits: ${c.corePersonality.traits?.join(', ') || 'none'}`
+              )
+              .join('\n')
+          : '';
 
       const systemPrompt = buildSystemPrompt();
       const userPrompt = buildUserPrompt(characterContext);
 
       // For now, simulate AI generation (replace with actual AI call)
       const mockGeneration = await simulateAIGeneration(userPrompt, systemPrompt);
-      
+
       setGeneratedContent(mockGeneration.content);
       if (mockGeneration.violations.length > 0) {
         setCanonViolations(mockGeneration.violations);
@@ -178,18 +186,18 @@ You have access to the full context of this story series and must maintain consi
 
     if (context) {
       systemPrompt += `ACTIVE CHARACTERS:\n`;
-      context.activeCharacters.forEach(char => {
+      context.activeCharacters.forEach((char) => {
         systemPrompt += `- ${char.name} (${char.role}, ${char.status})\n`;
       });
 
       systemPrompt += `\nACTIVE STORY ARCS:\n`;
-      context.activeArcs.forEach(arc => {
+      context.activeArcs.forEach((arc) => {
         systemPrompt += `- ${arc.name} (${arc.status}, ${arc.completion}% complete)\n`;
       });
 
       if (context.canonRules.length > 0) {
         systemPrompt += `\nCANON RULES TO FOLLOW:\n`;
-        context.canonRules.forEach(rule => {
+        context.canonRules.forEach((rule) => {
           systemPrompt += `- [${rule.ruleType?.toUpperCase()}] ${rule.ruleDescription}\n`;
         });
       }
@@ -232,39 +240,60 @@ You have access to the full context of this story series and must maintain consi
     return userPrompt;
   };
 
-  const simulateAIGeneration = async (userPrompt: string, systemPrompt: string): Promise<{
+  const simulateAIGeneration = async (
+    userPrompt: string,
+    systemPrompt: string
+  ): Promise<{
     content: string;
     violations: string[];
   }> => {
     // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
 
     // This is a placeholder - replace with actual AI API call
     const mockContent = `[AI-Generated Content]
 
 Based on your prompt: "${prompt || 'Continue the story'}"
 
-${generationType === 'dialogue' ? `
+${
+  generationType === 'dialogue'
+    ? `
 "I didn't expect to find you here," said the first character, their voice barely above a whisper.
 
 "Sometimes the unexpected is exactly what we need," came the reply, weighted with meaning.
-` : ''}
+`
+    : ''
+}
 
-${generationType === 'description' ? `
+${
+  generationType === 'description'
+    ? `
 The ancient library stretched before them, its towering shelves reaching toward a ceiling lost in shadow. Dust motes danced in the few beams of light that filtered through cracked stained glass windows, illuminating leather-bound tomes that held secrets older than memory itself.
-` : ''}
+`
+    : ''
+}
 
-${generationType === 'action' ? `
+${
+  generationType === 'action'
+    ? `
 She ducked beneath the swinging blade, feeling the whistle of steel mere inches above her head. In one fluid motion, she rolled forward, came up on her feet, and drove her own weapon toward her opponent's exposed flank.
-` : ''}
+`
+    : ''
+}
 
-${generationType === 'continuation' ? `
+${
+  generationType === 'continuation'
+    ? `
 The moment stretched between them like a taut wire, neither willing to be the first to speak. Finally, it was the stranger who broke the silence.
 
 "You've been searching for something," they said, their eyes reflecting the dim light. "I can help you find it—but the cost may be more than you're willing to pay."
-` : ''}
+`
+    : ''
+}
 
-${generationType === 'chapter_outline' ? `
+${
+  generationType === 'chapter_outline'
+    ? `
 **Chapter Outline**
 
 1. Opening: Establish the current tension and stakes
@@ -272,7 +301,9 @@ ${generationType === 'chapter_outline' ? `
 3. Complication: An unexpected ally arrives with news that changes everything
 4. Climax: Confrontation with the immediate threat
 5. Resolution: The chapter ends with a new question emerging
-` : ''}
+`
+    : ''
+}
 
 ---
 *This is a preview. In production, this would be generated by your AI provider with full series context.*`;
@@ -284,7 +315,7 @@ ${generationType === 'chapter_outline' ? `
   };
 
   const insertGenerated = () => {
-    setContent(prev => prev + (prev ? '\n\n' : '') + generatedContent);
+    setContent((prev) => prev + (prev ? '\n\n' : '') + generatedContent);
     setGeneratedContent('');
   };
 
@@ -320,7 +351,7 @@ ${generationType === 'chapter_outline' ? `
             onChange={(e) => setSelectedBookId(e.target.value)}
             className="px-4 py-2 bg-void-depth border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
           >
-            {books.map(book => (
+            {books.map((book) => (
               <option key={book.id} value={book.id}>
                 Book {book.bookNumber}: {book.title}
               </option>
@@ -351,9 +382,7 @@ ${generationType === 'chapter_outline' ? `
             <div className="text-xs text-text-tertiary">Canon Rules</div>
           </div>
           <div className="p-4 rounded-lg bg-void-depth border border-void-mist">
-            <div className="text-2xl font-bold text-green-400">
-              {contextSummary.worldElements}
-            </div>
+            <div className="text-2xl font-bold text-green-400">{contextSummary.worldElements}</div>
             <div className="text-xs text-text-tertiary">World Elements</div>
           </div>
         </div>
@@ -364,7 +393,8 @@ ${generationType === 'chapter_outline' ? `
         <div className="p-6 rounded-lg bg-spectral-gold/10 border border-spectral-gold/30 text-center">
           <p className="text-spectral-gold mb-2">No books in this series yet</p>
           <p className="text-sm text-text-secondary">
-            Create a book in your series to start using the AI Writing Studio with full context awareness.
+            Create a book in your series to start using the AI Writing Studio with full context
+            awareness.
           </p>
         </div>
       )}
@@ -417,7 +447,7 @@ ${generationType === 'chapter_outline' ? `
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={
-                  generationType === 'continuation' 
+                  generationType === 'continuation'
                     ? 'Optional: direction for continuation...'
                     : `What should the ${generationType} include?`
                 }
@@ -433,7 +463,7 @@ ${generationType === 'chapter_outline' ? `
                   <span className="flex items-center gap-2">
                     <motion.span
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     >
                       ⚡
                     </motion.span>
@@ -491,7 +521,9 @@ ${generationType === 'chapter_outline' ? `
               <h4 className="font-semibold text-red-400 mb-2">⚠️ Potential Canon Violations</h4>
               <ul className="space-y-1">
                 {canonViolations.map((violation, i) => (
-                  <li key={i} className="text-sm text-red-400/80">• {violation}</li>
+                  <li key={i} className="text-sm text-red-400/80">
+                    • {violation}
+                  </li>
                 ))}
               </ul>
             </motion.div>
@@ -523,7 +555,7 @@ ${generationType === 'chapter_outline' ? `
                         if (e.target.checked) {
                           setSelectedCharacters([...selectedCharacters, char.id]);
                         } else {
-                          setSelectedCharacters(selectedCharacters.filter(id => id !== char.id));
+                          setSelectedCharacters(selectedCharacters.filter((id) => id !== char.id));
                         }
                       }}
                       className="rounded border-void-mist text-spectral-cyan focus:ring-spectral-cyan"
@@ -534,11 +566,15 @@ ${generationType === 'chapter_outline' ? `
                       </div>
                       <div className="text-xs text-text-tertiary">{char.characterRole}</div>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      char.currentStatus === 'active' ? 'bg-green-400/20 text-green-400' :
-                      char.currentStatus === 'deceased' ? 'bg-red-400/20 text-red-400' :
-                      'bg-void-mist text-text-tertiary'
-                    }`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        char.currentStatus === 'active'
+                          ? 'bg-green-400/20 text-green-400'
+                          : char.currentStatus === 'deceased'
+                            ? 'bg-red-400/20 text-red-400'
+                            : 'bg-void-mist text-text-tertiary'
+                      }`}
+                    >
                       {char.currentStatus}
                     </span>
                   </label>
@@ -574,9 +610,9 @@ ${generationType === 'chapter_outline' ? `
           <div className="p-4 rounded-lg bg-gradient-to-r from-spectral-violet/10 to-spectral-cyan/10 border border-spectral-violet/20">
             <h4 className="font-semibold text-text-primary mb-2">🧠 Canon-Aware AI</h4>
             <p className="text-xs text-text-secondary">
-              The AI has access to your entire series context including characters, 
-              world elements, active arcs, and canon rules. It will maintain consistency 
-              and warn you of potential violations.
+              The AI has access to your entire series context including characters, world elements,
+              active arcs, and canon rules. It will maintain consistency and warn you of potential
+              violations.
             </p>
           </div>
         </div>
@@ -584,4 +620,3 @@ ${generationType === 'chapter_outline' ? `
     </div>
   );
 }
-

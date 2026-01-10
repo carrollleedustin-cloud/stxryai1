@@ -56,11 +56,11 @@ export interface StoryMetadata {
   coverImageUrl: string;
   isPremium: boolean;
   estimatedDuration?: number;
-  
+
   // AI Autonomy Settings
   storyMode: StoryMode;
   customChoiceTier: CustomChoiceTier;
-  
+
   // AI Companion Settings (for ai_infinite mode)
   enableAICompanion: boolean;
   companionPersonality?: string;
@@ -210,7 +210,7 @@ export const updateStoryMetadata = async (storyId: string, metadata: Partial<Sto
     };
 
     // Remove undefined values
-    Object.keys(patch).forEach(key => {
+    Object.keys(patch).forEach((key) => {
       if (patch[key] === undefined) delete patch[key];
     });
 

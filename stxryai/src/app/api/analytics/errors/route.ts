@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Error Tracking Endpoint
  * Receives error reports from the client-side error tracker.
- * 
+ *
  * In production, these would be sent to Sentry or similar service.
  */
 
@@ -25,14 +25,11 @@ const MAX_BUFFER_SIZE = 500;
 
 export async function POST(request: NextRequest) {
   try {
-    const error = await request.json() as ErrorEvent;
+    const error = (await request.json()) as ErrorEvent;
 
     // Validate error structure
     if (!error.message) {
-      return NextResponse.json(
-        { error: 'Invalid error format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid error format' }, { status: 400 });
     }
 
     // Add to buffer
@@ -62,20 +59,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to process error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process error' }, { status: 500 });
   }
 }
 
 export async function GET(request: NextRequest) {
   // Only allow in development or for admins
   if (process.env.NODE_ENV !== 'development') {
-    return NextResponse.json(
-      { error: 'Not available in production' },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -84,12 +75,12 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '50', 10);
 
   let filteredErrors = errorsBuffer;
-  
+
   if (type) {
-    filteredErrors = filteredErrors.filter(e => e.type === type);
+    filteredErrors = filteredErrors.filter((e) => e.type === type);
   }
   if (source) {
-    filteredErrors = filteredErrors.filter(e => e.source === source);
+    filteredErrors = filteredErrors.filter((e) => e.source === source);
   }
 
   // Get recent errors
@@ -99,14 +90,14 @@ export async function GET(request: NextRequest) {
   const summary = {
     total: errorsBuffer.length,
     byType: {
-      error: errorsBuffer.filter(e => e.type === 'error').length,
-      warning: errorsBuffer.filter(e => e.type === 'warning').length,
-      info: errorsBuffer.filter(e => e.type === 'info').length,
+      error: errorsBuffer.filter((e) => e.type === 'error').length,
+      warning: errorsBuffer.filter((e) => e.type === 'warning').length,
+      info: errorsBuffer.filter((e) => e.type === 'info').length,
     },
     bySource: {
-      client: errorsBuffer.filter(e => e.source === 'client').length,
-      server: errorsBuffer.filter(e => e.source === 'server').length,
-      api: errorsBuffer.filter(e => e.source === 'api').length,
+      client: errorsBuffer.filter((e) => e.source === 'client').length,
+      server: errorsBuffer.filter((e) => e.source === 'server').length,
+      api: errorsBuffer.filter((e) => e.source === 'api').length,
     },
   };
 
@@ -115,4 +106,3 @@ export async function GET(request: NextRequest) {
     summary,
   });
 }
-

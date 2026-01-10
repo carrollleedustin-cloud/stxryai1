@@ -206,7 +206,9 @@ function SideBySideComparison({
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Reads</span>
-              <span className="font-medium text-foreground">{story.readCount.toLocaleString()}</span>
+              <span className="font-medium text-foreground">
+                {story.readCount.toLocaleString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Chapters</span>
@@ -224,4 +226,3 @@ function SideBySideComparison({
     </div>
   );
 }
-

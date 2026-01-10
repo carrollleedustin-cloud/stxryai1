@@ -208,9 +208,11 @@ class StreakService {
   /**
    * Get available streak freezes for user (based on subscription tier)
    */
-  async getStreakFreezeAllowance(userId: string): Promise<{ available: number; usedThisMonth: number; tier: string }> {
+  async getStreakFreezeAllowance(
+    userId: string
+  ): Promise<{ available: number; usedThisMonth: number; tier: string }> {
     const supabase = this.getSupabase();
-    
+
     // Get user tier
     const { data: user, error: userError } = await supabase
       .from('users')
@@ -225,15 +227,15 @@ class StreakService {
 
     // Define freeze allowance per tier
     const freezeAllowance: Record<string, number> = {
-      'free': 1,        // 1 freeze per month
-      'premium': 3,     // 3 freezes per month
-      'creator_pro': 5, // 5 freezes per month (unlimited would be -1)
+      free: 1, // 1 freeze per month
+      premium: 3, // 3 freezes per month
+      creator_pro: 5, // 5 freezes per month (unlimited would be -1)
     };
 
     const streakData = await this.getStreakData(userId);
     const usedThisMonth = streakData?.streakFreezesUsedThisMonth || 0;
     const totalAllowed = freezeAllowance[user.tier] || 1;
-    
+
     return {
       available: Math.max(0, totalAllowed - usedThisMonth),
       usedThisMonth,
@@ -246,16 +248,17 @@ class StreakService {
    */
   async activateStreakFreeze(userId: string): Promise<StreakFreezeResult> {
     const supabase = this.getSupabase();
-    
+
     // Check allowance
     const allowance = await this.getStreakFreezeAllowance(userId);
-    
+
     if (allowance.available <= 0) {
       return {
         success: false,
-        message: allowance.tier === 'free' 
-          ? 'Upgrade to Premium for more streak freezes!' 
-          : 'No streak freezes available this month.',
+        message:
+          allowance.tier === 'free'
+            ? 'Upgrade to Premium for more streak freezes!'
+            : 'No streak freezes available this month.',
         freezesRemaining: 0,
       };
     }
@@ -316,7 +319,7 @@ class StreakService {
    */
   async isStreakProtected(userId: string): Promise<{ protected: boolean; expiresAt?: string }> {
     const streakData = await this.getStreakData(userId);
-    
+
     if (!streakData || !streakData.isFrozen || !streakData.freezeExpiresAt) {
       return { protected: false };
     }
@@ -332,13 +335,13 @@ class StreakService {
           freeze_expires_at: null,
         })
         .eq('user_id', userId);
-      
+
       return { protected: false };
     }
 
-    return { 
-      protected: true, 
-      expiresAt: streakData.freezeExpiresAt 
+    return {
+      protected: true,
+      expiresAt: streakData.freezeExpiresAt,
     };
   }
 
@@ -347,7 +350,7 @@ class StreakService {
    */
   async deactivateStreakFreeze(userId: string): Promise<void> {
     const supabase = this.getSupabase();
-    
+
     await supabase
       .from('reading_streaks')
       .update({
@@ -514,20 +517,18 @@ class StreakService {
     const today = readDate.toISOString().split('T')[0];
 
     // Update calendar
-    const { error: calendarError } = await supabase
-      .from('reading_calendar')
-      .upsert(
-        {
-          user_id: userId,
-          read_date: today,
-          reading_time: readingTime,
-          stories_read: storiesRead,
-          chapters_read: chaptersRead,
-        },
-        {
-          onConflict: 'user_id,read_date',
-        }
-      );
+    const { error: calendarError } = await supabase.from('reading_calendar').upsert(
+      {
+        user_id: userId,
+        read_date: today,
+        reading_time: readingTime,
+        stories_read: storiesRead,
+        chapters_read: chaptersRead,
+      },
+      {
+        onConflict: 'user_id,read_date',
+      }
+    );
 
     if (calendarError) {
       console.error('Error updating reading calendar:', calendarError);
@@ -765,4 +766,3 @@ class StreakService {
 
 // Export singleton instance
 export const streakService = new StreakService();
-

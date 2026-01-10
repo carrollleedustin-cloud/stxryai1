@@ -22,7 +22,7 @@ async function getWebPush() {
   if (!webpush) {
     try {
       webpush = await import('web-push');
-      
+
       // Configure web-push with VAPID keys
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;
@@ -53,7 +53,12 @@ interface PushNotificationRequest {
   data?: Record<string, any>;
   tag?: string;
   requireInteraction?: boolean;
-  notificationType?: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation';
+  notificationType?:
+    | 'story_update'
+    | 'friend_activity'
+    | 'engagement_reminder'
+    | 'social'
+    | 'personalized_recommendation';
 }
 
 /**
@@ -114,10 +119,7 @@ export async function POST(request: NextRequest) {
 
     if (subError) {
       console.error('Error fetching subscriptions:', subError);
-      return NextResponse.json(
-        { error: 'Failed to fetch subscriptions' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch subscriptions' }, { status: 500 });
     }
 
     if (!subscriptions || subscriptions.length === 0) {
@@ -158,10 +160,7 @@ export async function POST(request: NextRequest) {
         } catch (error: any) {
           // If subscription is invalid, remove it
           if (error.statusCode === 410 || error.statusCode === 404) {
-            await supabase
-              .from('push_subscriptions')
-              .delete()
-              .eq('id', sub.id);
+            await supabase.from('push_subscriptions').delete().eq('id', sub.id);
           }
           throw error;
         }
@@ -215,4 +214,3 @@ export async function GET(request: NextRequest) {
 
   return response;
 }
-

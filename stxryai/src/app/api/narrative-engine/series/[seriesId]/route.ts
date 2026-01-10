@@ -5,20 +5,14 @@ import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine'
  * GET /api/narrative-engine/series/[seriesId]
  * Get a single series with full details
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { seriesId: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
     const { seriesId } = params;
 
     const overview = await persistentNarrativeEngine.getSeriesOverview(seriesId);
 
     if (!overview.series) {
-      return NextResponse.json(
-        { error: 'Series not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Series not found' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -33,10 +27,7 @@ export async function GET(
     });
   } catch (error) {
     console.error('Failed to fetch series:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch series' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch series' }, { status: 500 });
   }
 }
 
@@ -44,10 +35,7 @@ export async function GET(
  * PATCH /api/narrative-engine/series/[seriesId]
  * Update a series
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { seriesId: string } }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
     const { seriesId } = params;
     const body = await request.json();
@@ -57,10 +45,6 @@ export async function PATCH(
     return NextResponse.json(updated);
   } catch (error) {
     console.error('Failed to update series:', error);
-    return NextResponse.json(
-      { error: 'Failed to update series' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update series' }, { status: 500 });
   }
 }
-

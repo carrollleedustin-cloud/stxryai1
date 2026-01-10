@@ -66,33 +66,29 @@ export default function WritersDeskPage() {
   };
 
   const handleSeriesCreated = (newSeries: SeriesOverview) => {
-    setSeries(prev => [newSeries, ...prev]);
+    setSeries((prev) => [newSeries, ...prev]);
     setSelectedSeriesId(newSeries.id);
     setView('dashboard');
   };
 
-  const selectedSeries = series.find(s => s.id === selectedSeriesId);
+  const selectedSeries = series.find((s) => s.id === selectedSeriesId);
 
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-void-base">
         <Header />
         <div className="flex items-center justify-center h-[calc(100vh-80px)]">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
+          <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="relative w-16 h-16 mx-auto mb-4">
               <motion.div
                 className="absolute inset-0 rounded-full border-2 border-spectral-cyan/30"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
               />
               <motion.div
                 className="absolute inset-2 rounded-full border-2 border-spectral-violet/50"
                 animate={{ rotate: -360 }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
               />
             </div>
             <p className="text-text-secondary font-mono">Initializing Writer&apos;s Desk...</p>
@@ -127,7 +123,8 @@ export default function WritersDeskPage() {
             Writer&apos;s Desk
           </h1>
           <p className="text-text-secondary mt-1">
-            Craft epic multi-book series with persistent characters, worldbuilding, and canon enforcement
+            Craft epic multi-book series with persistent characters, worldbuilding, and canon
+            enforcement
           </p>
         </motion.div>
 
@@ -171,8 +168,8 @@ export default function WritersDeskPage() {
                       view === item.id
                         ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 border border-spectral-cyan/30 text-text-primary'
                         : isDisabled
-                        ? 'text-text-tertiary opacity-50 cursor-not-allowed'
-                        : 'hover:bg-void-mist text-text-secondary hover:text-text-primary'
+                          ? 'text-text-tertiary opacity-50 cursor-not-allowed'
+                          : 'hover:bg-void-mist text-text-secondary hover:text-text-primary'
                     }`}
                   >
                     <span className="text-xl">{item.icon}</span>
@@ -214,9 +211,7 @@ export default function WritersDeskPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-tertiary">Active Arcs</span>
-                    <span className="text-green-400 font-mono">
-                      {selectedSeries.activeArcs}
-                    </span>
+                    <span className="text-green-400 font-mono">{selectedSeries.activeArcs}</span>
                   </div>
                   {selectedSeries.pendingViolations > 0 && (
                     <div className="flex justify-between text-red-400">
@@ -339,4 +334,3 @@ export default function WritersDeskPage() {
     </div>
   );
 }
-

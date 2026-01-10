@@ -15,10 +15,13 @@ export interface ModerationResult {
   severity: 'low' | 'medium' | 'high' | 'critical';
   confidence: number;
   autoAction: 'allow' | 'review' | 'block';
-  categories: Record<string, {
-    detected: boolean;
-    confidence: number;
-  }>;
+  categories: Record<
+    string,
+    {
+      detected: boolean;
+      confidence: number;
+    }
+  >;
   sources: {
     openai?: {
       flagged: boolean;
@@ -63,7 +66,8 @@ export interface ModerationStats {
 
 class EnhancedModerationService {
   private perspectiveApiKey: string;
-  private perspectiveApiUrl: string = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
+  private perspectiveApiUrl: string =
+    'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 
   constructor() {
     this.perspectiveApiKey = process.env.NEXT_PUBLIC_PERSPECTIVE_API_KEY || '';
@@ -96,25 +100,22 @@ class EnhancedModerationService {
     }
 
     try {
-      const response = await fetch(
-        `${this.perspectiveApiUrl}?key=${this.perspectiveApiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            comment: { text },
-            requestedAttributes: {
-              TOXICITY: {},
-              SEVERE_TOXICITY: {},
-              IDENTITY_ATTACK: {},
-              THREAT: {},
-              PROFANITY: {},
-              INSULT: {},
-            },
-            languages: ['en'],
-          }),
-        }
-      );
+      const response = await fetch(`${this.perspectiveApiUrl}?key=${this.perspectiveApiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          comment: { text },
+          requestedAttributes: {
+            TOXICITY: {},
+            SEVERE_TOXICITY: {},
+            IDENTITY_ATTACK: {},
+            THREAT: {},
+            PROFANITY: {},
+            INSULT: {},
+          },
+          languages: ['en'],
+        }),
+      });
 
       if (!response.ok) {
         console.error('Perspective API error:', response.statusText);
@@ -180,10 +181,7 @@ class EnhancedModerationService {
   /**
    * Combine OpenAI and Perspective API results
    */
-  private combineResults(
-    openaiResult: any,
-    perspectiveResult: any
-  ): ModerationResult {
+  private combineResults(openaiResult: any, perspectiveResult: any): ModerationResult {
     const categories: Record<string, { detected: boolean; confidence: number }> = {};
     let maxConfidence = 0;
     let flagged = false;
@@ -250,7 +248,9 @@ class EnhancedModerationService {
       suggestions.push('Content contains toxic language. Please revise to be more respectful.');
     }
     if (categories.hate_speech?.detected || categories.identity_attack?.detected) {
-      suggestions.push('Content contains hate speech or identity attacks. This violates our community guidelines.');
+      suggestions.push(
+        'Content contains hate speech or identity attacks. This violates our community guidelines.'
+      );
     }
     if (categories.violence?.detected || categories.threat?.detected) {
       suggestions.push('Content contains violent language or threats. This is not allowed.');
@@ -272,13 +272,11 @@ class EnhancedModerationService {
         openai: openaiResult.flagged
           ? {
               flagged: openaiResult.flagged,
-              categories: openaiResult.categories?.reduce(
-                (acc: Record<string, number>, cat: any) => {
+              categories:
+                openaiResult.categories?.reduce((acc: Record<string, number>, cat: any) => {
                   acc[cat.name] = cat.confidence;
                   return acc;
-                },
-                {}
-              ) || {},
+                }, {}) || {},
             }
           : undefined,
         perspective: perspectiveResult || undefined,
@@ -360,10 +358,7 @@ class EnhancedModerationService {
   /**
    * Update moderation statistics
    */
-  private async updateStatistics(
-    contentType: string,
-    result: ModerationResult
-  ): Promise<void> {
+  private async updateStatistics(contentType: string, result: ModerationResult): Promise<void> {
     const supabase = this.getSupabase();
     const today = new Date().toISOString().split('T')[0];
 
@@ -487,4 +482,3 @@ class EnhancedModerationService {
 
 // Export singleton instance
 export const enhancedModerationService = new EnhancedModerationService();
-

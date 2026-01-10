@@ -52,7 +52,15 @@ export interface SkinTone {
 export interface HairTexture {
   id: string;
   name: string;
-  type: '1a-straight' | '2a-wavy' | '3a-curly' | '3b-curly' | '3c-curly' | '4a-coily' | '4b-coily' | '4c-coily';
+  type:
+    | '1a-straight'
+    | '2a-wavy'
+    | '3a-curly'
+    | '3b-curly'
+    | '3c-curly'
+    | '4a-coily'
+    | '4b-coily'
+    | '4c-coily';
   description: string;
   careInfo?: string;
 }
@@ -94,7 +102,15 @@ export interface BodyType {
 export interface BlackExcellenceStory {
   id: string;
   personName: string;
-  field: 'science' | 'arts' | 'sports' | 'politics' | 'education' | 'business' | 'activism' | 'innovation';
+  field:
+    | 'science'
+    | 'arts'
+    | 'sports'
+    | 'politics'
+    | 'education'
+    | 'business'
+    | 'activism'
+    | 'innovation';
   era: string;
   achievement: string;
   biography: string;
@@ -151,7 +167,12 @@ export interface AfrofuturistCharacter {
 export interface HeritageStoryTemplate {
   id: string;
   title: string;
-  type: 'family-history' | 'ancestor-story' | 'migration-journey' | 'tradition-origin' | 'name-meaning';
+  type:
+    | 'family-history'
+    | 'ancestor-story'
+    | 'migration-journey'
+    | 'tradition-origin'
+    | 'name-meaning';
   prompts: HeritagePrompt[];
   structure: StoryStructure;
   guidedQuestions: string[];
@@ -380,9 +401,11 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'science',
     era: '1956-Present',
     achievement: 'First African American woman in space',
-    biography: 'Dr. Mae Jemison is a physician, engineer, and NASA astronaut who made history in 1992 as the first African American woman to travel to space aboard the Space Shuttle Endeavour.',
-    impact: 'Inspired countless young people, especially girls of color, to pursue careers in STEM fields',
-    inspirationalQuote: 'Never be limited by other people\'s limited imaginations.',
+    biography:
+      'Dr. Mae Jemison is a physician, engineer, and NASA astronaut who made history in 1992 as the first African American woman to travel to space aboard the Space Shuttle Endeavour.',
+    impact:
+      'Inspired countless young people, especially girls of color, to pursue careers in STEM fields',
+    inspirationalQuote: "Never be limited by other people's limited imaginations.",
     ageAppropriate: ['k', '1', '2', '3', '4', '5'],
     interactiveElements: ['space-mission-game', 'stem-activities', 'career-exploration'],
   },
@@ -392,9 +415,12 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'science',
     era: '1918-2020',
     achievement: 'NASA mathematician whose calculations were critical to space missions',
-    biography: 'Katherine Johnson was a brilliant mathematician whose precise calculations of orbital mechanics were essential to the success of early U.S. space missions, including the Apollo 11 moon landing.',
-    impact: 'Her work was crucial to space exploration and she broke barriers for women and African Americans in STEM',
-    inspirationalQuote: 'I counted everything. I counted the steps to the road, the steps up to church, the number of dishes and silverware I washed.',
+    biography:
+      'Katherine Johnson was a brilliant mathematician whose precise calculations of orbital mechanics were essential to the success of early U.S. space missions, including the Apollo 11 moon landing.',
+    impact:
+      'Her work was crucial to space exploration and she broke barriers for women and African Americans in STEM',
+    inspirationalQuote:
+      'I counted everything. I counted the steps to the road, the steps up to church, the number of dishes and silverware I washed.',
     ageAppropriate: ['2', '3', '4', '5'],
     interactiveElements: ['math-challenges', 'space-calculations', 'biography-timeline'],
   },
@@ -404,11 +430,18 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'arts',
     era: '1901-1967',
     achievement: 'Pioneering poet of the Harlem Renaissance',
-    biography: 'Langston Hughes was a poet, novelist, and playwright who became one of the most important voices of the Harlem Renaissance, celebrating Black culture and experiences.',
-    impact: 'His poetry gave voice to the African American experience and influenced generations of writers',
-    inspirationalQuote: 'Hold fast to dreams, for if dreams die, life is a broken-winged bird that cannot fly.',
+    biography:
+      'Langston Hughes was a poet, novelist, and playwright who became one of the most important voices of the Harlem Renaissance, celebrating Black culture and experiences.',
+    impact:
+      'His poetry gave voice to the African American experience and influenced generations of writers',
+    inspirationalQuote:
+      'Hold fast to dreams, for if dreams die, life is a broken-winged bird that cannot fly.',
     ageAppropriate: ['3', '4', '5'],
-    interactiveElements: ['poetry-writing', 'harlem-renaissance-exploration', 'creative-expression'],
+    interactiveElements: [
+      'poetry-writing',
+      'harlem-renaissance-exploration',
+      'creative-expression',
+    ],
   },
   {
     id: 'harriet-tubman',
@@ -416,9 +449,11 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'activism',
     era: '1822-1913',
     achievement: 'Conductor of the Underground Railroad, freed hundreds from slavery',
-    biography: 'Harriet Tubman escaped slavery and then risked her life repeatedly to lead hundreds of enslaved people to freedom through the Underground Railroad. She was also a Union spy during the Civil War.',
+    biography:
+      'Harriet Tubman escaped slavery and then risked her life repeatedly to lead hundreds of enslaved people to freedom through the Underground Railroad. She was also a Union spy during the Civil War.',
     impact: 'Symbol of courage and freedom, her bravery saved countless lives',
-    inspirationalQuote: 'I freed a thousand slaves. I could have freed a thousand more if only they knew they were slaves.',
+    inspirationalQuote:
+      'I freed a thousand slaves. I could have freed a thousand more if only they knew they were slaves.',
     ageAppropriate: ['2', '3', '4', '5'],
     interactiveElements: ['history-timeline', 'courage-scenarios', 'freedom-journey'],
   },
@@ -428,7 +463,8 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'science',
     era: '1864-1943',
     achievement: 'Agricultural scientist and inventor',
-    biography: 'George Washington Carver was a brilliant scientist who revolutionized agriculture in the South. He developed hundreds of products from peanuts, sweet potatoes, and soybeans.',
+    biography:
+      'George Washington Carver was a brilliant scientist who revolutionized agriculture in the South. He developed hundreds of products from peanuts, sweet potatoes, and soybeans.',
     impact: 'His innovations helped farmers and promoted sustainable agriculture',
     inspirationalQuote: 'Education is the key to unlock the golden door of freedom.',
     ageAppropriate: ['1', '2', '3', '4', '5'],
@@ -440,8 +476,10 @@ export const blackExcellenceStories: BlackExcellenceStory[] = [
     field: 'arts',
     era: '1928-2014',
     achievement: 'Poet, author, and civil rights activist',
-    biography: 'Maya Angelou was a celebrated poet, memoirist, and civil rights activist whose powerful words inspired millions around the world.',
-    impact: 'Her autobiographies and poetry gave voice to the Black experience and inspired social change',
+    biography:
+      'Maya Angelou was a celebrated poet, memoirist, and civil rights activist whose powerful words inspired millions around the world.',
+    impact:
+      'Her autobiographies and poetry gave voice to the Black experience and inspired social change',
     inspirationalQuote: 'There is no greater agony than bearing an untold story inside you.',
     ageAppropriate: ['3', '4', '5'],
     interactiveElements: ['poetry-creation', 'storytelling', 'self-expression'],
@@ -459,15 +497,26 @@ export const culturalCelebrations: CulturalCelebration[] = [
     date: '06-19',
     type: 'juneteenth',
     description: 'Celebration of the end of slavery in the United States',
-    history: 'On June 19, 1865, enslaved people in Texas learned they were free, two years after the Emancipation Proclamation.',
-    traditions: ['Family gatherings', 'Reading of the Emancipation Proclamation', 'Red food and drinks', 'Music and dance', 'Education and reflection'],
+    history:
+      'On June 19, 1865, enslaved people in Texas learned they were free, two years after the Emancipation Proclamation.',
+    traditions: [
+      'Family gatherings',
+      'Reading of the Emancipation Proclamation',
+      'Red food and drinks',
+      'Music and dance',
+      'Education and reflection',
+    ],
     activities: [
       {
         id: 'juneteenth-story',
         title: 'Freedom Story',
         description: 'Create a story about freedom and celebration',
         type: 'story',
-        instructions: ['Think about what freedom means', 'Imagine a celebration', 'Include family and community'],
+        instructions: [
+          'Think about what freedom means',
+          'Imagine a celebration',
+          'Include family and community',
+        ],
         culturalContext: 'Honoring the journey to freedom',
       },
       {
@@ -475,7 +524,11 @@ export const culturalCelebrations: CulturalCelebration[] = [
         title: 'Freedom Flag',
         description: 'Design a flag representing freedom',
         type: 'craft',
-        instructions: ['Use red, white, and blue', 'Add symbols of freedom', 'Share what it means to you'],
+        instructions: [
+          'Use red, white, and blue',
+          'Add symbols of freedom',
+          'Share what it means to you',
+        ],
         materials: ['Paper', 'Markers', 'Crayons'],
         culturalContext: 'The Juneteenth flag symbolizes freedom and new beginnings',
       },
@@ -489,8 +542,15 @@ export const culturalCelebrations: CulturalCelebration[] = [
     date: '12-26',
     type: 'kwanzaa',
     description: 'Week-long celebration of African American culture and heritage',
-    history: 'Created in 1966 by Dr. Maulana Karenga to celebrate African American culture, family, and community.',
-    traditions: ['Lighting the Kinara', 'Seven Principles (Nguzo Saba)', 'Gift giving', 'Feast (Karamu)', 'Storytelling'],
+    history:
+      'Created in 1966 by Dr. Maulana Karenga to celebrate African American culture, family, and community.',
+    traditions: [
+      'Lighting the Kinara',
+      'Seven Principles (Nguzo Saba)',
+      'Gift giving',
+      'Feast (Karamu)',
+      'Storytelling',
+    ],
     activities: [
       {
         id: 'kwanzaa-principles',
@@ -505,7 +565,11 @@ export const culturalCelebrations: CulturalCelebration[] = [
         title: 'Make a Kinara',
         description: 'Create your own Kinara (candle holder)',
         type: 'craft',
-        instructions: ['Use seven candles: 3 red, 3 green, 1 black', 'Decorate with African patterns', 'Learn what each candle represents'],
+        instructions: [
+          'Use seven candles: 3 red, 3 green, 1 black',
+          'Decorate with African patterns',
+          'Learn what each candle represents',
+        ],
         materials: ['Paper', 'Markers', 'Craft supplies'],
         culturalContext: 'The Kinara represents African ancestry',
       },
@@ -519,15 +583,25 @@ export const culturalCelebrations: CulturalCelebration[] = [
     date: '02-01',
     type: 'black-history-month',
     description: 'Month-long celebration of Black history and achievements',
-    history: 'Started as Negro History Week in 1926 by Carter G. Woodson, expanded to a month in 1976.',
-    traditions: ['Learning about Black history', 'Celebrating achievements', 'Community events', 'Educational programs'],
+    history:
+      'Started as Negro History Week in 1926 by Carter G. Woodson, expanded to a month in 1976.',
+    traditions: [
+      'Learning about Black history',
+      'Celebrating achievements',
+      'Community events',
+      'Educational programs',
+    ],
     activities: [
       {
         id: 'bhm-biography',
         title: 'Hero Biography',
         description: 'Research and write about a Black hero',
         type: 'story',
-        instructions: ['Choose a historical figure', 'Learn about their achievements', 'Share their story'],
+        instructions: [
+          'Choose a historical figure',
+          'Learn about their achievements',
+          'Share their story',
+        ],
         culturalContext: 'Honoring those who paved the way',
       },
       {
@@ -554,7 +628,8 @@ export const afrofuturismThemes: AfrofuturismTheme[] = [
     id: 'afro-tech-city',
     title: 'The Technologically Advanced Kingdom',
     description: 'A futuristic African kingdom where ancient wisdom meets advanced technology',
-    setting: 'A gleaming city with buildings inspired by traditional African architecture, powered by sustainable energy',
+    setting:
+      'A gleaming city with buildings inspired by traditional African architecture, powered by sustainable energy',
     themes: ['Innovation', 'Cultural pride', 'Environmental stewardship', 'Community'],
     characters: [
       {
@@ -571,9 +646,19 @@ export const afrofuturismThemes: AfrofuturismTheme[] = [
         culturalConnection: 'Teaches that innovation builds on tradition',
       },
     ],
-    technology: ['Solar-powered cities', 'Holographic storytelling', 'Sustainable transportation', 'Advanced medicine'],
-    culturalElements: ['Traditional patterns in modern design', 'Ancestral wisdom guides innovation', 'Community-centered technology'],
-    inspirationalMessage: 'The future is built on the strength of our past and the creativity of our present',
+    technology: [
+      'Solar-powered cities',
+      'Holographic storytelling',
+      'Sustainable transportation',
+      'Advanced medicine',
+    ],
+    culturalElements: [
+      'Traditional patterns in modern design',
+      'Ancestral wisdom guides innovation',
+      'Community-centered technology',
+    ],
+    inspirationalMessage:
+      'The future is built on the strength of our past and the creativity of our present',
   },
   {
     id: 'space-explorers',
@@ -591,7 +676,11 @@ export const afrofuturismThemes: AfrofuturismTheme[] = [
       },
     ],
     technology: ['Faster-than-light travel', 'Universal translators', 'Holographic libraries'],
-    culturalElements: ['Oral tradition in space', 'African patterns in ship design', 'Community across galaxies'],
+    culturalElements: [
+      'Oral tradition in space',
+      'African patterns in ship design',
+      'Community across galaxies',
+    ],
     inspirationalMessage: 'Our stories and culture can light up the entire universe',
   },
 ];
@@ -610,13 +699,17 @@ export const heritageTemplates: HeritageStoryTemplate[] = [
         section: 'Beginning',
         question: 'Where does our family name come from?',
         examples: ['African origins', 'Changed during migration', 'Chosen for its meaning'],
-        tips: ['Ask elders about the name history', 'Research the name\'s origins', 'Consider what it means to your family'],
+        tips: [
+          'Ask elders about the name history',
+          "Research the name's origins",
+          'Consider what it means to your family',
+        ],
       },
       {
         section: 'Middle',
         question: 'What stories are connected to our name?',
         examples: ['Family legends', 'Historical events', 'Personal meanings'],
-        tips: ['Share family stories', 'Include different generations\' perspectives'],
+        tips: ['Share family stories', "Include different generations' perspectives"],
       },
       {
         section: 'End',
@@ -628,7 +721,7 @@ export const heritageTemplates: HeritageStoryTemplate[] = [
     structure: {
       beginning: 'Introduce the family name and its origins',
       middle: 'Share stories and meanings connected to the name',
-      end: 'Reflect on what the name means for your family\'s future',
+      end: "Reflect on what the name means for your family's future",
       culturalElements: ['Heritage', 'Identity', 'Continuity', 'Pride'],
     },
     guidedQuestions: [
@@ -645,7 +738,7 @@ export const heritageTemplates: HeritageStoryTemplate[] = [
   },
   {
     id: 'migration-journey',
-    title: 'Our Family\'s Journey',
+    title: "Our Family's Journey",
     type: 'migration-journey',
     prompts: [
       {
@@ -741,33 +834,31 @@ export function getCelebrationByDate(date: Date): CulturalCelebration | null {
   const day = String(date.getDate()).padStart(2, '0');
   const dateString = `${month}-${day}`;
 
-  return culturalCelebrations.find(c => c.date === dateString) || null;
+  return culturalCelebrations.find((c) => c.date === dateString) || null;
 }
 
 /**
  * Get age-appropriate excellence stories
  */
 export function getExcellenceStoriesForAge(gradeLevel: string): BlackExcellenceStory[] {
-  return blackExcellenceStories.filter(story => 
-    story.ageAppropriate.includes(gradeLevel)
-  );
+  return blackExcellenceStories.filter((story) => story.ageAppropriate.includes(gradeLevel));
 }
 
 /**
  * Get random affirmation
  */
 export function getRandomAffirmation(gradeLevel: string): IdentityAffirmation {
-  const appropriate = identityAffirmations.filter(a => 
-    a.ageAppropriate.includes(gradeLevel)
-  );
+  const appropriate = identityAffirmations.filter((a) => a.ageAppropriate.includes(gradeLevel));
   return appropriate[Math.floor(Math.random() * appropriate.length)];
 }
 
 /**
  * Get heritage template by type
  */
-export function getHeritageTemplate(type: HeritageStoryTemplate['type']): HeritageStoryTemplate | undefined {
-  return heritageTemplates.find(t => t.type === type);
+export function getHeritageTemplate(
+  type: HeritageStoryTemplate['type']
+): HeritageStoryTemplate | undefined {
+  return heritageTemplates.find((t) => t.type === type);
 }
 
 // ============================================================================

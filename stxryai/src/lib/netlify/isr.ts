@@ -23,9 +23,7 @@ export const REVALIDATE = {
  * Generate static params with ISR support.
  * Use this in page components that need static generation.
  */
-export function createStaticParams<T extends Record<string, string>>(
-  params: T[]
-): T[] {
+export function createStaticParams<T extends Record<string, string>>(params: T[]): T[] {
   return params;
 }
 

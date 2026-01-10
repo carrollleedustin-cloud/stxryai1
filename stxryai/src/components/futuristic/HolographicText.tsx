@@ -10,11 +10,11 @@ interface HolographicTextProps {
   animated?: boolean;
 }
 
-const HolographicText = ({ 
-  text, 
+const HolographicText = ({
+  text,
   className = '',
   size = 'lg',
-  animated = true 
+  animated = true,
 }: HolographicTextProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const sizeClasses = {
@@ -66,4 +66,3 @@ const HolographicText = ({
 };
 
 export default HolographicText;
-

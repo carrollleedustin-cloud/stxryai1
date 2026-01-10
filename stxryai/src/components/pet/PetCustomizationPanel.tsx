@@ -14,7 +14,9 @@ import { PetAccessory } from '@/types/pet';
 
 export default function PetCustomizationPanel({ onClose }: { onClose: () => void }) {
   const { pet, hasPet } = usePet();
-  const [selectedCategory, setSelectedCategory] = useState<'accessories' | 'colors' | 'effects'>('accessories');
+  const [selectedCategory, setSelectedCategory] = useState<'accessories' | 'colors' | 'effects'>(
+    'accessories'
+  );
   const [availableAccessories, setAvailableAccessories] = useState<PetAccessory[]>([]);
 
   useEffect(() => {
@@ -22,45 +24,113 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
       // Generate available accessories based on pet level and achievements
       const accessories: PetAccessory[] = [
         // Common accessories (always available)
-        { id: '1', name: 'Reading Glasses', type: 'glasses', rarity: 'common', unlockedAt: new Date().toISOString(), equipped: false },
-        { id: '2', name: 'Book Collar', type: 'collar', rarity: 'common', unlockedAt: new Date().toISOString(), equipped: false },
-        
+        {
+          id: '1',
+          name: 'Reading Glasses',
+          type: 'glasses',
+          rarity: 'common',
+          unlockedAt: new Date().toISOString(),
+          equipped: false,
+        },
+        {
+          id: '2',
+          name: 'Book Collar',
+          type: 'collar',
+          rarity: 'common',
+          unlockedAt: new Date().toISOString(),
+          equipped: false,
+        },
+
         // Level-based unlocks
-        ...(pet.stats.level >= 5 ? [{
-          id: '3', name: 'Scholar Hat', type: 'hat', rarity: 'rare', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
-        
-        ...(pet.stats.level >= 10 ? [{
-          id: '4', name: 'Storyteller Crown', type: 'crown', rarity: 'epic', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
-        
+        ...(pet.stats.level >= 5
+          ? [
+              {
+                id: '3',
+                name: 'Scholar Hat',
+                type: 'hat',
+                rarity: 'rare',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
+
+        ...(pet.stats.level >= 10
+          ? [
+              {
+                id: '4',
+                name: 'Storyteller Crown',
+                type: 'crown',
+                rarity: 'epic',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
+
         // Achievement-based unlocks
-        ...(pet.stats.storiesRead >= 10 ? [{
-          id: '5', name: 'Bookworm Scarf', type: 'scarf', rarity: 'rare', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
-        
-        ...(pet.stats.currentStreak >= 7 ? [{
-          id: '6', name: 'Streak Aura', type: 'aura', rarity: 'epic', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
-        
+        ...(pet.stats.storiesRead >= 10
+          ? [
+              {
+                id: '5',
+                name: 'Bookworm Scarf',
+                type: 'scarf',
+                rarity: 'rare',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
+
+        ...(pet.stats.currentStreak >= 7
+          ? [
+              {
+                id: '6',
+                name: 'Streak Aura',
+                type: 'aura',
+                rarity: 'epic',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
+
         // Genre-based unlocks
-        ...(pet.stats.genresExplored.length >= 5 ? [{
-          id: '7', name: 'Explorer Wings', type: 'wings', rarity: 'rare', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
-        
+        ...(pet.stats.genresExplored.length >= 5
+          ? [
+              {
+                id: '7',
+                name: 'Explorer Wings',
+                type: 'wings',
+                rarity: 'rare',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
+
         // Legendary unlocks
-        ...(pet.evolutionStage === 'legendary' ? [{
-          id: '8', name: 'Legendary Crown', type: 'crown', rarity: 'legendary', unlockedAt: new Date().toISOString(), equipped: false
-        }] : []),
+        ...(pet.evolutionStage === 'legendary'
+          ? [
+              {
+                id: '8',
+                name: 'Legendary Crown',
+                type: 'crown',
+                rarity: 'legendary',
+                unlockedAt: new Date().toISOString(),
+                equipped: false,
+              },
+            ]
+          : []),
       ];
-      
+
       setAvailableAccessories(accessories);
     }
   }, [pet]);
 
   if (!hasPet || !pet) return null;
 
-  const equippedAccessories = pet.accessories.filter(a => a.equipped);
+  const equippedAccessories = pet.accessories.filter((a) => a.equipped);
 
   return (
     <motion.div
@@ -83,10 +153,7 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
             <h2 className="text-3xl font-bold text-white mb-2">Customize {pet.name}</h2>
             <p className="text-ghost-400">Make your companion uniquely yours!</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-3 hover:bg-white/10 rounded-xl transition-colors"
-          >
+          <button onClick={onClose} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <X className="w-6 h-6 text-ghost-400" />
           </button>
         </div>
@@ -102,14 +169,17 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                   Lv.{pet.stats.level} {pet.evolutionStage} {pet.baseType}
                 </p>
               </div>
-              
+
               {/* Equipped Accessories */}
               {equippedAccessories.length > 0 && (
                 <div className="mt-6 w-full">
                   <p className="text-sm text-ghost-400 mb-3">Equipped:</p>
                   <div className="space-y-2">
-                    {equippedAccessories.map(acc => (
-                      <div key={acc.id} className="bg-void-black/50 rounded-lg p-2 text-sm text-white">
+                    {equippedAccessories.map((acc) => (
+                      <div
+                        key={acc.id}
+                        className="bg-void-black/50 rounded-lg p-2 text-sm text-white"
+                      >
                         {acc.name}
                       </div>
                     ))}
@@ -161,8 +231,10 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
             {/* Accessories */}
             {selectedCategory === 'accessories' && (
               <div className="grid grid-cols-2 gap-4">
-                {availableAccessories.map(accessory => {
-                  const isEquipped = pet.accessories.some(a => a.id === accessory.id && a.equipped);
+                {availableAccessories.map((accessory) => {
+                  const isEquipped = pet.accessories.some(
+                    (a) => a.id === accessory.id && a.equipped
+                  );
                   const rarityColors = {
                     common: 'border-gray-500 bg-gray-500/20',
                     rare: 'border-blue-500 bg-blue-500/20',
@@ -187,7 +259,9 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                         <span className="font-semibold text-white">{accessory.name}</span>
                         {isEquipped && <Star className="w-5 h-5 text-amber-400 fill-amber-400" />}
                       </div>
-                      <p className="text-xs text-ghost-400 capitalize mb-2">{accessory.type} • {accessory.rarity}</p>
+                      <p className="text-xs text-ghost-400 capitalize mb-2">
+                        {accessory.type} • {accessory.rarity}
+                      </p>
                       {accessory.rarity === 'legendary' && (
                         <div className="flex items-center gap-1 text-xs text-amber-400">
                           <Gift className="w-3 h-3" />
@@ -206,7 +280,16 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                 <div>
                   <label className="block text-white font-semibold mb-3">Primary Color</label>
                   <div className="grid grid-cols-8 gap-3">
-                    {['#ff6b35', '#00b4d8', '#606c38', '#caf0f8', '#ffd60a', '#a2d2ff', '#80b918', '#7b2cbf'].map(color => (
+                    {[
+                      '#ff6b35',
+                      '#00b4d8',
+                      '#606c38',
+                      '#caf0f8',
+                      '#ffd60a',
+                      '#a2d2ff',
+                      '#80b918',
+                      '#7b2cbf',
+                    ].map((color) => (
                       <button
                         key={color}
                         className="w-12 h-12 rounded-xl border-2 border-white/20 hover:border-white/50 transition-all"
@@ -222,7 +305,16 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                 <div>
                   <label className="block text-white font-semibold mb-3">Secondary Color</label>
                   <div className="grid grid-cols-8 gap-3">
-                    {['#f7c59f', '#90e0ef', '#dda15e', '#90e0ef', '#ffc300', '#bde0fe', '#d4e09b', '#9d4edd'].map(color => (
+                    {[
+                      '#f7c59f',
+                      '#90e0ef',
+                      '#dda15e',
+                      '#90e0ef',
+                      '#ffc300',
+                      '#bde0fe',
+                      '#d4e09b',
+                      '#9d4edd',
+                    ].map((color) => (
                       <button
                         key={color}
                         className="w-12 h-12 rounded-xl border-2 border-white/20 hover:border-white/50 transition-all"
@@ -245,7 +337,7 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                   { name: 'Sparkles', icon: Sparkles, unlocked: true },
                   { name: 'Rainbow Aura', icon: Wand2, unlocked: pet.stats.level >= 5 },
                   { name: 'Cosmic Glow', icon: Star, unlocked: pet.stats.level >= 10 },
-                ].map(effect => (
+                ].map((effect) => (
                   <motion.div
                     key={effect.name}
                     whileHover={{ scale: 1.05 }}
@@ -258,7 +350,9 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
                     <effect.icon className="w-8 h-8 text-white mb-2" />
                     <p className="font-semibold text-white">{effect.name}</p>
                     {!effect.unlocked && (
-                      <p className="text-xs text-ghost-400 mt-1">Unlock at level {effect.name === 'Rainbow Aura' ? 5 : 10}</p>
+                      <p className="text-xs text-ghost-400 mt-1">
+                        Unlock at level {effect.name === 'Rainbow Aura' ? 5 : 10}
+                      </p>
                     )}
                   </motion.div>
                 ))}
@@ -270,4 +364,3 @@ export default function PetCustomizationPanel({ onClose }: { onClose: () => void
     </motion.div>
   );
 }
-

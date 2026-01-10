@@ -91,10 +91,7 @@ export class MessagingService {
   /**
    * Get or create direct conversation
    */
-  async getOrCreateDirectConversation(
-    userId1: string,
-    userId2: string
-  ): Promise<Conversation> {
+  async getOrCreateDirectConversation(userId1: string, userId2: string): Promise<Conversation> {
     const { data, error } = await this.supabase.rpc('get_or_create_direct_conversation', {
       p_user1_id: userId1,
       p_user2_id: userId2,
@@ -259,11 +256,7 @@ export class MessagingService {
   /**
    * Mark messages as read
    */
-  async markMessagesRead(
-    conversationId: string,
-    userId: string,
-    messageId: string
-  ): Promise<void> {
+  async markMessagesRead(conversationId: string, userId: string, messageId: string): Promise<void> {
     const { error } = await this.supabase.rpc('mark_messages_read', {
       p_conversation_id: conversationId,
       p_user_id: userId,
@@ -315,22 +308,19 @@ export class MessagingService {
   /**
    * Set typing indicator
    */
-  async setTyping(
-    conversationId: string,
-    userId: string,
-    isTyping: boolean
-  ): Promise<void> {
+  async setTyping(conversationId: string, userId: string, isTyping: boolean): Promise<void> {
     if (isTyping) {
-      const { error } = await this.supabase
-        .from('typing_indicators')
-        .upsert({
+      const { error } = await this.supabase.from('typing_indicators').upsert(
+        {
           conversation_id: conversationId,
           user_id: userId,
           is_typing: true,
           started_at: new Date().toISOString(),
-        }, {
+        },
+        {
           onConflict: 'conversation_id,user_id',
-        });
+        }
+      );
 
       if (error) throw error;
     } else {
@@ -373,14 +363,17 @@ export class MessagingService {
   ): Promise<MessageReaction> {
     const { data, error } = await this.supabase
       .from('message_reactions')
-      .upsert({
-        message_id: messageId,
-        user_id: userId,
-        reaction_type: reactionType,
-        emoji,
-      }, {
-        onConflict: 'message_id,user_id,reaction_type',
-      })
+      .upsert(
+        {
+          message_id: messageId,
+          user_id: userId,
+          reaction_type: reactionType,
+          emoji,
+        },
+        {
+          onConflict: 'message_id,user_id,reaction_type',
+        }
+      )
       .select()
       .single();
 
@@ -498,4 +491,3 @@ export class MessagingService {
 }
 
 export const messagingService = new MessagingService();
-

@@ -21,7 +21,14 @@ const MOCK_CONVERSATIONS: Conversation[] = [
     lastMessageAt: new Date(Date.now() - 5 * 60000).toISOString(),
     isArchived: false,
     isMuted: false,
-    metadata: { otherUser: { username: 'darkstoryteller', displayName: 'Alexandra Chen', avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg', isOnline: true } },
+    metadata: {
+      otherUser: {
+        username: 'darkstoryteller',
+        displayName: 'Alexandra Chen',
+        avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+        isOnline: true,
+      },
+    },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -33,7 +40,14 @@ const MOCK_CONVERSATIONS: Conversation[] = [
     lastMessageAt: new Date(Date.now() - 30 * 60000).toISOString(),
     isArchived: false,
     isMuted: false,
-    metadata: { otherUser: { username: 'scifiexplorer', displayName: 'Marcus Rodriguez', avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg', isOnline: false } },
+    metadata: {
+      otherUser: {
+        username: 'scifiexplorer',
+        displayName: 'Marcus Rodriguez',
+        avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+        isOnline: false,
+      },
+    },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
@@ -67,22 +81,178 @@ const MOCK_CONVERSATIONS: Conversation[] = [
 
 const MOCK_MESSAGES: Record<string, Message[]> = {
   '1': [
-    { id: 'm1', conversationId: '1', senderId: 'user2', content: 'Hey! Have you started reading The Midnight Carnival yet?', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user1'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 3600000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm2', conversationId: '1', senderId: 'user1', content: 'Yes! I\'m on chapter 5 and it\'s getting intense 😱', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user2'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 3500000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm3', conversationId: '1', senderId: 'user2', content: 'Wait until you get to the twist in chapter 8! Don\'t want to spoil it but 🤯', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user1'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 3400000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm4', conversationId: '1', senderId: 'user1', content: 'Now I\'m scared and excited at the same time lol', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user2'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 3300000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm5', conversationId: '1', senderId: 'user2', content: 'Hey! Did you finish reading The Midnight Carnival?', messageType: 'text', isEdited: false, isDeleted: false, readBy: [], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 5 * 60000).toISOString(), updatedAt: new Date().toISOString() },
+    {
+      id: 'm1',
+      conversationId: '1',
+      senderId: 'user2',
+      content: 'Hey! Have you started reading The Midnight Carnival yet?',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user1'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm2',
+      conversationId: '1',
+      senderId: 'user1',
+      content: "Yes! I'm on chapter 5 and it's getting intense 😱",
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user2'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 3500000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm3',
+      conversationId: '1',
+      senderId: 'user2',
+      content: "Wait until you get to the twist in chapter 8! Don't want to spoil it but 🤯",
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user1'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 3400000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm4',
+      conversationId: '1',
+      senderId: 'user1',
+      content: "Now I'm scared and excited at the same time lol",
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user2'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 3300000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm5',
+      conversationId: '1',
+      senderId: 'user2',
+      content: 'Hey! Did you finish reading The Midnight Carnival?',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: [],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 5 * 60000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   ],
   '2': [
-    { id: 'm6', conversationId: '2', senderId: 'user3', content: 'Just finished Echoes of Tomorrow!', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user1'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 7200000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm7', conversationId: '2', senderId: 'user1', content: 'How was it? I\'ve been meaning to read that one', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user3'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 7100000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm8', conversationId: '2', senderId: 'user3', content: 'The ending of that story was incredible!', messageType: 'text', isEdited: false, isDeleted: false, readBy: [], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 30 * 60000).toISOString(), updatedAt: new Date().toISOString() },
+    {
+      id: 'm6',
+      conversationId: '2',
+      senderId: 'user3',
+      content: 'Just finished Echoes of Tomorrow!',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user1'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 7200000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm7',
+      conversationId: '2',
+      senderId: 'user1',
+      content: "How was it? I've been meaning to read that one",
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user3'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 7100000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm8',
+      conversationId: '2',
+      senderId: 'user3',
+      content: 'The ending of that story was incredible!',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: [],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 30 * 60000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   ],
   '3': [
-    { id: 'm9', conversationId: '3', senderId: 'user4', content: 'What story should we read next?', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user1', 'user2', 'user3'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 86400000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm10', conversationId: '3', senderId: 'user2', content: 'I vote for Whispers in the Dark!', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user1', 'user3', 'user4'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 85000000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm11', conversationId: '3', senderId: 'user1', content: 'Sounds good to me! When should we start?', messageType: 'text', isEdited: false, isDeleted: false, readBy: ['user2', 'user3', 'user4'], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 84000000).toISOString(), updatedAt: new Date().toISOString() },
-    { id: 'm12', conversationId: '3', senderId: 'user3', content: 'Meeting tomorrow at 8pm for the discussion!', messageType: 'text', isEdited: false, isDeleted: false, readBy: [], readAt: [], metadata: {}, createdAt: new Date(Date.now() - 2 * 3600000).toISOString(), updatedAt: new Date().toISOString() },
+    {
+      id: 'm9',
+      conversationId: '3',
+      senderId: 'user4',
+      content: 'What story should we read next?',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user1', 'user2', 'user3'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm10',
+      conversationId: '3',
+      senderId: 'user2',
+      content: 'I vote for Whispers in the Dark!',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user1', 'user3', 'user4'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 85000000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm11',
+      conversationId: '3',
+      senderId: 'user1',
+      content: 'Sounds good to me! When should we start?',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: ['user2', 'user3', 'user4'],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 84000000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'm12',
+      conversationId: '3',
+      senderId: 'user3',
+      content: 'Meeting tomorrow at 8pm for the discussion!',
+      messageType: 'text',
+      isEdited: false,
+      isDeleted: false,
+      readBy: [],
+      readAt: [],
+      metadata: {},
+      createdAt: new Date(Date.now() - 2 * 3600000).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
   ],
 };
 
@@ -179,11 +349,12 @@ export default function MessagesPage() {
     return date.toLocaleDateString();
   };
 
-  const filteredConversations = conversations.filter(conv => {
+  const filteredConversations = conversations.filter((conv) => {
     if (!searchQuery) return true;
-    const name = conv.conversationType === 'group' 
-      ? conv.conversationName 
-      : conv.metadata?.otherUser?.displayName;
+    const name =
+      conv.conversationType === 'group'
+        ? conv.conversationName
+        : conv.metadata?.otherUser?.displayName;
     return name?.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -222,7 +393,11 @@ export default function MessagesPage() {
                 <div className="p-4 border-b border-void-border">
                   <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-bold text-aurora flex items-center">
-                      <Icon name="MessageCircleIcon" className="mr-3 text-spectral-cyan" size={24} />
+                      <Icon
+                        name="MessageCircleIcon"
+                        className="mr-3 text-spectral-cyan"
+                        size={24}
+                      />
                       Messages
                     </h1>
                     <SpectralButton
@@ -233,10 +408,14 @@ export default function MessagesPage() {
                       <Icon name="PlusIcon" size={18} />
                     </SpectralButton>
                   </div>
-                  
+
                   {/* Search */}
                   <div className="relative">
-                    <Icon name="SearchIcon" className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+                    <Icon
+                      name="SearchIcon"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                      size={18}
+                    />
                     <input
                       type="text"
                       value={searchQuery}
@@ -252,8 +431,12 @@ export default function MessagesPage() {
                   <AnimatePresence>
                     {filteredConversations.map((conv, index) => {
                       const isGroup = conv.conversationType === 'group';
-                      const name = isGroup ? conv.conversationName : conv.metadata?.otherUser?.displayName;
-                      const avatar = isGroup ? conv.metadata?.groupAvatar : conv.metadata?.otherUser?.avatar;
+                      const name = isGroup
+                        ? conv.conversationName
+                        : conv.metadata?.otherUser?.displayName;
+                      const avatar = isGroup
+                        ? conv.metadata?.groupAvatar
+                        : conv.metadata?.otherUser?.avatar;
                       const isOnline = !isGroup && conv.metadata?.otherUser?.isOnline;
 
                       return (
@@ -295,15 +478,23 @@ export default function MessagesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
                                 <h3 className="font-medium text-text-primary truncate">{name}</h3>
-                                <span className="text-xs text-text-secondary">{formatTime(conv.lastMessageAt || '')}</span>
+                                <span className="text-xs text-text-secondary">
+                                  {formatTime(conv.lastMessageAt || '')}
+                                </span>
                               </div>
                               <p className="text-sm text-text-secondary truncate mt-1">
                                 {conv.lastMessagePreview}
                               </p>
                               {isGroup && (
                                 <div className="flex items-center gap-1 mt-1">
-                                  <Icon name="UsersIcon" className="text-text-secondary" size={12} />
-                                  <span className="text-xs text-text-secondary">{conv.metadata?.memberCount} members</span>
+                                  <Icon
+                                    name="UsersIcon"
+                                    className="text-text-secondary"
+                                    size={12}
+                                  />
+                                  <span className="text-xs text-text-secondary">
+                                    {conv.metadata?.memberCount} members
+                                  </span>
                                 </div>
                               )}
                             </div>
@@ -353,7 +544,7 @@ export default function MessagesPage() {
                       >
                         <Icon name="ArrowLeftIcon" size={20} />
                       </button>
-                      
+
                       {selectedConversation.conversationType === 'group' ? (
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl">
                           {selectedConversation.metadata?.groupAvatar}
@@ -370,7 +561,7 @@ export default function MessagesPage() {
                           )}
                         </div>
                       )}
-                      
+
                       <div>
                         <h2 className="font-semibold text-aurora">
                           {selectedConversation.conversationType === 'group'
@@ -404,7 +595,9 @@ export default function MessagesPage() {
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.map((message, index) => {
                       const isOwn = message.senderId === 'user1';
-                      const showAvatar = !isOwn && (index === 0 || messages[index - 1]?.senderId !== message.senderId);
+                      const showAvatar =
+                        !isOwn &&
+                        (index === 0 || messages[index - 1]?.senderId !== message.senderId);
 
                       return (
                         <motion.div
@@ -413,28 +606,39 @@ export default function MessagesPage() {
                           animate={{ opacity: 1, y: 0 }}
                           className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className={`flex items-end gap-2 max-w-[70%] ${isOwn ? 'flex-row-reverse' : ''}`}>
-                            {!isOwn && showAvatar && selectedConversation.conversationType === 'group' && (
-                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
-                            )}
-                            
+                          <div
+                            className={`flex items-end gap-2 max-w-[70%] ${isOwn ? 'flex-row-reverse' : ''}`}
+                          >
+                            {!isOwn &&
+                              showAvatar &&
+                              selectedConversation.conversationType === 'group' && (
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0" />
+                              )}
+
                             <div
                               className={`
                                 relative group px-4 py-2 rounded-2xl
-                                ${isOwn
-                                  ? 'bg-gradient-to-r from-spectral-cyan to-purple-500 text-void-900'
-                                  : 'bg-void-100/50 text-text-primary border border-void-border'
+                                ${
+                                  isOwn
+                                    ? 'bg-gradient-to-r from-spectral-cyan to-purple-500 text-void-900'
+                                    : 'bg-void-100/50 text-text-primary border border-void-border'
                                 }
                               `}
                             >
                               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                              <p className={`text-xs mt-1 ${isOwn ? 'text-void-900/70' : 'text-text-secondary'}`}>
+                              <p
+                                className={`text-xs mt-1 ${isOwn ? 'text-void-900/70' : 'text-text-secondary'}`}
+                              >
                                 {formatTime(message.createdAt)}
                               </p>
 
                               {/* Reaction Button */}
                               <button
-                                onClick={() => setShowEmojiPicker(showEmojiPicker === message.id ? null : message.id)}
+                                onClick={() =>
+                                  setShowEmojiPicker(
+                                    showEmojiPicker === message.id ? null : message.id
+                                  )
+                                }
                                 className={`
                                   absolute -bottom-2 ${isOwn ? 'left-2' : 'right-2'}
                                   opacity-0 group-hover:opacity-100 transition-opacity
@@ -456,7 +660,7 @@ export default function MessagesPage() {
                                       flex gap-1 p-2 bg-void-100/90 backdrop-blur-md rounded-full border border-void-border
                                     `}
                                   >
-                                    {REACTION_EMOJIS.map(emoji => (
+                                    {REACTION_EMOJIS.map((emoji) => (
                                       <button
                                         key={emoji}
                                         onClick={() => setShowEmojiPicker(null)}
@@ -512,7 +716,7 @@ export default function MessagesPage() {
                       <button className="p-2 hover:bg-void-100/50 rounded-lg transition-colors">
                         <Icon name="PlusCircleIcon" className="text-spectral-cyan" size={24} />
                       </button>
-                      
+
                       <div className="flex-1 relative">
                         <input
                           ref={inputRef}
@@ -524,7 +728,11 @@ export default function MessagesPage() {
                           className="w-full px-4 py-3 bg-void-100/50 border border-void-border rounded-xl text-text-primary placeholder-text-secondary focus:outline-none focus:border-spectral-cyan"
                         />
                         <button className="absolute right-3 top-1/2 -translate-y-1/2">
-                          <Icon name="SmileIcon" className="text-text-secondary hover:text-spectral-cyan transition-colors" size={20} />
+                          <Icon
+                            name="SmileIcon"
+                            className="text-text-secondary hover:text-spectral-cyan transition-colors"
+                            size={20}
+                          />
                         </button>
                       </div>
 
@@ -593,7 +801,11 @@ export default function MessagesPage() {
                     <div>
                       <label className="block text-sm text-text-secondary mb-2">Search Users</label>
                       <div className="relative">
-                        <Icon name="SearchIcon" className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
+                        <Icon
+                          name="SearchIcon"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"
+                          size={18}
+                        />
                         <input
                           type="text"
                           placeholder="Search by username..."
@@ -613,9 +825,15 @@ export default function MessagesPage() {
                             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-spectral-cyan to-purple-500" />
                             <div className="flex-1 text-left">
                               <p className="font-medium text-text-primary">{name}</p>
-                              <p className="text-xs text-text-secondary">@{name.toLowerCase().replace(' ', '')}</p>
+                              <p className="text-xs text-text-secondary">
+                                @{name.toLowerCase().replace(' ', '')}
+                              </p>
                             </div>
-                            <Icon name="MessageCircleIcon" className="text-spectral-cyan" size={18} />
+                            <Icon
+                              name="MessageCircleIcon"
+                              className="text-spectral-cyan"
+                              size={18}
+                            />
                           </button>
                         ))}
                       </div>

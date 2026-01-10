@@ -12,9 +12,7 @@ import {
 } from '@/lib/validation/schemas';
 
 // Type guard for validation failure
-function isValidationFailure<T>(
-  result: ValidationResult<T>
-): result is ValidationFailure {
+function isValidationFailure<T>(result: ValidationResult<T>): result is ValidationFailure {
   return result.success === false;
 }
 
@@ -33,7 +31,9 @@ interface UseFormReturn<T> {
   isSubmitting: boolean;
   isValid: boolean;
   isDirty: boolean;
-  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  handleChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => void;
   handleBlur: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   handleSubmit: (e: FormEvent) => Promise<void>;
   setFieldValue: (field: keyof T, value: T[keyof T]) => void;
@@ -85,9 +85,7 @@ export function useForm<T extends Record<string, unknown>>({
       const result = validator.safeParse(testValues);
 
       if (isValidationFailure(result)) {
-        const fieldError = result.errors.find(
-          (err: ValidationError) => err.path[0] === field
-        );
+        const fieldError = result.errors.find((err: ValidationError) => err.path[0] === field);
         return fieldError?.message || null;
       }
 
@@ -204,10 +202,7 @@ export function useForm<T extends Record<string, unknown>>({
 /**
  * Helper hook for field-level form state
  */
-export function useField<T>(
-  form: UseFormReturn<T>,
-  name: keyof T & string
-) {
+export function useField<T>(form: UseFormReturn<T>, name: keyof T & string) {
   return {
     value: form.values[name],
     error: form.errors[name],

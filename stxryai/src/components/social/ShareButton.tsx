@@ -68,9 +68,7 @@ export default function ShareButton({
   }, [user, shareCardData, showShareCard]);
 
   // Add referral code to URL if available
-  const shareUrl = referralCode
-    ? `${url}${url.includes('?') ? '&' : '?'}ref=${referralCode}`
-    : url;
+  const shareUrl = referralCode ? `${url}${url.includes('?') ? '&' : '?'}ref=${referralCode}` : url;
 
   const shareLinks = {
     twitter: () => {
@@ -105,13 +103,7 @@ export default function ShareButton({
   const handleShare = async (platformId: string) => {
     // Track share
     if (user) {
-      await referralService.trackShare(
-        user.id,
-        storyId || null,
-        platformId,
-        shareType,
-        shareUrl
-      );
+      await referralService.trackShare(user.id, storyId || null, platformId, shareType, shareUrl);
     }
 
     const link = shareLinks[platformId as keyof typeof shareLinks]();
@@ -124,7 +116,7 @@ export default function ShareButton({
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      
+
       // Track share
       if (user) {
         await referralService.trackShare(
@@ -150,18 +142,12 @@ export default function ShareButton({
           title,
           text: description,
           url: shareUrl,
-          ...(shareCardUrl && { files: [await fetch(shareCardUrl).then(r => r.blob())] }),
+          ...(shareCardUrl && { files: [await fetch(shareCardUrl).then((r) => r.blob())] }),
         });
 
         // Track share
         if (user) {
-          await referralService.trackShare(
-            user.id,
-            storyId || null,
-            'native',
-            shareType,
-            shareUrl
-          );
+          await referralService.trackShare(user.id, storyId || null, 'native', shareType, shareUrl);
         }
 
         onShare?.('native');
@@ -176,10 +162,7 @@ export default function ShareButton({
     if (!shareCardData) return;
 
     try {
-      await shareCardService.downloadShareCard(
-        shareCardData,
-        `stxryai-share-${Date.now()}.png`
-      );
+      await shareCardService.downloadShareCard(shareCardData, `stxryai-share-${Date.now()}.png`);
       toast.success('Share card downloaded!');
     } catch (error) {
       console.error('Failed to download share card:', error);
@@ -329,7 +312,8 @@ export default function ShareButton({
                 </div>
                 {referralCode && (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Your referral code: <code className="bg-muted px-1.5 py-0.5 rounded">{referralCode}</code>
+                    Your referral code:{' '}
+                    <code className="bg-muted px-1.5 py-0.5 rounded">{referralCode}</code>
                   </p>
                 )}
               </div>

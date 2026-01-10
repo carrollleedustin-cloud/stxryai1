@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Globe, 
-  Users, 
-  Clock, 
-  ChevronUp, 
+import {
+  Globe,
+  Users,
+  Clock,
+  ChevronUp,
   ChevronDown,
   Send,
   Sparkles,
@@ -15,10 +15,10 @@ import {
   Check,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  globalStoryService, 
-  GlobalStory, 
-  GlobalStoryChapter, 
+import {
+  globalStoryService,
+  GlobalStory,
+  GlobalStoryChapter,
   GlobalStoryAction,
   UserCooldownStatus,
 } from '@/services/globalStoryService';
@@ -83,9 +83,10 @@ export default function GlobalStoryReader() {
   const handleSubmitAction = async () => {
     if (!story || !currentChapter || !user || !cooldownStatus?.canAct) return;
 
-    const actionText = actionMode === 'preset' 
-      ? currentChapter.aiGeneratedChoices[selectedChoice!]?.text 
-      : customAction;
+    const actionText =
+      actionMode === 'preset'
+        ? currentChapter.aiGeneratedChoices[selectedChoice!]?.text
+        : customAction;
 
     if (!actionText?.trim()) return;
 
@@ -128,10 +129,10 @@ export default function GlobalStoryReader() {
   const getTimeRemaining = (endTime: string) => {
     const diff = new Date(endTime).getTime() - Date.now();
     if (diff <= 0) return 'Voting ended';
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) return `${hours}h ${minutes}m remaining`;
     return `${minutes}m remaining`;
   };
@@ -181,9 +182,7 @@ export default function GlobalStoryReader() {
         <div className="prose prose-invert max-w-none">
           {chapters.map((chapter) => (
             <div key={chapter.id} className="mb-8">
-              <h3 className="text-lg font-semibold text-purple-400 mb-2">
-                {chapter.title}
-              </h3>
+              <h3 className="text-lg font-semibold text-purple-400 mb-2">{chapter.title}</h3>
               <p className="whitespace-pre-wrap text-gray-300">{chapter.content}</p>
               {chapter.winningActionText && (
                 <div className="mt-4 pl-4 border-l-2 border-green-500 text-green-400 italic">
@@ -225,8 +224,8 @@ export default function GlobalStoryReader() {
                 <button
                   onClick={() => setActionMode('preset')}
                   className={`flex-1 py-2 rounded-lg transition-colors ${
-                    actionMode === 'preset' 
-                      ? 'bg-purple-600 text-white' 
+                    actionMode === 'preset'
+                      ? 'bg-purple-600 text-white'
                       : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                   }`}
                 >
@@ -235,8 +234,8 @@ export default function GlobalStoryReader() {
                 <button
                   onClick={() => setActionMode('custom')}
                   className={`flex-1 py-2 rounded-lg transition-colors ${
-                    actionMode === 'custom' 
-                      ? 'bg-purple-600 text-white' 
+                    actionMode === 'custom'
+                      ? 'bg-purple-600 text-white'
                       : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                   }`}
                 >
@@ -274,7 +273,10 @@ export default function GlobalStoryReader() {
 
               <button
                 onClick={handleSubmitAction}
-                disabled={submitting || (actionMode === 'preset' ? selectedChoice === null : !customAction.trim())}
+                disabled={
+                  submitting ||
+                  (actionMode === 'preset' ? selectedChoice === null : !customAction.trim())
+                }
                 className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? (
@@ -319,9 +321,13 @@ export default function GlobalStoryReader() {
                 >
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm text-gray-400">@{action.username || 'Anonymous'}</span>
+                      <span className="text-sm text-gray-400">
+                        @{action.username || 'Anonymous'}
+                      </span>
                       {action.actionType === 'custom_write' && (
-                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">Custom</span>
+                        <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">
+                          Custom
+                        </span>
                       )}
                       {action.isSelected && (
                         <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded flex items-center gap-1">
@@ -360,11 +366,10 @@ export default function GlobalStoryReader() {
       {/* Info */}
       <div className="bg-gray-800/30 rounded-xl p-4 text-center text-sm text-gray-400">
         <p>
-          Everyone gets <strong className="text-purple-400">one action every 24 hours</strong>.
-          The most voted action shapes the story!
+          Everyone gets <strong className="text-purple-400">one action every 24 hours</strong>. The
+          most voted action shapes the story!
         </p>
       </div>
     </div>
   );
 }
-

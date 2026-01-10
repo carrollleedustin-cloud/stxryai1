@@ -154,20 +154,23 @@ export function useAsyncData<T>(
     await fetchData(true);
   }, [fetchData]);
 
-  const mutate = useCallback((dataOrUpdater: T | ((prev: T | null) => T)) => {
-    setState((prev) => {
-      const newData =
-        typeof dataOrUpdater === 'function'
-          ? (dataOrUpdater as (prev: T | null) => T)(prev.data)
-          : dataOrUpdater;
+  const mutate = useCallback(
+    (dataOrUpdater: T | ((prev: T | null) => T)) => {
+      setState((prev) => {
+        const newData =
+          typeof dataOrUpdater === 'function'
+            ? (dataOrUpdater as (prev: T | null) => T)(prev.data)
+            : dataOrUpdater;
 
-      if (cacheKey) {
-        setCache(cacheKey, newData);
-      }
+        if (cacheKey) {
+          setCache(cacheKey, newData);
+        }
 
-      return { ...prev, data: newData };
-    });
-  }, [cacheKey]);
+        return { ...prev, data: newData };
+      });
+    },
+    [cacheKey]
+  );
 
   const reset = useCallback(() => {
     if (cacheKey) {

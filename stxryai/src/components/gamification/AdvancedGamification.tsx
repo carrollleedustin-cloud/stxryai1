@@ -59,7 +59,9 @@ export function AdvancedGamification({
   onTournamentJoin,
   onQuestClaim,
 }: AdvancedGamificationProps) {
-  const [activeTab, setActiveTab] = useState<'badges' | 'tournaments' | 'quests' | 'bingo'>('badges');
+  const [activeTab, setActiveTab] = useState<'badges' | 'tournaments' | 'quests' | 'bingo'>(
+    'badges'
+  );
 
   // Mock data - replace with actual API calls
   const badges: Badge[] = [];
@@ -178,7 +180,9 @@ export function AdvancedGamification({
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1">
                       <Icon name="UsersIcon" size={16} />
-                      <span className="text-muted-foreground">{tournament.participants} participants</span>
+                      <span className="text-muted-foreground">
+                        {tournament.participants} participants
+                      </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Icon name="TrophyIcon" size={16} className="text-yellow-500" />
@@ -276,7 +280,9 @@ export function AdvancedGamification({
                     {quest.reward.energy && (
                       <div className="flex items-center gap-1">
                         <Icon name="BoltIcon" size={16} className="text-yellow-500" />
-                        <span className="font-medium text-foreground">+{quest.reward.energy} Energy</span>
+                        <span className="font-medium text-foreground">
+                          +{quest.reward.energy} Energy
+                        </span>
                       </div>
                     )}
                   </div>
@@ -328,10 +334,10 @@ function BingoCard({ userId }: { userId: string }) {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div 
+      <div
         className="grid gap-2"
-        style={{ 
-          gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` 
+        style={{
+          gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
         }}
       >
         {board.tiles.map((tile, index) => {
@@ -346,12 +352,14 @@ function BingoCard({ userId }: { userId: string }) {
               }`}
             >
               <div className="z-10">{tile.label}</div>
-              <div className={`z-10 text-[10px] mt-1 opacity-80 ${tile.completed ? 'hidden' : 'block'}`}>
+              <div
+                className={`z-10 text-[10px] mt-1 opacity-80 ${tile.completed ? 'hidden' : 'block'}`}
+              >
                 {tile.current} / {tile.target}
               </div>
-              
+
               {!tile.completed && (
-                <div 
+                <div
                   className="absolute bottom-0 left-0 h-1 bg-primary/30 transition-all duration-500"
                   style={{ width: `${(tile.current / tile.target) * 100}%` }}
                 />
@@ -374,7 +382,9 @@ function BingoCard({ userId }: { userId: string }) {
       <div className="mt-8 p-4 bg-primary/5 border border-primary/10 rounded-xl flex items-center justify-between">
         <div>
           <h4 className="font-bold text-foreground">Bingo Bonus</h4>
-          <p className="text-sm text-muted-foreground">Complete any row, column, or diagonal for 500 bonus XP!</p>
+          <p className="text-sm text-muted-foreground">
+            Complete any row, column, or diagonal for 500 bonus XP!
+          </p>
         </div>
         <div className="flex flex-col items-end">
           <div className="text-2xl font-black text-primary">500 XP</div>
@@ -392,4 +402,3 @@ function BingoCard({ userId }: { userId: string }) {
     </div>
   );
 }
-

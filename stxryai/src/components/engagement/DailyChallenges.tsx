@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  dailyChallengeService, 
-  ChallengeProgress, 
-  ChallengeDifficulty 
+import {
+  dailyChallengeService,
+  ChallengeProgress,
+  ChallengeDifficulty,
 } from '@/services/dailyChallengeService';
 
 // ========================================
@@ -23,30 +23,33 @@ interface DailyChallengesProps {
 // DIFFICULTY CONFIG
 // ========================================
 
-const DIFFICULTY_CONFIG: Record<ChallengeDifficulty, { color: string; bgColor: string; borderColor: string; label: string }> = {
-  easy: { 
-    color: 'text-green-400', 
-    bgColor: 'bg-green-500/10', 
+const DIFFICULTY_CONFIG: Record<
+  ChallengeDifficulty,
+  { color: string; bgColor: string; borderColor: string; label: string }
+> = {
+  easy: {
+    color: 'text-green-400',
+    bgColor: 'bg-green-500/10',
     borderColor: 'border-green-500/30',
-    label: 'Easy'
+    label: 'Easy',
   },
-  medium: { 
-    color: 'text-blue-400', 
-    bgColor: 'bg-blue-500/10', 
+  medium: {
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30',
-    label: 'Medium'
+    label: 'Medium',
   },
-  hard: { 
-    color: 'text-purple-400', 
-    bgColor: 'bg-purple-500/10', 
+  hard: {
+    color: 'text-purple-400',
+    bgColor: 'bg-purple-500/10',
     borderColor: 'border-purple-500/30',
-    label: 'Hard'
+    label: 'Hard',
   },
-  legendary: { 
-    color: 'text-yellow-400', 
-    bgColor: 'bg-yellow-500/10', 
+  legendary: {
+    color: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/10',
     borderColor: 'border-yellow-500/30',
-    label: 'Legendary'
+    label: 'Legendary',
   },
 };
 
@@ -73,7 +76,7 @@ export function DailyChallenges({
         setLoading(true);
         const data = await dailyChallengeService.getUserChallengeProgress(user.id);
         setChallenges(data);
-        
+
         if (data.length > 0) {
           setTimeRemaining(data[0].timeRemaining);
         }
@@ -108,15 +111,17 @@ export function DailyChallenges({
     try {
       setClaiming(challengeId);
       const result = await dailyChallengeService.claimReward(user.id, challengeId);
-      
+
       if (result.success) {
         // Update local state
-        setChallenges(prev => prev.map(c => 
-          c.challenge.id === challengeId 
-            ? { ...c, userProgress: { ...c.userProgress, rewardClaimed: true } }
-            : c
-        ));
-        
+        setChallenges((prev) =>
+          prev.map((c) =>
+            c.challenge.id === challengeId
+              ? { ...c, userProgress: { ...c.userProgress, rewardClaimed: true } }
+              : c
+          )
+        );
+
         onChallengeComplete?.(challengeId, result.xpAwarded);
       }
     } catch (error) {
@@ -128,11 +133,13 @@ export function DailyChallenges({
 
   if (!user) return null;
 
-  const completedCount = challenges.filter(c => c.userProgress.completed).length;
-  const claimedCount = challenges.filter(c => c.userProgress.rewardClaimed).length;
+  const completedCount = challenges.filter((c) => c.userProgress.completed).length;
+  const claimedCount = challenges.filter((c) => c.userProgress.rewardClaimed).length;
 
   return (
-    <div className={`rounded-xl bg-void-900/50 border border-void-800 overflow-hidden ${className}`}>
+    <div
+      className={`rounded-xl bg-void-900/50 border border-void-800 overflow-hidden ${className}`}
+    >
       {/* Header */}
       <div className="px-4 py-3 border-b border-void-800">
         <div className="flex items-center justify-between">
@@ -149,7 +156,7 @@ export function DailyChallenges({
             </span>
           </div>
         </div>
-        
+
         {/* Progress bar */}
         <div className="mt-3 h-2 bg-void-800 rounded-full overflow-hidden">
           <motion.div
@@ -197,23 +204,25 @@ export function DailyChallenges({
       </div>
 
       {/* All completed bonus */}
-      {completedCount === challenges.length && challenges.length > 0 && claimedCount < challenges.length && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="m-2 p-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🎊</span>
-              <div>
-                <p className="font-medium text-yellow-400">All Challenges Complete!</p>
-                <p className="text-sm text-void-400">Claim all rewards for a bonus</p>
+      {completedCount === challenges.length &&
+        challenges.length > 0 &&
+        claimedCount < challenges.length && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="m-2 p-3 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🎊</span>
+                <div>
+                  <p className="font-medium text-yellow-400">All Challenges Complete!</p>
+                  <p className="text-sm text-void-400">Claim all rewards for a bonus</p>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
     </div>
   );
 }
@@ -243,25 +252,29 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
       transition={{ delay: index * 0.1 }}
       className={`
         p-3 rounded-lg border transition-all
-        ${isCompleted 
-          ? isClaimed 
-            ? 'bg-void-800/30 border-void-700/50 opacity-60'
-            : 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
-          : `${config.bgColor} ${config.borderColor}`
+        ${
+          isCompleted
+            ? isClaimed
+              ? 'bg-void-800/30 border-void-700/50 opacity-60'
+              : 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30'
+            : `${config.bgColor} ${config.borderColor}`
         }
       `}
     >
       <div className="flex items-start gap-3">
         {/* Icon/Status */}
-        <div className={`
+        <div
+          className={`
           flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-lg
-          ${isCompleted 
-            ? isClaimed 
-              ? 'bg-void-700 text-void-500' 
-              : 'bg-green-500/20 text-green-400'
-            : config.bgColor
+          ${
+            isCompleted
+              ? isClaimed
+                ? 'bg-void-700 text-void-500'
+                : 'bg-green-500/20 text-green-400'
+              : config.bgColor
           }
-        `}>
+        `}
+        >
           {isCompleted ? (isClaimed ? '✓' : '🏆') : '🎯'}
         </div>
 
@@ -272,18 +285,16 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
               <p className={`font-medium ${isCompleted ? 'text-void-300' : 'text-void-100'}`}>
                 {challenge.title}
               </p>
-              {!compact && (
-                <p className="text-sm text-void-400 mt-0.5">
-                  {challenge.description}
-                </p>
-              )}
+              {!compact && <p className="text-sm text-void-400 mt-0.5">{challenge.description}</p>}
             </div>
-            
+
             {/* Difficulty badge */}
-            <span className={`
+            <span
+              className={`
               px-2 py-0.5 rounded-full text-xs font-medium
               ${config.bgColor} ${config.color}
-            `}>
+            `}
+            >
               {config.label}
             </span>
           </div>
@@ -300,7 +311,7 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
               <div className="h-1.5 bg-void-700 rounded-full overflow-hidden">
                 <motion.div
                   className={`h-full rounded-full ${
-                    challenge.difficulty === 'legendary' 
+                    challenge.difficulty === 'legendary'
                       ? 'bg-gradient-to-r from-yellow-400 to-orange-400'
                       : challenge.difficulty === 'hard'
                         ? 'bg-gradient-to-r from-purple-400 to-pink-400'
@@ -322,10 +333,14 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
               <span className="text-xs text-spectral-cyan">+{challenge.xpReward} XP</span>
               {challenge.bonusReward && (
                 <span className="text-xs text-yellow-400">
-                  +{challenge.bonusReward.type === 'streak_freeze' ? '🧊 Freeze' : 
-                    challenge.bonusReward.type === 'energy' ? '⚡ Energy' :
-                    challenge.bonusReward.type === 'coins' ? '🪙 Coins' :
-                    '🏅 Badge'}
+                  +
+                  {challenge.bonusReward.type === 'streak_freeze'
+                    ? '🧊 Freeze'
+                    : challenge.bonusReward.type === 'energy'
+                      ? '⚡ Energy'
+                      : challenge.bonusReward.type === 'coins'
+                        ? '🪙 Coins'
+                        : '🏅 Badge'}
                 </span>
               )}
             </div>
@@ -341,8 +356,19 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
                 {claiming ? (
                   <span className="flex items-center gap-1">
                     <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
                     </svg>
                     Claiming...
                   </span>
@@ -352,9 +378,7 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
               </motion.button>
             )}
 
-            {isClaimed && (
-              <span className="text-xs text-void-500">Claimed ✓</span>
-            )}
+            {isClaimed && <span className="text-xs text-void-500">Claimed ✓</span>}
           </div>
         </div>
       </div>
@@ -363,4 +387,3 @@ function ChallengeCard({ progress, index, compact, claiming, onClaim }: Challeng
 }
 
 export default DailyChallenges;
-

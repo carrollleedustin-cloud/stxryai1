@@ -59,10 +59,7 @@ export interface ConversionFunnel {
 /**
  * Track custom event
  */
-export function trackEvent(
-  event: string,
-  properties?: Record<string, any>
-): void {
+export function trackEvent(event: string, properties?: Record<string, any>): void {
   if (typeof window === 'undefined') return;
 
   // PostHog
@@ -212,10 +209,7 @@ export function trackStoryCreation(
 /**
  * Track user signup
  */
-export function trackUserSignup(
-  userId: string,
-  method: 'email' | 'google' | 'github'
-): void {
+export function trackUserSignup(userId: string, method: 'email' | 'google' | 'github'): void {
   trackEvent('user_signup', {
     user_id: userId,
     method,
@@ -282,11 +276,7 @@ export function trackFeatureUsage(
 /**
  * Track funnel step
  */
-export function trackFunnelStep(
-  funnelName: string,
-  step: string,
-  stepNumber: number
-): void {
+export function trackFunnelStep(funnelName: string, step: string, stepNumber: number): void {
   trackEvent('funnel_step', {
     funnel: funnelName,
     step,
@@ -297,11 +287,7 @@ export function trackFunnelStep(
 /**
  * Track conversion
  */
-export function trackConversion(
-  funnelName: string,
-  value?: number,
-  currency?: string
-): void {
+export function trackConversion(funnelName: string, value?: number, currency?: string): void {
   trackEvent('conversion', {
     funnel: funnelName,
     value,
@@ -316,10 +302,7 @@ export function trackConversion(
 /**
  * Get A/B test variant
  */
-export function getABTestVariant(
-  testName: string,
-  variants: string[]
-): string {
+export function getABTestVariant(testName: string, variants: string[]): string {
   const userId = getUserId();
   const sessionId = getSessionId();
 
@@ -343,10 +326,7 @@ export function getABTestVariant(
 /**
  * Track A/B test exposure
  */
-export function trackABTestExposure(
-  testName: string,
-  variant: string
-): void {
+export function trackABTestExposure(testName: string, variant: string): void {
   trackEvent('ab_test_exposure', {
     test: testName,
     variant,
@@ -406,11 +386,7 @@ export function clearUserId(): void {
 /**
  * Track performance metric
  */
-export function trackPerformanceMetric(
-  metric: string,
-  value: number,
-  unit: string = 'ms'
-): void {
+export function trackPerformanceMetric(metric: string, value: number, unit: string = 'ms'): void {
   trackEvent('performance_metric', {
     metric,
     value,
@@ -462,10 +438,7 @@ export function trackCoreWebVitals(): void {
 /**
  * Track error
  */
-export function trackError(
-  error: Error,
-  context?: Record<string, any>
-): void {
+export function trackError(error: Error, context?: Record<string, any>): void {
   trackEvent('error', {
     message: error.message,
     stack: error.stack,
@@ -479,11 +452,7 @@ export function trackError(
 /**
  * Track API error
  */
-export function trackAPIError(
-  endpoint: string,
-  statusCode: number,
-  errorMessage: string
-): void {
+export function trackAPIError(endpoint: string, statusCode: number, errorMessage: string): void {
   trackEvent('api_error', {
     endpoint,
     status_code: statusCode,

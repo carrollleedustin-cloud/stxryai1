@@ -188,9 +188,9 @@ function AccountSettings({
       <div className="flex items-center space-x-4">
         <div className="relative">
           {profile?.avatar_url ? (
-            <img 
-              src={profile.avatar_url} 
-              alt={formData.display_name || 'Profile'} 
+            <img
+              src={profile.avatar_url}
+              alt={formData.display_name || 'Profile'}
               className="w-20 h-20 rounded-full object-cover border-2 border-purple-500"
             />
           ) : (
@@ -212,7 +212,7 @@ function AccountSettings({
             onChange={handleAvatarChange}
             className="hidden"
           />
-          <button 
+          <button
             onClick={handleAvatarClick}
             disabled={isUploadingAvatar}
             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
@@ -383,7 +383,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
       toast.error('Please log in to upgrade');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       const response = await fetch('/api/stripe/create-checkout', {
@@ -399,7 +399,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
       });
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -417,7 +417,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
 
   const handleManageSubscription = async () => {
     if (!userId) return;
-    
+
     setIsLoading(true);
     try {
       const response = await fetch('/api/stripe/portal', {
@@ -430,7 +430,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
       });
 
       const data = await response.json();
-      
+
       if (data.error) {
         throw new Error(data.error);
       }
@@ -493,13 +493,11 @@ function SubscriptionSettings({ profile }: { profile: any }) {
             </h3>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold text-purple-600">
-              {getTierPrice(tier)}
-            </p>
+            <p className="text-3xl font-bold text-purple-600">{getTierPrice(tier)}</p>
             <p className="text-sm text-gray-600 dark:text-gray-400">/month</p>
           </div>
         </div>
-        
+
         {isPaidTier && (
           <button
             onClick={handleManageSubscription}
@@ -533,14 +531,14 @@ function SubscriptionSettings({ profile }: { profile: any }) {
           <p className="font-medium text-gray-900 dark:text-white">Upgrade Your Plan</p>
           {tier === 'free' && (
             <>
-              <button 
+              <button
                 onClick={() => handleUpgrade('premium')}
                 disabled={isLoading}
                 className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
               >
                 {isLoading ? 'Loading...' : 'Upgrade to Premium - $7.14/month'}
               </button>
-              <button 
+              <button
                 onClick={() => handleUpgrade('pro')}
                 disabled={isLoading}
                 className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50"
@@ -550,7 +548,7 @@ function SubscriptionSettings({ profile }: { profile: any }) {
             </>
           )}
           {tier === 'premium' && (
-            <button 
+            <button
               onClick={() => handleUpgrade('pro')}
               disabled={isLoading}
               className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50"

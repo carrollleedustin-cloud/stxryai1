@@ -224,10 +224,7 @@ export class ChapterCommentService {
    * Delete a comment
    */
   async deleteComment(commentId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('chapter_comments')
-      .delete()
-      .eq('id', commentId);
+    const { error } = await this.supabase.from('chapter_comments').delete().eq('id', commentId);
 
     if (error) throw error;
   }
@@ -240,12 +237,10 @@ export class ChapterCommentService {
    * Like a comment
    */
   async likeComment(commentId: string, userId: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('chapter_comment_likes')
-      .insert({
-        comment_id: commentId,
-        user_id: userId,
-      });
+    const { error } = await this.supabase.from('chapter_comment_likes').insert({
+      comment_id: commentId,
+      user_id: userId,
+    });
 
     if (error && error.code !== '23505') throw error; // Ignore duplicate like
   }
@@ -333,18 +328,19 @@ export class ChapterCommentService {
       notifyOnLike?: boolean;
     }
   ): Promise<void> {
-    const { error } = await this.supabase
-      .from('chapter_comment_subscriptions')
-      .upsert({
+    const { error } = await this.supabase.from('chapter_comment_subscriptions').upsert(
+      {
         user_id: userId,
         chapter_id: chapterId,
         subscription_type: 'chapter',
         notify_on_reply: options?.notifyOnReply ?? true,
         notify_on_author_reply: options?.notifyOnAuthorReply ?? true,
         notify_on_like: options?.notifyOnLike ?? false,
-      }, {
+      },
+      {
         onConflict: 'user_id,chapter_id,comment_id,subscription_type',
-      });
+      }
+    );
 
     if (error) throw error;
   }
@@ -452,4 +448,3 @@ export class ChapterCommentService {
 }
 
 export const chapterCommentService = new ChapterCommentService();
-

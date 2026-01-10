@@ -71,8 +71,8 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const width = canvas.width = window.innerWidth;
-    const height = canvas.height = window.innerHeight;
+    const width = (canvas.width = window.innerWidth);
+    const height = (canvas.height = window.innerHeight);
 
     // Create nodes based on reading progress
     const nodeCount = Math.max(20, Math.floor(particleCount * (0.5 + readingProgress / 200)));
@@ -160,8 +160,8 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Update nodes
-      setNodes(prevNodes =>
-        prevNodes.map(node => {
+      setNodes((prevNodes) =>
+        prevNodes.map((node) => {
           // Mouse interaction
           const mouseDistance = Math.sqrt(
             Math.pow(node.x - mousePosition.x, 2) + Math.pow(node.y - mousePosition.y, 2)
@@ -172,8 +172,8 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
 
           if (mouseDistance < 100) {
             const force = (100 - mouseDistance) / 100;
-            forceX += (node.x - mousePosition.x) / mouseDistance * force * 0.5;
-            forceY += (node.y - mousePosition.y) / mouseDistance * force * 0.5;
+            forceX += ((node.x - mousePosition.x) / mouseDistance) * force * 0.5;
+            forceY += ((node.y - mousePosition.y) / mouseDistance) * force * 0.5;
           }
 
           // Emotional state influence
@@ -204,7 +204,7 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
       );
 
       // Draw connections
-      connections.forEach(connection => {
+      connections.forEach((connection) => {
         const fromNode = nodes[connection.from];
         const toNode = nodes[connection.to];
 
@@ -216,7 +216,7 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
 
         if (distance > 300) return;
 
-        const strength = connection.strength * (fromNode.activation + toNode.activation) / 2;
+        const strength = (connection.strength * (fromNode.activation + toNode.activation)) / 2;
         const opacity = Math.min(1, strength * intensity);
 
         ctx.beginPath();
@@ -237,7 +237,7 @@ export const NeuralNetworkBackground: React.FC<NeuralNetworkBackgroundProps> = (
       });
 
       // Draw nodes
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         const size = 3 + node.activation * 4;
 
         // Glow effect

@@ -36,7 +36,10 @@ export const commentService = {
       }
 
       // Check authentication
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
       if (authError) {
         console.error('Auth error in postComment:', authError);
         throw new Error('Authentication failed. Please sign in again.');
@@ -61,7 +64,10 @@ export const commentService = {
       return Array.isArray(data) ? data[0] : data;
     } catch (error) {
       // Re-throw validation errors
-      if (error instanceof Error && (error.message.includes('required') || error.message.includes('cannot be empty'))) {
+      if (
+        error instanceof Error &&
+        (error.message.includes('required') || error.message.includes('cannot be empty'))
+      ) {
         throw error;
       }
 
@@ -99,7 +105,7 @@ export const commentService = {
 
       const { data, error } = await updateCommentById(commentId, {
         content: sanitizedContent,
-        is_edited: true
+        is_edited: true,
       });
 
       if (error) {
@@ -110,7 +116,10 @@ export const commentService = {
       return Array.isArray(data) ? data[0] : data;
     } catch (error) {
       // Re-throw validation errors
-      if (error instanceof Error && (error.message.includes('required') || error.message.includes('cannot be empty'))) {
+      if (
+        error instanceof Error &&
+        (error.message.includes('required') || error.message.includes('cannot be empty'))
+      ) {
         throw error;
       }
 
@@ -153,7 +162,10 @@ export const commentService = {
       }
 
       // Check authentication
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
       if (authError || !user) {
         throw new Error('User not authenticated');
       }
@@ -162,7 +174,7 @@ export const commentService = {
       // For now, this is a placeholder that calls a hypothetical RPC function
       const { data, error } = await supabase.rpc('toggle_comment_like', {
         comment_id: commentId,
-        user_id: user.id
+        user_id: user.id,
       });
 
       if (error) {

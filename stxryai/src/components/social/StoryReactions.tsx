@@ -121,9 +121,7 @@ export function StoryReactions({
             whileHover={{ scale: 1.2, rotate: 10 }}
             whileTap={{ scale: 0.9 }}
             className={`relative px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all ${
-              userReacted
-                ? 'bg-primary/20 ring-2 ring-primary'
-                : 'bg-muted hover:bg-muted/80'
+              userReacted ? 'bg-primary/20 ring-2 ring-primary' : 'bg-muted hover:bg-muted/80'
             }`}
           >
             <span className="text-xl">{emoji}</span>
@@ -154,4 +152,3 @@ export function StoryReactions({
     </div>
   );
 }
-

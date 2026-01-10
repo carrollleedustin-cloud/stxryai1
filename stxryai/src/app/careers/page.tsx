@@ -36,7 +36,8 @@ export default function CareersPage() {
         >
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Careers</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Join us in revolutionizing interactive storytelling. We're building the future of narrative experiences.
+            Join us in revolutionizing interactive storytelling. We're building the future of
+            narrative experiences.
           </p>
         </motion.div>
 
@@ -86,7 +87,8 @@ export default function CareersPage() {
         >
           <h2 className="text-2xl font-bold text-white mb-4">Don't see a role that fits?</h2>
           <p className="text-gray-300 mb-6">
-            We're always looking for talented people. Send us your resume and we'll keep you in mind for future opportunities.
+            We're always looking for talented people. Send us your resume and we'll keep you in mind
+            for future opportunities.
           </p>
           <Link
             href="/contact?subject=General Inquiry"
@@ -99,4 +101,3 @@ export default function CareersPage() {
     </div>
   );
 }
-

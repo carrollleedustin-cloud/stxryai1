@@ -29,12 +29,12 @@ export async function POST(request: NextRequest) {
     );
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get user's subscription ID from database
@@ -45,10 +45,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (userError || !userData?.stripe_subscription_id) {
-      return NextResponse.json(
-        { error: 'No active subscription found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'No active subscription found' }, { status: 404 });
     }
 
     // Cancel at period end (so user keeps access until the end of billing period)
@@ -56,10 +53,9 @@ export async function POST(request: NextRequest) {
     if (!stripe) {
       return NextResponse.json({ error: 'Stripe is not configured' }, { status: 503 });
     }
-    const subscription = await stripe.subscriptions.update(
-      userData.stripe_subscription_id,
-      { cancel_at_period_end: true }
-    );
+    const subscription = await stripe.subscriptions.update(userData.stripe_subscription_id, {
+      cancel_at_period_end: true,
+    });
 
     // Update database
     await supabase
@@ -76,10 +72,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Cancel subscription error:', error);
-    return NextResponse.json(
-      { error: 'Failed to cancel subscription' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to cancel subscription' }, { status: 500 });
   }
 }
-

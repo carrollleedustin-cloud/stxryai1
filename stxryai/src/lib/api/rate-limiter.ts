@@ -1,6 +1,6 @@
 /**
  * In-Memory Rate Limiter
- * 
+ *
  * Simple sliding window rate limiter for API protection.
  * For production with multiple instances, consider using Redis (Upstash).
  */
@@ -11,29 +11,29 @@ interface RateLimitEntry {
 }
 
 interface RateLimitConfig {
-  windowMs: number;      // Time window in milliseconds
-  maxRequests: number;   // Maximum requests per window
+  windowMs: number; // Time window in milliseconds
+  maxRequests: number; // Maximum requests per window
 }
 
 interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   resetAt: number;
-  retryAfter?: number;   // Seconds until next request allowed
+  retryAfter?: number; // Seconds until next request allowed
 }
 
 class RateLimiter {
   private store: Map<string, RateLimitEntry> = new Map();
   private cleanupInterval: NodeJS.Timeout | null = null;
-  
+
   // Default configs for different endpoints
   static readonly CONFIGS = {
-    default: { windowMs: 60 * 1000, maxRequests: 100 },         // 100/min
-    auth: { windowMs: 15 * 60 * 1000, maxRequests: 10 },        // 10/15min (login attempts)
-    ai: { windowMs: 60 * 1000, maxRequests: 20 },               // 20/min (AI generations)
-    webhook: { windowMs: 60 * 1000, maxRequests: 500 },         // 500/min (webhooks)
-    upload: { windowMs: 60 * 1000, maxRequests: 10 },           // 10/min (file uploads)
-    strict: { windowMs: 60 * 1000, maxRequests: 30 },           // 30/min (sensitive endpoints)
+    default: { windowMs: 60 * 1000, maxRequests: 100 }, // 100/min
+    auth: { windowMs: 15 * 60 * 1000, maxRequests: 10 }, // 10/15min (login attempts)
+    ai: { windowMs: 60 * 1000, maxRequests: 20 }, // 20/min (AI generations)
+    webhook: { windowMs: 60 * 1000, maxRequests: 500 }, // 500/min (webhooks)
+    upload: { windowMs: 60 * 1000, maxRequests: 10 }, // 10/min (file uploads)
+    strict: { windowMs: 60 * 1000, maxRequests: 30 }, // 30/min (sensitive endpoints)
   } as const;
 
   constructor() {
@@ -101,9 +101,8 @@ class RateLimiter {
       allowed: entry.count < config.maxRequests,
       remaining: Math.max(0, config.maxRequests - entry.count),
       resetAt: entry.resetAt,
-      retryAfter: entry.count >= config.maxRequests 
-        ? Math.ceil((entry.resetAt - now) / 1000) 
-        : undefined,
+      retryAfter:
+        entry.count >= config.maxRequests ? Math.ceil((entry.resetAt - now) / 1000) : undefined,
     };
   }
 
@@ -151,10 +150,7 @@ export const rateLimiter = new RateLimiter();
 /**
  * Generate rate limit key from request
  */
-export function getRateLimitKey(
-  identifier: string,
-  endpoint?: string
-): string {
+export function getRateLimitKey(identifier: string, endpoint?: string): string {
   if (endpoint) {
     return `${identifier}:${endpoint}`;
   }
@@ -165,10 +161,7 @@ export function getRateLimitKey(
  * Get client identifier from request
  * Priority: User ID > IP Address
  */
-export function getClientIdentifier(
-  userId?: string | null,
-  ip?: string | null
-): string {
+export function getClientIdentifier(userId?: string | null, ip?: string | null): string {
   if (userId) {
     return `user:${userId}`;
   }
@@ -204,4 +197,3 @@ export function getIPFromHeaders(headers: Headers): string | null {
 
 export type { RateLimitConfig, RateLimitResult };
 export { RateLimiter };
-

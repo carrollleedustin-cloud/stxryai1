@@ -111,7 +111,9 @@ export default function DynamicPacingIndicator({
           <div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Engagement</span>
-              <span className={`${getEngagementColor(pacingInfo.engagementLevel)} text-sm font-semibold capitalize`}>
+              <span
+                className={`${getEngagementColor(pacingInfo.engagementLevel)} text-sm font-semibold capitalize`}
+              >
                 {pacingInfo.engagementLevel.replace('_', ' ')}
               </span>
             </div>

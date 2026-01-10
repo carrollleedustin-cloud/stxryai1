@@ -92,10 +92,7 @@ export function NotificationPreferences({
     }
   };
 
-  const handlePreferenceChange = async (
-    key: keyof NotificationPrefs,
-    value: boolean | string
-  ) => {
+  const handlePreferenceChange = async (key: keyof NotificationPrefs, value: boolean | string) => {
     if (!user || !preferences) return;
 
     setSaving(true);
@@ -192,10 +189,8 @@ export function NotificationPreferences({
                 </div>
                 <input
                   type="checkbox"
-                  checked={preferences.pushStoryUpdates}
-                  onChange={(e) =>
-                    handlePreferenceChange('pushStoryUpdates', e.target.checked)
-                  }
+                  checked={preferences.storyUpdates}
+                  onChange={(e) => handlePreferenceChange('storyUpdates', e.target.checked)}
                   disabled={saving}
                   className="rounded"
                 />
@@ -210,10 +205,8 @@ export function NotificationPreferences({
                 </div>
                 <input
                   type="checkbox"
-                  checked={preferences.pushFriendActivity}
-                  onChange={(e) =>
-                    handlePreferenceChange('pushFriendActivity', e.target.checked)
-                  }
+                  checked={preferences.friendActivity}
+                  onChange={(e) => handlePreferenceChange('friendActivity', e.target.checked)}
                   disabled={saving}
                   className="rounded"
                 />
@@ -228,10 +221,11 @@ export function NotificationPreferences({
                 </div>
                 <input
                   type="checkbox"
-                  checked={preferences.pushEngagementReminders}
-                  onChange={(e) =>
-                    handlePreferenceChange('pushEngagementReminders', e.target.checked)
-                  }
+                  checked={preferences.streakReminders || preferences.dailyChallenges}
+                  onChange={(e) => {
+                    handlePreferenceChange('streakReminders', e.target.checked);
+                    handlePreferenceChange('dailyChallenges', e.target.checked);
+                  }}
                   disabled={saving}
                   className="rounded"
                 />
@@ -246,10 +240,8 @@ export function NotificationPreferences({
                 </div>
                 <input
                   type="checkbox"
-                  checked={preferences.pushSocialNotifications}
-                  onChange={(e) =>
-                    handlePreferenceChange('pushSocialNotifications', e.target.checked)
-                  }
+                  checked={preferences.friendActivity}
+                  onChange={(e) => handlePreferenceChange('friendActivity', e.target.checked)}
                   disabled={saving}
                   className="rounded"
                 />
@@ -266,10 +258,8 @@ export function NotificationPreferences({
                 </div>
                 <input
                   type="checkbox"
-                  checked={preferences.pushPersonalizedRecommendations}
-                  onChange={(e) =>
-                    handlePreferenceChange('pushPersonalizedRecommendations', e.target.checked)
-                  }
+                  checked={preferences.newStories}
+                  onChange={(e) => handlePreferenceChange('newStories', e.target.checked)}
                   disabled={saving}
                   className="rounded"
                 />
@@ -290,9 +280,7 @@ export function NotificationPreferences({
                 <input
                   type="checkbox"
                   checked={preferences.quietHoursEnabled}
-                  onChange={(e) =>
-                    handlePreferenceChange('quietHoursEnabled', e.target.checked)
-                  }
+                  onChange={(e) => handlePreferenceChange('quietHoursEnabled', e.target.checked)}
                   disabled={saving}
                   className="sr-only peer"
                 />
@@ -308,24 +296,32 @@ export function NotificationPreferences({
                   </label>
                   <input
                     type="time"
-                    value={preferences.quietHoursStart}
-                    onChange={(e) =>
-                      handlePreferenceChange('quietHoursStart', e.target.value)
+                    value={
+                      preferences.quietHoursStart !== undefined
+                        ? `${String(preferences.quietHoursStart).padStart(2, '0')}:00`
+                        : '22:00'
                     }
+                    onChange={(e) => {
+                      const hour = parseInt(e.target.value.split(':')[0], 10);
+                      handlePreferenceChange('quietHoursStart', hour);
+                    }}
                     disabled={saving}
                     className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-foreground mb-1">
-                    End Time
-                  </label>
+                  <label className="block text-xs font-medium text-foreground mb-1">End Time</label>
                   <input
                     type="time"
-                    value={preferences.quietHoursEnd}
-                    onChange={(e) =>
-                      handlePreferenceChange('quietHoursEnd', e.target.value)
+                    value={
+                      preferences.quietHoursEnd !== undefined
+                        ? `${String(preferences.quietHoursEnd).padStart(2, '0')}:00`
+                        : '08:00'
                     }
+                    onChange={(e) => {
+                      const hour = parseInt(e.target.value.split(':')[0], 10);
+                      handlePreferenceChange('quietHoursEnd', hour);
+                    }}
                     disabled={saving}
                     className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm"
                   />
@@ -356,4 +352,3 @@ export function NotificationPreferences({
     </div>
   );
 }
-

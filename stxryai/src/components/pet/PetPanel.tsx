@@ -35,15 +35,15 @@ interface PetPanelProps {
   defaultMinimized?: boolean;
 }
 
-export default function PetPanel({ 
+export default function PetPanel({
   position = 'bottom-right',
   defaultMinimized = false,
 }: PetPanelProps) {
-  const { 
-    pet, 
-    hasPet, 
-    loading, 
-    showPetPanel, 
+  const {
+    pet,
+    hasPet,
+    loading,
+    showPetPanel,
     setShowPetPanel,
     showEvolutionCelebration,
     dismissEvolutionCelebration,
@@ -51,28 +51,28 @@ export default function PetPanel({
     renamePet,
     getDialogue,
   } = usePet();
-  
+
   const [isMinimized, setIsMinimized] = useState(defaultMinimized);
   const [showCreation, setShowCreation] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [greeting, setGreeting] = useState('');
   const [showCustomization, setShowCustomization] = useState(false);
-  
+
   // Set greeting when pet loads
   useEffect(() => {
     if (pet) {
       setGreeting(getDialogue('greeting'));
     }
   }, [pet, getDialogue]);
-  
+
   // Check if should prompt for pet creation
   useEffect(() => {
     if (!loading && !hasPet && showPetPanel) {
       setShowCreation(true);
     }
   }, [loading, hasPet, showPetPanel]);
-  
+
   const handleRename = async () => {
     if (newName.trim() && newName !== pet?.name) {
       const success = await renamePet(newName.trim());
@@ -83,22 +83,22 @@ export default function PetPanel({
       setIsEditing(false);
     }
   };
-  
+
   const positionClasses = {
     'bottom-right': 'fixed bottom-4 right-4',
     'bottom-left': 'fixed bottom-4 left-4',
-    'sidebar': 'relative',
+    sidebar: 'relative',
   };
-  
+
   // Don't render if loading or explicitly hidden
   if (loading || !showPetPanel) {
     return null;
   }
-  
+
   // Show creation wizard if no pet
   if (!hasPet) {
     return showCreation ? (
-      <PetCreationWizard 
+      <PetCreationWizard
         onComplete={() => setShowCreation(false)}
         onCancel={() => {
           setShowCreation(false);
@@ -107,9 +107,9 @@ export default function PetPanel({
       />
     ) : null;
   }
-  
+
   if (!pet) return null;
-  
+
   return (
     <>
       {/* Evolution Celebration Modal */}
@@ -128,24 +128,24 @@ export default function PetPanel({
               exit={{ scale: 0, rotate: 20 }}
               transition={{ type: 'spring', damping: 15 }}
               className="relative bg-gradient-to-b from-void-elevated to-void-black border border-white/20 rounded-3xl p-8 max-w-md mx-4 text-center"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Celebration particles */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-3xl">
                 {[...Array(20)].map((_, i) => (
                   <motion.div
                     key={i}
-                    initial={{ 
-                      x: '50%', 
-                      y: '50%', 
-                      scale: 0 
+                    initial={{
+                      x: '50%',
+                      y: '50%',
+                      scale: 0,
                     }}
-                    animate={{ 
+                    animate={{
                       x: `${Math.random() * 100}%`,
                       y: `${Math.random() * 100}%`,
                       scale: [0, 1, 0],
                     }}
-                    transition={{ 
+                    transition={{
                       duration: 2 + Math.random(),
                       repeat: Infinity,
                       delay: Math.random() * 2,
@@ -156,7 +156,7 @@ export default function PetPanel({
                   </motion.div>
                 ))}
               </div>
-              
+
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -165,7 +165,7 @@ export default function PetPanel({
               >
                 <StoryPetDisplay size="lg" showInteractions={false} showStats={false} />
               </motion.div>
-              
+
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -174,7 +174,7 @@ export default function PetPanel({
               >
                 {pet.name} Evolved!
               </motion.h2>
-              
+
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -183,7 +183,7 @@ export default function PetPanel({
               >
                 Now a {pendingEvolution} {pet.baseType}!
               </motion.p>
-              
+
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -192,7 +192,7 @@ export default function PetPanel({
               >
                 Your bond has grown stronger through countless adventures together!
               </motion.p>
-              
+
               <motion.button
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -208,7 +208,7 @@ export default function PetPanel({
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Main Panel */}
       <motion.div
         initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -220,7 +220,7 @@ export default function PetPanel({
           {/* Header - 3x bigger */}
           <div className="flex items-center justify-between px-6 py-4 bg-void-elevated/50 border-b-2 border-white/5">
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="w-6 h-6 rounded-full border-2 border-white/20"
                 style={{ backgroundColor: pet.traits.primaryColor }}
               />
@@ -229,16 +229,13 @@ export default function PetPanel({
                   <input
                     type="text"
                     value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleRename()}
+                    onChange={(e) => setNewName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleRename()}
                     className="w-48 px-4 py-2 text-lg bg-void-black border-2 border-white/20 rounded-lg text-white"
                     autoFocus
                     maxLength={20}
                   />
-                  <button
-                    onClick={handleRename}
-                    className="p-2 hover:bg-white/10 rounded-lg"
-                  >
+                  <button onClick={handleRename} className="p-2 hover:bg-white/10 rounded-lg">
                     <Check className="w-6 h-6 text-green-400" />
                   </button>
                 </div>
@@ -257,7 +254,7 @@ export default function PetPanel({
                 </>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowCustomization(true)}
@@ -284,7 +281,7 @@ export default function PetPanel({
               </button>
             </div>
           </div>
-          
+
           {/* Content */}
           <AnimatePresence mode="wait">
             {!isMinimized ? (
@@ -301,14 +298,12 @@ export default function PetPanel({
                   <div className="flex justify-center mb-8">
                     <StoryPetDisplay size="lg" showStats showInteractions />
                   </div>
-                  
+
                   {/* Greeting - 3x bigger */}
                   <div className="bg-void-elevated/50 rounded-xl p-6 mb-6">
-                    <p className="text-xl text-ghost-300 italic text-center">
-                      "{greeting}"
-                    </p>
+                    <p className="text-xl text-ghost-300 italic text-center">"{greeting}"</p>
                   </div>
-                  
+
                   {/* Quick stats - 3x bigger */}
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div className="bg-void-elevated/30 rounded-xl p-4">
@@ -327,7 +322,7 @@ export default function PetPanel({
                       <p className="text-2xl font-bold text-white">{pet.stats.daysActive}</p>
                     </div>
                   </div>
-                  
+
                   {/* Additional stats */}
                   <div className="mt-6 grid grid-cols-2 gap-4 text-center">
                     <div className="bg-void-elevated/30 rounded-xl p-4">
@@ -338,7 +333,9 @@ export default function PetPanel({
                     <div className="bg-void-elevated/30 rounded-xl p-4">
                       <Sparkles className="w-8 h-8 mx-auto mb-2 text-cyan-400" />
                       <p className="text-lg text-ghost-400 font-semibold">XP</p>
-                      <p className="text-2xl font-bold text-white">{pet.stats.experience}/{pet.stats.experienceToNextLevel}</p>
+                      <p className="text-2xl font-bold text-white">
+                        {pet.stats.experience}/{pet.stats.experienceToNextLevel}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -357,13 +354,17 @@ export default function PetPanel({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-lg font-bold text-ghost-400">Lv.{pet.stats.level}</span>
-                      <span className="text-lg text-ghost-500 capitalize">{pet.evolutionStage}</span>
+                      <span className="text-lg text-ghost-500 capitalize">
+                        {pet.evolutionStage}
+                      </span>
                     </div>
                     {/* Mini XP bar - 3x bigger */}
                     <div className="h-3 bg-void-elevated rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-spectral-cyan to-spectral-violet transition-all duration-500"
-                        style={{ width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%` }}
+                        style={{
+                          width: `${(pet.stats.experience / pet.stats.experienceToNextLevel) * 100}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -376,11 +377,8 @@ export default function PetPanel({
 
       {/* Customization Panel */}
       <AnimatePresence>
-        {showCustomization && (
-          <PetCustomizationPanel onClose={() => setShowCustomization(false)} />
-        )}
+        {showCustomization && <PetCustomizationPanel onClose={() => setShowCustomization(false)} />}
       </AnimatePresence>
     </>
   );
 }
-

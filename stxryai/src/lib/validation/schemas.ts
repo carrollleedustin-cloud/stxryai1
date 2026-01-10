@@ -102,7 +102,11 @@ export function string(options: StringValidatorOptions = {}) {
     const errors: ValidationError[] = [];
 
     if (options.min !== undefined && value.length < options.min) {
-      errors.push({ path, message: `Must be at least ${options.min} characters`, code: 'too_short' });
+      errors.push({
+        path,
+        message: `Must be at least ${options.min} characters`,
+        code: 'too_short',
+      });
     }
 
     if (options.max !== undefined && value.length > options.max) {
@@ -142,7 +146,10 @@ export function number(options: NumberValidatorOptions = {}) {
     const value = typeof data === 'string' ? parseFloat(data) : data;
 
     if (typeof value !== 'number' || isNaN(value)) {
-      return { success: false, errors: [{ path, message: 'Expected number', code: 'invalid_type' }] };
+      return {
+        success: false,
+        errors: [{ path, message: 'Expected number', code: 'invalid_type' }],
+      };
     }
 
     const errors: ValidationError[] = [];
@@ -170,15 +177,24 @@ export function boolean() {
     if (typeof data === 'boolean') return { success: true, data };
     if (data === 'true') return { success: true, data: true };
     if (data === 'false') return { success: true, data: false };
-    return { success: false, errors: [{ path, message: 'Expected boolean', code: 'invalid_type' }] };
+    return {
+      success: false,
+      errors: [{ path, message: 'Expected boolean', code: 'invalid_type' }],
+    };
   });
 }
 
 // Array validator
-export function array<T>(itemValidator: Validator<T>, options: { min?: number; max?: number } = {}) {
+export function array<T>(
+  itemValidator: Validator<T>,
+  options: { min?: number; max?: number } = {}
+) {
   return createValidator<T[]>((data, path) => {
     if (!Array.isArray(data)) {
-      return { success: false, errors: [{ path, message: 'Expected array', code: 'invalid_type' }] };
+      return {
+        success: false,
+        errors: [{ path, message: 'Expected array', code: 'invalid_type' }],
+      };
     }
 
     const errors: ValidationError[] = [];
@@ -212,7 +228,10 @@ type InferObjectShape<T extends ObjectShape> = {
 export function object<T extends ObjectShape>(shape: T) {
   return createValidator<InferObjectShape<T>>((data, path) => {
     if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-      return { success: false, errors: [{ path, message: 'Expected object', code: 'invalid_type' }] };
+      return {
+        success: false,
+        errors: [{ path, message: 'Expected object', code: 'invalid_type' }],
+      };
     }
 
     const errors: ValidationError[] = [];
@@ -228,7 +247,9 @@ export function object<T extends ObjectShape>(shape: T) {
       }
     }
 
-    return errors.length > 0 ? { success: false, errors } : { success: true, data: result as InferObjectShape<T> };
+    return errors.length > 0
+      ? { success: false, errors }
+      : { success: true, data: result as InferObjectShape<T> };
   });
 }
 
@@ -236,7 +257,10 @@ export function object<T extends ObjectShape>(shape: T) {
 export function enumType<T extends string>(values: readonly T[]) {
   return createValidator<T>((data, path) => {
     if (typeof data !== 'string' || !values.includes(data as T)) {
-      return { success: false, errors: [{ path, message: `Must be one of: ${values.join(', ')}`, code: 'invalid_enum' }] };
+      return {
+        success: false,
+        errors: [{ path, message: `Must be one of: ${values.join(', ')}`, code: 'invalid_enum' }],
+      };
     }
     return { success: true, data: data as T };
   });

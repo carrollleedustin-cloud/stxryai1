@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { enhancedModerationService, type ModerationStats } from '@/services/enhancedModerationService';
+import {
+  enhancedModerationService,
+  type ModerationStats,
+} from '@/services/enhancedModerationService';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import Icon from '@/components/ui/AppIcon';
@@ -42,7 +45,7 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
   const getStatsForPeriod = async (): Promise<ModerationStats[]> => {
     const endDate = new Date().toISOString().split('T')[0];
     const startDate = new Date();
-    
+
     if (selectedPeriod === '7d') {
       startDate.setDate(startDate.getDate() - 7);
     } else if (selectedPeriod === '30d') {
@@ -52,7 +55,7 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
     }
 
     const contentType = selectedContentType === 'all' ? undefined : selectedContentType;
-    
+
     return await enhancedModerationService.getModerationStats(
       startDate.toISOString().split('T')[0],
       endDate,
@@ -142,9 +145,7 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
             {totalFlagged.toLocaleString()}
           </div>
           <div className="text-sm text-muted-foreground">Flagged</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {flagRate.toFixed(1)}% flag rate
-          </div>
+          <div className="text-xs text-muted-foreground mt-1">{flagRate.toFixed(1)}% flag rate</div>
         </motion.div>
 
         <motion.div
@@ -199,9 +200,7 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
                 className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border"
               >
                 <div className="flex-1">
-                  <div className="font-medium text-foreground capitalize">
-                    {item.content_type}
-                  </div>
+                  <div className="font-medium text-foreground capitalize">{item.content_type}</div>
                   <div className="text-sm text-muted-foreground">
                     ID: {item.content_id.slice(0, 8)}...
                   </div>
@@ -249,9 +248,7 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
                     <div className="text-sm font-medium text-foreground capitalize">
                       {stat.contentType}
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {stat.totalChecked} checked
-                    </div>
+                    <div className="text-xs text-muted-foreground">{stat.totalChecked} checked</div>
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
@@ -275,4 +272,3 @@ export function EnhancedModerationDashboard({ className = '' }: EnhancedModerati
     </div>
   );
 }
-

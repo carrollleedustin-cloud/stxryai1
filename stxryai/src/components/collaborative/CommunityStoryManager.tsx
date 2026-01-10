@@ -2,7 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { collaborativeCreationService, type CommunityStory, type StoryContribution, type StoryRemix, type StoryFork } from '@/services/collaborativeCreationService';
+import {
+  collaborativeCreationService,
+  type CommunityStory,
+  type StoryContribution,
+  type StoryRemix,
+  type StoryFork,
+} from '@/services/collaborativeCreationService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -14,7 +20,9 @@ interface CommunityStoryManagerProps {
 
 export function CommunityStoryManager({ storyId, className = '' }: CommunityStoryManagerProps) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'contributions' | 'remixes' | 'forks'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'contributions' | 'remixes' | 'forks'>(
+    'overview'
+  );
   const [communityStory, setCommunityStory] = useState<CommunityStory | null>(null);
   const [contributions, setContributions] = useState<StoryContribution[]>([]);
   const [remixes, setRemixes] = useState<StoryRemix[]>([]);
@@ -167,11 +175,15 @@ export function CommunityStoryManager({ storyId, className = '' }: CommunityStor
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-card border-2 border-border rounded-xl p-4">
               <div className="text-sm text-muted-foreground mb-1">Contributors</div>
-              <div className="text-2xl font-bold text-foreground">{communityStory.contributorCount}</div>
+              <div className="text-2xl font-bold text-foreground">
+                {communityStory.contributorCount}
+              </div>
             </div>
             <div className="bg-card border-2 border-border rounded-xl p-4">
               <div className="text-sm text-muted-foreground mb-1">Chapters</div>
-              <div className="text-2xl font-bold text-foreground">{communityStory.chapterCount}</div>
+              <div className="text-2xl font-bold text-foreground">
+                {communityStory.chapterCount}
+              </div>
             </div>
             <div className="bg-card border-2 border-border rounded-xl p-4">
               <div className="text-sm text-muted-foreground mb-1">Rating</div>
@@ -181,14 +193,18 @@ export function CommunityStoryManager({ storyId, className = '' }: CommunityStor
             </div>
             <div className="bg-card border-2 border-border rounded-xl p-4">
               <div className="text-sm text-muted-foreground mb-1">Status</div>
-              <div className="text-lg font-bold text-foreground capitalize">{communityStory.status}</div>
+              <div className="text-lg font-bold text-foreground capitalize">
+                {communityStory.status}
+              </div>
             </div>
           </div>
 
           {communityStory.contributionGuidelines && (
             <div className="bg-card border-2 border-border rounded-xl p-6">
               <h3 className="text-lg font-bold text-foreground mb-2">Contribution Guidelines</h3>
-              <p className="text-foreground whitespace-pre-line">{communityStory.contributionGuidelines}</p>
+              <p className="text-foreground whitespace-pre-line">
+                {communityStory.contributionGuidelines}
+              </p>
             </div>
           )}
 
@@ -238,13 +254,15 @@ export function CommunityStoryManager({ storyId, className = '' }: CommunityStor
                       <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium capitalize">
                         {contribution.contributionType}
                       </span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        contribution.contributionStatus === 'approved'
-                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                          : contribution.contributionStatus === 'pending'
-                          ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          contribution.contributionStatus === 'approved'
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : contribution.contributionStatus === 'pending'
+                              ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                        }`}
+                      >
                         {contribution.contributionStatus}
                       </span>
                     </div>
@@ -345,4 +363,3 @@ export function CommunityStoryManager({ storyId, className = '' }: CommunityStor
     </div>
   );
 }
-

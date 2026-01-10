@@ -37,14 +37,14 @@ async function getSupabaseClient() {
 export async function POST(request: NextRequest) {
   try {
     const supabase = await getSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -63,15 +63,20 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!seriesId) {
-      return NextResponse.json(
-        { error: 'seriesId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'seriesId is required' }, { status: 400 });
     }
 
-    if (!type || !['continuation', 'dialogue', 'description', 'action', 'chapter_outline', 'scene'].includes(type)) {
+    if (
+      !type ||
+      !['continuation', 'dialogue', 'description', 'action', 'chapter_outline', 'scene'].includes(
+        type
+      )
+    ) {
       return NextResponse.json(
-        { error: 'Valid type is required: continuation, dialogue, description, action, chapter_outline, scene' },
+        {
+          error:
+            'Valid type is required: continuation, dialogue, description, action, chapter_outline, scene',
+        },
         { status: 400 }
       );
     }
@@ -84,10 +89,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (seriesError || !series) {
-      return NextResponse.json(
-        { error: 'Series not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Series not found' }, { status: 404 });
     }
 
     if (series.author_id !== user.id) {
@@ -120,7 +122,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Canon-aware generation error:', error);
     return NextResponse.json(
-      { error: 'Failed to generate content', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Failed to generate content',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
       { status: 500 }
     );
   }
@@ -130,13 +135,13 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const supabase = await getSupabaseClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -144,10 +149,7 @@ export async function GET(request: NextRequest) {
     const bookId = searchParams.get('bookId');
 
     if (!seriesId) {
-      return NextResponse.json(
-        { error: 'seriesId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'seriesId is required' }, { status: 400 });
     }
 
     // Verify access
@@ -158,17 +160,11 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (seriesError || !series) {
-      return NextResponse.json(
-        { error: 'Series not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Series not found' }, { status: 404 });
     }
 
     if (series.author_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Permission denied' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Permission denied' }, { status: 403 });
     }
 
     // Get context summary
@@ -202,17 +198,13 @@ export async function GET(request: NextRequest) {
           title: series.series_title,
         },
         characters: characters || [],
-        activeArcs: (arcs || []).filter(a => a.status === 'active'),
+        activeArcs: (arcs || []).filter((a) => a.status === 'active'),
         canonRules: rules || [],
         worldElements: worldElements || [],
       },
     });
   } catch (error) {
     console.error('Context preview error:', error);
-    return NextResponse.json(
-      { error: 'Failed to get context' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to get context' }, { status: 500 });
   }
 }
-

@@ -76,13 +76,14 @@ export const optimizedStoryService = {
    */
   async getStoryWithChapters(storyId: string): Promise<StoryWithChapters | null> {
     const cacheKey = cacheKeys.storyWithChapters(storyId);
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         const { data, error } = await supabase
           .from('stories')
-          .select(`
+          .select(
+            `
             *,
             chapters (
               id,
@@ -101,7 +102,8 @@ export const optimizedStoryService = {
                 position
               )
             )
-          `)
+          `
+          )
           .eq('id', storyId)
           .single();
 
@@ -131,7 +133,7 @@ export const optimizedStoryService = {
    */
   async getStoryById(storyId: string): Promise<Story | null> {
     const cacheKey = cacheKeys.story(storyId);
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
@@ -157,13 +159,14 @@ export const optimizedStoryService = {
    */
   async getChaptersWithChoices(storyId: string): Promise<Chapter[]> {
     const cacheKey = cacheKeys.storyChapters(storyId);
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         const { data, error } = await supabase
           .from('chapters')
-          .select(`
+          .select(
+            `
             *,
             choices (
               id,
@@ -173,7 +176,8 @@ export const optimizedStoryService = {
               next_chapter_id,
               position
             )
-          `)
+          `
+          )
           .eq('story_id', storyId)
           .order('chapter_number', { ascending: true });
 
@@ -184,7 +188,7 @@ export const optimizedStoryService = {
 
         // Sort choices within each chapter
         const chapters = (data || []) as Chapter[];
-        chapters.forEach(chapter => {
+        chapters.forEach((chapter) => {
           if (chapter.choices) {
             chapter.choices.sort((a, b) => a.position - b.position);
           }
@@ -212,19 +216,21 @@ export const optimizedStoryService = {
 
     // Build cache key from filters
     const cacheKey = `stories:${JSON.stringify(filters)}`;
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         let query = supabase
           .from('stories')
-          .select(`
+          .select(
+            `
             *,
             author:user_profiles!author_id (
               display_name,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('is_published', true);
 
         // Apply filters
@@ -285,19 +291,21 @@ export const optimizedStoryService = {
    */
   async getFeaturedStories(limit = 10): Promise<StoryWithAuthor[]> {
     const cacheKey = cacheKeys.featuredStories();
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         const { data, error } = await supabase
           .from('stories')
-          .select(`
+          .select(
+            `
             *,
             author:user_profiles!author_id (
               display_name,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('is_published', true)
           .eq('is_featured', true)
           .order('published_at', { ascending: false })
@@ -319,19 +327,21 @@ export const optimizedStoryService = {
    */
   async getTrendingStories(limit = 10): Promise<StoryWithAuthor[]> {
     const cacheKey = cacheKeys.trendingStories();
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         const { data, error } = await supabase
           .from('stories')
-          .select(`
+          .select(
+            `
             *,
             author:user_profiles!author_id (
               display_name,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('is_published', true)
           .order('view_count', { ascending: false })
           .order('published_at', { ascending: false })
@@ -353,19 +363,21 @@ export const optimizedStoryService = {
    */
   async getStoriesByGenre(genre: string, limit = 20): Promise<StoryWithAuthor[]> {
     const cacheKey = cacheKeys.genreStories(genre);
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
         const { data, error } = await supabase
           .from('stories')
-          .select(`
+          .select(
+            `
             *,
             author:user_profiles!author_id (
               display_name,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('is_published', true)
           .eq('genre', genre)
           .order('published_at', { ascending: false })
@@ -385,13 +397,9 @@ export const optimizedStoryService = {
   /**
    * Get story comments with user info (paginated)
    */
-  async getStoryComments(
-    storyId: string,
-    page = 1,
-    pageSize = 10
-  ): Promise<StoryComment[]> {
+  async getStoryComments(storyId: string, page = 1, pageSize = 10): Promise<StoryComment[]> {
     const cacheKey = cacheKeys.storyComments(storyId, page);
-    
+
     return queryCache.getOrSet(
       cacheKey,
       async () => {
@@ -400,14 +408,16 @@ export const optimizedStoryService = {
 
         const { data, error } = await supabase
           .from('comments')
-          .select(`
+          .select(
+            `
             *,
             user:user_profiles!user_id (
               id,
               display_name,
               avatar_url
             )
-          `)
+          `
+          )
           .eq('story_id', storyId)
           .is('parent_id', null)
           .order('created_at', { ascending: false })
@@ -445,10 +455,7 @@ export const optimizedStoryService = {
 
     // Fetch uncached stories in one query
     if (uncachedIds.length > 0) {
-      const { data, error } = await supabase
-        .from('stories')
-        .select('*')
-        .in('id', uncachedIds);
+      const { data, error } = await supabase.from('stories').select('*').in('id', uncachedIds);
 
       if (!error && data) {
         // Cache each story
@@ -461,7 +468,7 @@ export const optimizedStoryService = {
 
     // Return in original order
     return storyIds
-      .map(id => cachedStories.find(s => s.id === id))
+      .map((id) => cachedStories.find((s) => s.id === id))
       .filter((s): s is Story => s !== undefined);
   },
 
@@ -493,4 +500,3 @@ export const optimizedStoryService = {
     return queryCache.getStats();
   },
 };
-

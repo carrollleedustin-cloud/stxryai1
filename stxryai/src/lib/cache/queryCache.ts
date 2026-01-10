@@ -32,7 +32,7 @@ class QueryCache {
     options: CacheOptions = {}
   ): Promise<T> {
     const ttl = options.ttl ?? DEFAULT_TTL;
-    
+
     // Check cache
     const cached = this.get<T>(key);
     if (cached !== null) {
@@ -64,7 +64,7 @@ class QueryCache {
         // Silently fail if localStorage is unavailable
       }
     }
-    
+
     if (!entry) {
       return null;
     }
@@ -215,15 +215,14 @@ export const cacheKeys = {
 
 // Cache TTLs (in milliseconds)
 export const cacheTTL = {
-  story: 5 * 60 * 1000,          // 5 minutes
-  storyList: 60 * 1000,          // 1 minute
-  chapters: 10 * 60 * 1000,      // 10 minutes
-  choices: 10 * 60 * 1000,       // 10 minutes
-  comments: 30 * 1000,           // 30 seconds
-  featured: 5 * 60 * 1000,       // 5 minutes
-  trending: 2 * 60 * 1000,       // 2 minutes
+  story: 5 * 60 * 1000, // 5 minutes
+  storyList: 60 * 1000, // 1 minute
+  chapters: 10 * 60 * 1000, // 10 minutes
+  choices: 10 * 60 * 1000, // 10 minutes
+  comments: 30 * 1000, // 30 seconds
+  featured: 5 * 60 * 1000, // 5 minutes
+  trending: 2 * 60 * 1000, // 2 minutes
 };
 
 // Export singleton instance
 export const queryCache = new QueryCache();
-

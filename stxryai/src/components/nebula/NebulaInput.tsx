@@ -25,120 +25,127 @@ const SIZES = {
   lg: { padding: '1.125rem 1.5rem', fontSize: '1.125rem', iconSize: '1.5rem' },
 };
 
-export const NebulaInput = forwardRef<HTMLInputElement, NebulaInputProps>(({
-  label,
-  error,
-  success,
-  hint,
-  icon,
-  iconPosition = 'left',
-  size = 'md',
-  className = '',
-  disabled,
-  ...props
-}, ref) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const sizeStyle = SIZES[size];
-  
-  const borderColor = error 
-    ? 'rgba(255,64,128,0.5)' 
-    : success 
-    ? 'rgba(0,255,213,0.5)' 
-    : isFocused 
-    ? 'rgba(0,255,213,0.5)' 
-    : 'rgba(255,255,255,0.08)';
-  
-  const glowColor = error
-    ? '0 0 20px rgba(255,64,128,0.2)'
-    : success
-    ? '0 0 20px rgba(0,255,213,0.2)'
-    : isFocused
-    ? '0 0 20px rgba(0,255,213,0.15)'
-    : 'none';
+export const NebulaInput = forwardRef<HTMLInputElement, NebulaInputProps>(
+  (
+    {
+      label,
+      error,
+      success,
+      hint,
+      icon,
+      iconPosition = 'left',
+      size = 'md',
+      className = '',
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const [isFocused, setIsFocused] = useState(false);
+    const sizeStyle = SIZES[size];
 
-  return (
-    <div className={`w-full ${className}`}>
-      {label && (
-        <label
-          className="block text-sm font-medium mb-2"
-          style={{
-            color: error ? '#ff4080' : success ? '#00ffd5' : 'rgba(255,255,255,0.7)',
-          }}
-        >
-          {label}
-        </label>
-      )}
-      
-      <div className="relative">
-        {/* Icon */}
-        {icon && (
-          <div
-            className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
+    const borderColor = error
+      ? 'rgba(255,64,128,0.5)'
+      : success
+        ? 'rgba(0,255,213,0.5)'
+        : isFocused
+          ? 'rgba(0,255,213,0.5)'
+          : 'rgba(255,255,255,0.08)';
+
+    const glowColor = error
+      ? '0 0 20px rgba(255,64,128,0.2)'
+      : success
+        ? '0 0 20px rgba(0,255,213,0.2)'
+        : isFocused
+          ? '0 0 20px rgba(0,255,213,0.15)'
+          : 'none';
+
+    return (
+      <div className={`w-full ${className}`}>
+        {label && (
+          <label
+            className="block text-sm font-medium mb-2"
             style={{
-              [iconPosition === 'left' ? 'left' : 'right']: '1rem',
-              color: isFocused ? '#00ffd5' : 'rgba(255,255,255,0.4)',
-              fontSize: sizeStyle.iconSize,
-              transition: 'color 0.2s ease',
+              color: error ? '#ff4080' : success ? '#00ffd5' : 'rgba(255,255,255,0.7)',
             }}
           >
-            {icon}
-          </div>
+            {label}
+          </label>
         )}
-        
-        <input
-          ref={ref}
-          disabled={disabled}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          className="w-full outline-none transition-all duration-200"
-          style={{
-            padding: sizeStyle.padding,
-            paddingLeft: icon && iconPosition === 'left' ? '3rem' : sizeStyle.padding.split(' ')[1],
-            paddingRight: icon && iconPosition === 'right' ? '3rem' : sizeStyle.padding.split(' ')[1],
-            fontSize: sizeStyle.fontSize,
-            fontFamily: 'var(--font-body)',
-            color: disabled ? 'rgba(255,255,255,0.3)' : '#f0f0ff',
-            background: 'rgba(12,12,30,0.8)',
-            border: `1px solid ${borderColor}`,
-            borderRadius: '12px',
-            boxShadow: glowColor,
-            cursor: disabled ? 'not-allowed' : 'text',
-          }}
-          {...props}
-        />
-        
-        {/* Animated focus ring */}
-        <motion.div
-          className="absolute inset-0 rounded-xl pointer-events-none"
-          initial={false}
-          animate={{
-            boxShadow: isFocused 
-              ? '0 0 0 4px rgba(0,255,213,0.1)' 
-              : '0 0 0 0px rgba(0,255,213,0)',
-          }}
-          transition={{ duration: 0.2 }}
-        />
+
+        <div className="relative">
+          {/* Icon */}
+          {icon && (
+            <div
+              className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none"
+              style={{
+                [iconPosition === 'left' ? 'left' : 'right']: '1rem',
+                color: isFocused ? '#00ffd5' : 'rgba(255,255,255,0.4)',
+                fontSize: sizeStyle.iconSize,
+                transition: 'color 0.2s ease',
+              }}
+            >
+              {icon}
+            </div>
+          )}
+
+          <input
+            ref={ref}
+            disabled={disabled}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className="w-full outline-none transition-all duration-200"
+            style={{
+              padding: sizeStyle.padding,
+              paddingLeft:
+                icon && iconPosition === 'left' ? '3rem' : sizeStyle.padding.split(' ')[1],
+              paddingRight:
+                icon && iconPosition === 'right' ? '3rem' : sizeStyle.padding.split(' ')[1],
+              fontSize: sizeStyle.fontSize,
+              fontFamily: 'var(--font-body)',
+              color: disabled ? 'rgba(255,255,255,0.3)' : '#f0f0ff',
+              background: 'rgba(12,12,30,0.8)',
+              border: `1px solid ${borderColor}`,
+              borderRadius: '12px',
+              boxShadow: glowColor,
+              cursor: disabled ? 'not-allowed' : 'text',
+            }}
+            {...props}
+          />
+
+          {/* Animated focus ring */}
+          <motion.div
+            className="absolute inset-0 rounded-xl pointer-events-none"
+            initial={false}
+            animate={{
+              boxShadow: isFocused
+                ? '0 0 0 4px rgba(0,255,213,0.1)'
+                : '0 0 0 0px rgba(0,255,213,0)',
+            }}
+            transition={{ duration: 0.2 }}
+          />
+        </div>
+
+        {/* Error or hint message */}
+        <AnimatePresence mode="wait">
+          {(error || hint) && (
+            <motion.p
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="mt-2 text-sm"
+              style={{
+                color: error ? '#ff4080' : 'rgba(255,255,255,0.5)',
+              }}
+            >
+              {error || hint}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
-      
-      {/* Error or hint message */}
-      <AnimatePresence mode="wait">
-        {(error || hint) && (
-          <motion.p
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="mt-2 text-sm"
-            style={{
-              color: error ? '#ff4080' : 'rgba(255,255,255,0.5)',
-            }}
-          >
-            {error || hint}
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-});
+    );
+  }
+);
 
 NebulaInput.displayName = 'NebulaInput';
 
@@ -151,67 +158,62 @@ interface NebulaTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaE
   hint?: string;
 }
 
-export const NebulaTextarea = forwardRef<HTMLTextAreaElement, NebulaTextareaProps>(({
-  label,
-  error,
-  hint,
-  className = '',
-  disabled,
-  ...props
-}, ref) => {
-  const [isFocused, setIsFocused] = useState(false);
-  
-  return (
-    <div className={`w-full ${className}`}>
-      {label && (
-        <label
-          className="block text-sm font-medium mb-2"
-          style={{
-            color: error ? '#ff4080' : 'rgba(255,255,255,0.7)',
-          }}
-        >
-          {label}
-        </label>
-      )}
-      
-      <textarea
-        ref={ref}
-        disabled={disabled}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        className="w-full outline-none transition-all duration-200 resize-none"
-        style={{
-          padding: '1rem 1.25rem',
-          fontSize: '1rem',
-          fontFamily: 'var(--font-body)',
-          color: disabled ? 'rgba(255,255,255,0.3)' : '#f0f0ff',
-          background: 'rgba(12,12,30,0.8)',
-          border: `1px solid ${error ? 'rgba(255,64,128,0.5)' : isFocused ? 'rgba(0,255,213,0.5)' : 'rgba(255,255,255,0.08)'}`,
-          borderRadius: '12px',
-          boxShadow: isFocused ? '0 0 20px rgba(0,255,213,0.15)' : 'none',
-          minHeight: '120px',
-        }}
-        {...props}
-      />
-      
-      <AnimatePresence mode="wait">
-        {(error || hint) && (
-          <motion.p
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            className="mt-2 text-sm"
+export const NebulaTextarea = forwardRef<HTMLTextAreaElement, NebulaTextareaProps>(
+  ({ label, error, hint, className = '', disabled, ...props }, ref) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    return (
+      <div className={`w-full ${className}`}>
+        {label && (
+          <label
+            className="block text-sm font-medium mb-2"
             style={{
-              color: error ? '#ff4080' : 'rgba(255,255,255,0.5)',
+              color: error ? '#ff4080' : 'rgba(255,255,255,0.7)',
             }}
           >
-            {error || hint}
-          </motion.p>
+            {label}
+          </label>
         )}
-      </AnimatePresence>
-    </div>
-  );
-});
+
+        <textarea
+          ref={ref}
+          disabled={disabled}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="w-full outline-none transition-all duration-200 resize-none"
+          style={{
+            padding: '1rem 1.25rem',
+            fontSize: '1rem',
+            fontFamily: 'var(--font-body)',
+            color: disabled ? 'rgba(255,255,255,0.3)' : '#f0f0ff',
+            background: 'rgba(12,12,30,0.8)',
+            border: `1px solid ${error ? 'rgba(255,64,128,0.5)' : isFocused ? 'rgba(0,255,213,0.5)' : 'rgba(255,255,255,0.08)'}`,
+            borderRadius: '12px',
+            boxShadow: isFocused ? '0 0 20px rgba(0,255,213,0.15)' : 'none',
+            minHeight: '120px',
+          }}
+          {...props}
+        />
+
+        <AnimatePresence mode="wait">
+          {(error || hint) && (
+            <motion.p
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="mt-2 text-sm"
+              style={{
+                color: error ? '#ff4080' : 'rgba(255,255,255,0.5)',
+              }}
+            >
+              {error || hint}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+);
 
 NebulaTextarea.displayName = 'NebulaTextarea';
 
@@ -245,9 +247,9 @@ export function NebulaSelect({
   className = '',
 }: NebulaSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
-  const selectedOption = options.find(opt => opt.value === value);
-  
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
   return (
     <div className={`w-full ${className}`}>
       {label && (
@@ -260,7 +262,7 @@ export function NebulaSelect({
           {label}
         </label>
       )}
-      
+
       <div className="relative">
         <button
           type="button"
@@ -283,7 +285,7 @@ export function NebulaSelect({
         >
           {selectedOption?.label || placeholder}
         </button>
-        
+
         {/* Dropdown arrow */}
         <motion.div
           className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
@@ -299,7 +301,7 @@ export function NebulaSelect({
             />
           </svg>
         </motion.div>
-        
+
         {/* Dropdown menu */}
         <AnimatePresence>
           {isOpen && (
@@ -325,12 +327,8 @@ export function NebulaSelect({
                   }}
                   className="w-full text-left px-4 py-3 transition-colors"
                   style={{
-                    background: option.value === value 
-                      ? 'rgba(0,255,213,0.1)' 
-                      : 'transparent',
-                    color: option.value === value 
-                      ? '#00ffd5' 
-                      : 'rgba(255,255,255,0.8)',
+                    background: option.value === value ? 'rgba(0,255,213,0.1)' : 'transparent',
+                    color: option.value === value ? '#00ffd5' : 'rgba(255,255,255,0.8)',
                   }}
                   onMouseEnter={(e) => {
                     if (option.value !== value) {
@@ -350,7 +348,7 @@ export function NebulaSelect({
           )}
         </AnimatePresence>
       </div>
-      
+
       {error && (
         <motion.p
           initial={{ opacity: 0, y: -5 }}
@@ -365,5 +363,3 @@ export function NebulaSelect({
 }
 
 export default NebulaInput;
-
-

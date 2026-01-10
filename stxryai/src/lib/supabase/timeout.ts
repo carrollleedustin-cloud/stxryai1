@@ -94,4 +94,3 @@ export function getConnectionErrorMessage(error: any): string {
 
   return error?.message || 'An unexpected error occurred';
 }
-

@@ -16,7 +16,9 @@ interface CreatorToolsDashboardProps {
 
 export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardProps) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'drafts' | 'collaboration' | 'templates' | 'marketing'>('drafts');
+  const [activeTab, setActiveTab] = useState<
+    'drafts' | 'collaboration' | 'templates' | 'marketing'
+  >('drafts');
   const [drafts, setDrafts] = useState<StoryDraft[]>([]);
   const [collaborations, setCollaborations] = useState<StoryCollaborator[]>([]);
   const [templates, setTemplates] = useState<WritingTemplate[]>([]);
@@ -79,7 +81,9 @@ export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardP
           <Icon name="WrenchScrewdriverIcon" size={28} />
           Creator Tools
         </h2>
-        <p className="text-muted-foreground">Enhanced editing, collaboration, and marketing tools</p>
+        <p className="text-muted-foreground">
+          Enhanced editing, collaboration, and marketing tools
+        </p>
       </div>
 
       {/* Tabs */}
@@ -127,11 +131,15 @@ export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardP
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>v{draft.versionNumber}</span>
                       <span>{draft.wordCount.toLocaleString()} words</span>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        draft.draftStatus === 'ready' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                        draft.draftStatus === 'review' ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200' :
-                        'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          draft.draftStatus === 'ready'
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : draft.draftStatus === 'review'
+                              ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                              : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'
+                        }`}
+                      >
                         {draft.draftStatus}
                       </span>
                     </div>
@@ -169,9 +177,7 @@ export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardP
                     <p className="text-sm text-muted-foreground">Role: {collab.role}</p>
                   </div>
                   <div className="flex gap-2">
-                    <button className="px-4 py-2 bg-green-500 text-white rounded-lg">
-                      Accept
-                    </button>
+                    <button className="px-4 py-2 bg-green-500 text-white rounded-lg">Accept</button>
                     <button className="px-4 py-2 bg-gray-200 dark:bg-gray-800 text-foreground rounded-lg">
                       Decline
                     </button>
@@ -249,15 +255,21 @@ export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardP
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h4 className="text-lg font-bold text-foreground mb-2">{campaign.campaignName}</h4>
+                    <h4 className="text-lg font-bold text-foreground mb-2">
+                      {campaign.campaignName}
+                    </h4>
                     <p className="text-sm text-muted-foreground mb-2">{campaign.description}</p>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="capitalize">{campaign.campaignType}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        campaign.campaignStatus === 'active' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
-                        campaign.campaignStatus === 'scheduled' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
-                        'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          campaign.campaignStatus === 'active'
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : campaign.campaignStatus === 'scheduled'
+                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                              : 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200'
+                        }`}
+                      >
                         {campaign.campaignStatus}
                       </span>
                     </div>
@@ -274,4 +286,3 @@ export function CreatorToolsDashboard({ className = '' }: CreatorToolsDashboardP
     </div>
   );
 }
-

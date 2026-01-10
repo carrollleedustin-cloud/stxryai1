@@ -17,7 +17,7 @@ export default function BlogPage() {
     {
       id: 2,
       title: 'Getting Started with Story Creation',
-      excerpt: 'A beginner\'s guide to creating your first interactive story on StxryAI.',
+      excerpt: "A beginner's guide to creating your first interactive story on StxryAI.",
       author: 'StxryAI Team',
       date: '2024-12-10',
       category: 'Tutorial',
@@ -41,7 +41,9 @@ export default function BlogPage() {
           className="text-center mb-16"
         >
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">Blog</h1>
-          <p className="text-xl text-gray-300">Stories, updates, and insights from the StxryAI team</p>
+          <p className="text-xl text-gray-300">
+            Stories, updates, and insights from the StxryAI team
+          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -90,4 +92,3 @@ export default function BlogPage() {
     </div>
   );
 }
-

@@ -28,18 +28,18 @@ import {
 interface ReaderSettings {
   // Theme
   theme: 'light' | 'dark' | 'sepia' | 'high-contrast';
-  
+
   // Typography
   fontFamily: 'serif' | 'sans-serif' | 'dyslexic';
   fontSize: number; // 12-24px
   lineHeight: number; // 1.4-2.0
   letterSpacing: number; // 0-2px
   textAlign: 'left' | 'center' | 'justify';
-  
+
   // Layout
   maxWidth: number; // 600-900px
   padding: number; // 20-60px
-  
+
   // Features
   distractionFree: boolean;
   showProgress: boolean;
@@ -664,9 +664,7 @@ export default function EnhancedReaderInterface({
                   <input
                     type="checkbox"
                     checked={settings.showProgress}
-                    onChange={(e) =>
-                      setSettings({ ...settings, showProgress: e.target.checked })
-                    }
+                    onChange={(e) => setSettings({ ...settings, showProgress: e.target.checked })}
                     className="w-5 h-5"
                   />
                 </label>
@@ -676,9 +674,7 @@ export default function EnhancedReaderInterface({
                   <input
                     type="checkbox"
                     checked={settings.autoScroll}
-                    onChange={(e) =>
-                      setSettings({ ...settings, autoScroll: e.target.checked })
-                    }
+                    onChange={(e) => setSettings({ ...settings, autoScroll: e.target.checked })}
                     className="w-5 h-5"
                   />
                 </label>

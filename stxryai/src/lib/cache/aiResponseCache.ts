@@ -26,7 +26,13 @@ export interface CachedAIResponse {
 }
 
 export interface AIPromptContext {
-  type: 'story_continuation' | 'character_dialogue' | 'world_building' | 'choice_generation' | 'summary' | 'suggestion';
+  type:
+    | 'story_continuation'
+    | 'character_dialogue'
+    | 'world_building'
+    | 'choice_generation'
+    | 'summary'
+    | 'suggestion';
   seriesId?: string;
   bookId?: string;
   chapterId?: string;
@@ -50,12 +56,12 @@ export interface CacheConfig {
 const DEFAULT_CONFIG: CacheConfig = {
   enabled: true,
   ttlByType: {
-    story_continuation: 5 * 60 * 1000,     // 5 minutes - unique per context
-    character_dialogue: 10 * 60 * 1000,     // 10 minutes - voice is consistent
-    world_building: 30 * 60 * 1000,         // 30 minutes - rarely changes
-    choice_generation: 2 * 60 * 1000,       // 2 minutes - choices should vary
-    summary: 60 * 60 * 1000,                // 1 hour - summaries are stable
-    suggestion: 15 * 60 * 1000,             // 15 minutes
+    story_continuation: 5 * 60 * 1000, // 5 minutes - unique per context
+    character_dialogue: 10 * 60 * 1000, // 10 minutes - voice is consistent
+    world_building: 30 * 60 * 1000, // 30 minutes - rarely changes
+    choice_generation: 2 * 60 * 1000, // 2 minutes - choices should vary
+    summary: 60 * 60 * 1000, // 1 hour - summaries are stable
+    suggestion: 15 * 60 * 1000, // 15 minutes
   },
   maxEntries: 1000,
   similarityThreshold: 0.95,
@@ -85,7 +91,7 @@ class AIResponseCache {
   private hashPrompt(prompt: string, context: AIPromptContext): string {
     // Normalize the prompt
     const normalized = prompt.toLowerCase().trim().replace(/\s+/g, ' ');
-    
+
     // Create a deterministic key from prompt + context
     const contextKey = [
       context.type,
@@ -95,17 +101,19 @@ class AIResponseCache {
       context.characterId,
       context.genre,
       context.tone,
-    ].filter(Boolean).join(':');
+    ]
+      .filter(Boolean)
+      .join(':');
 
     // Simple hash function for browser compatibility
     let hash = 0;
     const str = normalized + contextKey;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32bit integer
     }
-    
+
     return `ai:${context.type}:${Math.abs(hash).toString(36)}`;
   }
 
@@ -144,7 +152,7 @@ class AIResponseCache {
 
     const key = this.hashPrompt(prompt, context);
     const ttl = this.config.ttlByType[context.type];
-    
+
     const cached: CachedAIResponse = {
       content: response,
       model,
@@ -165,15 +173,15 @@ class AIResponseCache {
   findSimilar(prompt: string, context: AIPromptContext): CachedAIResponse[] {
     const key = this.hashPrompt(prompt, context);
     const basePrefix = `ai:${context.type}:`;
-    
+
     // Get all keys with same type prefix
     const similar: CachedAIResponse[] = [];
-    
+
     // This would require extending queryCache with getAllByPrefix
     // For now, we do exact match only
     const cached = queryCache.get<CachedAIResponse>(key);
     if (cached) similar.push(cached);
-    
+
     return similar;
   }
 
@@ -182,13 +190,13 @@ class AIResponseCache {
    */
   invalidate(context: Partial<AIPromptContext>): void {
     const patterns: string[] = [];
-    
+
     if (context.type) patterns.push(`ai:${context.type}:`);
     if (context.seriesId) patterns.push(context.seriesId);
     if (context.characterId) patterns.push(context.characterId);
-    
+
     // Invalidate matching patterns
-    patterns.forEach(pattern => {
+    patterns.forEach((pattern) => {
       queryCache.invalidatePattern(pattern);
     });
   }
@@ -214,11 +222,11 @@ class AIResponseCache {
   } {
     const total = this.stats.hits + this.stats.misses;
     const hitRate = total > 0 ? (this.stats.hits / total) * 100 : 0;
-    
+
     // Extrapolate monthly savings based on current rate
     const uptimeHours = 1; // Assume 1 hour of data
     const estimatedMonthlySavings = (this.stats.costSaved / uptimeHours) * 24 * 30;
-    
+
     return {
       ...this.stats,
       hitRate,
@@ -234,8 +242,8 @@ class AIResponseCache {
     // $0.150 / 1M input tokens
     // $0.600 / 1M output tokens
     const PROMPT_COST_PER_1M = 0.15;
-    const COMPLETION_COST_PER_1M = 0.60;
-    
+    const COMPLETION_COST_PER_1M = 0.6;
+
     return (
       (tokens.prompt / 1000000) * PROMPT_COST_PER_1M +
       (tokens.completion / 1000000) * COMPLETION_COST_PER_1M
@@ -312,16 +320,15 @@ export async function withAICache<T>(
 export const aiCacheKeys = {
   storyContext: (seriesId: string, bookId?: string, chapterId?: string) =>
     generateCacheKey('ai:story', seriesId, bookId, chapterId),
-  
+
   characterVoice: (characterId: string, mood?: string) =>
     generateCacheKey('ai:character', characterId, mood),
-  
+
   worldElement: (seriesId: string, elementType: string, elementId?: string) =>
     generateCacheKey('ai:world', seriesId, elementType, elementId),
-  
+
   choiceGeneration: (chapterId: string, choiceCount: number) =>
     generateCacheKey('ai:choices', chapterId, choiceCount.toString()),
 };
-
 
 import { generateCacheKey } from '../utils';

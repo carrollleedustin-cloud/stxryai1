@@ -191,7 +191,10 @@ export function trapFocus(container: HTMLElement): () => void {
 /**
  * Announce message to screen readers
  */
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite'): void {
+export function announceToScreenReader(
+  message: string,
+  priority: 'polite' | 'assertive' = 'polite'
+): void {
   if (typeof document === 'undefined') return;
 
   const announcement = document.createElement('div');
@@ -313,7 +316,10 @@ export function validateHeadingHierarchy(container: HTMLElement): string[] {
 /**
  * Create skip navigation link
  */
-export function createSkipLink(targetId: string, text: string = 'Skip to main content'): HTMLElement {
+export function createSkipLink(
+  targetId: string,
+  text: string = 'Skip to main content'
+): HTMLElement {
   const skipLink = document.createElement('a');
   skipLink.href = `#${targetId}`;
   skipLink.className = 'skip-link';

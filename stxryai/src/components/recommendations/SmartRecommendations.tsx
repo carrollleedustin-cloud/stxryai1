@@ -43,7 +43,7 @@ export function SmartRecommendations({
       // TODO: Replace with actual AI recommendation service
       // const data = await recommendationService.getSmartRecommendations(userId, limit);
       // setRecommendations(data);
-      
+
       // Mock data for now
       setRecommendations([]);
     } catch (error) {
@@ -90,7 +90,9 @@ export function SmartRecommendations({
             <span>✨</span>
             Recommended For You
           </h2>
-          <p className="text-muted-foreground">AI-powered suggestions based on your reading history</p>
+          <p className="text-muted-foreground">
+            AI-powered suggestions based on your reading history
+          </p>
         </div>
         <motion.button
           onClick={loadRecommendations}
@@ -164,4 +166,3 @@ export function SmartRecommendations({
     </div>
   );
 }
-

@@ -72,11 +72,11 @@ export default function SettingsPage() {
   const [darkMode, setDarkMode] = useState(true);
 
   const toggleNotification = (key: keyof NotificationSettings) => {
-    setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+    setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const togglePrivacy = (key: keyof PrivacySettings) => {
-    setPrivacy(prev => ({ ...prev, [key]: !prev[key] }));
+    setPrivacy((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const ToggleSwitch = ({ enabled, onChange }: { enabled: boolean; onChange: () => void }) => (
@@ -112,18 +112,28 @@ export default function SettingsPage() {
   }) => (
     <div className="flex items-center justify-between py-4 border-b border-white/5 last:border-0">
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-          color === 'cyan' ? 'bg-aurora-cyan/10' :
-          color === 'pink' ? 'bg-aurora-pink/10' :
-          color === 'purple' ? 'bg-aurora-violet/10' :
-          'bg-white/10'
-        }`}>
-          <Icon className={`w-5 h-5 ${
-            color === 'cyan' ? 'text-aurora-cyan' :
-            color === 'pink' ? 'text-aurora-pink' :
-            color === 'purple' ? 'text-aurora-violet' :
-            'text-white'
-          }`} />
+        <div
+          className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            color === 'cyan'
+              ? 'bg-aurora-cyan/10'
+              : color === 'pink'
+                ? 'bg-aurora-pink/10'
+                : color === 'purple'
+                  ? 'bg-aurora-violet/10'
+                  : 'bg-white/10'
+          }`}
+        >
+          <Icon
+            className={`w-5 h-5 ${
+              color === 'cyan'
+                ? 'text-aurora-cyan'
+                : color === 'pink'
+                  ? 'text-aurora-pink'
+                  : color === 'purple'
+                    ? 'text-aurora-violet'
+                    : 'text-white'
+            }`}
+          />
         </div>
         <div>
           <p className="text-white font-medium">{label}</p>
@@ -153,20 +163,32 @@ export default function SettingsPage() {
         whileHover={{ x: 4 }}
       >
         <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-            danger ? 'bg-red-500/10' :
-            color === 'cyan' ? 'bg-aurora-cyan/10' :
-            color === 'pink' ? 'bg-aurora-pink/10' :
-            color === 'purple' ? 'bg-aurora-violet/10' :
-            'bg-white/10'
-          }`}>
-            <Icon className={`w-5 h-5 ${
-              danger ? 'text-red-400' :
-              color === 'cyan' ? 'text-aurora-cyan' :
-              color === 'pink' ? 'text-aurora-pink' :
-              color === 'purple' ? 'text-aurora-violet' :
-              'text-white'
-            }`} />
+          <div
+            className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              danger
+                ? 'bg-red-500/10'
+                : color === 'cyan'
+                  ? 'bg-aurora-cyan/10'
+                  : color === 'pink'
+                    ? 'bg-aurora-pink/10'
+                    : color === 'purple'
+                      ? 'bg-aurora-violet/10'
+                      : 'bg-white/10'
+            }`}
+          >
+            <Icon
+              className={`w-5 h-5 ${
+                danger
+                  ? 'text-red-400'
+                  : color === 'cyan'
+                    ? 'text-aurora-cyan'
+                    : color === 'pink'
+                      ? 'text-aurora-pink'
+                      : color === 'purple'
+                        ? 'text-aurora-violet'
+                        : 'text-white'
+              }`}
+            />
           </div>
           <p className={`font-medium ${danger ? 'text-red-400' : 'text-white'}`}>{label}</p>
         </div>
@@ -178,7 +200,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-nebula-void relative">
       <NebulaBackground variant="subtle" />
-      
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-nebula-void/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -188,19 +210,34 @@ export default function SettingsPage() {
                 Stxryai
               </Link>
               <div className="hidden md:flex items-center gap-6">
-                <Link href="/family" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Overview
                 </Link>
-                <Link href="/family/profiles" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/profiles"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Kids Profiles
                 </Link>
-                <Link href="/family/controls" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/controls"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Content Controls
                 </Link>
-                <Link href="/family/activity" className="text-sm text-white/60 hover:text-white transition-colors">
+                <Link
+                  href="/family/activity"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
                   Activity
                 </Link>
-                <Link href="/family/settings" className="text-sm text-aurora-cyan font-medium relative">
+                <Link
+                  href="/family/settings"
+                  className="text-sm text-aurora-cyan font-medium relative"
+                >
                   Settings
                   <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-aurora-cyan rounded-full" />
                 </Link>
@@ -223,7 +260,10 @@ export default function SettingsPage() {
       <main className="relative z-10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-aurora-cyan mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+          <h1
+            className="text-3xl font-bold text-aurora-cyan mb-2"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
             Settings
           </h1>
           <p className="text-white/60">Manage your account and preferences</p>
@@ -241,7 +281,7 @@ export default function SettingsPage() {
               <Bell className="w-5 h-5 text-aurora-cyan" />
               Notifications
             </h2>
-            
+
             <div className="space-y-1">
               <SettingRow
                 icon={Mail}
@@ -303,7 +343,7 @@ export default function SettingsPage() {
               <Eye className="w-5 h-5 text-aurora-cyan" />
               Privacy & Safety
             </h2>
-            
+
             <div className="space-y-1">
               <SettingRow
                 icon={Eye}
@@ -349,7 +389,7 @@ export default function SettingsPage() {
               <Sun className="w-5 h-5 text-aurora-cyan" />
               Appearance
             </h2>
-            
+
             <div className="flex items-center justify-between py-4">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-xl bg-aurora-violet/10 flex items-center justify-center">
@@ -379,11 +419,21 @@ export default function SettingsPage() {
               <Lock className="w-5 h-5 text-aurora-cyan" />
               Account
             </h2>
-            
+
             <div className="space-y-1">
               <LinkRow icon={Lock} label="Change Password" href="/family/settings/password" />
-              <LinkRow icon={Mail} label="Email Preferences" href="/family/settings/email" color="pink" />
-              <LinkRow icon={CreditCard} label="Subscription & Billing" href="/family/settings/billing" color="purple" />
+              <LinkRow
+                icon={Mail}
+                label="Email Preferences"
+                href="/family/settings/email"
+                color="pink"
+              />
+              <LinkRow
+                icon={CreditCard}
+                label="Subscription & Billing"
+                href="/family/settings/billing"
+                color="purple"
+              />
               <LinkRow icon={Download} label="Download My Data" href="/family/settings/data" />
             </div>
           </motion.section>
@@ -399,7 +449,7 @@ export default function SettingsPage() {
               <HelpCircle className="w-5 h-5 text-aurora-cyan" />
               Support
             </h2>
-            
+
             <div className="space-y-1">
               <LinkRow icon={HelpCircle} label="Help Center" href="/help" />
               <LinkRow icon={MessageSquare} label="Contact Support" href="/support" color="pink" />
@@ -418,7 +468,7 @@ export default function SettingsPage() {
               <Shield className="w-5 h-5" />
               Danger Zone
             </h2>
-            
+
             <div className="space-y-1">
               <LinkRow icon={LogOut} label="Sign Out" href="/auth/logout" danger />
               <LinkRow icon={Trash2} label="Delete Account" href="/family/settings/delete" danger />
@@ -429,4 +479,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

@@ -50,4 +50,3 @@ export {
   type ImpactAnalysis,
   type PropagationResult,
 } from './revisionPropagation';
-

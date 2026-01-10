@@ -33,7 +33,12 @@ export function StoryRemix({ originalStoryId, originalStoryTitle, onRemix }: Sto
     { id: 'fork' as const, label: 'Fork', icon: '🔀', description: 'Create a parallel version' },
     { id: 'remix' as const, label: 'Remix', icon: '🎵', description: 'Mix and match elements' },
     { id: 'sequel' as const, label: 'Sequel', icon: '➡️', description: 'Continue the story' },
-    { id: 'prequel' as const, label: 'Prequel', icon: '⬅️', description: 'Tell what happened before' },
+    {
+      id: 'prequel' as const,
+      label: 'Prequel',
+      icon: '⬅️',
+      description: 'Tell what happened before',
+    },
   ];
 
   const handleRemix = async () => {
@@ -128,8 +133,16 @@ export function StoryRemix({ originalStoryId, originalStoryTitle, onRemix }: Sto
                     What to Keep
                   </label>
                   {[
-                    { key: 'keepStructure', label: 'Story Structure', description: 'Keep branching paths' },
-                    { key: 'keepCharacters', label: 'Characters', description: 'Keep character names' },
+                    {
+                      key: 'keepStructure',
+                      label: 'Story Structure',
+                      description: 'Keep branching paths',
+                    },
+                    {
+                      key: 'keepCharacters',
+                      label: 'Characters',
+                      description: 'Keep character names',
+                    },
                     { key: 'keepSetting', label: 'Setting', description: 'Keep world/location' },
                   ].map((option) => (
                     <label
@@ -139,9 +152,7 @@ export function StoryRemix({ originalStoryId, originalStoryTitle, onRemix }: Sto
                       <input
                         type="checkbox"
                         checked={options[option.key as keyof RemixOptions] as boolean}
-                        onChange={(e) =>
-                          setOptions({ ...options, [option.key]: e.target.checked })
-                        }
+                        onChange={(e) => setOptions({ ...options, [option.key]: e.target.checked })}
                         className="mt-1 w-4 h-4 rounded border-border"
                       />
                       <div>
@@ -180,4 +191,3 @@ export function StoryRemix({ originalStoryId, originalStoryTitle, onRemix }: Sto
     </>
   );
 }
-

@@ -42,7 +42,10 @@ export function AIStreamingProgress({
       {/* Progress Bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-foreground">{message}{dots}</span>
+          <span className="font-medium text-foreground">
+            {message}
+            {dots}
+          </span>
           {progress > 0 && <span className="text-muted-foreground">{Math.round(progress)}%</span>}
         </div>
         <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -111,4 +114,3 @@ export function AIStreamingProgress({
     </div>
   );
 }
-

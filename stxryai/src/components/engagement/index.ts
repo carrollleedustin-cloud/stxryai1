@@ -1,9 +1,9 @@
 /**
  * Engagement Components
- * 
+ *
  * Components for user retention and engagement features:
  * - Reading Streaks
- * - Daily Challenges  
+ * - Daily Challenges
  * - Activity Feed
  * - Milestone Celebrations
  * - Push Notifications
@@ -27,4 +27,3 @@ export { dailyChallengeService } from '@/services/dailyChallengeService';
 export { milestoneCelebrationService } from '@/services/milestoneCelebrationService';
 export { pushNotificationService } from '@/services/pushNotificationService';
 export { streakService } from '@/services/streakService';
-

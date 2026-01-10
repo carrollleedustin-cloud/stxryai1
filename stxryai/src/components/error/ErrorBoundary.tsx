@@ -44,21 +44,23 @@ export class ErrorBoundary extends Component<Props, State> {
     // ErrorBoundary only runs on client, but keeping consistent with other error tracking
     if (process.env.NODE_ENV === 'production') {
       // Dynamic import to avoid bundling error tracking if not configured
-      import('@/lib/error-tracking').then(({ errorTracking }) => {
-        errorTracking.captureException(error, {
-          level: 'error',
-          tags: {
-            component: 'ErrorBoundary',
-          },
-          contexts: {
-            react: {
-              componentStack: errorInfo.componentStack,
+      import('@/lib/error-tracking')
+        .then(({ errorTracking }) => {
+          errorTracking.captureException(error, {
+            level: 'error',
+            tags: {
+              component: 'ErrorBoundary',
             },
-          },
+            contexts: {
+              react: {
+                componentStack: errorInfo.componentStack,
+              },
+            },
+          });
+        })
+        .catch(() => {
+          // Error tracking not available, silently fail
         });
-      }).catch(() => {
-        // Error tracking not available, silently fail
-      });
     }
   }
 
@@ -193,21 +195,19 @@ export function AsyncErrorBoundary({
   return (
     <ErrorBoundary
       fallback={(error, reset) =>
-        typeof errorFallback === 'function' ? (
-          errorFallback(error, reset)
-        ) : (
-          errorFallback || (
-            <div className="flex flex-col items-center justify-center p-8 text-center">
-              <p className="mb-4 text-red-600 dark:text-red-400">Failed to load content</p>
-              <button
-                onClick={reset}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
-              >
-                Retry
-              </button>
-            </div>
-          )
-        )
+        typeof errorFallback === 'function'
+          ? errorFallback(error, reset)
+          : errorFallback || (
+              <div className="flex flex-col items-center justify-center p-8 text-center">
+                <p className="mb-4 text-red-600 dark:text-red-400">Failed to load content</p>
+                <button
+                  onClick={reset}
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+                >
+                  Retry
+                </button>
+              </div>
+            )
       }
     >
       {children}

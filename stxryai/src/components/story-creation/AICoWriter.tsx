@@ -18,7 +18,13 @@ interface AICoWriterProps {
   onSuggestionInsert: (suggestion: string, position: number) => void;
 }
 
-type SuggestionType = 'continue' | 'enhance' | 'dialogue' | 'description' | 'conflict' | 'resolution';
+type SuggestionType =
+  | 'continue'
+  | 'enhance'
+  | 'dialogue'
+  | 'description'
+  | 'conflict'
+  | 'resolution';
 
 export function AICoWriter({
   currentContent,
@@ -32,7 +38,12 @@ export function AICoWriter({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const suggestionTypes: Array<{ id: SuggestionType; label: string; icon: string; description: string }> = [
+  const suggestionTypes: Array<{
+    id: SuggestionType;
+    label: string;
+    icon: string;
+    description: string;
+  }> = [
     { id: 'continue', label: 'Continue', icon: '➡️', description: 'Continue the story naturally' },
     { id: 'enhance', label: 'Enhance', icon: '✨', description: 'Add more detail and depth' },
     { id: 'dialogue', label: 'Dialogue', icon: '💬', description: 'Generate character dialogue' },
@@ -241,4 +252,3 @@ export function AICoWriter({
     </div>
   );
 }
-

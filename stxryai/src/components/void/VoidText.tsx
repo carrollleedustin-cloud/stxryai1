@@ -32,14 +32,14 @@ export default function VoidText({
   const ref = useRef(null);
   const isInView = useInView(ref, { once, margin: '-10% 0px -10% 0px' });
   const controls = useAnimation();
-  
+
   const variantStyles: Record<string, string> = {
     display: 'font-display text-4xl md:text-6xl lg:text-7xl tracking-vast text-text-primary',
     prose: 'font-prose text-lg md:text-xl leading-relaxed text-text-secondary',
     whisper: 'font-literary text-base italic text-text-tertiary tracking-wide',
     spectral: 'font-display text-2xl md:text-3xl tracking-wide text-spectral-glow',
   };
-  
+
   const containerVariants: Variants = {
     hidden: {},
     visible: {
@@ -49,7 +49,7 @@ export default function VoidText({
       },
     },
   };
-  
+
   const itemVariants: Variants = {
     hidden: {
       opacity: 0,
@@ -64,13 +64,13 @@ export default function VoidText({
       },
     },
   };
-  
+
   useEffect(() => {
     if (isInView) {
       controls.start('visible');
     }
   }, [isInView, controls]);
-  
+
   const splitText = () => {
     switch (splitBy) {
       case 'letter':
@@ -79,7 +79,7 @@ export default function VoidText({
             key={i}
             variants={itemVariants}
             className="inline-block"
-            style={{ 
+            style={{
               display: char === ' ' ? 'inline' : 'inline-block',
               whiteSpace: char === ' ' ? 'pre' : 'normal',
             }}
@@ -89,12 +89,9 @@ export default function VoidText({
         ));
       case 'word':
         return children.split(' ').map((word, i, arr) => (
-          <motion.span
-            key={i}
-            variants={itemVariants}
-            className="inline-block"
-          >
-            {word}{i < arr.length - 1 ? '\u00A0' : ''}
+          <motion.span key={i} variants={itemVariants} className="inline-block">
+            {word}
+            {i < arr.length - 1 ? '\u00A0' : ''}
           </motion.span>
         ));
       case 'line':
@@ -107,7 +104,7 @@ export default function VoidText({
         return children;
     }
   };
-  
+
   return (
     <motion.div
       ref={ref}
@@ -138,7 +135,7 @@ export function TemporalHeading({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-5%' });
-  
+
   const sizeClasses = {
     1: 'text-5xl md:text-7xl lg:text-8xl',
     2: 'text-3xl md:text-5xl lg:text-6xl',
@@ -146,7 +143,7 @@ export function TemporalHeading({
   };
 
   const HeadingTag = `h${level}` as keyof JSX.IntrinsicElements;
-  
+
   // If children is a string, split and animate each character
   // Otherwise, render children directly with simple fade animation
   const renderContent = () => {
@@ -162,7 +159,7 @@ export function TemporalHeading({
             ease: [0.16, 1, 0.3, 1],
           }}
           className="inline-block origin-bottom"
-          style={{ 
+          style={{
             display: char === ' ' ? 'inline' : 'inline-block',
             transformStyle: 'preserve-3d',
           }}
@@ -171,11 +168,11 @@ export function TemporalHeading({
         </motion.span>
       ));
     }
-    
+
     // For React nodes, just render them
     return children;
   };
-  
+
   return (
     <motion.div
       ref={ref}
@@ -198,31 +195,23 @@ export function TemporalHeading({
  * GHOST TEXT
  * Text that exists on multiple opacity layers
  */
-export function GhostText({
-  children,
-  className = '',
-}: {
-  children: string;
-  className?: string;
-}) {
+export function GhostText({ children, className = '' }: { children: string; className?: string }) {
   return (
     <span className={`relative inline-block ${className}`}>
       {/* Ghost layer - behind */}
-      <span 
+      <span
         className="absolute inset-0 text-spectral-cyan opacity-20 blur-sm select-none"
         aria-hidden="true"
         style={{ transform: 'translate(-2px, -2px)' }}
       >
         {children}
       </span>
-      
+
       {/* Primary layer */}
-      <span className="relative">
-        {children}
-      </span>
-      
+      <span className="relative">{children}</span>
+
       {/* Glow layer - in front */}
-      <span 
+      <span
         className="absolute inset-0 text-spectral-cyan opacity-10 blur-md select-none mix-blend-screen"
         aria-hidden="true"
         style={{ transform: 'translate(1px, 1px)' }}
@@ -232,4 +221,3 @@ export function GhostText({
     </span>
   );
 }
-

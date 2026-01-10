@@ -2,7 +2,11 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { chapterCommentService, type ChapterComment, type ChapterCommentStats } from '@/services/chapterCommentService';
+import {
+  chapterCommentService,
+  type ChapterComment,
+  type ChapterCommentStats,
+} from '@/services/chapterCommentService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -20,7 +24,9 @@ export function ChapterComments({ chapterId, className = '' }: ChapterCommentsPr
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
-  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'most_liked' | 'most_replies'>('newest');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'most_liked' | 'most_replies'>(
+    'newest'
+  );
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
 
@@ -209,8 +215,14 @@ export function ChapterComments({ chapterId, className = '' }: ChapterCommentsPr
       <div className="space-y-4">
         {comments.length === 0 ? (
           <div className="text-center py-12 bg-card border-2 border-border rounded-xl">
-            <Icon name="ChatBubbleLeftRightIcon" size={48} className="mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">No comments yet. Be the first to share your thoughts!</p>
+            <Icon
+              name="ChatBubbleLeftRightIcon"
+              size={48}
+              className="mx-auto text-muted-foreground mb-4"
+            />
+            <p className="text-muted-foreground">
+              No comments yet. Be the first to share your thoughts!
+            </p>
           </div>
         ) : (
           comments.map((comment, index) => (
@@ -304,9 +316,7 @@ function CommentItem({
       {/* Comment Header */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
-          {comment.isPinned && (
-            <Icon name="PinIcon" size={16} className="text-yellow-500" />
-          )}
+          {comment.isPinned && <Icon name="PinIcon" size={16} className="text-yellow-500" />}
           {comment.authorReplied && (
             <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium">
               Author Replied
@@ -321,9 +331,7 @@ function CommentItem({
       {/* Comment Content */}
       <div className="mb-3">
         <p className="text-foreground whitespace-pre-wrap">{comment.content}</p>
-        {comment.isEdited && (
-          <span className="text-xs text-muted-foreground">(edited)</span>
-        )}
+        {comment.isEdited && <span className="text-xs text-muted-foreground">(edited)</span>}
       </div>
 
       {/* Comment Actions */}
@@ -331,9 +339,7 @@ function CommentItem({
         <button
           onClick={onLike}
           className={`flex items-center gap-1 transition-colors ${
-            isLiked
-              ? 'text-red-500'
-              : 'text-muted-foreground hover:text-foreground'
+            isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           <Icon name={isLiked ? 'HeartIcon' : 'HeartIcon'} size={18} />
@@ -349,10 +355,7 @@ function CommentItem({
         </button>
 
         {user && (
-          <button
-            onClick={onReply}
-            className="text-muted-foreground hover:text-foreground"
-          >
+          <button onClick={onReply} className="text-muted-foreground hover:text-foreground">
             Reply
           </button>
         )}
@@ -413,10 +416,7 @@ function CommentItem({
                   <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                     <span>{new Date(reply.createdAt).toLocaleDateString()}</span>
                     <span>•</span>
-                    <button
-                      onClick={() => onLike()}
-                      className="flex items-center gap-1"
-                    >
+                    <button onClick={() => onLike()} className="flex items-center gap-1">
                       <Icon name="HeartIcon" size={14} />
                       <span>{reply.likeCount}</span>
                     </button>
@@ -430,4 +430,3 @@ function CommentItem({
     </motion.div>
   );
 }
-

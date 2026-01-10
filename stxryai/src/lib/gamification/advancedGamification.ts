@@ -286,10 +286,7 @@ export function generateEpicQuests(): Quest[] {
 /**
  * Update streak
  */
-export function updateStreak(
-  streak: Streak,
-  activityDate: Date
-): Streak {
+export function updateStreak(streak: Streak, activityDate: Date): Streak {
   const lastActivity = new Date(streak.lastActivity);
   const daysSinceLastActivity = Math.floor(
     (activityDate.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
@@ -385,10 +382,7 @@ export function getXPForLevel(level: number): number {
 /**
  * Grant reward to user
  */
-export async function grantReward(
-  userId: string,
-  reward: QuestReward
-): Promise<void> {
+export async function grantReward(userId: string, reward: QuestReward): Promise<void> {
   switch (reward.type) {
     case 'xp':
       // Add XP to user
@@ -582,11 +576,7 @@ export function getNextAchievement(
 /**
  * Create seasonal event
  */
-export function createSeasonalEvent(
-  name: string,
-  theme: string,
-  durationDays: number
-): Season {
+export function createSeasonalEvent(name: string, theme: string, durationDays: number): Season {
   const startDate = new Date();
   const endDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
 

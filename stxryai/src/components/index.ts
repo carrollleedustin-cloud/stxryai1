@@ -92,4 +92,3 @@ export { ParallaxScroll, ParallaxContainer } from './ui/ParallaxScroll';
 export { Card3D } from './ui/3DCard';
 export { SmoothScroll } from './ui/SmoothScroll';
 export { Confetti } from './ui/Confetti';
-

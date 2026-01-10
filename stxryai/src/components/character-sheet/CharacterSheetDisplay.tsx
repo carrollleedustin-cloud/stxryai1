@@ -18,15 +18,15 @@ interface CharacterSheetDisplayProps {
 }
 
 // Section component
-const Section = ({ 
-  title, 
-  icon, 
-  children, 
+const Section = ({
+  title,
+  icon,
+  children,
   delay = 0,
-  color = 'cyan'
-}: { 
-  title: string; 
-  icon: string; 
+  color = 'cyan',
+}: {
+  title: string;
+  icon: string;
   children: React.ReactNode;
   delay?: number;
   color?: 'cyan' | 'pink' | 'gold' | 'purple' | 'green';
@@ -56,7 +56,13 @@ const Section = ({
 };
 
 // Trait badge
-const TraitBadge = ({ children, type = 'neutral' }: { children: string; type?: 'strength' | 'weakness' | 'neutral' }) => {
+const TraitBadge = ({
+  children,
+  type = 'neutral',
+}: {
+  children: string;
+  type?: 'strength' | 'weakness' | 'neutral';
+}) => {
   const colors = {
     strength: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
     weakness: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
@@ -64,14 +70,23 @@ const TraitBadge = ({ children, type = 'neutral' }: { children: string; type?: '
   };
 
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${colors[type]}`}>
+    <span
+      className={`inline-block px-3 py-1 rounded-full text-xs font-medium border ${colors[type]}`}
+    >
       {children}
     </span>
   );
 };
 
-export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivacyChange }: CharacterSheetDisplayProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'love' | 'shadow' | 'aesthetic'>('overview');
+export function CharacterSheetDisplay({
+  sheet,
+  compact = false,
+  onEdit,
+  onPrivacyChange,
+}: CharacterSheetDisplayProps) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'love' | 'shadow' | 'aesthetic'>(
+    'overview'
+  );
   const [showPrivacy, setShowPrivacy] = useState(false);
 
   // Handle privacy toggle
@@ -119,7 +134,10 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
               <span className="text-3xl">{getZodiacEmoji(sheet.coreAlignment.moonSign)}</span>
               <span className="text-3xl">{getZodiacEmoji(sheet.coreAlignment.risingSign)}</span>
             </div>
-            <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-display)' }}>
+            <h2
+              className="text-xl font-bold text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
               {sheet.personalityArchetype.title}
             </h2>
             <p className="text-sm text-white/60 italic mt-1">"{sheet.coreAlignment.tagline}"</p>
@@ -180,17 +198,15 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
           <div className="inline-flex items-center gap-1 px-4 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
             <span className="text-xs text-white/50">CHARACTER SHEET</span>
           </div>
-          
-          <h1 
+
+          <h1
             className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 mb-2"
             style={{ fontFamily: 'var(--font-display)' }}
           >
             {sheet.name}
           </h1>
-          
-          <p className="text-sm text-white/50 mb-6">
-            {getBirthInfoDisplay()}
-          </p>
+
+          <p className="text-sm text-white/50 mb-6">{getBirthInfoDisplay()}</p>
 
           {/* Privacy Toggle */}
           {onPrivacyChange && (
@@ -209,13 +225,13 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                 >
                   <label className="flex items-center justify-between py-2 cursor-pointer">
                     <span className="text-sm text-white/70">Hide location on profile</span>
-                    <div 
+                    <div
                       className={`w-12 h-6 rounded-full relative transition-colors ${
                         sheet.privacySettings?.hideLocation ? 'bg-cyan-500' : 'bg-white/20'
                       }`}
                       onClick={() => handlePrivacyToggle('hideLocation')}
                     >
-                      <div 
+                      <div
                         className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
                           sheet.privacySettings?.hideLocation ? 'translate-x-7' : 'translate-x-1'
                         }`}
@@ -224,13 +240,13 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                   </label>
                   <label className="flex items-center justify-between py-2 cursor-pointer">
                     <span className="text-sm text-white/70">Hide birth time on profile</span>
-                    <div 
+                    <div
                       className={`w-12 h-6 rounded-full relative transition-colors ${
                         sheet.privacySettings?.hideBirthTime ? 'bg-cyan-500' : 'bg-white/20'
                       }`}
                       onClick={() => handlePrivacyToggle('hideBirthTime')}
                     >
-                      <div 
+                      <div
                         className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
                           sheet.privacySettings?.hideBirthTime ? 'translate-x-7' : 'translate-x-1'
                         }`}
@@ -302,13 +318,18 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
 
         {/* Personality Archetype */}
         <Section title="Personality Archetype" icon="🎭" delay={0.2} color="purple">
-          <h4 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-display)' }}>
+          <h4
+            className="text-2xl font-bold text-white mb-2"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
             {sheet.personalityArchetype.title}
           </h4>
           <p className="text-white/70 mb-3">{sheet.personalityArchetype.essence}</p>
           <div className="inline-block px-4 py-2 rounded-xl bg-white/5 border border-white/10">
             <span className="text-sm text-white/50">Mode of Operation: </span>
-            <span className="text-sm font-medium text-purple-300">{sheet.personalityArchetype.modeOfOperation}</span>
+            <span className="text-sm font-medium text-purple-300">
+              {sheet.personalityArchetype.modeOfOperation}
+            </span>
           </div>
         </Section>
 
@@ -359,7 +380,10 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {tab === 'overview' && '🌟 '}{tab === 'love' && '💕 '}{tab === 'shadow' && '🌙 '}{tab === 'aesthetic' && '🎨 '}
+              {tab === 'overview' && '🌟 '}
+              {tab === 'love' && '💕 '}
+              {tab === 'shadow' && '🌙 '}
+              {tab === 'aesthetic' && '🎨 '}
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </motion.button>
           ))}
@@ -380,7 +404,9 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-white/50">Archetype:</span>
-                    <span className="font-medium text-cyan-300">{sheet.emotionalProfile?.emotionalArchetype}</span>
+                    <span className="font-medium text-cyan-300">
+                      {sheet.emotionalProfile?.emotionalArchetype}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-white/50">Key Trait:</span>
@@ -389,7 +415,9 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                 </div>
                 <div className="mt-3 space-y-1">
                   {sheet.emotionalProfile?.traits?.map((trait, i) => (
-                    <p key={i} className="text-sm text-white/50">• {trait}</p>
+                    <p key={i} className="text-sm text-white/50">
+                      • {trait}
+                    </p>
                   ))}
                 </div>
               </Section>
@@ -397,7 +425,9 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
               <Section title="Vocation & Purpose" icon="⚡" color="gold">
                 <p className="text-white/70 mb-3">{sheet.vocationProfile?.keyPlacements}</p>
                 {sheet.vocationProfile?.jupiterPlacement && (
-                  <p className="text-sm text-white/50 mb-2">{sheet.vocationProfile.jupiterPlacement}</p>
+                  <p className="text-sm text-white/50 mb-2">
+                    {sheet.vocationProfile.jupiterPlacement}
+                  </p>
                 )}
                 <p className="text-sm text-white/50 mb-3">{sheet.vocationProfile?.northNode}</p>
                 <div className="space-y-2">
@@ -424,35 +454,47 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-2xl">{getZodiacEmoji(sheet.loveProfile?.venusSign || '')}</span>
-                      <span className="text-lg font-bold text-pink-400">Venus in {sheet.loveProfile?.venusSign}</span>
+                      <span className="text-2xl">
+                        {getZodiacEmoji(sheet.loveProfile?.venusSign || '')}
+                      </span>
+                      <span className="text-lg font-bold text-pink-400">
+                        Venus in {sheet.loveProfile?.venusSign}
+                      </span>
                     </div>
                     <p className="text-white/70 text-sm">{sheet.loveProfile?.venusDescription}</p>
                   </div>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-2xl">{getZodiacEmoji(sheet.loveProfile?.marsSign || '')}</span>
-                      <span className="text-lg font-bold text-red-400">Mars in {sheet.loveProfile?.marsSign}</span>
+                      <span className="text-2xl">
+                        {getZodiacEmoji(sheet.loveProfile?.marsSign || '')}
+                      </span>
+                      <span className="text-lg font-bold text-red-400">
+                        Mars in {sheet.loveProfile?.marsSign}
+                      </span>
                     </div>
                     <p className="text-white/70 text-sm">{sheet.loveProfile?.marsDescription}</p>
                   </div>
                 </div>
-                
+
                 {sheet.loveProfile?.keyAspect && (
                   <div className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-sm text-white/50">Key Aspect:</p>
                     <p className="text-white/70">{sheet.loveProfile.keyAspect}</p>
                   </div>
                 )}
-                
+
                 <div className="mt-6 p-4 rounded-xl bg-white/5 border border-white/10">
                   <p className="text-sm text-white/50">Romantic Archetype:</p>
-                  <p className="text-lg font-bold text-pink-300">{sheet.loveProfile?.romanticArchetype}</p>
+                  <p className="text-lg font-bold text-pink-300">
+                    {sheet.loveProfile?.romanticArchetype}
+                  </p>
                 </div>
 
                 <div className="mt-4 space-y-2">
                   {sheet.loveProfile?.traits?.map((trait, i) => (
-                    <p key={i} className="text-sm text-white/60">• {trait}</p>
+                    <p key={i} className="text-sm text-white/60">
+                      • {trait}
+                    </p>
                   ))}
                 </div>
               </Section>
@@ -470,8 +512,12 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-2xl">{getZodiacEmoji(sheet.shadowProfile?.plutoSign || '')}</span>
-                      <span className="text-lg font-bold text-purple-400">Pluto in {sheet.shadowProfile?.plutoSign}</span>
+                      <span className="text-2xl">
+                        {getZodiacEmoji(sheet.shadowProfile?.plutoSign || '')}
+                      </span>
+                      <span className="text-lg font-bold text-purple-400">
+                        Pluto in {sheet.shadowProfile?.plutoSign}
+                      </span>
                     </div>
                     <p className="text-white/70 text-sm">{sheet.shadowProfile?.plutoDescription}</p>
                   </div>
@@ -479,28 +525,36 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-2xl">🌑</span>
-                        <span className="text-lg font-bold text-indigo-400">Lilith in {sheet.shadowProfile.lilithSign}</span>
+                        <span className="text-lg font-bold text-indigo-400">
+                          Lilith in {sheet.shadowProfile.lilithSign}
+                        </span>
                       </div>
-                      <p className="text-white/70 text-sm">{sheet.shadowProfile.lilithDescription}</p>
+                      <p className="text-white/70 text-sm">
+                        {sheet.shadowProfile.lilithDescription}
+                      </p>
                     </div>
                   )}
                 </div>
-                
+
                 {sheet.shadowProfile?.keyAspect && (
                   <div className="mt-4 p-3 rounded-xl bg-white/5 border border-white/10">
                     <p className="text-sm text-white/50">Key Aspect:</p>
                     <p className="text-white/70">{sheet.shadowProfile.keyAspect}</p>
                   </div>
                 )}
-                
+
                 <div className="mt-6 p-4 rounded-xl bg-white/5 border border-white/10">
                   <p className="text-sm text-white/50">Shadow Archetype:</p>
-                  <p className="text-lg font-bold text-purple-300">{sheet.shadowProfile?.shadowArchetype}</p>
+                  <p className="text-lg font-bold text-purple-300">
+                    {sheet.shadowProfile?.shadowArchetype}
+                  </p>
                 </div>
 
                 <div className="mt-4 space-y-2">
                   {sheet.shadowProfile?.traits?.map((trait, i) => (
-                    <p key={i} className="text-sm text-white/60">• {trait}</p>
+                    <p key={i} className="text-sm text-white/60">
+                      • {trait}
+                    </p>
                   ))}
                 </div>
               </Section>
@@ -520,16 +574,36 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                     <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Colors</p>
                     <div className="flex gap-2 flex-wrap">
                       {sheet.aestheticProfile?.colors?.map((color, i) => (
-                        <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                          <div className="w-3 h-3 rounded-full" style={{ 
-                            background: color.toLowerCase().includes('gray') || color.toLowerCase().includes('charcoal') ? '#4a5568' : 
-                                        color.toLowerCase().includes('gold') || color.toLowerCase().includes('parchment') ? '#d4af37' : 
-                                        color.toLowerCase().includes('blue') || color.toLowerCase().includes('lunar') ? '#3b82f6' : 
-                                        color.toLowerCase().includes('white') || color.toLowerCase().includes('silver') ? '#e5e7eb' :
-                                        color.toLowerCase().includes('red') || color.toLowerCase().includes('crimson') ? '#ef4444' : 
-                                        color.toLowerCase().includes('green') ? '#22c55e' : 
-                                        color.toLowerCase().includes('purple') ? '#a855f7' : '#9ca3af' 
-                          }} />
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10"
+                        >
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{
+                              background:
+                                color.toLowerCase().includes('gray') ||
+                                color.toLowerCase().includes('charcoal')
+                                  ? '#4a5568'
+                                  : color.toLowerCase().includes('gold') ||
+                                      color.toLowerCase().includes('parchment')
+                                    ? '#d4af37'
+                                    : color.toLowerCase().includes('blue') ||
+                                        color.toLowerCase().includes('lunar')
+                                      ? '#3b82f6'
+                                      : color.toLowerCase().includes('white') ||
+                                          color.toLowerCase().includes('silver')
+                                        ? '#e5e7eb'
+                                        : color.toLowerCase().includes('red') ||
+                                            color.toLowerCase().includes('crimson')
+                                          ? '#ef4444'
+                                          : color.toLowerCase().includes('green')
+                                            ? '#22c55e'
+                                            : color.toLowerCase().includes('purple')
+                                              ? '#a855f7'
+                                              : '#9ca3af',
+                            }}
+                          />
                           <span className="text-xs text-white/70">{color}</span>
                         </div>
                       ))}
@@ -539,21 +613,26 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
                     <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Symbols</p>
                     <div className="flex gap-2 flex-wrap">
                       {sheet.aestheticProfile?.symbols?.map((symbol, i) => (
-                        <span key={i} className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/70">
+                        <span
+                          key={i}
+                          className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/70"
+                        >
                           {symbol}
                         </span>
                       ))}
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-6">
                   <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Style</p>
                   <p className="text-white/70">{sheet.aestheticProfile?.style}</p>
                 </div>
 
                 <div className="mt-4">
-                  <p className="text-xs text-white/40 uppercase tracking-wider mb-2">Playlist Energy</p>
+                  <p className="text-xs text-white/40 uppercase tracking-wider mb-2">
+                    Playlist Energy
+                  </p>
                   <p className="text-white/70 italic">"{sheet.aestheticProfile?.playlistEnergy}"</p>
                 </div>
               </Section>
@@ -569,7 +648,7 @@ export function CharacterSheetDisplay({ sheet, compact = false, onEdit, onPrivac
           className="text-center py-8 px-6 rounded-3xl bg-gradient-to-br from-nebula-deep/50 to-nebula-space/50 border border-white/10"
         >
           <p className="text-xs text-white/40 uppercase tracking-wider mb-3">Signature Quote</p>
-          <p 
+          <p
             className="text-2xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 italic"
             style={{ fontFamily: 'var(--font-display)' }}
           >

@@ -90,4 +90,3 @@ export function ReadingTimeTracker({
     </motion.div>
   );
 }
-

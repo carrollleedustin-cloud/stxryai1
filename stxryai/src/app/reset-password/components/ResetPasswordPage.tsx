@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
         <div className="relative">
           {/* Glow effect */}
           <div className="absolute -inset-1 bg-gradient-to-r from-spectral-cyan/20 via-spectral-violet/20 to-spectral-cyan/20 rounded-2xl blur-xl opacity-50" />
-          
+
           {/* Card content */}
           <div className="relative bg-void-black/80 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl shadow-void-black/50">
             <AnimatePresence mode="wait">
@@ -82,21 +82,25 @@ export default function ResetPasswordPage() {
                   {/* Header */}
                   <div className="text-center mb-8">
                     <Link href="/landing-page" className="inline-block group">
-                      <motion.div 
+                      <motion.div
                         className="w-16 h-16 mx-auto rounded-xl flex items-center justify-center mb-4 relative overflow-hidden"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         {/* Gradient background */}
                         <div className="absolute inset-0 bg-gradient-to-br from-spectral-cyan via-spectral-violet to-spectral-rose opacity-80" />
-                        
+
                         {/* Icon */}
-                        <svg className="w-8 h-8 text-white relative z-10" fill="currentColor" viewBox="0 0 20 20">
+                        <svg
+                          className="w-8 h-8 text-white relative z-10"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
                           <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                         </svg>
                       </motion.div>
                     </Link>
-                    
+
                     <h1 className="text-3xl font-bold text-white mb-2 font-display tracking-tight">
                       <span className="bg-gradient-to-r from-spectral-cyan via-white to-spectral-violet bg-clip-text text-transparent">
                         Reset Password
@@ -155,7 +159,7 @@ export default function ResetPasswordPage() {
                           className="w-full px-4 py-3 bg-void-black/60 border border-white/10 rounded-lg text-white placeholder-ghost-600 focus:outline-none focus:border-spectral-cyan/50 focus:ring-1 focus:ring-spectral-cyan/30 transition-all duration-300"
                           placeholder="you@example.com"
                         />
-                        
+
                         {/* Focus glow */}
                         <motion.div
                           className="absolute inset-0 -z-10 rounded-lg bg-spectral-cyan/20 blur-md"
@@ -183,8 +187,18 @@ export default function ResetPasswordPage() {
                         </span>
                       ) : (
                         <span className="flex items-center gap-2">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
                           </svg>
                           Send Reset Link
                         </span>
@@ -198,10 +212,7 @@ export default function ResetPasswordPage() {
                       href="/authentication"
                       className="text-sm text-ghost-400 hover:text-spectral-cyan transition-colors duration-300 inline-flex items-center gap-1 group"
                     >
-                      <motion.span
-                        className="inline-block"
-                        whileHover={{ x: -3 }}
-                      >
+                      <motion.span className="inline-block" whileHover={{ x: -3 }}>
                         ←
                       </motion.span>
                       Back to Sign In
@@ -227,7 +238,7 @@ export default function ResetPasswordPage() {
                       {/* Success ring */}
                       <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-spectral-cyan opacity-20" />
                       <div className="absolute inset-1 rounded-full bg-void-black" />
-                      
+
                       <motion.svg
                         className="w-10 h-10 text-green-400 relative z-10"
                         fill="none"
@@ -252,9 +263,7 @@ export default function ResetPasswordPage() {
                     <h2 className="text-2xl font-bold text-white mb-3 font-display">
                       Check Your Email
                     </h2>
-                    <p className="text-ghost-400 mb-2">
-                      We've sent a password reset link to:
-                    </p>
+                    <p className="text-ghost-400 mb-2">We've sent a password reset link to:</p>
                     <p className="text-spectral-cyan font-medium mb-6 font-mono text-sm bg-spectral-cyan/10 py-2 px-4 rounded-lg inline-block">
                       {email}
                     </p>
@@ -266,8 +275,18 @@ export default function ResetPasswordPage() {
                     <Link href="/authentication">
                       <SpectralButton variant="primary" className="w-full justify-center mb-4">
                         <span className="flex items-center gap-2">
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                            />
                           </svg>
                           Back to Sign In
                         </span>
@@ -292,14 +311,17 @@ export default function ResetPasswordPage() {
         </div>
 
         {/* Help Text */}
-        <motion.p 
+        <motion.p
           className="text-center mt-6 text-sm text-ghost-600"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
           Need help?{' '}
-          <Link href="/help" className="text-spectral-cyan hover:text-spectral-violet transition-colors duration-300 hover:underline">
+          <Link
+            href="/help"
+            className="text-spectral-cyan hover:text-spectral-violet transition-colors duration-300 hover:underline"
+          >
             Contact Support
           </Link>
         </motion.p>
@@ -308,7 +330,8 @@ export default function ResetPasswordPage() {
       {/* CSS for floating animation */}
       <style jsx>{`
         @keyframes float {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0) scale(1);
             opacity: 0.3;
           }

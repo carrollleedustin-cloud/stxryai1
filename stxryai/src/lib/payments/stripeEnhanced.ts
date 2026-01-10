@@ -220,9 +220,7 @@ export async function cancelSubscription(
 /**
  * Reactivate canceled subscription
  */
-export async function reactivateSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
+export async function reactivateSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   return await stripe.subscriptions.update(subscriptionId, {
     cancel_at_period_end: false,
   });
@@ -246,9 +244,7 @@ export async function pauseSubscription(
 /**
  * Resume paused subscription
  */
-export async function resumeSubscription(
-  subscriptionId: string
-): Promise<Stripe.Subscription> {
+export async function resumeSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
   return await stripe.subscriptions.update(subscriptionId, {
     pause_collection: null as any,
   });
@@ -273,9 +269,7 @@ export async function attachPaymentMethod(
 /**
  * Detach payment method from customer
  */
-export async function detachPaymentMethod(
-  paymentMethodId: string
-): Promise<Stripe.PaymentMethod> {
+export async function detachPaymentMethod(paymentMethodId: string): Promise<Stripe.PaymentMethod> {
   return await stripe.paymentMethods.detach(paymentMethodId);
 }
 
@@ -296,9 +290,7 @@ export async function setDefaultPaymentMethod(
 /**
  * List customer payment methods
  */
-export async function listPaymentMethods(
-  customerId: string
-): Promise<Stripe.PaymentMethod[]> {
+export async function listPaymentMethods(customerId: string): Promise<Stripe.PaymentMethod[]> {
   const paymentMethods = await stripe.paymentMethods.list({
     customer: customerId,
     type: 'card',
@@ -374,10 +366,7 @@ export async function getInvoice(invoiceId: string): Promise<Invoice> {
 /**
  * List customer invoices
  */
-export async function listInvoices(
-  customerId: string,
-  limit: number = 10
-): Promise<Invoice[]> {
+export async function listInvoices(customerId: string, limit: number = 10): Promise<Invoice[]> {
   const invoices = await stripe.invoices.list({
     customer: customerId,
     limit,
@@ -422,9 +411,7 @@ export async function createRefund(
 /**
  * List refunds
  */
-export async function listRefunds(
-  paymentIntentId: string
-): Promise<Stripe.Refund[]> {
+export async function listRefunds(paymentIntentId: string): Promise<Stripe.Refund[]> {
   const refunds = await stripe.refunds.list({
     payment_intent: paymentIntentId,
   });
@@ -450,9 +437,7 @@ export function constructWebhookEvent(
 /**
  * Handle webhook event
  */
-export async function handleWebhookEvent(
-  event: Stripe.Event
-): Promise<void> {
+export async function handleWebhookEvent(event: Stripe.Event): Promise<void> {
   switch (event.type) {
     case 'payment_intent.succeeded':
       await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);

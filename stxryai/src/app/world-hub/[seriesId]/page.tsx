@@ -25,7 +25,7 @@ export default function WorldHubPage() {
       try {
         const [data, sum] = await Promise.all([
           worldExplorerService.getWorldData(seriesId),
-          worldExplorerService.generateWorldSummary(seriesId).catch(() => null)
+          worldExplorerService.generateWorldSummary(seriesId).catch(() => null),
         ]);
         setWorldData(data);
         setSummary(sum);
@@ -41,7 +41,9 @@ export default function WorldHubPage() {
   }, [seriesId]);
 
   const handleGenerateLore = async () => {
-    const topic = prompt('What aspect of the world would you like to explore? (e.g., "The Forgotten Gods", "Ancient Technology")');
+    const topic = prompt(
+      'What aspect of the world would you like to explore? (e.g., "The Forgotten Gods", "Ancient Technology")'
+    );
     if (!topic) return;
 
     setIsGenerating(true);
@@ -60,9 +62,9 @@ export default function WorldHubPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-void-absolute flex items-center justify-center">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
           className="w-12 h-12 border-2 border-t-spectral-cyan rounded-full"
         />
       </div>
@@ -85,11 +87,7 @@ export default function WorldHubPage() {
             </p>
           </div>
 
-          <SpectralButton 
-            variant="primary" 
-            onClick={handleGenerateLore}
-            disabled={isGenerating}
-          >
+          <SpectralButton variant="primary" onClick={handleGenerateLore} disabled={isGenerating}>
             {isGenerating ? 'Consulting Archivist...' : 'Discover Lore'}
           </SpectralButton>
         </div>
@@ -100,8 +98,8 @@ export default function WorldHubPage() {
               key={tab}
               onClick={() => setActiveTab(tab as any)}
               className={`px-6 py-2 rounded-full font-ui text-sm transition-all ${
-                activeTab === tab 
-                  ? 'bg-spectral-cyan/20 text-spectral-cyan border border-spectral-cyan/50' 
+                activeTab === tab
+                  ? 'bg-spectral-cyan/20 text-spectral-cyan border border-spectral-cyan/50'
                   : 'text-text-ghost hover:text-text-primary'
               }`}
             >
@@ -123,7 +121,8 @@ export default function WorldHubPage() {
                 <HolographicCard>
                   <h3 className="text-2xl font-display mb-4">World Overview</h3>
                   <p className="text-text-muted leading-relaxed">
-                    {summary?.overview || "The chronicles of this world are still being written. Continue your narrative to expand the archive."}
+                    {summary?.overview ||
+                      'The chronicles of this world are still being written. Continue your narrative to expand the archive.'}
                   </p>
                 </HolographicCard>
 
@@ -133,7 +132,9 @@ export default function WorldHubPage() {
                       <GradientBorder>
                         <div className="p-6 bg-void-surface/50">
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="text-xl font-display text-spectral-cyan">{faction.name}</h4>
+                            <h4 className="text-xl font-display text-spectral-cyan">
+                              {faction.name}
+                            </h4>
                             <span className="text-xs font-ui text-text-ghost bg-white/5 px-2 py-1 rounded">
                               Power: {faction.influence}/10
                             </span>
@@ -164,10 +165,15 @@ export default function WorldHubPage() {
                   <div className="space-y-4">
                     {summary?.keyConflicts.map((conflict, i) => (
                       <div key={i} className="flex gap-4">
-                        <div className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${
-                          conflict.status === 'active' ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 
-                          conflict.status === 'looming' ? 'bg-yellow-500' : 'bg-green-500'
-                        }`} />
+                        <div
+                          className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${
+                            conflict.status === 'active'
+                              ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+                              : conflict.status === 'looming'
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
+                          }`}
+                        />
                         <div>
                           <p className="font-ui text-sm font-bold">{conflict.title}</p>
                           <p className="text-xs text-text-ghost">{conflict.description}</p>
@@ -190,8 +196,13 @@ export default function WorldHubPage() {
             >
               {loreEntries.length === 0 && (
                 <div className="col-span-full py-20 text-center">
-                  <Icon name="book-open" className="w-12 h-12 mx-auto mb-4 text-text-ghost opacity-20" />
-                  <p className="text-text-ghost italic">The scrolls are currently empty. Discover new lore to populate the archive.</p>
+                  <Icon
+                    name="book-open"
+                    className="w-12 h-12 mx-auto mb-4 text-text-ghost opacity-20"
+                  />
+                  <p className="text-text-ghost italic">
+                    The scrolls are currently empty. Discover new lore to populate the archive.
+                  </p>
                 </div>
               )}
               {loreEntries.map((entry) => (
@@ -207,7 +218,9 @@ export default function WorldHubPage() {
                   </p>
                   <div className="mt-auto flex flex-wrap gap-2">
                     {entry.relatedElements.map((rel, i) => (
-                      <span key={i} className="text-[10px] text-text-ghost italic">#{rel}</span>
+                      <span key={i} className="text-[10px] text-text-ghost italic">
+                        #{rel}
+                      </span>
                     ))}
                   </div>
                 </HolographicCard>
@@ -226,15 +239,22 @@ export default function WorldHubPage() {
               <div className="max-w-3xl mx-auto">
                 <h3 className="text-2xl font-display mb-8 text-center">Active World Ripples</h3>
                 {worldData?.ripples.length === 0 ? (
-                  <p className="text-center text-text-ghost italic">No major choices have rippled through the world yet.</p>
+                  <p className="text-center text-text-ghost italic">
+                    No major choices have rippled through the world yet.
+                  </p>
                 ) : (
                   <div className="space-y-4">
                     {worldData?.ripples.map((ripple: any, i: number) => (
-                      <div key={i} className="p-6 rounded-2xl bg-void-surface/50 border border-membrane relative overflow-hidden group">
+                      <div
+                        key={i}
+                        className="p-6 rounded-2xl bg-void-surface/50 border border-membrane relative overflow-hidden group"
+                      >
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-spectral-pink" />
                         <div className="flex justify-between items-start">
                           <div>
-                            <h4 className="font-display text-lg mb-1">{ripple.title || 'Narrative Consequence'}</h4>
+                            <h4 className="font-display text-lg mb-1">
+                              {ripple.title || 'Narrative Consequence'}
+                            </h4>
                             <p className="text-text-muted">{ripple.description}</p>
                           </div>
                           <div className="text-xs font-ui text-text-ghost bg-white/5 px-3 py-1 rounded-full">
@@ -263,7 +283,9 @@ export default function WorldHubPage() {
                   <p className="text-xs text-spectral-cyan mb-3 font-ui uppercase tracking-tighter">
                     {loc.type || 'Location'} • {loc.region || 'Unknown Realm'}
                   </p>
-                  <p className="text-sm text-text-muted">{loc.description || 'A place of whispers and shadows.'}</p>
+                  <p className="text-sm text-text-muted">
+                    {loc.description || 'A place of whispers and shadows.'}
+                  </p>
                 </HolographicCard>
               ))}
               {worldData?.locations.length === 0 && (

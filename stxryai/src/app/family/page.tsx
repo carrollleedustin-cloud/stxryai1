@@ -48,24 +48,26 @@ const mockKids: KidProfile[] = [
 
 export default function FamilyDashboardPage() {
   const [kids] = useState<KidProfile[]>(mockKids);
-  
+
   const totalStoriesRead = kids.reduce((sum, k) => sum + k.storiesRead, 0);
   const totalTimeThisWeek = kids.reduce((sum, k) => sum + k.timeThisWeek, 0);
-  
+
   return (
     <div>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <NebulaTitle size="md" gradient="aurora">Family Dashboard</NebulaTitle>
+          <NebulaTitle size="md" gradient="aurora">
+            Family Dashboard
+          </NebulaTitle>
           <p className="text-white/60 mt-2">Manage your family&apos;s reading adventure</p>
         </div>
-        
+
         <NebulaButton icon={<Plus size={18} />} href="/family/profiles/new">
           Add Child Profile
         </NebulaButton>
       </div>
-      
+
       {/* Stats Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <NebulaCard glowColor="cyan">
@@ -79,7 +81,7 @@ export default function FamilyDashboardPage() {
             </div>
           </div>
         </NebulaCard>
-        
+
         <NebulaCard glowColor="violet">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
@@ -93,7 +95,7 @@ export default function FamilyDashboardPage() {
             </div>
           </div>
         </NebulaCard>
-        
+
         <NebulaCard glowColor="pink">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center">
@@ -107,7 +109,7 @@ export default function FamilyDashboardPage() {
             </div>
           </div>
         </NebulaCard>
-        
+
         <NebulaCard glowColor="gold">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
@@ -120,14 +122,14 @@ export default function FamilyDashboardPage() {
           </div>
         </NebulaCard>
       </div>
-      
+
       {/* Kids Profiles */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <Users size={20} className="text-cyan-400" />
           Kids Profiles
         </h2>
-        
+
         <div className="grid md:grid-cols-2 gap-4">
           {kids.map((kid, i) => (
             <motion.div
@@ -140,10 +142,11 @@ export default function FamilyDashboardPage() {
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
                   <div className="relative">
-                    <div 
+                    <div
                       className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(155,93,229,0.3), rgba(241,91,181,0.3))',
+                        background:
+                          'linear-gradient(135deg, rgba(155,93,229,0.3), rgba(241,91,181,0.3))',
                         border: '2px solid rgba(155,93,229,0.3)',
                       }}
                     >
@@ -152,14 +155,14 @@ export default function FamilyDashboardPage() {
                     {/* Online indicator */}
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-[#0c0c1e]" />
                   </div>
-                  
+
                   {/* Info */}
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="text-lg font-bold text-white">{kid.name}</h3>
                       <span className="text-xs text-white/40">Age {kid.age}</span>
                     </div>
-                    
+
                     <div className="flex flex-wrap gap-2 mb-3">
                       <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/20 text-cyan-400">
                         {kid.storiesRead} stories
@@ -168,11 +171,11 @@ export default function FamilyDashboardPage() {
                         {Math.floor(kid.timeThisWeek / 60)}h this week
                       </span>
                     </div>
-                    
+
                     <p className="text-xs text-white/40">Last active: {kid.lastActive}</p>
                   </div>
                 </div>
-                
+
                 {/* Actions */}
                 <div className="flex gap-2 mt-4 pt-4 border-t border-white/5">
                   <NebulaButton size="sm" variant="ghost" href={`/family/profiles/${kid.id}`}>
@@ -189,14 +192,14 @@ export default function FamilyDashboardPage() {
               </NebulaCard>
             </motion.div>
           ))}
-          
+
           {/* Add Profile Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: kids.length * 0.1 }}
           >
-            <NebulaCard 
+            <NebulaCard
               className="cursor-pointer h-full min-h-[200px] flex items-center justify-center"
               glowColor="cyan"
             >
@@ -218,17 +221,37 @@ export default function FamilyDashboardPage() {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Quick Actions */}
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
-        
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { icon: '⏰', title: 'Set Screen Time', desc: 'Manage daily limits', href: '/family/controls' },
-            { icon: '📚', title: 'Content Filters', desc: 'Choose age-appropriate content', href: '/family/controls' },
-            { icon: '📊', title: 'View Reports', desc: 'Weekly reading insights', href: '/family/activity' },
-            { icon: '🔔', title: 'Notifications', desc: 'Activity alerts', href: '/family/settings' },
+            {
+              icon: '⏰',
+              title: 'Set Screen Time',
+              desc: 'Manage daily limits',
+              href: '/family/controls',
+            },
+            {
+              icon: '📚',
+              title: 'Content Filters',
+              desc: 'Choose age-appropriate content',
+              href: '/family/controls',
+            },
+            {
+              icon: '📊',
+              title: 'View Reports',
+              desc: 'Weekly reading insights',
+              href: '/family/activity',
+            },
+            {
+              icon: '🔔',
+              title: 'Notifications',
+              desc: 'Activity alerts',
+              href: '/family/settings',
+            },
           ].map((action, i) => (
             <motion.div
               key={action.title}
@@ -255,5 +278,3 @@ export default function FamilyDashboardPage() {
     </div>
   );
 }
-
-

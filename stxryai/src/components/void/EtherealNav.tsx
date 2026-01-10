@@ -22,7 +22,7 @@ export default function EtherealNav() {
   const [notifications, setNotifications] = useState<Announcement[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const notificationRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollY } = useScroll();
   const navBackground = useTransform(
     scrollY,
@@ -30,7 +30,7 @@ export default function EtherealNav() {
     ['rgba(2, 2, 3, 0)', 'rgba(2, 2, 3, 0.95)']
   );
   const navBlur = useTransform(scrollY, [0, 100], ['blur(0px)', 'blur(20px)']);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -43,9 +43,15 @@ export default function EtherealNav() {
   useEffect(() => {
     const fetchNotifications = async () => {
       if (user) {
-        const announcements = await announcementService.getForUser(user.id, profile?.subscription_tier || 'free');
+        const announcements = await announcementService.getForUser(
+          user.id,
+          profile?.subscription_tier || 'free'
+        );
         setNotifications(announcements);
-        const unread = await announcementService.getUnreadCount(user.id, profile?.subscription_tier || 'free');
+        const unread = await announcementService.getUnreadCount(
+          user.id,
+          profile?.subscription_tier || 'free'
+        );
         setUnreadCount(unread);
       }
     };
@@ -71,21 +77,27 @@ export default function EtherealNav() {
   const handleMarkAsRead = async (id: string) => {
     if (user) {
       await announcementService.markAsRead(id, user.id);
-      setUnreadCount(prev => Math.max(0, prev - 1));
-      setNotifications(prev => prev.map(n => 
-        n.id === id ? { ...n, readBy: [...n.readBy, user.id] } : n
-      ));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, readBy: [...n.readBy, user.id] } : n))
+      );
     }
   };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'feature': return '✨';
-      case 'maintenance': return '🔧';
-      case 'warning': return '⚠️';
-      case 'urgent': return '🚨';
-      case 'success': return '✅';
-      default: return 'ℹ️';
+      case 'feature':
+        return '✨';
+      case 'maintenance':
+        return '🔧';
+      case 'warning':
+        return '⚠️';
+      case 'urgent':
+        return '🚨';
+      case 'success':
+        return '✅';
+      default:
+        return 'ℹ️';
     }
   };
 
@@ -100,13 +112,13 @@ export default function EtherealNav() {
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
   };
-  
+
   const navLinks = [
     { href: '/story-library', label: 'Library' },
     { href: '/community-hub', label: 'Community' },
     { href: '/pricing', label: 'Premium' },
   ];
-  
+
   return (
     <>
       <motion.header
@@ -143,10 +155,7 @@ export default function EtherealNav() {
                     fill="url(#logo-gradient)"
                     className="transition-all duration-500"
                   />
-                  <path
-                    d="M18 10l-8 5v10l8 5 8-5V15l-8-5z"
-                    fill="var(--void-absolute)"
-                  />
+                  <path d="M18 10l-8 5v10l8 5 8-5V15l-8-5z" fill="var(--void-absolute)" />
                   <defs>
                     <linearGradient id="logo-gradient" x1="4" y1="2" x2="32" y2="34">
                       <stop stopColor="var(--spectral-cyan)" />
@@ -154,21 +163,21 @@ export default function EtherealNav() {
                     </linearGradient>
                   </defs>
                 </svg>
-                
+
                 {/* Glow effect */}
-                <div 
+                <div
                   className="absolute inset-0 blur-lg opacity-50 group-hover:opacity-80 transition-opacity"
                   style={{
                     background: 'radial-gradient(circle, var(--spectral-cyan) 0%, transparent 70%)',
                   }}
                 />
               </motion.div>
-              
+
               <span className="font-display text-lg tracking-widest text-text-primary group-hover:text-spectral-cyan transition-colors">
                 STXRY
               </span>
             </Link>
-            
+
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
@@ -182,7 +191,7 @@ export default function EtherealNav() {
                   `}
                 >
                   {link.label}
-                  
+
                   {/* Active indicator */}
                   {pathname === link.href && (
                     <motion.div
@@ -195,7 +204,7 @@ export default function EtherealNav() {
                 </Link>
               ))}
             </div>
-            
+
             {/* Right Section */}
             <div className="flex items-center gap-4">
               {user ? (
@@ -206,7 +215,15 @@ export default function EtherealNav() {
                     className="relative p-2 rounded-lg hover:bg-void-mist transition-colors"
                     title="Messages"
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-tertiary hover:text-spectral-cyan transition-colors">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      className="text-text-tertiary hover:text-spectral-cyan transition-colors"
+                    >
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                     </svg>
                     {/* Unread indicator would go here */}
@@ -219,7 +236,15 @@ export default function EtherealNav() {
                       className="relative p-2 rounded-lg hover:bg-void-mist transition-colors"
                       title="Notifications"
                     >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-text-tertiary hover:text-spectral-cyan transition-colors">
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className="text-text-tertiary hover:text-spectral-cyan transition-colors"
+                      >
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                       </svg>
@@ -239,7 +264,7 @@ export default function EtherealNav() {
                           exit={{ opacity: 0, y: 10, scale: 0.95 }}
                           transition={{ duration: 0.15 }}
                           className="absolute right-0 top-full mt-2 w-96 max-h-[70vh] overflow-hidden rounded-xl z-50"
-                          style={{ 
+                          style={{
                             background: 'rgba(10, 10, 14, 0.98)',
                             backdropFilter: 'blur(20px)',
                             border: '1px solid rgba(0, 245, 212, 0.1)',
@@ -249,10 +274,12 @@ export default function EtherealNav() {
                           <div className="p-4 border-b border-membrane flex items-center justify-between">
                             <h3 className="font-semibold text-text-primary">Notifications</h3>
                             {unreadCount > 0 && (
-                              <span className="text-xs text-spectral-cyan">{unreadCount} unread</span>
+                              <span className="text-xs text-spectral-cyan">
+                                {unreadCount} unread
+                              </span>
                             )}
                           </div>
-                          
+
                           <div className="overflow-y-auto max-h-[400px]">
                             {notifications.length === 0 ? (
                               <div className="p-8 text-center">
@@ -286,7 +313,9 @@ export default function EtherealNav() {
                                       </span>
                                       <div className="flex-1 min-w-0">
                                         <div className="flex items-start justify-between gap-2">
-                                          <h4 className={`text-sm font-medium ${isRead ? 'text-text-secondary' : 'text-text-primary'}`}>
+                                          <h4
+                                            className={`text-sm font-medium ${isRead ? 'text-text-secondary' : 'text-text-primary'}`}
+                                          >
                                             {notification.title}
                                           </h4>
                                           {!isRead && (
@@ -334,7 +363,7 @@ export default function EtherealNav() {
                   >
                     Dashboard
                   </Link>
-                  
+
                   {/* User Menu */}
                   <div className="relative group">
                     <button className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-void-mist transition-colors">
@@ -345,7 +374,7 @@ export default function EtherealNav() {
                         {profile?.display_name || 'User'}
                       </span>
                     </button>
-                    
+
                     {/* Dropdown */}
                     <div className="absolute right-0 top-full mt-2 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       <div className="void-glass-heavy rounded-xl p-2">
@@ -392,7 +421,7 @@ export default function EtherealNav() {
                   >
                     Sign In
                   </Link>
-                  
+
                   <Link href="/authentication?mode=signup">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
@@ -404,7 +433,7 @@ export default function EtherealNav() {
                   </Link>
                 </>
               )}
-              
+
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -437,7 +466,7 @@ export default function EtherealNav() {
           </div>
         </nav>
       </motion.header>
-      
+
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
@@ -455,7 +484,7 @@ export default function EtherealNav() {
               className="absolute inset-0 bg-void-absolute/95 backdrop-blur-xl"
               onClick={() => setIsMobileMenuOpen(false)}
             />
-            
+
             {/* Menu Content */}
             <motion.nav
               initial={{ y: -20, opacity: 0 }}
@@ -485,7 +514,7 @@ export default function EtherealNav() {
                   </motion.div>
                 ))}
               </div>
-              
+
               <div className="mt-8 pt-8 border-t border-membrane">
                 {user ? (
                   <div className="space-y-4">
@@ -521,13 +550,8 @@ export default function EtherealNav() {
                     </button>
                   </div>
                 ) : (
-                  <Link
-                    href="/authentication"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <button className="btn-spectral w-full">
-                      Get Started
-                    </button>
+                  <Link href="/authentication" onClick={() => setIsMobileMenuOpen(false)}>
+                    <button className="btn-spectral w-full">Get Started</button>
                   </Link>
                 )}
               </div>

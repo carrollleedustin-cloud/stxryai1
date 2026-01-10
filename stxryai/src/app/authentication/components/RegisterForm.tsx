@@ -125,16 +125,19 @@ export default function RegisterForm({
         formData.username.trim(),
         formData.displayName.trim()
       );
-      
+
       // After registration, redirect to login (email confirmation needed)
       // Or if auto-confirmed, redirect to dashboard
-      const redirectUrl = typeof window !== 'undefined' 
-        ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
-        : '/user-dashboard';
-      
+      const redirectUrl =
+        typeof window !== 'undefined'
+          ? new URLSearchParams(window.location.search).get('redirect') || '/user-dashboard'
+          : '/user-dashboard';
+
       // Note: Registration typically requires email confirmation
       // So we redirect to login with a message, or dashboard if already confirmed
-      router.push('/authentication?mode=login&message=Please check your email to confirm your account');
+      router.push(
+        '/authentication?mode=login&message=Please check your email to confirm your account'
+      );
     } catch (err: unknown) {
       const error = err as Error;
       if (

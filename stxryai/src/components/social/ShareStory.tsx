@@ -128,7 +128,11 @@ export function ShareStory({
         >
           <Icon name="ShareIcon" size={20} />
         </motion.button>
-        <ShareDropdown isOpen={isOpen} onClose={() => setIsOpen(false)} shareOptions={shareOptions} />
+        <ShareDropdown
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          shareOptions={shareOptions}
+        />
       </div>
     );
   }
@@ -145,7 +149,11 @@ export function ShareStory({
           <Icon name="ShareIcon" size={20} />
           Share
         </motion.button>
-        <ShareDropdown isOpen={isOpen} onClose={() => setIsOpen(false)} shareOptions={shareOptions} />
+        <ShareDropdown
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          shareOptions={shareOptions}
+        />
       </div>
     );
   }
@@ -205,7 +213,9 @@ function ShareDropdown({
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted rounded-lg transition-colors text-left"
                 >
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${option.color} flex items-center justify-center text-xl`}>
+                  <div
+                    className={`w-10 h-10 rounded-lg bg-gradient-to-r ${option.color} flex items-center justify-center text-xl`}
+                  >
                     {option.icon}
                   </div>
                   <span className="font-medium text-foreground">{option.name}</span>
@@ -218,4 +228,3 @@ function ShareDropdown({
     </AnimatePresence>
   );
 }
-

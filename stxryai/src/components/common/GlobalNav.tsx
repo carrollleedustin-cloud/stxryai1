@@ -107,7 +107,9 @@ export default function GlobalNav() {
 
             <div className="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-start">
               <div className="max-w-md w-full lg:max-w-xs">
-                <label htmlFor="search" className="sr-only">Search</label>
+                <label htmlFor="search" className="sr-only">
+                  Search
+                </label>
                 <Search />
               </div>
             </div>

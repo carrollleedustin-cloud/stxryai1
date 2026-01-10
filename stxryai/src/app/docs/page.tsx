@@ -62,7 +62,9 @@ export default function DocsPage() {
                 href={section.href}
                 className="block bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-purple-500/50 transition-all group"
               >
-                <div className={`w-16 h-16 rounded-lg bg-gradient-to-r ${section.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-16 h-16 rounded-lg bg-gradient-to-r ${section.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
+                >
                   <section.icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-3">{section.title}</h3>
@@ -80,7 +82,8 @@ export default function DocsPage() {
         >
           <h2 className="text-2xl font-bold text-white mb-4">Documentation Coming Soon</h2>
           <p className="text-gray-300 mb-6">
-            We're working on comprehensive documentation. In the meantime, check out our help center or contact support.
+            We're working on comprehensive documentation. In the meantime, check out our help center
+            or contact support.
           </p>
           <div className="flex gap-4 justify-center">
             <Link
@@ -101,4 +104,3 @@ export default function DocsPage() {
     </div>
   );
 }
-

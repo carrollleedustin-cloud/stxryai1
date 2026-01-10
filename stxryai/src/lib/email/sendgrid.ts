@@ -26,7 +26,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
     };
 
     const response = await sgMail.send(msg);
-    
+
     return { success: true, data: response };
   } catch (error) {
     console.error('Email send error:', error);
@@ -161,4 +161,3 @@ export const emailTemplates = {
     `,
   }),
 };
-

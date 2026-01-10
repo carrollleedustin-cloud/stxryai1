@@ -2,7 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { marketplaceService, type CreatorEarnings, type CreatorPayout } from '@/services/marketplaceService';
+import {
+  marketplaceService,
+  type CreatorEarnings,
+  type CreatorPayout,
+} from '@/services/marketplaceService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -140,9 +144,7 @@ export function CreatorEarningsDashboard({ className = '' }: CreatorEarningsDash
               <span className="text-sm text-muted-foreground">Paid Out</span>
               <Icon name="CheckCircleIcon" size={20} className="text-blue-500" />
             </div>
-            <div className="text-3xl font-bold text-foreground">
-              ${earnings.paidOut.toFixed(2)}
-            </div>
+            <div className="text-3xl font-bold text-foreground">${earnings.paidOut.toFixed(2)}</div>
           </motion.div>
 
           <motion.div
@@ -155,9 +157,7 @@ export function CreatorEarningsDashboard({ className = '' }: CreatorEarningsDash
               <span className="text-sm text-muted-foreground">Pending</span>
               <Icon name="ClockIcon" size={20} className="text-yellow-500" />
             </div>
-            <div className="text-3xl font-bold text-foreground">
-              ${earnings.pending.toFixed(2)}
-            </div>
+            <div className="text-3xl font-bold text-foreground">${earnings.pending.toFixed(2)}</div>
           </motion.div>
         </div>
       )}
@@ -230,18 +230,21 @@ export function CreatorEarningsDashboard({ className = '' }: CreatorEarningsDash
                       <h3 className="text-lg font-bold text-foreground">
                         ${payout.netEarnings.toFixed(2)}
                       </h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        payout.payoutStatus === 'completed'
-                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                          : payout.payoutStatus === 'processing'
-                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                          : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
-                      }`}>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          payout.payoutStatus === 'completed'
+                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                            : payout.payoutStatus === 'processing'
+                              ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                              : 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
+                        }`}
+                      >
                         {payout.payoutStatus.toUpperCase()}
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Period: {new Date(payout.payoutPeriodStart).toLocaleDateString()} - {new Date(payout.payoutPeriodEnd).toLocaleDateString()}
+                      Period: {new Date(payout.payoutPeriodStart).toLocaleDateString()} -{' '}
+                      {new Date(payout.payoutPeriodEnd).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -249,15 +252,21 @@ export function CreatorEarningsDashboard({ className = '' }: CreatorEarningsDash
                 <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border">
                   <div>
                     <div className="text-sm text-muted-foreground">Total Earnings</div>
-                    <div className="font-medium text-foreground">${payout.totalEarnings.toFixed(2)}</div>
+                    <div className="font-medium text-foreground">
+                      ${payout.totalEarnings.toFixed(2)}
+                    </div>
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">Platform Fee</div>
-                    <div className="font-medium text-foreground">${payout.platformFee.toFixed(2)}</div>
+                    <div className="font-medium text-foreground">
+                      ${payout.platformFee.toFixed(2)}
+                    </div>
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">Net Earnings</div>
-                    <div className="font-medium text-foreground">${payout.netEarnings.toFixed(2)}</div>
+                    <div className="font-medium text-foreground">
+                      ${payout.netEarnings.toFixed(2)}
+                    </div>
                   </div>
                 </div>
 
@@ -274,5 +283,3 @@ export function CreatorEarningsDashboard({ className = '' }: CreatorEarningsDash
     </div>
   );
 }
-
-

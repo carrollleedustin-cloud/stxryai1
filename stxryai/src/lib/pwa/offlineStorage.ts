@@ -133,9 +133,7 @@ class OfflineStorageService {
       const offlineStory: OfflineStory = {
         ...story,
         downloaded_at: new Date().toISOString(),
-        expires_at: new Date(
-          Date.now() + 30 * 24 * 60 * 60 * 1000
-        ).toISOString(), // 30 days
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
         size_bytes: new Blob([JSON.stringify(story)]).size,
       };
 
@@ -313,10 +311,7 @@ class OfflineStorageService {
   /**
    * Add item to sync queue
    */
-  async addToSyncQueue(
-    type: SyncQueueItem['type'],
-    data: Record<string, unknown>
-  ): Promise<void> {
+  async addToSyncQueue(type: SyncQueueItem['type'], data: Record<string, unknown>): Promise<void> {
     try {
       const db = await this.ensureDb();
 
@@ -426,10 +421,4 @@ class OfflineStorageService {
 export const offlineStorage = new OfflineStorageService();
 
 // Export types
-export type {
-  OfflineStory,
-  OfflineChapter,
-  OfflineChoice,
-  OfflineProgress,
-  SyncQueueItem,
-};
+export type { OfflineStory, OfflineChapter, OfflineChoice, OfflineProgress, SyncQueueItem };

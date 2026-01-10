@@ -3,7 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VoidBackground from '@/components/void/VoidBackground';
-import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCounter, ParticleField } from '@/components/void';
+import {
+  EtherealNav,
+  TemporalHeading,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedCounter,
+  ParticleField,
+} from '@/components/void';
 import { HolographicCard, RevealOnScroll, GradientBorder } from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import { socialService } from '@/services/socialService';
@@ -15,32 +22,149 @@ import { toast } from 'sonner';
 
 // Mock data
 const MOCK_TRENDING_DISCUSSIONS = [
-  { id: '1', title: 'What makes a great plot twist?', author: 'storyteller99', replies: 156, views: 2340, category: 'Writing Tips', hot: true },
-  { id: '2', title: 'The future of interactive fiction', author: 'futurist', replies: 89, views: 1567, category: 'Discussion', hot: true },
-  { id: '3', title: 'Best horror stories on the platform?', author: 'horrorlover', replies: 234, views: 4521, category: 'Recommendations', hot: false },
-  { id: '4', title: 'How to build compelling characters', author: 'novelist', replies: 67, views: 890, category: 'Writing Tips', hot: false },
-  { id: '5', title: 'Monthly reading challenge - December', author: 'bookclub', replies: 445, views: 8920, category: 'Events', hot: true },
+  {
+    id: '1',
+    title: 'What makes a great plot twist?',
+    author: 'storyteller99',
+    replies: 156,
+    views: 2340,
+    category: 'Writing Tips',
+    hot: true,
+  },
+  {
+    id: '2',
+    title: 'The future of interactive fiction',
+    author: 'futurist',
+    replies: 89,
+    views: 1567,
+    category: 'Discussion',
+    hot: true,
+  },
+  {
+    id: '3',
+    title: 'Best horror stories on the platform?',
+    author: 'horrorlover',
+    replies: 234,
+    views: 4521,
+    category: 'Recommendations',
+    hot: false,
+  },
+  {
+    id: '4',
+    title: 'How to build compelling characters',
+    author: 'novelist',
+    replies: 67,
+    views: 890,
+    category: 'Writing Tips',
+    hot: false,
+  },
+  {
+    id: '5',
+    title: 'Monthly reading challenge - December',
+    author: 'bookclub',
+    replies: 445,
+    views: 8920,
+    category: 'Events',
+    hot: true,
+  },
 ];
 
 const MOCK_UPCOMING_EVENTS = [
-  { id: '1', title: 'Horror Writing Workshop', date: '2024-12-28', time: '7:00 PM EST', host: 'Master of Darkness', participants: 45, cover: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg' },
-  { id: '2', title: 'New Year Reading Marathon', date: '2024-12-31', time: '12:00 AM EST', host: 'Book Lovers Club', participants: 234, cover: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg' },
-  { id: '3', title: 'Sci-Fi Story Discussion', date: '2025-01-05', time: '3:00 PM EST', host: 'Sci-Fi Explorers', participants: 67, cover: 'https://images.pexels.com/photos/2832039/pexels-photo-2832039.jpeg' },
+  {
+    id: '1',
+    title: 'Horror Writing Workshop',
+    date: '2024-12-28',
+    time: '7:00 PM EST',
+    host: 'Master of Darkness',
+    participants: 45,
+    cover: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg',
+  },
+  {
+    id: '2',
+    title: 'New Year Reading Marathon',
+    date: '2024-12-31',
+    time: '12:00 AM EST',
+    host: 'Book Lovers Club',
+    participants: 234,
+    cover: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg',
+  },
+  {
+    id: '3',
+    title: 'Sci-Fi Story Discussion',
+    date: '2025-01-05',
+    time: '3:00 PM EST',
+    host: 'Sci-Fi Explorers',
+    participants: 67,
+    cover: 'https://images.pexels.com/photos/2832039/pexels-photo-2832039.jpeg',
+  },
 ];
 
 const MOCK_FEATURED_CLUBS = [
-  { id: '1', name: 'Dark Fiction Society', members: 2456, description: 'For lovers of horror, thriller, and dark fantasy', cover: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg', activity: 'Very Active' },
-  { id: '2', name: 'Sci-Fi Explorers', members: 1892, description: 'Exploring the boundaries of science fiction', cover: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg', activity: 'Active' },
-  { id: '3', name: 'Fantasy Realm', members: 3210, description: 'Epic adventures in magical worlds', cover: 'https://images.pexels.com/photos/2832039/pexels-photo-2832039.jpeg', activity: 'Very Active' },
-  { id: '4', name: 'Mystery Masters', members: 1567, description: 'Unraveling the best mystery stories', cover: 'https://images.pexels.com/photos/2832040/pexels-photo-2832040.jpeg', activity: 'Active' },
+  {
+    id: '1',
+    name: 'Dark Fiction Society',
+    members: 2456,
+    description: 'For lovers of horror, thriller, and dark fantasy',
+    cover: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg',
+    activity: 'Very Active',
+  },
+  {
+    id: '2',
+    name: 'Sci-Fi Explorers',
+    members: 1892,
+    description: 'Exploring the boundaries of science fiction',
+    cover: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg',
+    activity: 'Active',
+  },
+  {
+    id: '3',
+    name: 'Fantasy Realm',
+    members: 3210,
+    description: 'Epic adventures in magical worlds',
+    cover: 'https://images.pexels.com/photos/2832039/pexels-photo-2832039.jpeg',
+    activity: 'Very Active',
+  },
+  {
+    id: '4',
+    name: 'Mystery Masters',
+    members: 1567,
+    description: 'Unraveling the best mystery stories',
+    cover: 'https://images.pexels.com/photos/2832040/pexels-photo-2832040.jpeg',
+    activity: 'Active',
+  },
 ];
 
 const MOCK_ACTIVE_USERS = [
-  { id: '1', name: 'Alexandra', avatar: 'https://img.rocket.new/generatedImages/rocket_gen_img_17f211366-1764756733705.png', status: 'Reading: The Midnight Carnival' },
-  { id: '2', name: 'Marcus', avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg', status: 'In a reading session' },
-  { id: '3', name: 'Emily', avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg', status: 'Just finished a story!' },
-  { id: '4', name: 'David', avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg', status: 'Browsing the library' },
-  { id: '5', name: 'Sarah', avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg', status: 'Writing a review' },
+  {
+    id: '1',
+    name: 'Alexandra',
+    avatar: 'https://img.rocket.new/generatedImages/rocket_gen_img_17f211366-1764756733705.png',
+    status: 'Reading: The Midnight Carnival',
+  },
+  {
+    id: '2',
+    name: 'Marcus',
+    avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+    status: 'In a reading session',
+  },
+  {
+    id: '3',
+    name: 'Emily',
+    avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+    status: 'Just finished a story!',
+  },
+  {
+    id: '4',
+    name: 'David',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    status: 'Browsing the library',
+  },
+  {
+    id: '5',
+    name: 'Sarah',
+    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    status: 'Writing a review',
+  },
 ];
 
 const CommunityHubPage: React.FC = () => {
@@ -92,19 +216,20 @@ const CommunityHubPage: React.FC = () => {
     <VoidBackground variant="aurora">
       <ParticleField color="rgba(123, 44, 191, 0.5)" particleCount={40} />
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <RevealOnScroll>
-        <div className="text-center mb-12">
+            <div className="text-center mb-12">
               <TemporalHeading level={1} accent className="mb-4">
                 Community Hub
               </TemporalHeading>
               <p className="text-xl text-void-400 max-w-2xl mx-auto">
-                Connect with fellow readers, join discussions, and discover amazing stories together.
-          </p>
-        </div>
+                Connect with fellow readers, join discussions, and discover amazing stories
+                together.
+              </p>
+            </div>
           </RevealOnScroll>
 
           {/* Stats Bar */}
@@ -259,7 +384,7 @@ const CommunityHubPage: React.FC = () => {
                         </StaggerItem>
                       ))}
                     </StaggerContainer>
-              </div>
+                  </div>
                 </GradientBorder>
               </RevealOnScroll>
 
@@ -277,7 +402,7 @@ const CommunityHubPage: React.FC = () => {
                           Explore All
                           <Icon name="ArrowRightIcon" size={16} className="ml-1" />
                         </SpectralButton>
-            </Link>
+                      </Link>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {clubs.map((club: any) => (
@@ -301,7 +426,9 @@ const CommunityHubPage: React.FC = () => {
                             <p className="text-sm text-void-400 line-clamp-1">{club.description}</p>
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-xs text-void-500">
-                                {club.members?.toLocaleString() || club.member_count?.toLocaleString()} members
+                                {club.members?.toLocaleString() ||
+                                  club.member_count?.toLocaleString()}{' '}
+                                members
                               </span>
                               <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs">
                                 {club.activity || 'Active'}
@@ -334,11 +461,17 @@ const CommunityHubPage: React.FC = () => {
                       >
                         <div className="flex items-start gap-3">
                           <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                            <img src={event.cover} alt={event.title} className="w-full h-full object-cover" />
+                            <img
+                              src={event.cover}
+                              alt={event.title}
+                              className="w-full h-full object-cover"
+                            />
                           </div>
                           <div className="flex-1 min-w-0">
                             <h4 className="font-medium text-void-100 truncate">{event.title}</h4>
-                            <p className="text-sm text-void-500">{event.date} at {event.time}</p>
+                            <p className="text-sm text-void-500">
+                              {event.date} at {event.time}
+                            </p>
                             <div className="flex items-center gap-2 mt-1 text-xs text-void-500">
                               <Icon name="UserIcon" size={12} />
                               {event.participants} attending
@@ -394,7 +527,12 @@ const CommunityHubPage: React.FC = () => {
                   <p className="text-sm text-void-400 mb-4">
                     Share your thoughts, ask questions, or start a discussion with the community.
                   </p>
-                  <SpectralButton variant="primary" size="md" className="w-full" onClick={handleCreatePost}>
+                  <SpectralButton
+                    variant="primary"
+                    size="md"
+                    className="w-full"
+                    onClick={handleCreatePost}
+                  >
                     <Icon name="PlusIcon" size={16} className="mr-2" />
                     Create Post
                   </SpectralButton>

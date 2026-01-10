@@ -4,11 +4,11 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  ArrowRight, 
-  Sparkles, 
-  Infinity, 
-  Zap, 
+import {
+  ArrowRight,
+  Sparkles,
+  Infinity,
+  Zap,
   BookOpen,
   Users,
   Wand2,
@@ -26,15 +26,25 @@ import {
 } from 'lucide-react';
 import VoidBackground, { AmbientOrbs } from '@/components/void/VoidBackground';
 import { TemporalHeading } from '@/components/void/VoidText';
-import TemporalReveal, { StaggerContainer, StaggerItem, ParallaxDepth } from '@/components/void/TemporalReveal';
+import TemporalReveal, {
+  StaggerContainer,
+  StaggerItem,
+  ParallaxDepth,
+} from '@/components/void/TemporalReveal';
 import DimensionalCard from '@/components/void/DimensionalCard';
 import SpectralButton from '@/components/void/SpectralButton';
 import EtherealNav from '@/components/void/EtherealNav';
-import ParticleField, { AnimatedCounter, TypewriterText, FloatingElement, MagneticButton, GlitchText } from '@/components/void/ParticleField';
-import { 
-  HolographicCard, 
-  MorphingBlob, 
-  NeonText, 
+import ParticleField, {
+  AnimatedCounter,
+  TypewriterText,
+  FloatingElement,
+  MagneticButton,
+  GlitchText,
+} from '@/components/void/ParticleField';
+import {
+  HolographicCard,
+  MorphingBlob,
+  NeonText,
   ScrollProgressIndicator,
   RevealOnScroll,
   SplitTextAnimation,
@@ -51,18 +61,18 @@ import FooterSection from './FooterSection';
 function StoryPreview() {
   const [currentChoice, setCurrentChoice] = useState<number | null>(null);
   const [storyProgress, setStoryProgress] = useState(0);
-  
+
   const storyParts = [
     {
-      text: "The ancient library stretched before you, its towering shelves disappearing into shadow. Dust motes danced in beams of pale moonlight filtering through stained glass windows. Something moved in the darkness ahead.",
-      choices: ["Investigate the movement", "Find another path"],
+      text: 'The ancient library stretched before you, its towering shelves disappearing into shadow. Dust motes danced in beams of pale moonlight filtering through stained glass windows. Something moved in the darkness ahead.',
+      choices: ['Investigate the movement', 'Find another path'],
     },
     {
       text: "You step forward, heart pounding. The movement resolves into a figure—a woman in flowing robes, her eyes glowing with an ethereal light. She speaks: 'I've been waiting for you. The book you seek... it knows your name.'",
-      choices: ["Ask about the book", "Demand answers"],
+      choices: ['Ask about the book', 'Demand answers'],
     },
   ];
-  
+
   useEffect(() => {
     if (currentChoice !== null) {
       const timer = setTimeout(() => {
@@ -72,9 +82,9 @@ function StoryPreview() {
       return () => clearTimeout(timer);
     }
   }, [currentChoice, storyProgress, storyParts.length]);
-  
+
   const currentPart = storyParts[storyProgress];
-  
+
   return (
     <div className="relative">
       <HolographicCard className="p-8" glowColor="spectral-violet">
@@ -89,7 +99,7 @@ function StoryPreview() {
             />
           ))}
         </div>
-        
+
         {/* Story text */}
         <AnimatePresence mode="wait">
           <motion.div
@@ -104,7 +114,7 @@ function StoryPreview() {
             </p>
           </motion.div>
         </AnimatePresence>
-        
+
         {/* Choice buttons */}
         <div className="space-y-3">
           {currentPart.choices.map((choice, i) => (
@@ -117,9 +127,10 @@ function StoryPreview() {
               disabled={currentChoice !== null}
               className={`
                 w-full p-4 rounded-xl text-left font-prose transition-all duration-300
-                ${currentChoice === i 
-                  ? 'bg-spectral-cyan/20 border-spectral-cyan text-spectral-cyan' 
-                  : 'bg-void-elevated/50 border-white/10 text-white/70 hover:bg-void-elevated hover:border-spectral-cyan/30 hover:text-white'
+                ${
+                  currentChoice === i
+                    ? 'bg-spectral-cyan/20 border-spectral-cyan text-spectral-cyan'
+                    : 'bg-void-elevated/50 border-white/10 text-white/70 hover:bg-void-elevated hover:border-spectral-cyan/30 hover:text-white'
                 }
                 border disabled:opacity-50
               `}
@@ -131,17 +142,19 @@ function StoryPreview() {
             </motion.button>
           ))}
         </div>
-        
+
         {/* Hint text */}
         <p className="text-center text-xs text-ghost-500 mt-6">
           Make a choice to see how the story unfolds
         </p>
       </HolographicCard>
-      
+
       {/* Decorative glow */}
-      <div 
+      <div
         className="absolute -inset-8 -z-10 rounded-3xl blur-3xl opacity-20"
-        style={{ background: 'linear-gradient(135deg, var(--spectral-cyan), var(--spectral-violet))' }}
+        style={{
+          background: 'linear-gradient(135deg, var(--spectral-cyan), var(--spectral-violet))',
+        }}
       />
     </div>
   );
@@ -151,7 +164,11 @@ function StoryPreview() {
  * FLOATING FEATURE CARDS
  * Animated feature cards with depth effect
  */
-function FeatureOrbit({ features }: { features: Array<{ icon: React.ElementType; label: string }> }) {
+function FeatureOrbit({
+  features,
+}: {
+  features: Array<{ icon: React.ElementType; label: string }>;
+}) {
   return (
     <div className="relative w-full h-80 flex items-center justify-center">
       {features.map((feature, i) => {
@@ -159,19 +176,19 @@ function FeatureOrbit({ features }: { features: Array<{ icon: React.ElementType;
         const radius = 120;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
-        
+
         return (
           <motion.div
             key={i}
             className="absolute"
             initial={{ x, y, opacity: 0 }}
-            animate={{ 
-              x, 
-              y, 
+            animate={{
+              x,
+              y,
               opacity: 1,
               rotate: [0, 5, -5, 0],
             }}
-            transition={{ 
+            transition={{
               duration: 8 + i,
               repeat: Infinity,
               repeatType: 'reverse',
@@ -185,7 +202,7 @@ function FeatureOrbit({ features }: { features: Array<{ icon: React.ElementType;
           </motion.div>
         );
       })}
-      
+
       {/* Center orb */}
       <motion.div
         animate={{ scale: [1, 1.1, 1] }}
@@ -201,10 +218,10 @@ function FeatureOrbit({ features }: { features: Array<{ icon: React.ElementType;
 /**
  * STATS COUNTER WITH EFFECTS
  */
-function EnhancedStatCard({ 
-  icon: Icon, 
-  value, 
-  label, 
+function EnhancedStatCard({
+  icon: Icon,
+  value,
+  label,
   suffix = '',
   isInfinity = false,
   gradient,
@@ -230,30 +247,25 @@ function EnhancedStatCard({
     >
       <HolographicCard className="p-6 text-center" glowColor={gradient.split('-')[1]}>
         <FloatingItem duration={4 + delay} distance={8}>
-          <div 
+          <div
             className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:shadow-xl transition-shadow`}
           >
             <Icon className="w-5 h-5 text-void-black" />
           </div>
         </FloatingItem>
-        
+
         <div className="font-display text-3xl text-white mb-2">
           {isInfinity ? (
-            <NeonText color="spectral-cyan" intensity={0.5}>∞</NeonText>
+            <NeonText color="spectral-cyan" intensity={0.5}>
+              ∞
+            </NeonText>
           ) : typeof value === 'number' ? (
-            <AnimatedCounter 
-              end={value} 
-              duration={2.5} 
-              suffix={suffix}
-              className="inline-block"
-            />
+            <AnimatedCounter end={value} duration={2.5} suffix={suffix} className="inline-block" />
           ) : (
             value
           )}
         </div>
-        <div className="text-xs font-ui tracking-widest uppercase text-ghost-500">
-          {label}
-        </div>
+        <div className="text-xs font-ui tracking-widest uppercase text-ghost-500">{label}</div>
       </HolographicCard>
     </motion.div>
   );
@@ -271,13 +283,13 @@ const LandingPageInteractive = () => {
   const heroRef = useRef<HTMLDivElement>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isMuted, setIsMuted] = useState(true);
-  
+
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
   const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0]);
   const heroScale = useTransform(smoothProgress, [0, 0.15], [1, 0.95]);
   const heroY = useTransform(smoothProgress, [0, 0.15], [0, -50]);
-  
+
   // Track mouse for parallax effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -291,14 +303,17 @@ const LandingPageInteractive = () => {
   }, []);
 
   // Feature orbit items
-  const orbitFeatures = useMemo(() => [
-    { icon: Wand2, label: 'AI Writing' },
-    { icon: Sparkles, label: 'Dynamic' },
-    { icon: Layers, label: 'Branching' },
-    { icon: Users, label: 'Social' },
-    { icon: Heart, label: 'Emotional' },
-    { icon: Eye, label: 'Immersive' },
-  ], []);
+  const orbitFeatures = useMemo(
+    () => [
+      { icon: Wand2, label: 'AI Writing' },
+      { icon: Sparkles, label: 'Dynamic' },
+      { icon: Layers, label: 'Branching' },
+      { icon: Users, label: 'Social' },
+      { icon: Heart, label: 'Emotional' },
+      { icon: Eye, label: 'Immersive' },
+    ],
+    []
+  );
 
   return (
     <div className="bg-void-absolute min-h-screen">
@@ -307,11 +322,11 @@ const LandingPageInteractive = () => {
       <AmbientOrbs />
       <EtherealNav />
       <ScrollProgressIndicator />
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           HERO SECTION - The Awakening
           ════════════════════════════════════════════════════════════════════════ */}
-      <motion.section 
+      <motion.section
         ref={heroRef}
         style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
         className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
@@ -324,20 +339,20 @@ const LandingPageInteractive = () => {
               y: mousePosition.y * 2,
             }}
           >
-            <MorphingBlob 
-              color="spectral-cyan" 
-              size={600} 
-              className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 opacity-20" 
+            <MorphingBlob
+              color="spectral-cyan"
+              size={600}
+              className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 opacity-20"
             />
-            <MorphingBlob 
-              color="spectral-violet" 
-              size={500} 
+            <MorphingBlob
+              color="spectral-violet"
+              size={500}
               speed={10}
-              className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 opacity-15" 
+              className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 opacity-15"
             />
           </motion.div>
         </div>
-        
+
         {/* Hero Content */}
         <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
           {/* Eyebrow */}
@@ -362,7 +377,7 @@ const LandingPageInteractive = () => {
               </span>
             </MagneticElement>
           </motion.div>
-          
+
           {/* Main Title with Split Animation */}
           <motion.h1
             initial={{ opacity: 0 }}
@@ -370,22 +385,22 @@ const LandingPageInteractive = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="font-display text-5xl md:text-7xl lg:text-8xl xl:text-9xl tracking-tight mb-6"
           >
-            <SplitTextAnimation 
-              text="INFINITE" 
+            <SplitTextAnimation
+              text="INFINITE"
               className="block text-white"
               delay={0.5}
               stagger={0.04}
             />
             <span className="block mt-2">
-              <SplitTextAnimation 
-                text="STORIES" 
+              <SplitTextAnimation
+                text="STORIES"
                 className="bg-gradient-to-r from-spectral-cyan via-spectral-violet to-spectral-rose bg-clip-text text-transparent"
                 delay={0.8}
                 stagger={0.04}
               />
             </span>
           </motion.h1>
-          
+
           {/* Subtitle with Typewriter Effect */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -393,13 +408,13 @@ const LandingPageInteractive = () => {
             transition={{ duration: 0.8, delay: 1.2 }}
             className="font-literary text-xl md:text-2xl lg:text-3xl text-ghost-400 italic max-w-3xl mx-auto mb-12"
           >
-            <TypewriterText 
-              text="Where every choice fractures reality into new narratives." 
+            <TypewriterText
+              text="Where every choice fractures reality into new narratives."
               speed={40}
               className="block"
             />
           </motion.div>
-          
+
           {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -409,7 +424,9 @@ const LandingPageInteractive = () => {
           >
             <MagneticElement strength={0.15}>
               <SpectralButton
-                onClick={() => router.push(user ? '/user-dashboard' : '/authentication?mode=signup')}
+                onClick={() =>
+                  router.push(user ? '/user-dashboard' : '/authentication?mode=signup')
+                }
                 size="lg"
                 icon={<Zap className="w-5 h-5" />}
                 className="text-lg px-8 py-4"
@@ -417,7 +434,7 @@ const LandingPageInteractive = () => {
                 {user ? 'Enter Dashboard' : 'Begin Your Story'}
               </SpectralButton>
             </MagneticElement>
-            
+
             {!user && (
               <MagneticElement strength={0.15}>
                 <SpectralButton
@@ -432,7 +449,7 @@ const LandingPageInteractive = () => {
               </MagneticElement>
             )}
           </motion.div>
-          
+
           {/* Stats Grid */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -473,7 +490,7 @@ const LandingPageInteractive = () => {
             />
           </motion.div>
         </div>
-        
+
         {/* Scroll Indicator */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -491,7 +508,7 @@ const LandingPageInteractive = () => {
           </motion.div>
         </motion.div>
       </motion.section>
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           INTERACTIVE DEMO SECTION
           ════════════════════════════════════════════════════════════════════════ */}
@@ -508,10 +525,10 @@ const LandingPageInteractive = () => {
                 <span className="block text-spectral-violet">Magic</span>
               </h2>
               <p className="font-prose text-lg text-ghost-400 mb-8 leading-relaxed">
-                Try it yourself. Every choice you make creates a new branch in the story.
-                Watch as the AI weaves your decisions into a unique narrative experience.
+                Try it yourself. Every choice you make creates a new branch in the story. Watch as
+                the AI weaves your decisions into a unique narrative experience.
               </p>
-              
+
               <div className="flex flex-wrap gap-4">
                 {[
                   { icon: Wand2, label: 'AI-Generated' },
@@ -532,7 +549,7 @@ const LandingPageInteractive = () => {
                 ))}
               </div>
             </RevealOnScroll>
-            
+
             {/* Right: Interactive Demo */}
             <RevealOnScroll direction="right" delay={0.2}>
               <StoryPreview />
@@ -540,7 +557,7 @@ const LandingPageInteractive = () => {
           </div>
         </div>
       </section>
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           FEATURES SECTION - The Powers
           ════════════════════════════════════════════════════════════════════════ */}
@@ -554,56 +571,62 @@ const LandingPageInteractive = () => {
               Beyond Reading
             </h2>
             <p className="font-prose text-lg text-ghost-400 max-w-2xl mx-auto">
-              Experience stories that respond to your presence, adapt to your choices, 
-              and evolve with each reading.
+              Experience stories that respond to your presence, adapt to your choices, and evolve
+              with each reading.
             </p>
           </RevealOnScroll>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
                 icon: Wand2,
                 title: 'AI Story Generation',
-                description: 'Watch as artificial intelligence crafts unique narrative paths based on your decisions in real-time.',
+                description:
+                  'Watch as artificial intelligence crafts unique narrative paths based on your decisions in real-time.',
                 gradient: 'from-spectral-cyan to-spectral-violet',
               },
               {
                 icon: Sparkles,
                 title: 'Infinite Branches',
-                description: 'Every choice creates new story threads. No two readers experience the same journey.',
+                description:
+                  'Every choice creates new story threads. No two readers experience the same journey.',
                 gradient: 'from-spectral-violet to-spectral-rose',
               },
               {
                 icon: BookOpen,
                 title: 'Immersive Reading',
-                description: 'A distraction-free environment designed for deep literary immersion and focus.',
+                description:
+                  'A distraction-free environment designed for deep literary immersion and focus.',
                 gradient: 'from-spectral-rose to-plasma-orange',
               },
               {
                 icon: Users,
                 title: 'Social Discovery',
-                description: 'Share your unique story paths with friends and explore narratives they have uncovered.',
+                description:
+                  'Share your unique story paths with friends and explore narratives they have uncovered.',
                 gradient: 'from-plasma-orange to-spectral-amber',
               },
               {
                 icon: MessageSquare,
                 title: 'AI Companions',
-                description: 'Interact with intelligent characters who remember your choices and grow with your story.',
+                description:
+                  'Interact with intelligent characters who remember your choices and grow with your story.',
                 gradient: 'from-spectral-amber to-spectral-emerald',
               },
               {
                 icon: Zap,
                 title: 'Dynamic Pacing',
-                description: 'Stories that sense your reading rhythm and adapt their intensity accordingly.',
+                description:
+                  'Stories that sense your reading rhythm and adapt their intensity accordingly.',
                 gradient: 'from-spectral-emerald to-spectral-cyan',
               },
             ].map((feature, index) => (
               <RevealOnScroll key={index} delay={0.1 * index}>
-                <HolographicCard 
-                  className="p-8 h-full" 
+                <HolographicCard
+                  className="p-8 h-full"
                   glowColor={feature.gradient.split(' ')[1]?.replace('to-', '') || 'spectral-cyan'}
                 >
-                  <motion.div 
+                  <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg`}
                   >
@@ -612,16 +635,14 @@ const LandingPageInteractive = () => {
                   <h3 className="font-display text-xl tracking-wide text-white mb-3">
                     {feature.title}
                   </h3>
-                  <p className="font-prose text-ghost-400 leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <p className="font-prose text-ghost-400 leading-relaxed">{feature.description}</p>
                 </HolographicCard>
               </RevealOnScroll>
             ))}
           </div>
         </div>
       </section>
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           TESTIMONIALS SECTION
           ════════════════════════════════════════════════════════════════════════ */}
@@ -635,28 +656,31 @@ const LandingPageInteractive = () => {
               What Voyagers Say
             </h2>
           </RevealOnScroll>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                quote: "I've never experienced storytelling like this. Every choice felt meaningful, every consequence real.",
-                author: "Sarah M.",
-                role: "Fantasy Reader",
-                avatar: "S",
+                quote:
+                  "I've never experienced storytelling like this. Every choice felt meaningful, every consequence real.",
+                author: 'Sarah M.',
+                role: 'Fantasy Reader',
+                avatar: 'S',
                 rating: 5,
               },
               {
-                quote: "The AI creates narratives so compelling, I forgot I was reading. I was living another life.",
-                author: "Marcus T.",
-                role: "Sci-Fi Enthusiast",
-                avatar: "M",
+                quote:
+                  'The AI creates narratives so compelling, I forgot I was reading. I was living another life.',
+                author: 'Marcus T.',
+                role: 'Sci-Fi Enthusiast',
+                avatar: 'M',
                 rating: 5,
               },
               {
-                quote: "Stxryai redefined what interactive fiction can be. The immersion is unparalleled.",
-                author: "Elena K.",
-                role: "Horror Aficionado",
-                avatar: "E",
+                quote:
+                  'Stxryai redefined what interactive fiction can be. The immersion is unparalleled.',
+                author: 'Elena K.',
+                role: 'Horror Aficionado',
+                avatar: 'E',
                 rating: 5,
               },
             ].map((testimonial, index) => (
@@ -668,11 +692,11 @@ const LandingPageInteractive = () => {
                       <Star key={i} className="w-4 h-4 text-spectral-amber fill-spectral-amber" />
                     ))}
                   </div>
-                  
+
                   <p className="font-literary text-lg text-ghost-300 italic mb-6 leading-relaxed">
                     "{testimonial.quote}"
                   </p>
-                  
+
                   <div className="flex items-center gap-4 pt-4 border-t border-white/10">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center text-void-black font-display text-lg">
                       {testimonial.avatar}
@@ -686,7 +710,7 @@ const LandingPageInteractive = () => {
               </RevealOnScroll>
             ))}
           </div>
-          
+
           {/* Trust badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -694,7 +718,12 @@ const LandingPageInteractive = () => {
             viewport={{ once: true }}
             className="flex flex-wrap items-center justify-center gap-8 mt-16"
           >
-            {['100K+ Downloads', '4.9 App Store', 'Featured in TechCrunch', 'Top 10 Reading Apps'].map((badge, i) => (
+            {[
+              '100K+ Downloads',
+              '4.9 App Store',
+              'Featured in TechCrunch',
+              'Top 10 Reading Apps',
+            ].map((badge, i) => (
               <div key={i} className="flex items-center gap-2 text-ghost-500 text-sm font-ui">
                 <Star className="w-4 h-4 text-spectral-amber" fill="currentColor" />
                 <span>{badge}</span>
@@ -703,7 +732,7 @@ const LandingPageInteractive = () => {
           </motion.div>
         </div>
       </section>
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           PRICING SECTION
           ════════════════════════════════════════════════════════════════════════ */}
@@ -717,21 +746,17 @@ const LandingPageInteractive = () => {
               Choose Your Path
             </h2>
           </RevealOnScroll>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {/* Free Tier */}
             <RevealOnScroll delay={0.1}>
               <HolographicCard className="p-10 h-full" glowColor="spectral-emerald">
                 <div className="text-center mb-8">
-                  <h3 className="font-display text-2xl tracking-wide text-white mb-3">
-                    Explorer
-                  </h3>
-                  <div className="font-display text-6xl text-white mb-2">
-                    Free
-                  </div>
+                  <h3 className="font-display text-2xl tracking-wide text-white mb-3">Explorer</h3>
+                  <div className="font-display text-6xl text-white mb-2">Free</div>
                   <p className="text-sm text-ghost-400">Forever</p>
                 </div>
-                
+
                 <ul className="space-y-4 mb-10">
                   {[
                     'Access to curated stories',
@@ -745,13 +770,13 @@ const LandingPageInteractive = () => {
                     </li>
                   ))}
                 </ul>
-                
+
                 <SpectralButton variant="secondary" fullWidth href="/authentication?mode=signup">
                   Start Free
                 </SpectralButton>
               </HolographicCard>
             </RevealOnScroll>
-            
+
             {/* Premium Tier */}
             <RevealOnScroll delay={0.2}>
               <div className="relative">
@@ -762,18 +787,16 @@ const LandingPageInteractive = () => {
                     Recommended
                   </span>
                 </div>
-                
+
                 <HolographicCard className="p-10 h-full" glowColor="spectral-violet">
                   <div className="text-center mb-8">
-                    <h3 className="font-display text-2xl tracking-wide text-white mb-3">
-                      Voyager
-                    </h3>
+                    <h3 className="font-display text-2xl tracking-wide text-white mb-3">Voyager</h3>
                     <div className="font-display text-6xl text-spectral-violet mb-2">
                       $9<span className="text-2xl text-ghost-400">/mo</span>
                     </div>
                     <p className="text-sm text-ghost-400">Billed monthly</p>
                   </div>
-                  
+
                   <ul className="space-y-4 mb-10">
                     {[
                       'Unlimited story access',
@@ -789,7 +812,7 @@ const LandingPageInteractive = () => {
                       </li>
                     ))}
                   </ul>
-                  
+
                   <SpectralButton variant="plasma" fullWidth href="/pricing">
                     Upgrade Now
                   </SpectralButton>
@@ -799,20 +822,20 @@ const LandingPageInteractive = () => {
           </div>
         </div>
       </section>
-      
+
       {/* ════════════════════════════════════════════════════════════════════════
           CTA SECTION - The Invitation
           ════════════════════════════════════════════════════════════════════════ */}
       <section className="relative py-40 overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0 pointer-events-none">
-          <MorphingBlob 
-            color="spectral-cyan" 
-            size={800} 
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10" 
+          <MorphingBlob
+            color="spectral-cyan"
+            size={800}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10"
           />
         </div>
-        
+
         <div className="max-w-4xl mx-auto px-4 relative z-10">
           <RevealOnScroll className="text-center">
             <motion.div
@@ -824,10 +847,10 @@ const LandingPageInteractive = () => {
               </h2>
             </motion.div>
             <p className="font-prose text-xl text-ghost-400 mb-12 leading-relaxed max-w-2xl mx-auto">
-              Join thousands of readers who have discovered a new way to experience fiction. 
-              Every story is a universe. Every choice is a new beginning.
+              Join thousands of readers who have discovered a new way to experience fiction. Every
+              story is a universe. Every choice is a new beginning.
             </p>
-            
+
             <MagneticElement strength={0.15}>
               <SpectralButton
                 size="lg"
@@ -842,7 +865,7 @@ const LandingPageInteractive = () => {
           </RevealOnScroll>
         </div>
       </section>
-      
+
       <FooterSection />
     </div>
   );

@@ -32,7 +32,12 @@ const HelpPage: React.FC = () => {
       description: 'Learn the basics of Stxryai',
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
         </svg>
       ),
       gradient: 'from-spectral-cyan to-spectral-violet',
@@ -42,7 +47,12 @@ const HelpPage: React.FC = () => {
       description: 'Navigate interactive fiction',
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+          />
         </svg>
       ),
       gradient: 'from-spectral-violet to-spectral-rose',
@@ -52,7 +62,12 @@ const HelpPage: React.FC = () => {
       description: 'Become a story author',
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+          />
         </svg>
       ),
       gradient: 'from-spectral-rose to-amber-400',
@@ -62,8 +77,18 @@ const HelpPage: React.FC = () => {
       description: 'Manage subscriptions and settings',
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
         </svg>
       ),
       gradient: 'from-amber-400 to-spectral-cyan',
@@ -73,62 +98,98 @@ const HelpPage: React.FC = () => {
   const faqs: FAQ[] = [
     {
       question: 'What is Stxryai?',
-      answer: 'Stxryai is an AI-powered interactive fiction platform where you can read and create stories that branch and evolve based on your choices. Every decision you make shapes the narrative, creating a unique reading experience every time.',
+      answer:
+        'Stxryai is an AI-powered interactive fiction platform where you can read and create stories that branch and evolve based on your choices. Every decision you make shapes the narrative, creating a unique reading experience every time.',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       ),
     },
     {
       question: 'How do I create a story?',
-      answer: 'Navigate to the Story Creation Studio from the navigation bar. You can start by creating a new draft, adding chapters, and defining choices. Our AI assistant can help you brainstorm ideas, expand scenes, and create engaging branching narratives.',
+      answer:
+        'Navigate to the Story Creation Studio from the navigation bar. You can start by creating a new draft, adding chapters, and defining choices. Our AI assistant can help you brainstorm ideas, expand scenes, and create engaging branching narratives.',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
         </svg>
       ),
     },
     {
       question: 'What are energy points?',
-      answer: 'Energy points are used to make choices in stories and generate AI content. They regenerate over time—free users get 1 energy per 3 hours, while premium users regenerate faster. You can also purchase additional energy or upgrade to a higher tier for more generous limits.',
+      answer:
+        'Energy points are used to make choices in stories and generate AI content. They regenerate over time—free users get 1 energy per 3 hours, while premium users regenerate faster. You can also purchase additional energy or upgrade to a higher tier for more generous limits.',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
         </svg>
       ),
     },
     {
       question: 'How do I report inappropriate content?',
-      answer: 'You can report stories, comments, or users by clicking the "Report" button next to the content. Our moderation team reviews all reports within 24 hours. We take community safety seriously and have strict content guidelines.',
+      answer:
+        'You can report stories, comments, or users by clicking the "Report" button next to the content. Our moderation team reviews all reports within 24 hours. We take community safety seriously and have strict content guidelines.',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
         </svg>
       ),
     },
     {
       question: 'Can I collaborate with other authors?',
-      answer: 'Yes! Creator Pro subscribers can invite collaborators to their stories. You can co-write chapters, share access to story branches, and work together in real-time with built-in version control.',
+      answer:
+        'Yes! Creator Pro subscribers can invite collaborators to their stories. You can co-write chapters, share access to story branches, and work together in real-time with built-in version control.',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
       ),
     },
     {
       question: 'How does the AI writing assistant work?',
-      answer: 'Our AI analyzes your story context, characters, and style to generate suggestions that feel natural to your narrative. You can ask it to expand scenes, create dialogue, suggest plot twists, or help with writer\'s block. The AI learns from your writing to maintain consistency.',
+      answer:
+        "Our AI analyzes your story context, characters, and style to generate suggestions that feel natural to your narrative. You can ask it to expand scenes, create dialogue, suggest plot twists, or help with writer's block. The AI learns from your writing to maintain consistency.",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+          />
         </svg>
       ),
     },
   ];
 
   const filteredFaqs = faqs.filter(
-    faq =>
+    (faq) =>
       faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -171,7 +232,12 @@ const HelpPage: React.FC = () => {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
@@ -194,10 +260,14 @@ const HelpPage: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                 >
                   {/* Hover glow */}
-                  <div className={`absolute -inset-px rounded-xl bg-gradient-to-r ${category.gradient} opacity-0 group-hover:opacity-30 blur-lg transition-opacity duration-300`} />
+                  <div
+                    className={`absolute -inset-px rounded-xl bg-gradient-to-r ${category.gradient} opacity-0 group-hover:opacity-30 blur-lg transition-opacity duration-300`}
+                  />
 
                   <div className="relative bg-void-black/60 backdrop-blur-sm border border-white/10 rounded-xl p-6 h-full group-hover:border-white/20 transition-all duration-300">
-                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center text-void-black mb-4`}>
+                    <div
+                      className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.gradient} flex items-center justify-center text-void-black mb-4`}
+                    >
                       {category.icon}
                     </div>
                     <h3 className="text-white font-semibold mb-1">{category.name}</h3>
@@ -238,12 +308,16 @@ const HelpPage: React.FC = () => {
                       transition={{ duration: 0.3 }}
                     />
 
-                    <div className={`relative bg-void-black/60 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 ${openFaq === index ? 'border-spectral-cyan/30' : 'border-white/10 hover:border-white/20'}`}>
+                    <div
+                      className={`relative bg-void-black/60 backdrop-blur-sm border rounded-xl overflow-hidden transition-all duration-300 ${openFaq === index ? 'border-spectral-cyan/30' : 'border-white/10 hover:border-white/20'}`}
+                    >
                       <button
                         onClick={() => setOpenFaq(openFaq === index ? null : index)}
                         className="w-full flex items-center gap-4 p-6 text-left"
                       >
-                        <span className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${openFaq === index ? 'bg-spectral-cyan/20 text-spectral-cyan' : 'bg-white/5 text-ghost-400'}`}>
+                        <span
+                          className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-300 ${openFaq === index ? 'bg-spectral-cyan/20 text-spectral-cyan' : 'bg-white/5 text-ghost-400'}`}
+                        >
                           {faq.icon}
                         </span>
                         <span className="flex-1 text-white font-medium">{faq.question}</span>
@@ -252,8 +326,18 @@ const HelpPage: React.FC = () => {
                           animate={{ rotate: openFaq === index ? 180 : 0 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </motion.span>
                       </button>
@@ -284,8 +368,18 @@ const HelpPage: React.FC = () => {
                   animate={{ opacity: 1 }}
                   className="text-center py-12"
                 >
-                  <svg className="w-16 h-16 text-ghost-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-16 h-16 text-ghost-600 mx-auto mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <p className="text-ghost-400">No results found for "{searchQuery}"</p>
                   <button
@@ -310,19 +404,42 @@ const HelpPage: React.FC = () => {
               <div className="absolute -inset-4 bg-gradient-to-r from-spectral-cyan/10 via-spectral-violet/10 to-spectral-rose/10 rounded-3xl blur-xl" />
               <div className="relative bg-void-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-br from-spectral-cyan to-spectral-violet flex items-center justify-center">
-                  <svg className="w-8 h-8 text-void-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <svg
+                    className="w-8 h-8 text-void-black"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3 font-display">Still need help?</h3>
+                <h3 className="text-2xl font-bold text-white mb-3 font-display">
+                  Still need help?
+                </h3>
                 <p className="text-ghost-400 mb-6">
-                  Our support team is here to help. Reach out and we'll get back to you within 24 hours.
+                  Our support team is here to help. Reach out and we'll get back to you within 24
+                  hours.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <SpectralButton variant="primary">
                     <span className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                       Email Support
                     </span>

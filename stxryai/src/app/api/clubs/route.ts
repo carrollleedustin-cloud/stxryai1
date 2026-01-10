@@ -37,23 +37,16 @@ export async function POST(request: NextRequest) {
     const supabase = await getSupabaseClient();
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
-    const {
-      name,
-      description,
-      category,
-      isPrivate,
-      coverImageUrl,
-      tags,
-    } = body;
+    const { name, description, category, isPrivate, coverImageUrl, tags } = body;
 
     // Validate required fields
     if (!name || !description || !category) {
@@ -81,36 +74,29 @@ export async function POST(request: NextRequest) {
 
     if (clubError) {
       console.error('Error creating club:', clubError);
-      return NextResponse.json(
-        { error: 'Failed to create club' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to create club' }, { status: 500 });
     }
 
     // Add creator as first member
-    const { error: memberError } = await supabase
-      .from('club_members')
-      .insert({
-        club_id: club.id,
-        user_id: user.id,
-        role: 'admin',
-      });
+    const { error: memberError } = await supabase.from('club_members').insert({
+      club_id: club.id,
+      user_id: user.id,
+      role: 'admin',
+    });
 
     if (memberError) {
       console.error('Error adding creator as member:', memberError);
     }
 
     // Log activity
-    await supabase
-      .from('user_activity')
-      .insert({
-        user_id: user.id,
-        activity_type: 'club_created',
-        metadata: {
-          club_id: club.id,
-          club_name: name,
-        },
-      });
+    await supabase.from('user_activity').insert({
+      user_id: user.id,
+      activity_type: 'club_created',
+      metadata: {
+        club_id: club.id,
+        club_name: name,
+      },
+    });
 
     return NextResponse.json({
       success: true,
@@ -154,10 +140,7 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching clubs:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch clubs' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to fetch clubs' }, { status: 500 });
     }
 
     return NextResponse.json({

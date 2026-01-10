@@ -44,7 +44,7 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
     { id: 'shimmer', name: 'Shimmer', gender: 'female' },
   ]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   const accessCheck = canAccessPremiumFeature(profile, 'ai_voice_narration');
 
   const handlePlay = async () => {
@@ -53,10 +53,10 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
     try {
       // Import and use TTS service
       const { ttsService } = await import('@/services/ttsService');
-      
+
       // Get user ID from context or auth
       const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : undefined;
-      
+
       // Generate audio using TTS service
       const audioGeneration = await ttsService.generateAudio(text, settings.voice, {
         userId: userId || undefined,
@@ -79,7 +79,7 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
         // Still processing - poll for completion
         const checkStatus = setInterval(async () => {
           const updated = await ttsService.getUserAudioGenerations(userId || '', undefined);
-          const current = updated.find(a => a.id === audioGeneration.id);
+          const current = updated.find((a) => a.id === audioGeneration.id);
           if (current?.generationStatus === 'completed' && current.audioUrl) {
             clearInterval(checkStatus);
             if (audioRef.current) {
@@ -96,7 +96,7 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
             throw new Error(current.errorMessage || 'Audio generation failed');
           }
         }, 2000);
-        
+
         // Timeout after 30 seconds
         setTimeout(() => clearInterval(checkStatus), 30000);
       }
@@ -149,132 +149,132 @@ export function AIVoiceNarration({ text, onPlay, onPause, onStop }: AIVoiceNarra
           </div>
         </div>
 
-      {/* Voice Settings */}
-      <div className="p-4 bg-card border border-border rounded-lg space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">Voice</label>
-          <div className="grid grid-cols-3 gap-2">
-            {voices.map((voice) => (
-              <motion.button
-                key={voice.id}
-                onClick={() => setSettings({ ...settings, voice: voice.id })}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`p-3 rounded-lg border-2 transition-all ${
-                  settings.voice === voice.id
-                    ? 'border-primary bg-primary/10'
-                    : 'border-border hover:border-primary/50'
-                }`}
-              >
-                <div className="font-medium text-foreground text-sm">{voice.name}</div>
-                <div className="text-xs text-muted-foreground">{voice.gender}</div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-4">
+        {/* Voice Settings */}
+        <div className="p-4 bg-card border border-border rounded-lg space-y-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Speed: {settings.speed.toFixed(1)}x
-            </label>
-            <input
-              type="range"
-              min="0.5"
-              max="2.0"
-              step="0.1"
-              value={settings.speed}
-              onChange={(e) => setSettings({ ...settings, speed: parseFloat(e.target.value) })}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Pitch: {settings.pitch.toFixed(1)}
-            </label>
-            <input
-              type="range"
-              min="0.5"
-              max="2.0"
-              step="0.1"
-              value={settings.pitch}
-              onChange={(e) => setSettings({ ...settings, pitch: parseFloat(e.target.value) })}
-              className="w-full"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Volume: {Math.round(settings.volume * 100)}%
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={settings.volume}
-              onChange={(e) => setSettings({ ...settings, volume: parseFloat(e.target.value) })}
-              className="w-full"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Playback Controls */}
-      <div className="p-4 bg-card border border-border rounded-lg">
-        <div className="flex items-center gap-4 mb-4">
-          {!isPlaying ? (
-            <motion.button
-              onClick={handlePlay}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
-            >
-              <Icon name="PlayIcon" size={24} />
-            </motion.button>
-          ) : isPaused ? (
-            <motion.button
-              onClick={handleResume}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
-            >
-              <Icon name="PlayIcon" size={24} />
-            </motion.button>
-          ) : (
-            <motion.button
-              onClick={handlePause}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
-            >
-              <Icon name="PauseIcon" size={24} />
-            </motion.button>
-          )}
-
-          <motion.button
-            onClick={handleStop}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-10 h-10 bg-muted text-foreground rounded-full flex items-center justify-center"
-          >
-            <Icon name="StopIcon" size={20} />
-          </motion.button>
-
-          <div className="flex-1">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-              <span>{formatTime(currentTime)}</span>
-              <span>{formatTime(duration)}</span>
+            <label className="block text-sm font-medium text-foreground mb-2">Voice</label>
+            <div className="grid grid-cols-3 gap-2">
+              {voices.map((voice) => (
+                <motion.button
+                  key={voice.id}
+                  onClick={() => setSettings({ ...settings, voice: voice.id })}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`p-3 rounded-lg border-2 transition-all ${
+                    settings.voice === voice.id
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="font-medium text-foreground text-sm">{voice.name}</div>
+                  <div className="text-xs text-muted-foreground">{voice.gender}</div>
+                </motion.button>
+              ))}
             </div>
-            <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
-                initial={{ width: 0 }}
-                animate={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : 0 }}
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Speed: {settings.speed.toFixed(1)}x
+              </label>
+              <input
+                type="range"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                value={settings.speed}
+                onChange={(e) => setSettings({ ...settings, speed: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Pitch: {settings.pitch.toFixed(1)}
+              </label>
+              <input
+                type="range"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                value={settings.pitch}
+                onChange={(e) => setSettings({ ...settings, pitch: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Volume: {Math.round(settings.volume * 100)}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={settings.volume}
+                onChange={(e) => setSettings({ ...settings, volume: parseFloat(e.target.value) })}
+                className="w-full"
               />
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Playback Controls */}
+        <div className="p-4 bg-card border border-border rounded-lg">
+          <div className="flex items-center gap-4 mb-4">
+            {!isPlaying ? (
+              <motion.button
+                onClick={handlePlay}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
+              >
+                <Icon name="PlayIcon" size={24} />
+              </motion.button>
+            ) : isPaused ? (
+              <motion.button
+                onClick={handleResume}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
+              >
+                <Icon name="PlayIcon" size={24} />
+              </motion.button>
+            ) : (
+              <motion.button
+                onClick={handlePause}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center"
+              >
+                <Icon name="PauseIcon" size={24} />
+              </motion.button>
+            )}
+
+            <motion.button
+              onClick={handleStop}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-10 h-10 bg-muted text-foreground rounded-full flex items-center justify-center"
+            >
+              <Icon name="StopIcon" size={20} />
+            </motion.button>
+
+            <div className="flex-1">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                <span>{formatTime(currentTime)}</span>
+                <span>{formatTime(duration)}</span>
+              </div>
+              <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                  initial={{ width: 0 }}
+                  animate={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : 0 }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
         <audio ref={audioRef} onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)} />
       </div>
@@ -287,4 +287,3 @@ function formatTime(seconds: number): string {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
-

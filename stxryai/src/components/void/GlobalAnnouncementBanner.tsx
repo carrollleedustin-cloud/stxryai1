@@ -22,13 +22,14 @@ export default function GlobalAnnouncementBanner() {
       const userId = user?.id || 'guest';
       const tier = profile?.subscription_tier || 'free';
       const announcements = await announcementService.getForUser(userId, tier);
-      
+
       // Find pinned or urgent announcement that hasn't been dismissed
-      const pinnedOrUrgent = announcements.find(a => 
-        (a.isPinned || a.type === 'urgent' || a.type === 'maintenance') &&
-        !localStorage.getItem(`dismissed_announcement_${a.id}`)
+      const pinnedOrUrgent = announcements.find(
+        (a) =>
+          (a.isPinned || a.type === 'urgent' || a.type === 'maintenance') &&
+          !localStorage.getItem(`dismissed_announcement_${a.id}`)
       );
-      
+
       if (pinnedOrUrgent) {
         setAnnouncement(pinnedOrUrgent);
       }
@@ -105,18 +106,15 @@ export default function GlobalAnnouncementBanner() {
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-xl flex-shrink-0">{style.icon}</span>
               <div className="min-w-0">
-                <span className={`font-semibold ${style.textColor}`}>
-                  {announcement.title}
-                </span>
+                <span className={`font-semibold ${style.textColor}`}>{announcement.title}</span>
                 <span className="text-text-secondary ml-2 hidden sm:inline">
-                  {announcement.content.length > 100 
-                    ? announcement.content.substring(0, 100) + '...' 
-                    : announcement.content
-                  }
+                  {announcement.content.length > 100
+                    ? announcement.content.substring(0, 100) + '...'
+                    : announcement.content}
                 </span>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3 flex-shrink-0">
               {announcement.metadata?.linkUrl && (
                 <Link
@@ -131,7 +129,14 @@ export default function GlobalAnnouncementBanner() {
                 className="p-1 rounded-lg hover:bg-void-mist transition-colors text-text-tertiary hover:text-text-primary"
                 aria-label="Dismiss announcement"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -143,4 +148,3 @@ export default function GlobalAnnouncementBanner() {
     </AnimatePresence>
   );
 }
-

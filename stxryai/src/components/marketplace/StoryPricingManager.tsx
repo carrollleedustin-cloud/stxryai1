@@ -70,9 +70,14 @@ export function StoryPricingManager({
       await marketplaceService.setStoryPricing(storyId, {
         pricingModel: formData.pricingModel,
         priceAmount: parseFloat(formData.priceAmount),
-        chapterPrice: formData.pricingModel === 'chapter_based' ? parseFloat(formData.chapterPrice) : undefined,
-        freeChapters: formData.pricingModel === 'chapter_based' ? parseInt(formData.freeChapters) : 0,
-        subscriptionDurationDays: formData.pricingModel === 'subscription' ? parseInt(formData.subscriptionDurationDays) : undefined,
+        chapterPrice:
+          formData.pricingModel === 'chapter_based' ? parseFloat(formData.chapterPrice) : undefined,
+        freeChapters:
+          formData.pricingModel === 'chapter_based' ? parseInt(formData.freeChapters) : 0,
+        subscriptionDurationDays:
+          formData.pricingModel === 'subscription'
+            ? parseInt(formData.subscriptionDurationDays)
+            : undefined,
         discountPercentage: parseFloat(formData.discountPercentage),
         discountExpiresAt: formData.discountExpiresAt || undefined,
         creatorSharePercentage: parseFloat(formData.creatorSharePercentage),
@@ -105,11 +110,13 @@ export function StoryPricingManager({
           Story Pricing
         </h3>
         {pricing && (
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-            pricing.isActive
-              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-              : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-          }`}>
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-medium ${
+              pricing.isActive
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+            }`}
+          >
             {pricing.isActive ? 'Active' : 'Inactive'}
           </span>
         )}
@@ -118,9 +125,7 @@ export function StoryPricingManager({
       <div className="space-y-4">
         {/* Pricing Model */}
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
-            Pricing Model
-          </label>
+          <label className="block text-sm font-medium text-foreground mb-2">Pricing Model</label>
           <select
             value={formData.pricingModel}
             onChange={(e) => setFormData({ ...formData, pricingModel: e.target.value as any })}
@@ -136,11 +141,11 @@ export function StoryPricingManager({
         {/* Price Amount */}
         {(formData.pricingModel === 'one_time' || formData.pricingModel === 'subscription') && (
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Price (USD)
-            </label>
+            <label className="block text-sm font-medium text-foreground mb-2">Price (USD)</label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                $
+              </span>
               <input
                 type="number"
                 min="0"
@@ -173,7 +178,9 @@ export function StoryPricingManager({
                 Price Per Chapter (USD)
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  $
+                </span>
                 <input
                   type="number"
                   min="0"
@@ -197,7 +204,9 @@ export function StoryPricingManager({
               type="number"
               min="1"
               value={formData.subscriptionDurationDays}
-              onChange={(e) => setFormData({ ...formData, subscriptionDurationDays: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, subscriptionDurationDays: e.target.value })
+              }
               className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground"
             />
           </div>
@@ -254,9 +263,7 @@ export function StoryPricingManager({
               (Platform: {100 - parseFloat(formData.creatorSharePercentage)}%)
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Default: 70% creator, 30% platform
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">Default: 70% creator, 30% platform</p>
         </div>
 
         {/* Save Button */}
@@ -273,5 +280,3 @@ export function StoryPricingManager({
     </div>
   );
 }
-
-

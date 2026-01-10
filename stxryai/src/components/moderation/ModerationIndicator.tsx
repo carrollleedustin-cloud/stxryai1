@@ -22,13 +22,7 @@ export function ModerationIndicator({
   showWarning = true,
   className = '',
 }: ModerationIndicatorProps) {
-  const {
-    checkContent,
-    isChecking,
-    lastResult,
-    isFlagged,
-    severity,
-  } = useContentModeration({
+  const { checkContent, isChecking, lastResult, isFlagged, severity } = useContentModeration({
     contentType,
     contentId,
     authorId,
@@ -63,10 +57,7 @@ export function ModerationIndicator({
 
       {/* Warning display */}
       {showWarning && lastResult && isFlagged && (
-        <ModerationWarning
-          result={lastResult}
-          className="mt-2"
-        />
+        <ModerationWarning result={lastResult} className="mt-2" />
       )}
 
       {/* Status indicator (subtle) */}
@@ -83,4 +74,3 @@ export function ModerationIndicator({
     </div>
   );
 }
-

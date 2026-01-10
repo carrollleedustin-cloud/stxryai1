@@ -9,11 +9,7 @@ interface LiquidMorphProps {
   intensity?: number;
 }
 
-const LiquidMorph = ({ 
-  children, 
-  className = '',
-  intensity = 0.3 
-}: LiquidMorphProps) => {
+const LiquidMorph = ({ children, className = '', intensity = 0.3 }: LiquidMorphProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
   const timeRef = useRef(0);
@@ -51,9 +47,11 @@ const LiquidMorph = ({
     <motion.div
       ref={ref}
       className={`liquid-morph ${className}`}
-      style={{
-        '--intensity': intensity,
-      } as React.CSSProperties}
+      style={
+        {
+          '--intensity': intensity,
+        } as React.CSSProperties
+      }
     >
       {children}
     </motion.div>
@@ -61,4 +59,3 @@ const LiquidMorph = ({
 };
 
 export default LiquidMorph;
-

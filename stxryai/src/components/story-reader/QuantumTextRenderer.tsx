@@ -29,15 +29,17 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [hoveredWord, setHoveredWord] = useState<string | null>(null);
-  const [particles, setParticles] = useState<Array<{
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    life: number;
-    color: string;
-    size: number;
-  }>>([]);
+  const [particles, setParticles] = useState<
+    Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      life: number;
+      color: string;
+      size: number;
+    }>
+  >([]);
 
   // Emotion detection patterns
   const emotionPatterns = {
@@ -60,18 +62,19 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      setParticles(prev => prev
-        .map(particle => ({
-          ...particle,
-          x: particle.x + particle.vx,
-          y: particle.y + particle.vy,
-          life: particle.life - 0.02,
-          vy: particle.vy + 0.1, // gravity
-        }))
-        .filter(particle => particle.life > 0)
+      setParticles((prev) =>
+        prev
+          .map((particle) => ({
+            ...particle,
+            x: particle.x + particle.vx,
+            y: particle.y + particle.vy,
+            life: particle.life - 0.02,
+            vy: particle.vy + 0.1, // gravity
+          }))
+          .filter((particle) => particle.life > 0)
       );
 
-      particles.forEach(particle => {
+      particles.forEach((particle) => {
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
@@ -100,8 +103,7 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
     });
 
     // Find dominant emotion
-    const dominantEmotion = Object.entries(detectedEmotions)
-      .sort(([,a], [,b]) => b - a)[0];
+    const dominantEmotion = Object.entries(detectedEmotions).sort(([, a], [, b]) => b - a)[0];
 
     if (dominantEmotion) {
       onEmotionDetected(dominantEmotion[0], dominantEmotion[1]);
@@ -130,7 +132,7 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
       size: Math.random() * 3 + 1,
     }));
 
-    setParticles(prev => [...prev, ...newParticles]);
+    setParticles((prev) => [...prev, ...newParticles]);
   };
 
   // Split text into words with quantum effects
@@ -146,7 +148,7 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
         transition={{
           duration: 0.8,
           delay: paraIndex * 0.1,
-          ease: [0.16, 1, 0.3, 1]
+          ease: [0.16, 1, 0.3, 1],
         }}
         className="mb-6 leading-relaxed"
         style={{
@@ -156,9 +158,7 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
       >
         {paragraph.split(/\s+/).map((word, wordIndex) => {
           const globalIndex = words.indexOf(word);
-          const isEmotional = Object.values(emotionPatterns).some(pattern =>
-            pattern.test(word)
-          );
+          const isEmotional = Object.values(emotionPatterns).some((pattern) => pattern.test(word));
 
           return (
             <motion.span
@@ -172,20 +172,23 @@ export const QuantumTextRenderer: React.FC<QuantumTextRendererProps> = ({
               }}
               whileHover={{
                 scale: 1.05,
-                textShadow: theme === 'void'
-                  ? '0 0 20px rgba(0, 245, 212, 0.5)'
-                  : theme === 'sepia'
-                  ? '0 0 20px rgba(201, 162, 39, 0.5)'
-                  : '0 0 20px rgba(107, 68, 35, 0.5)',
+                textShadow:
+                  theme === 'void'
+                    ? '0 0 20px rgba(0, 245, 212, 0.5)'
+                    : theme === 'sepia'
+                      ? '0 0 20px rgba(201, 162, 39, 0.5)'
+                      : '0 0 20px rgba(107, 68, 35, 0.5)',
               }}
               onMouseEnter={(e) => handleWordHover(word, e)}
               onMouseLeave={() => setHoveredWord(null)}
               style={{
-                color: isEmotional ? (
-                  theme === 'void' ? '#ff6b9d' :
-                  theme === 'sepia' ? '#d4c5a9' :
-                  '#8b4513'
-                ) : undefined,
+                color: isEmotional
+                  ? theme === 'void'
+                    ? '#ff6b9d'
+                    : theme === 'sepia'
+                      ? '#d4c5a9'
+                      : '#8b4513'
+                  : undefined,
               }}
             >
               {word}{' '}

@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VoidBackground from '@/components/void/VoidBackground';
-import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, ParticleField } from '@/components/void';
+import {
+  EtherealNav,
+  TemporalHeading,
+  StaggerContainer,
+  StaggerItem,
+  ParticleField,
+} from '@/components/void';
 import { HolographicCard, RevealOnScroll, GradientBorder } from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import { enhancedSocialService } from '@/services/enhancedSocialService';
@@ -34,10 +40,11 @@ interface Club {
 
 // Mock data for clubs (fallback)
 const MOCK_CLUBS: Club[] = [
-  { 
-    id: '1', 
-    name: 'Dark Fiction Society', 
-    description: 'For lovers of horror, thriller, and dark fantasy. We explore the shadows of storytelling together.',
+  {
+    id: '1',
+    name: 'Dark Fiction Society',
+    description:
+      'For lovers of horror, thriller, and dark fantasy. We explore the shadows of storytelling together.',
     cover: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg',
     members: 2456,
     online: 89,
@@ -46,12 +53,13 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Horror', 'Thriller', 'Dark Fantasy'],
     recentActivity: '5 min ago',
-    featured: true
+    featured: true,
   },
-  { 
-    id: '2', 
-    name: 'Sci-Fi Explorers', 
-    description: 'Exploring the boundaries of science fiction narratives. From space operas to cyberpunk.',
+  {
+    id: '2',
+    name: 'Sci-Fi Explorers',
+    description:
+      'Exploring the boundaries of science fiction narratives. From space operas to cyberpunk.',
     cover: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg',
     members: 1892,
     online: 56,
@@ -60,11 +68,11 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Sci-Fi', 'Space Opera', 'Cyberpunk'],
     recentActivity: '15 min ago',
-    featured: true
+    featured: true,
   },
-  { 
-    id: '3', 
-    name: 'Fantasy Realm', 
+  {
+    id: '3',
+    name: 'Fantasy Realm',
     description: 'Epic adventures in magical worlds. Dragons, wizards, and everything in between.',
     cover: 'https://images.pexels.com/photos/2832039/pexels-photo-2832039.jpeg',
     members: 3210,
@@ -74,12 +82,13 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Fantasy', 'Epic', 'Magic'],
     recentActivity: '2 min ago',
-    featured: true
+    featured: true,
   },
-  { 
-    id: '4', 
-    name: 'Mystery Masters', 
-    description: 'Unraveling the best mystery stories. Join us in solving puzzles and discovering whodunits.',
+  {
+    id: '4',
+    name: 'Mystery Masters',
+    description:
+      'Unraveling the best mystery stories. Join us in solving puzzles and discovering whodunits.',
     cover: 'https://images.pexels.com/photos/2832040/pexels-photo-2832040.jpeg',
     members: 1567,
     online: 45,
@@ -88,11 +97,11 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Mystery', 'Detective', 'Crime'],
     recentActivity: '30 min ago',
-    featured: false
+    featured: false,
   },
-  { 
-    id: '5', 
-    name: 'Romance Readers', 
+  {
+    id: '5',
+    name: 'Romance Readers',
     description: 'For those who love a good love story. From sweet to steamy, we read it all.',
     cover: 'https://images.pexels.com/photos/2832041/pexels-photo-2832041.jpeg',
     members: 2890,
@@ -102,11 +111,11 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Romance', 'Love', 'Drama'],
     recentActivity: '8 min ago',
-    featured: false
+    featured: false,
   },
-  { 
-    id: '6', 
-    name: 'Writers Workshop', 
+  {
+    id: '6',
+    name: 'Writers Workshop',
     description: 'A private club for aspiring writers to share work and get feedback.',
     cover: 'https://images.pexels.com/photos/2832042/pexels-photo-2832042.jpeg',
     members: 456,
@@ -116,11 +125,11 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: true,
     tags: ['Writing', 'Feedback', 'Craft'],
     recentActivity: '1 hour ago',
-    featured: false
+    featured: false,
   },
-  { 
-    id: '7', 
-    name: 'Adventure Seekers', 
+  {
+    id: '7',
+    name: 'Adventure Seekers',
     description: 'For fans of action-packed adventures and thrilling journeys.',
     cover: 'https://images.pexels.com/photos/2832043/pexels-photo-2832043.jpeg',
     members: 1234,
@@ -130,11 +139,11 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Adventure', 'Action', 'Journey'],
     recentActivity: '20 min ago',
-    featured: false
+    featured: false,
   },
-  { 
-    id: '8', 
-    name: 'Historical Fiction Fans', 
+  {
+    id: '8',
+    name: 'Historical Fiction Fans',
     description: 'Journey through time with historical fiction enthusiasts.',
     cover: 'https://images.pexels.com/photos/2832044/pexels-photo-2832044.jpeg',
     members: 987,
@@ -144,11 +153,21 @@ const MOCK_CLUBS: Club[] = [
     isPrivate: false,
     tags: ['Historical', 'Drama', 'Period'],
     recentActivity: '2 hours ago',
-    featured: false
+    featured: false,
   },
 ];
 
-const CATEGORIES = ['All', 'Horror', 'Sci-Fi', 'Fantasy', 'Mystery', 'Romance', 'Writing', 'Adventure', 'Historical'];
+const CATEGORIES = [
+  'All',
+  'Horror',
+  'Sci-Fi',
+  'Fantasy',
+  'Mystery',
+  'Romance',
+  'Writing',
+  'Adventure',
+  'Historical',
+];
 
 const ClubsPage: React.FC = () => {
   const { user } = useAuth();
@@ -244,14 +263,18 @@ const ClubsPage: React.FC = () => {
     return 0;
   });
 
-  const featuredClubs = clubs.filter(club => club.featured);
+  const featuredClubs = clubs.filter((club) => club.featured);
 
   const getActivityColor = (activity: string) => {
     switch (activity) {
-      case 'Very Active': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'Active': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'Moderate': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      default: return 'bg-void-500/20 text-void-400 border-void-500/30';
+      case 'Very Active':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'Active':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'Moderate':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      default:
+        return 'bg-void-500/20 text-void-400 border-void-500/30';
     }
   };
 
@@ -259,7 +282,7 @@ const ClubsPage: React.FC = () => {
     <VoidBackground variant="aurora">
       <ParticleField color="rgba(123, 44, 191, 0.4)" particleCount={35} />
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -322,12 +345,18 @@ const ClubsPage: React.FC = () => {
                           <h3 className="text-lg font-semibold text-void-100 mb-2 group-hover:text-spectral-cyan transition-colors">
                             {club.name}
                           </h3>
-                          <p className="text-sm text-void-400 line-clamp-2 mb-4">{club.description}</p>
+                          <p className="text-sm text-void-400 line-clamp-2 mb-4">
+                            {club.description}
+                          </p>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-void-500">
                               {club.members.toLocaleString()} members
                             </span>
-                            <SpectralButton variant="ghost" size="sm" onClick={() => handleJoinClub(club.id)}>
+                            <SpectralButton
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleJoinClub(club.id)}
+                            >
                               Join
                               <Icon name="ArrowRightIcon" size={14} className="ml-1" />
                             </SpectralButton>
@@ -346,7 +375,11 @@ const ClubsPage: React.FC = () => {
             <div className="mb-8">
               <div className="flex flex-col md:flex-row gap-4 mb-6">
                 <div className="flex-1 relative">
-                  <Icon name="MagnifyingGlassIcon" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-void-500" />
+                  <Icon
+                    name="MagnifyingGlassIcon"
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-void-500"
+                  />
                   <input
                     type="text"
                     placeholder="Search clubs..."
@@ -435,7 +468,10 @@ const ClubsPage: React.FC = () => {
                       <p className="text-sm text-void-500 line-clamp-2 mb-3">{club.description}</p>
                       <div className="flex flex-wrap gap-1 mb-3">
                         {club.tags.slice(0, 2).map((tag) => (
-                          <span key={tag} className="px-2 py-0.5 rounded-full bg-void-800/50 text-void-400 text-xs">
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-full bg-void-800/50 text-void-400 text-xs"
+                          >
                             {tag}
                           </span>
                         ))}
@@ -444,7 +480,9 @@ const ClubsPage: React.FC = () => {
                         <div className="text-sm text-void-500">
                           {club.members.toLocaleString()} members
                         </div>
-                        <span className={`px-2 py-0.5 rounded-full text-xs border ${getActivityColor(club.activity)}`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs border ${getActivityColor(club.activity)}`}
+                        >
                           {club.activity}
                         </span>
                       </div>
@@ -472,7 +510,8 @@ const ClubsPage: React.FC = () => {
                 <Icon name="SparklesIcon" size={48} className="text-spectral-cyan mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-void-100 mb-2">Start Your Own Club</h3>
                 <p className="text-void-400 mb-6">
-                  Can't find the perfect club? Create your own and build a community around your favorite genres and stories.
+                  Can't find the perfect club? Create your own and build a community around your
+                  favorite genres and stories.
                 </p>
                 <SpectralButton variant="primary" size="lg" onClick={handleCreateClub}>
                   <Icon name="PlusIcon" size={20} className="mr-2" />
@@ -503,7 +542,10 @@ const ClubsPage: React.FC = () => {
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-void-100">Create a Reading Club</h2>
-                <button onClick={() => setShowCreateModal(false)} className="text-void-400 hover:text-void-100">
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="text-void-400 hover:text-void-100"
+                >
                   <Icon name="XMarkIcon" size={24} />
                 </button>
               </div>
@@ -519,7 +561,9 @@ const ClubsPage: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-void-300 mb-2">Description</label>
+                  <label className="block text-sm font-medium text-void-300 mb-2">
+                    Description
+                  </label>
                   <textarea
                     placeholder="Describe your club..."
                     rows={3}
@@ -530,34 +574,43 @@ const ClubsPage: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-void-300 mb-2">Category</label>
-                  <select 
+                  <select
                     value={clubCategory}
                     onChange={(e) => setClubCategory(e.target.value)}
                     className="w-full px-4 py-3 bg-void-950/50 border border-void-700/50 rounded-lg text-void-200 focus:outline-none"
                   >
-                    {CATEGORIES.filter(c => c !== 'All').map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div className="flex items-center gap-3">
-                  <input 
-                    type="checkbox" 
-                    id="private" 
+                  <input
+                    type="checkbox"
+                    id="private"
                     checked={isPrivate}
                     onChange={(e) => setIsPrivate(e.target.checked)}
-                    className="w-4 h-4 rounded bg-void-800 border-void-700" 
+                    className="w-4 h-4 rounded bg-void-800 border-void-700"
                   />
-                  <label htmlFor="private" className="text-sm text-void-300">Make this club private (invite only)</label>
+                  <label htmlFor="private" className="text-sm text-void-300">
+                    Make this club private (invite only)
+                  </label>
                 </div>
                 <div className="flex gap-3 mt-6">
-                  <SpectralButton variant="ghost" size="md" className="flex-1" onClick={() => setShowCreateModal(false)}>
+                  <SpectralButton
+                    variant="ghost"
+                    size="md"
+                    className="flex-1"
+                    onClick={() => setShowCreateModal(false)}
+                  >
                     Cancel
                   </SpectralButton>
-                  <SpectralButton 
-                    variant="primary" 
-                    size="md" 
-                    className="flex-1" 
+                  <SpectralButton
+                    variant="primary"
+                    size="md"
+                    className="flex-1"
                     onClick={handleSubmitClub}
                     disabled={isLoading}
                   >

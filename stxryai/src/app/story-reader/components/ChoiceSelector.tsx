@@ -15,8 +15,8 @@ interface ChoiceSelectorProps {
   isGeneratingAI?: boolean;
 }
 
-export default function ChoiceSelector({ 
-  choices, 
+export default function ChoiceSelector({
+  choices,
   onChoiceSelect,
   storyMode = 'ai_choices',
   canUseCustomChoice = false,
@@ -52,7 +52,7 @@ export default function ChoiceSelector({
 
   const handleCustomSubmit = async () => {
     if (!customInput.trim() || !onCustomChoice) return;
-    
+
     setIsSubmittingCustom(true);
     try {
       await onCustomChoice(customInput.trim());
@@ -70,7 +70,10 @@ export default function ChoiceSelector({
   };
 
   return (
-    <PrismPanel tone="card" className="mt-6 overflow-visible border-none bg-transparent shadow-none">
+    <PrismPanel
+      tone="card"
+      className="mt-6 overflow-visible border-none bg-transparent shadow-none"
+    >
       <div className="flex items-end justify-between gap-4 px-2 mb-6">
         <div>
           <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
@@ -78,9 +81,13 @@ export default function ChoiceSelector({
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
             {storyMode === 'ai_infinite' && canUseCustomChoice ? (
-              <>Pick an option or <span className="text-purple-400">write your own path</span></>
+              <>
+                Pick an option or <span className="text-purple-400">write your own path</span>
+              </>
             ) : (
-              <>Press <span className="font-mono text-foreground/80">1–9</span> to choose instantly.</>
+              <>
+                Press <span className="font-mono text-foreground/80">1–9</span> to choose instantly.
+              </>
             )}
           </p>
         </div>
@@ -95,44 +102,49 @@ export default function ChoiceSelector({
       <div className="px-4 pb-5 pt-5 md:px-8 md:pb-8">
         {/* Preset Choices */}
         <div className="grid gap-3">
-        {choices.map((choice, index) => (
-          <motion.button
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            key={choice.id}
-            onClick={() => onChoiceSelect(choice)}
-            disabled={isGeneratingAI || isSubmittingCustom}
-            className="group relative w-full overflow-hidden rounded-2xl border border-border bg-background/35 p-5 text-left transition-smooth hover:bg-background/55 hover:shadow-elevation-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {/* Hover gradient sweep */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/5 to-transparent -translate-x-full group-hover:animate-shimmer transition-transform" />
-            
-            <div className="flex items-start gap-6 relative z-10">
-              <div className="flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-black/40 font-mono text-lg font-bold text-violet-400 group-hover:scale-110 group-hover:border-violet-500/50 transition-all duration-300">
-                {index + 1}
-              </div>
-              
-              <div className="flex-1 space-y-2">
-                <p className="text-lg font-medium text-slate-200 group-hover:text-white transition-colors">
-                  {choice.choice_text}
-                </p>
-                {choice.consequence_text && (
-                  <p className="text-sm italic text-slate-500 group-hover:text-violet-300/70 transition-colors">
-                    Preview: {choice.consequence_text}
-                  </p>
-                )}
-              </div>
+          {choices.map((choice, index) => (
+            <motion.button
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              key={choice.id}
+              onClick={() => onChoiceSelect(choice)}
+              disabled={isGeneratingAI || isSubmittingCustom}
+              className="group relative w-full overflow-hidden rounded-2xl border border-border bg-background/35 p-5 text-left transition-smooth hover:bg-background/55 hover:shadow-elevation-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {/* Hover gradient sweep */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-violet-500/5 to-transparent -translate-x-full group-hover:animate-shimmer transition-transform" />
 
-              {/* Arrow Icon */}
-              <div className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex items-center h-full text-violet-400">
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+              <div className="flex items-start gap-6 relative z-10">
+                <div className="flex-shrink-0 flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-black/40 font-mono text-lg font-bold text-violet-400 group-hover:scale-110 group-hover:border-violet-500/50 transition-all duration-300">
+                  {index + 1}
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  <p className="text-lg font-medium text-slate-200 group-hover:text-white transition-colors">
+                    {choice.choice_text}
+                  </p>
+                  {choice.consequence_text && (
+                    <p className="text-sm italic text-slate-500 group-hover:text-violet-300/70 transition-colors">
+                      Preview: {choice.consequence_text}
+                    </p>
+                  )}
+                </div>
+
+                {/* Arrow Icon */}
+                <div className="opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 flex items-center h-full text-violet-400">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </div>
               </div>
-            </div>
-          </motion.button>
-        ))}
+            </motion.button>
+          ))}
         </div>
 
         {/* Custom Choice Input for Premium Users in AI Infinite Mode */}
@@ -144,7 +156,9 @@ export default function ChoiceSelector({
                 <div className="flex items-center gap-2 mb-3">
                   <Sparkles className="w-4 h-4 text-purple-400" />
                   <span className="text-sm font-semibold text-purple-300">Write Your Own Path</span>
-                  <span className="ml-auto text-xs text-muted-foreground bg-purple-500/20 px-2 py-0.5 rounded-full">Premium</span>
+                  <span className="ml-auto text-xs text-muted-foreground bg-purple-500/20 px-2 py-0.5 rounded-full">
+                    Premium
+                  </span>
                 </div>
                 <div className="flex gap-3">
                   <textarea

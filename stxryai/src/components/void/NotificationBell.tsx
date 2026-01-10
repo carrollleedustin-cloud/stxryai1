@@ -74,7 +74,7 @@ export default function NotificationBell() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length + announcements.length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length + announcements.length;
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -98,19 +98,17 @@ export default function NotificationBell() {
   }, []);
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, isRead: true } : n)
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
   };
 
   const dismissAnnouncement = async (id: string) => {
     if (user) {
       await announcementService.dismiss(id, user.id);
-      setAnnouncements(prev => prev.filter(a => a.id !== id));
+      setAnnouncements((prev) => prev.filter((a) => a.id !== id));
     }
   };
 
@@ -131,13 +129,24 @@ export default function NotificationBell() {
 
   const getAnnouncementIcon = (type: Announcement['type']) => {
     switch (type) {
-      case 'info': return { icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' };
-      case 'feature': return { icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' };
-      case 'success': return { icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' };
-      case 'warning': return { icon: 'ExclamationTriangleIcon', color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-      case 'urgent': return { icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' };
-      case 'maintenance': return { icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' };
-      default: return { icon: 'BellIcon', color: 'text-void-400', bg: 'bg-void-500/20' };
+      case 'info':
+        return { icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' };
+      case 'feature':
+        return { icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' };
+      case 'success':
+        return { icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' };
+      case 'warning':
+        return {
+          icon: 'ExclamationTriangleIcon',
+          color: 'text-yellow-400',
+          bg: 'bg-yellow-500/20',
+        };
+      case 'urgent':
+        return { icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' };
+      case 'maintenance':
+        return { icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' };
+      default:
+        return { icon: 'BellIcon', color: 'text-void-400', bg: 'bg-void-500/20' };
     }
   };
 
@@ -151,7 +160,7 @@ export default function NotificationBell() {
         whileTap={{ scale: 0.95 }}
       >
         <Icon name="BellIcon" size={20} className="text-void-300" />
-        
+
         {/* Unread Badge */}
         {unreadCount > 0 && (
           <motion.span
@@ -178,7 +187,7 @@ export default function NotificationBell() {
             <div className="p-4 border-b border-void-800/50 flex items-center justify-between">
               <h3 className="font-semibold text-void-100">Notifications</h3>
               <div className="flex items-center gap-2">
-                {notifications.some(n => !n.isRead) && (
+                {notifications.some((n) => !n.isRead) && (
                   <button
                     onClick={markAllAsRead}
                     className="text-xs text-spectral-cyan hover:text-spectral-cyan/80 transition-colors"
@@ -202,7 +211,9 @@ export default function NotificationBell() {
               {announcements.length > 0 && (
                 <div className="border-b border-void-800/50">
                   <div className="px-4 py-2 bg-void-900/50">
-                    <span className="text-xs text-void-500 uppercase tracking-wider">Announcements</span>
+                    <span className="text-xs text-void-500 uppercase tracking-wider">
+                      Announcements
+                    </span>
                   </div>
                   {announcements.slice(0, 3).map((announcement) => {
                     const { icon, color, bg } = getAnnouncementIcon(announcement.type);
@@ -214,19 +225,31 @@ export default function NotificationBell() {
                         className="p-4 hover:bg-void-900/30 transition-colors border-b border-void-800/30 last:border-b-0"
                       >
                         <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}>
+                          <div
+                            className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}
+                          >
                             <Icon name={icon} size={20} className={color} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium text-void-100 truncate">{announcement.title}</p>
+                              <p className="font-medium text-void-100 truncate">
+                                {announcement.title}
+                              </p>
                               {announcement.isPinned && (
-                                <Icon name="PinIcon" size={12} className="text-yellow-400 flex-shrink-0" />
+                                <Icon
+                                  name="PinIcon"
+                                  size={12}
+                                  className="text-yellow-400 flex-shrink-0"
+                                />
                               )}
                             </div>
-                            <p className="text-sm text-void-400 line-clamp-2 mt-1">{announcement.content}</p>
+                            <p className="text-sm text-void-400 line-clamp-2 mt-1">
+                              {announcement.content}
+                            </p>
                             <div className="flex items-center justify-between mt-2">
-                              <span className="text-xs text-void-500">{formatTimeAgo(announcement.createdAt)}</span>
+                              <span className="text-xs text-void-500">
+                                {formatTimeAgo(announcement.createdAt)}
+                              </span>
                               <div className="flex items-center gap-2">
                                 {announcement.metadata?.linkUrl && (
                                   <Link
@@ -260,7 +283,7 @@ export default function NotificationBell() {
                     <span className="text-xs text-void-500 uppercase tracking-wider">Recent</span>
                   </div>
                 )}
-                
+
                 {notifications.length === 0 && announcements.length === 0 ? (
                   <div className="p-8 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-void-800/50 flex items-center justify-center">
@@ -284,30 +307,38 @@ export default function NotificationBell() {
                       `}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`
+                        <div
+                          className={`
                           w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0
                           ${notification.type === 'message' ? 'bg-spectral-cyan/20' : ''}
                           ${notification.type === 'achievement' ? 'bg-yellow-500/20' : ''}
                           ${notification.type === 'social' ? 'bg-purple-500/20' : ''}
                           ${notification.type === 'system' ? 'bg-green-500/20' : ''}
-                        `}>
-                          <Icon 
-                            name={notification.icon || 'BellIcon'} 
-                            size={20} 
-                            className={notification.iconColor || 'text-void-400'} 
+                        `}
+                        >
+                          <Icon
+                            name={notification.icon || 'BellIcon'}
+                            size={20}
+                            className={notification.iconColor || 'text-void-400'}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className={`font-medium truncate ${!notification.isRead ? 'text-void-100' : 'text-void-300'}`}>
+                            <p
+                              className={`font-medium truncate ${!notification.isRead ? 'text-void-100' : 'text-void-300'}`}
+                            >
                               {notification.title}
                             </p>
                             {!notification.isRead && (
                               <span className="w-2 h-2 rounded-full bg-spectral-cyan flex-shrink-0" />
                             )}
                           </div>
-                          <p className="text-sm text-void-400 truncate mt-0.5">{notification.message}</p>
-                          <span className="text-xs text-void-500 mt-1 block">{formatTimeAgo(notification.timestamp)}</span>
+                          <p className="text-sm text-void-400 truncate mt-0.5">
+                            {notification.message}
+                          </p>
+                          <span className="text-xs text-void-500 mt-1 block">
+                            {formatTimeAgo(notification.timestamp)}
+                          </span>
                         </div>
                       </div>
                     </Link>
@@ -332,4 +363,3 @@ export default function NotificationBell() {
     </div>
   );
 }
-

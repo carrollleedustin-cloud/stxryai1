@@ -22,19 +22,20 @@ const variants: Record<PrismTextVariant, string> = {
 
 const gradients: Record<PrismTextGradient, string> = {
   none: '',
-  primary: 'bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 animate-gradient-x',
+  primary:
+    'bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-fuchsia-400 to-cyan-400 animate-gradient-x',
   secondary: 'bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500',
   gold: 'bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-600',
   silver: 'bg-clip-text text-transparent bg-gradient-to-b from-white via-slate-200 to-slate-400',
 };
 
-export function PrismText({ 
-  as: Component = 'p', 
-  variant = 'body', 
+export function PrismText({
+  as: Component = 'p',
+  variant = 'body',
   gradient = 'none',
-  className, 
-  children, 
-  ...props 
+  className,
+  children,
+  ...props
 }: PrismTextProps) {
   // Use h1-h3 defaults for 'as' if not specified
   if (Component === 'p') {
@@ -53,4 +54,3 @@ export function PrismText({
     </Component>
   );
 }
-

@@ -6,14 +6,17 @@
  * Provides pet data and actions throughout the application.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from 'react';
 import { useAuth } from './AuthContext';
 import { petService } from '@/services/petService';
-import {
-  StoryPet,
-  PetInteraction,
-  PET_EXPERIENCE_REWARDS,
-} from '@/types/pet';
+import { StoryPet, PetInteraction, PET_EXPERIENCE_REWARDS } from '@/types/pet';
 
 // =============================================================================
 // TYPES
@@ -24,38 +27,48 @@ interface PetContextType {
   pet: StoryPet | null;
   loading: boolean;
   error: string | null;
-  
+
   // Creation
   createPet: (name: string) => Promise<boolean>;
   hasPet: boolean;
-  
+
   // Interactions
   petPet: () => Promise<string | null>;
   feedPet: () => Promise<string | null>;
   playWithPet: () => Promise<string | null>;
   talkToPet: () => Promise<string | null>;
   giftPet: () => Promise<string | null>;
-  
+
   // Experience & Evolution
   awardExperience: (
     activityType: keyof typeof PET_EXPERIENCE_REWARDS,
     additionalData?: { storyId?: string; genre?: string }
   ) => Promise<{ leveledUp: boolean; evolved: boolean }>;
-  
+
   // Dialogue
-  getDialogue: (trigger: 'greeting' | 'reading_start' | 'reading_end' | 'choice_made' | 'milestone' | 'idle' | 'encouragement' | 'celebration') => string;
-  
+  getDialogue: (
+    trigger:
+      | 'greeting'
+      | 'reading_start'
+      | 'reading_end'
+      | 'choice_made'
+      | 'milestone'
+      | 'idle'
+      | 'encouragement'
+      | 'celebration'
+  ) => string;
+
   // Management
   renamePet: (newName: string) => Promise<boolean>;
   refreshPet: () => Promise<void>;
-  
+
   // UI State
   showPetPanel: boolean;
   setShowPetPanel: (show: boolean) => void;
   showEvolutionCelebration: boolean;
   dismissEvolutionCelebration: () => void;
   pendingEvolution: string | null;
-  
+
   // Last interaction response
   lastResponse: string | null;
 }
@@ -76,7 +89,7 @@ interface PetProviderProps {
 
 export function PetProvider({ children }: PetProviderProps) {
   const { user, profile } = useAuth();
-  
+
   const [pet, setPet] = useState<StoryPet | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +97,7 @@ export function PetProvider({ children }: PetProviderProps) {
   const [showEvolutionCelebration, setShowEvolutionCelebration] = useState(false);
   const [pendingEvolution, setPendingEvolution] = useState<string | null>(null);
   const [lastResponse, setLastResponse] = useState<string | null>(null);
-  
+
   // Load pet on mount and user change
   useEffect(() => {
     const loadPet = async () => {
@@ -93,17 +106,17 @@ export function PetProvider({ children }: PetProviderProps) {
         setLoading(false);
         return;
       }
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         const userPet = await petService.getUserPet(user.id);
         setPet(userPet);
-        
+
         // Check for unseen evolution celebrations
         if (userPet) {
-          const unseenEvolution = userPet.evolutionHistory.find(e => !e.celebrationSeen);
+          const unseenEvolution = userPet.evolutionHistory.find((e) => !e.celebrationSeen);
           if (unseenEvolution) {
             setPendingEvolution(unseenEvolution.stage);
             setShowEvolutionCelebration(true);
@@ -116,112 +129,139 @@ export function PetProvider({ children }: PetProviderProps) {
         setLoading(false);
       }
     };
-    
+
     loadPet();
   }, [user]);
-  
+
   // Create a new pet
-  const createPet = useCallback(async (name: string): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      const newPet = await petService.createPet(
-        user.id,
-        user.email || '',
-        user.created_at || new Date().toISOString(),
-        name
-      );
-      
-      if (newPet) {
-        setPet(newPet);
-        setLastResponse(`*${name} appears!* Hello, new friend! I'm so excited to go on adventures with you!`);
-        return true;
+  const createPet = useCallback(
+    async (name: string): Promise<boolean> => {
+      if (!user) return false;
+
+      try {
+        const newPet = await petService.createPet(
+          user.id,
+          user.email || '',
+          user.created_at || new Date().toISOString(),
+          name
+        );
+
+        if (newPet) {
+          setPet(newPet);
+          setLastResponse(
+            `*${name} appears!* Hello, new friend! I'm so excited to go on adventures with you!`
+          );
+          return true;
+        }
+        return false;
+      } catch (err) {
+        console.error('Error creating pet:', err);
+        setError('Failed to create companion');
+        return false;
       }
-      return false;
-    } catch (err) {
-      console.error('Error creating pet:', err);
-      setError('Failed to create companion');
-      return false;
-    }
-  }, [user]);
-  
+    },
+    [user]
+  );
+
   // Interact with pet
-  const handleInteraction = useCallback(async (type: PetInteraction['type']): Promise<string | null> => {
-    if (!user || !pet) return null;
-    
-    try {
-      const interaction = await petService.interactWithPet(user.id, type);
-      if (interaction) {
-        setLastResponse(interaction.response);
-        await refreshPet();
-        return interaction.response;
+  const handleInteraction = useCallback(
+    async (type: PetInteraction['type']): Promise<string | null> => {
+      if (!user || !pet) return null;
+
+      try {
+        const interaction = await petService.interactWithPet(user.id, type);
+        if (interaction) {
+          setLastResponse(interaction.response);
+          await refreshPet();
+          return interaction.response;
+        }
+        return null;
+      } catch (err) {
+        console.error('Error interacting with pet:', err);
+        return null;
       }
-      return null;
-    } catch (err) {
-      console.error('Error interacting with pet:', err);
-      return null;
-    }
-  }, [user, pet]);
-  
+    },
+    [user, pet]
+  );
+
   const petPet = useCallback(() => handleInteraction('pet'), [handleInteraction]);
   const feedPet = useCallback(() => handleInteraction('feed'), [handleInteraction]);
   const playWithPet = useCallback(() => handleInteraction('play'), [handleInteraction]);
   const talkToPet = useCallback(() => handleInteraction('talk'), [handleInteraction]);
   const giftPet = useCallback(() => handleInteraction('gift'), [handleInteraction]);
-  
+
   // Award experience
-  const awardExperience = useCallback(async (
-    activityType: keyof typeof PET_EXPERIENCE_REWARDS,
-    additionalData?: { storyId?: string; genre?: string }
-  ): Promise<{ leveledUp: boolean; evolved: boolean }> => {
-    if (!user) return { leveledUp: false, evolved: false };
-    
-    try {
-      const result = await petService.awardExperience(user.id, activityType, additionalData);
-      
-      if (result.pet) {
-        setPet(result.pet);
+  const awardExperience = useCallback(
+    async (
+      activityType: keyof typeof PET_EXPERIENCE_REWARDS,
+      additionalData?: { storyId?: string; genre?: string }
+    ): Promise<{ leveledUp: boolean; evolved: boolean }> => {
+      if (!user) return { leveledUp: false, evolved: false };
+
+      try {
+        const result = await petService.awardExperience(user.id, activityType, additionalData);
+
+        if (result.pet) {
+          setPet(result.pet);
+        }
+
+        if (result.evolved) {
+          setPendingEvolution(result.pet?.evolutionStage || null);
+          setShowEvolutionCelebration(true);
+        }
+
+        return { leveledUp: result.leveledUp, evolved: result.evolved };
+      } catch (err) {
+        console.error('Error awarding experience:', err);
+        return { leveledUp: false, evolved: false };
       }
-      
-      if (result.evolved) {
-        setPendingEvolution(result.pet?.evolutionStage || null);
-        setShowEvolutionCelebration(true);
-      }
-      
-      return { leveledUp: result.leveledUp, evolved: result.evolved };
-    } catch (err) {
-      console.error('Error awarding experience:', err);
-      return { leveledUp: false, evolved: false };
-    }
-  }, [user]);
-  
+    },
+    [user]
+  );
+
   // Get dialogue
-  const getDialogue = useCallback((trigger: 'greeting' | 'reading_start' | 'reading_end' | 'choice_made' | 'milestone' | 'idle' | 'encouragement' | 'celebration'): string => {
-    if (!pet) return '';
-    return petService.getDialogue(pet, trigger);
-  }, [pet]);
-  
+  const getDialogue = useCallback(
+    (
+      trigger:
+        | 'greeting'
+        | 'reading_start'
+        | 'reading_end'
+        | 'choice_made'
+        | 'milestone'
+        | 'idle'
+        | 'encouragement'
+        | 'celebration'
+    ): string => {
+      if (!pet) return '';
+      return petService.getDialogue(pet, trigger);
+    },
+    [pet]
+  );
+
   // Rename pet
-  const renamePet = useCallback(async (newName: string): Promise<boolean> => {
-    if (!user || !pet) return false;
-    
-    try {
-      const success = await petService.renamePet(user.id, newName);
-      if (success) {
-        setPet({ ...pet, name: newName });
-        setLastResponse(`*nods happily* I love my new name! Call me ${newName}!`);
+  const renamePet = useCallback(
+    async (newName: string): Promise<boolean> => {
+      if (!user || !pet) return false;
+
+      try {
+        const success = await petService.renamePet(user.id, newName);
+        if (success) {
+          setPet({ ...pet, name: newName });
+          setLastResponse(`*nods happily* I love my new name! Call me ${newName}!`);
+        }
+        return success;
+      } catch (err) {
+        console.error('Error renaming pet:', err);
+        return false;
       }
-      return success;
-    } catch (err) {
-      console.error('Error renaming pet:', err);
-      return false;
-    }
-  }, [user, pet]);
-  
+    },
+    [user, pet]
+  );
+
   // Refresh pet data
   const refreshPet = useCallback(async (): Promise<void> => {
     if (!user) return;
-    
+
     try {
       const userPet = await petService.getUserPet(user.id);
       if (userPet) {
@@ -231,7 +271,7 @@ export function PetProvider({ children }: PetProviderProps) {
       console.error('Error refreshing pet:', err);
     }
   }, [user]);
-  
+
   // Dismiss evolution celebration
   const dismissEvolutionCelebration = useCallback(() => {
     setShowEvolutionCelebration(false);
@@ -244,7 +284,7 @@ export function PetProvider({ children }: PetProviderProps) {
         .catch((err) => console.error('Failed to mark celebration as seen:', err));
     }
   }, [user, refreshPet]);
-  
+
   const value: PetContextType = {
     pet,
     loading,
@@ -267,12 +307,8 @@ export function PetProvider({ children }: PetProviderProps) {
     pendingEvolution,
     lastResponse,
   };
-  
-  return (
-    <PetContext.Provider value={value}>
-      {children}
-    </PetContext.Provider>
-  );
+
+  return <PetContext.Provider value={value}>{children}</PetContext.Provider>;
 }
 
 // =============================================================================
@@ -286,4 +322,3 @@ export function usePet() {
   }
   return context;
 }
-

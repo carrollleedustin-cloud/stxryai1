@@ -284,9 +284,7 @@ export default function ModernPetSystem() {
             )}
 
             {/* Pet Icon/Avatar */}
-            <div className="relative z-10 text-4xl">
-              {getPetIcon(pet.type, pet.element)}
-            </div>
+            <div className="relative z-10 text-4xl">{getPetIcon(pet.type, pet.element)}</div>
 
             {/* Particle Effects */}
             {pet.appearance.particles && (
@@ -388,13 +386,16 @@ export default function ModernPetSystem() {
                   <div className="flex-1">
                     <h2 className="text-3xl font-bold text-white mb-1">{pet.name}</h2>
                     <p className="text-white/70 mb-2">
-                      Level {pet.level} {getEvolutionStageName(pet.evolutionStage)} {getPetTypeName(pet.type)}
+                      Level {pet.level} {getEvolutionStageName(pet.evolutionStage)}{' '}
+                      {getPetTypeName(pet.type)}
                     </p>
 
                     {/* XP Progress */}
                     <div className="space-y-1">
                       <div className="flex justify-between text-xs text-white/60">
-                        <span>XP: {pet.xp} / {getXPForNextLevel(pet.level)}</span>
+                        <span>
+                          XP: {pet.xp} / {getXPForNextLevel(pet.level)}
+                        </span>
                         <span>{Math.floor((pet.xp / getXPForNextLevel(pet.level)) * 100)}%</span>
                       </div>
                       <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -486,7 +487,8 @@ export default function ModernPetSystem() {
                 {activeTab === 'abilities' && (
                   <div className="space-y-3">
                     {pet.abilities.map((ability) => {
-                      const isOnCooldown = ability.lastUsed &&
+                      const isOnCooldown =
+                        ability.lastUsed &&
                         Date.now() - ability.lastUsed.getTime() < ability.cooldown;
 
                       return (
@@ -504,7 +506,9 @@ export default function ModernPetSystem() {
                             <div className="text-3xl">{ability.icon}</div>
                             <div className="flex-1">
                               <div className="font-semibold text-white">{ability.name}</div>
-                              <div className="text-sm text-white/70 mt-1">{ability.description}</div>
+                              <div className="text-sm text-white/70 mt-1">
+                                {ability.description}
+                              </div>
                               {isOnCooldown && (
                                 <div className="text-xs text-orange-400 mt-2">
                                   Cooldown: {formatCooldown(ability.cooldown)}
@@ -701,7 +705,10 @@ function getStatGradient(stat: string, appearance: PetAppearance): string {
     strength: `linear-gradient(90deg, #3b82f6, #60a5fa)`,
   };
 
-  return gradients[stat] || `linear-gradient(90deg, ${appearance.primaryColor}, ${appearance.accentColor})`;
+  return (
+    gradients[stat] ||
+    `linear-gradient(90deg, ${appearance.primaryColor}, ${appearance.accentColor})`
+  );
 }
 
 function getRarityColor(rarity: string): string {

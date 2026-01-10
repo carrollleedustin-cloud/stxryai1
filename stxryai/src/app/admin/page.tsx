@@ -3,11 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import VoidBackground from '@/components/void/VoidBackground';
-import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCounter } from '@/components/void';
-import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
+import {
+  EtherealNav,
+  TemporalHeading,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedCounter,
+} from '@/components/void';
+import {
+  HolographicCard,
+  RevealOnScroll,
+  GradientBorder,
+  NeonText,
+} from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
-import { getPlatformMetrics, getUserAnalytics, getStoryAnalytics, getRecentActivities, PlatformMetrics, updateStoryStatus, updateUserSubscription } from '@/services/adminService';
-import { announcementService, Announcement, CreateAnnouncementDTO } from '@/services/announcementService';
+import {
+  getPlatformMetrics,
+  getUserAnalytics,
+  getStoryAnalytics,
+  getRecentActivities,
+  PlatformMetrics,
+  updateStoryStatus,
+  updateUserSubscription,
+} from '@/services/adminService';
+import {
+  announcementService,
+  Announcement,
+  CreateAnnouncementDTO,
+} from '@/services/announcementService';
 import Icon from '@/components/ui/AppIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -21,44 +44,216 @@ const MOCK_METRICS: PlatformMetrics = {
 };
 
 const MOCK_USERS = [
-  { id: '1', username: 'darkstoryteller', display_name: 'Alexandra Chen', subscription_tier: 'premium', stories_completed: 47, total_reading_time: 12540, created_at: '2024-03-15' },
-  { id: '2', username: 'scifiexplorer', display_name: 'Marcus Rodriguez', subscription_tier: 'vip', stories_completed: 89, total_reading_time: 25680, created_at: '2024-01-20' },
-  { id: '3', username: 'mysteryreader', display_name: 'Emily Watson', subscription_tier: 'free', stories_completed: 23, total_reading_time: 5420, created_at: '2024-06-10' },
-  { id: '4', username: 'fantasyfan', display_name: 'David Kim', subscription_tier: 'premium', stories_completed: 56, total_reading_time: 18920, created_at: '2024-02-28' },
-  { id: '5', username: 'horrorfanatic', display_name: 'Sarah Johnson', subscription_tier: 'free', stories_completed: 12, total_reading_time: 3200, created_at: '2024-08-05' },
+  {
+    id: '1',
+    username: 'darkstoryteller',
+    display_name: 'Alexandra Chen',
+    subscription_tier: 'premium',
+    stories_completed: 47,
+    total_reading_time: 12540,
+    created_at: '2024-03-15',
+  },
+  {
+    id: '2',
+    username: 'scifiexplorer',
+    display_name: 'Marcus Rodriguez',
+    subscription_tier: 'vip',
+    stories_completed: 89,
+    total_reading_time: 25680,
+    created_at: '2024-01-20',
+  },
+  {
+    id: '3',
+    username: 'mysteryreader',
+    display_name: 'Emily Watson',
+    subscription_tier: 'free',
+    stories_completed: 23,
+    total_reading_time: 5420,
+    created_at: '2024-06-10',
+  },
+  {
+    id: '4',
+    username: 'fantasyfan',
+    display_name: 'David Kim',
+    subscription_tier: 'premium',
+    stories_completed: 56,
+    total_reading_time: 18920,
+    created_at: '2024-02-28',
+  },
+  {
+    id: '5',
+    username: 'horrorfanatic',
+    display_name: 'Sarah Johnson',
+    subscription_tier: 'free',
+    stories_completed: 12,
+    total_reading_time: 3200,
+    created_at: '2024-08-05',
+  },
 ];
 
 const MOCK_STORIES = [
-  { id: '1', title: 'The Midnight Carnival', user_id: '1', play_count: 15420, completion_count: 8956, rating: 4.8, status: 'published', created_at: '2024-06-15' },
-  { id: '2', title: 'Echoes of Tomorrow', user_id: '2', play_count: 12850, completion_count: 7230, rating: 4.6, status: 'published', created_at: '2024-05-20' },
-  { id: '3', title: 'The Last Kingdom', user_id: '1', play_count: 9870, completion_count: 5640, rating: 4.9, status: 'published', created_at: '2024-04-10' },
-  { id: '4', title: 'Whispers in the Dark', user_id: '4', play_count: 7650, completion_count: 4120, rating: 4.4, status: 'published', created_at: '2024-07-25' },
-  { id: '5', title: 'Digital Dreams', user_id: '2', play_count: 6420, completion_count: 3560, rating: 4.7, status: 'draft', created_at: '2024-08-01' },
+  {
+    id: '1',
+    title: 'The Midnight Carnival',
+    user_id: '1',
+    play_count: 15420,
+    completion_count: 8956,
+    rating: 4.8,
+    status: 'published',
+    created_at: '2024-06-15',
+  },
+  {
+    id: '2',
+    title: 'Echoes of Tomorrow',
+    user_id: '2',
+    play_count: 12850,
+    completion_count: 7230,
+    rating: 4.6,
+    status: 'published',
+    created_at: '2024-05-20',
+  },
+  {
+    id: '3',
+    title: 'The Last Kingdom',
+    user_id: '1',
+    play_count: 9870,
+    completion_count: 5640,
+    rating: 4.9,
+    status: 'published',
+    created_at: '2024-04-10',
+  },
+  {
+    id: '4',
+    title: 'Whispers in the Dark',
+    user_id: '4',
+    play_count: 7650,
+    completion_count: 4120,
+    rating: 4.4,
+    status: 'published',
+    created_at: '2024-07-25',
+  },
+  {
+    id: '5',
+    title: 'Digital Dreams',
+    user_id: '2',
+    play_count: 6420,
+    completion_count: 3560,
+    rating: 4.7,
+    status: 'draft',
+    created_at: '2024-08-01',
+  },
 ];
 
 const MOCK_ACTIVITIES = [
-  { id: '1', activity_type: 'story_published', activity_data: { story_title: 'The Final Frontier' }, created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(), users: { username: 'cosmicwriter', display_name: 'Nova Star' } },
-  { id: '2', activity_type: 'user_signup', activity_data: {}, created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(), users: { username: 'newreader42', display_name: 'New Reader' } },
-  { id: '3', activity_type: 'premium_upgrade', activity_data: { tier: 'premium' }, created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), users: { username: 'bookworm', display_name: 'Lisa Anderson' } },
-  { id: '4', activity_type: 'story_completed', activity_data: { story_title: 'Mystery Manor' }, created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(), users: { username: 'detective99', display_name: 'Sam Holmes' } },
-  { id: '5', activity_type: 'achievement_unlocked', activity_data: { achievement: 'Story Master' }, created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(), users: { username: 'champion', display_name: 'Victory Lane' } },
+  {
+    id: '1',
+    activity_type: 'story_published',
+    activity_data: { story_title: 'The Final Frontier' },
+    created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    users: { username: 'cosmicwriter', display_name: 'Nova Star' },
+  },
+  {
+    id: '2',
+    activity_type: 'user_signup',
+    activity_data: {},
+    created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    users: { username: 'newreader42', display_name: 'New Reader' },
+  },
+  {
+    id: '3',
+    activity_type: 'premium_upgrade',
+    activity_data: { tier: 'premium' },
+    created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    users: { username: 'bookworm', display_name: 'Lisa Anderson' },
+  },
+  {
+    id: '4',
+    activity_type: 'story_completed',
+    activity_data: { story_title: 'Mystery Manor' },
+    created_at: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    users: { username: 'detective99', display_name: 'Sam Holmes' },
+  },
+  {
+    id: '5',
+    activity_type: 'achievement_unlocked',
+    activity_data: { achievement: 'Story Master' },
+    created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+    users: { username: 'champion', display_name: 'Victory Lane' },
+  },
 ];
 
 const MOCK_REPORTS = [
-  { id: '1', type: 'content', title: 'Inappropriate content in story', reporter: 'user123', status: 'pending', created_at: '2024-12-20' },
-  { id: '2', type: 'user', title: 'Harassment in comments', reporter: 'reader456', status: 'investigating', created_at: '2024-12-19' },
-  { id: '3', type: 'bug', title: 'Story progress not saving', reporter: 'techie789', status: 'resolved', created_at: '2024-12-18' },
+  {
+    id: '1',
+    type: 'content',
+    title: 'Inappropriate content in story',
+    reporter: 'user123',
+    status: 'pending',
+    created_at: '2024-12-20',
+  },
+  {
+    id: '2',
+    type: 'user',
+    title: 'Harassment in comments',
+    reporter: 'reader456',
+    status: 'investigating',
+    created_at: '2024-12-19',
+  },
+  {
+    id: '3',
+    type: 'bug',
+    title: 'Story progress not saving',
+    reporter: 'techie789',
+    status: 'resolved',
+    created_at: '2024-12-18',
+  },
 ];
 
 type AdminTab = 'overview' | 'users' | 'stories' | 'announcements' | 'reports' | 'settings';
 
 const ANNOUNCEMENT_TYPES = [
-  { value: 'info', label: 'Information', icon: 'InformationCircleIcon', color: 'text-blue-400', bg: 'bg-blue-500/20' },
-  { value: 'feature', label: 'New Feature', icon: 'SparklesIcon', color: 'text-purple-400', bg: 'bg-purple-500/20' },
-  { value: 'success', label: 'Success', icon: 'CheckCircleIcon', color: 'text-green-400', bg: 'bg-green-500/20' },
-  { value: 'warning', label: 'Warning', icon: 'ExclamationTriangleIcon', color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-  { value: 'urgent', label: 'Urgent', icon: 'ExclamationCircleIcon', color: 'text-red-400', bg: 'bg-red-500/20' },
-  { value: 'maintenance', label: 'Maintenance', icon: 'WrenchScrewdriverIcon', color: 'text-orange-400', bg: 'bg-orange-500/20' },
+  {
+    value: 'info',
+    label: 'Information',
+    icon: 'InformationCircleIcon',
+    color: 'text-blue-400',
+    bg: 'bg-blue-500/20',
+  },
+  {
+    value: 'feature',
+    label: 'New Feature',
+    icon: 'SparklesIcon',
+    color: 'text-purple-400',
+    bg: 'bg-purple-500/20',
+  },
+  {
+    value: 'success',
+    label: 'Success',
+    icon: 'CheckCircleIcon',
+    color: 'text-green-400',
+    bg: 'bg-green-500/20',
+  },
+  {
+    value: 'warning',
+    label: 'Warning',
+    icon: 'ExclamationTriangleIcon',
+    color: 'text-yellow-400',
+    bg: 'bg-yellow-500/20',
+  },
+  {
+    value: 'urgent',
+    label: 'Urgent',
+    icon: 'ExclamationCircleIcon',
+    color: 'text-red-400',
+    bg: 'bg-red-500/20',
+  },
+  {
+    value: 'maintenance',
+    label: 'Maintenance',
+    icon: 'WrenchScrewdriverIcon',
+    color: 'text-orange-400',
+    bg: 'bg-orange-500/20',
+  },
 ];
 
 const TARGET_AUDIENCES = [
@@ -80,7 +275,7 @@ const AdminPage: React.FC = () => {
   const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
   const { user, profile } = useAuth();
   const router = useRouter();
-  
+
   useEffect(() => {
     if (profile) {
       // Redirect based on role
@@ -114,13 +309,14 @@ const AdminPage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [metricsData, usersData, storiesData, activitiesData, announcementsData] = await Promise.all([
-          getPlatformMetrics(),
-          getUserAnalytics(10),
-          getStoryAnalytics(10),
-          getRecentActivities(20),
-          announcementService.getAll(),
-        ]);
+        const [metricsData, usersData, storiesData, activitiesData, announcementsData] =
+          await Promise.all([
+            getPlatformMetrics(),
+            getUserAnalytics(10),
+            getStoryAnalytics(10),
+            getRecentActivities(20),
+            announcementService.getAll(),
+          ]);
         if (metricsData) setMetrics(metricsData);
         if (usersData && usersData.length > 0) setUsers(usersData);
         if (storiesData && storiesData.length > 0) setStories(storiesData);
@@ -146,32 +342,48 @@ const AdminPage: React.FC = () => {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'story_published': return { icon: 'BookOpenIcon', color: 'text-green-400', bg: 'bg-green-400/20' };
-      case 'user_signup': return { icon: 'UserPlusIcon', color: 'text-blue-400', bg: 'bg-blue-400/20' };
-      case 'premium_upgrade': return { icon: 'SparklesIcon', color: 'text-yellow-400', bg: 'bg-yellow-400/20' };
-      case 'story_completed': return { icon: 'CheckCircleIcon', color: 'text-spectral-cyan', bg: 'bg-spectral-cyan/20' };
-      case 'achievement_unlocked': return { icon: 'TrophyIcon', color: 'text-purple-400', bg: 'bg-purple-400/20' };
-      default: return { icon: 'BellIcon', color: 'text-void-400', bg: 'bg-void-400/20' };
+      case 'story_published':
+        return { icon: 'BookOpenIcon', color: 'text-green-400', bg: 'bg-green-400/20' };
+      case 'user_signup':
+        return { icon: 'UserPlusIcon', color: 'text-blue-400', bg: 'bg-blue-400/20' };
+      case 'premium_upgrade':
+        return { icon: 'SparklesIcon', color: 'text-yellow-400', bg: 'bg-yellow-400/20' };
+      case 'story_completed':
+        return { icon: 'CheckCircleIcon', color: 'text-spectral-cyan', bg: 'bg-spectral-cyan/20' };
+      case 'achievement_unlocked':
+        return { icon: 'TrophyIcon', color: 'text-purple-400', bg: 'bg-purple-400/20' };
+      default:
+        return { icon: 'BellIcon', color: 'text-void-400', bg: 'bg-void-400/20' };
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'draft': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'archived': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'pending': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'investigating': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'resolved': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      default: return 'bg-void-500/20 text-void-400 border-void-500/30';
+      case 'published':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'draft':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'archived':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'pending':
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'investigating':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'resolved':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      default:
+        return 'bg-void-500/20 text-void-400 border-void-500/30';
     }
   };
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'vip': return 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 border-yellow-500/30';
-      case 'premium': return 'bg-gradient-to-r from-spectral-violet/20 to-spectral-pink/20 text-spectral-violet border-spectral-violet/30';
-      default: return 'bg-void-800/50 text-void-400 border-void-700/30';
+      case 'vip':
+        return 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 border-yellow-500/30';
+      case 'premium':
+        return 'bg-gradient-to-r from-spectral-violet/20 to-spectral-pink/20 text-spectral-violet border-spectral-violet/30';
+      default:
+        return 'bg-void-800/50 text-void-400 border-void-700/30';
     }
   };
 
@@ -194,7 +406,7 @@ const AdminPage: React.FC = () => {
   };
 
   const getAnnouncementTypeInfo = (type: string) => {
-    return ANNOUNCEMENT_TYPES.find(t => t.value === type) || ANNOUNCEMENT_TYPES[0];
+    return ANNOUNCEMENT_TYPES.find((t) => t.value === type) || ANNOUNCEMENT_TYPES[0];
   };
 
   const handleCreateAnnouncement = async () => {
@@ -202,7 +414,7 @@ const AdminPage: React.FC = () => {
 
     const result = await announcementService.create(announcementForm, user?.id || 'admin');
     if (result) {
-      setAnnouncements(prev => [result, ...prev]);
+      setAnnouncements((prev) => [result, ...prev]);
       setShowAnnouncementModal(false);
       resetAnnouncementForm();
     }
@@ -222,7 +434,7 @@ const AdminPage: React.FC = () => {
     });
 
     if (result) {
-      setAnnouncements(prev => prev.map(a => a.id === result.id ? result : a));
+      setAnnouncements((prev) => prev.map((a) => (a.id === result.id ? result : a)));
       setShowAnnouncementModal(false);
       setEditingAnnouncement(null);
       resetAnnouncementForm();
@@ -233,7 +445,7 @@ const AdminPage: React.FC = () => {
     if (confirm('Are you sure you want to delete this announcement?')) {
       const success = await announcementService.delete(id);
       if (success) {
-        setAnnouncements(prev => prev.filter(a => a.id !== id));
+        setAnnouncements((prev) => prev.filter((a) => a.id !== id));
       }
     }
   };
@@ -241,14 +453,18 @@ const AdminPage: React.FC = () => {
   const handleTogglePin = async (id: string) => {
     const success = await announcementService.togglePin(id);
     if (success) {
-      setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isPinned: !a.isPinned } : a));
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, isPinned: !a.isPinned } : a))
+      );
     }
   };
 
   const handleToggleActive = async (id: string) => {
     const success = await announcementService.toggleActive(id);
     if (success) {
-      setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isActive: !a.isActive } : a));
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === id ? { ...a, isActive: !a.isActive } : a))
+      );
     }
   };
 
@@ -281,7 +497,7 @@ const AdminPage: React.FC = () => {
   return (
     <VoidBackground variant="minimal">
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -315,9 +531,10 @@ const AdminPage: React.FC = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300
-                    ${activeTab === tab.id 
-                      ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50' 
-                      : 'text-void-400 hover:text-void-200 hover:bg-void-800/50'
+                    ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50'
+                        : 'text-void-400 hover:text-void-200 hover:bg-void-800/50'
                     }
                   `}
                   whileHover={{ scale: 1.02 }}
@@ -327,12 +544,12 @@ const AdminPage: React.FC = () => {
                   {tab.label}
                   {tab.id === 'reports' && (
                     <span className="ml-1 px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 text-xs">
-                      {MOCK_REPORTS.filter(r => r.status === 'pending').length}
+                      {MOCK_REPORTS.filter((r) => r.status === 'pending').length}
                     </span>
                   )}
                   {tab.id === 'announcements' && (
                     <span className="ml-1 px-2 py-0.5 rounded-full bg-spectral-cyan/20 text-spectral-cyan text-xs">
-                      {announcements.filter(a => a.isActive).length}
+                      {announcements.filter((a) => a.isActive).length}
                     </span>
                   )}
                 </motion.button>
@@ -430,18 +647,29 @@ const AdminPage: React.FC = () => {
                         {activities.slice(0, 8).map((activity: any) => {
                           const { icon, color, bg } = getActivityIcon(activity.activity_type);
                           return (
-                            <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg bg-void-900/30 border border-void-800/30">
-                              <div className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}>
+                            <div
+                              key={activity.id}
+                              className="flex items-center gap-4 p-3 rounded-lg bg-void-900/30 border border-void-800/30"
+                            >
+                              <div
+                                className={`w-10 h-10 rounded-lg ${bg} flex items-center justify-center`}
+                              >
                                 <Icon name={icon} size={18} className={color} />
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm text-void-200">
-                                  <span className="font-medium">{activity.users?.display_name}</span>
-                                  {activity.activity_type === 'story_published' && ` published "${activity.activity_data?.story_title}"`}
+                                  <span className="font-medium">
+                                    {activity.users?.display_name}
+                                  </span>
+                                  {activity.activity_type === 'story_published' &&
+                                    ` published "${activity.activity_data?.story_title}"`}
                                   {activity.activity_type === 'user_signup' && ' joined Stxryai'}
-                                  {activity.activity_type === 'premium_upgrade' && ` upgraded to ${activity.activity_data?.tier}`}
-                                  {activity.activity_type === 'story_completed' && ` completed "${activity.activity_data?.story_title}"`}
-                                  {activity.activity_type === 'achievement_unlocked' && ` unlocked "${activity.activity_data?.achievement}"`}
+                                  {activity.activity_type === 'premium_upgrade' &&
+                                    ` upgraded to ${activity.activity_data?.tier}`}
+                                  {activity.activity_type === 'story_completed' &&
+                                    ` completed "${activity.activity_data?.story_title}"`}
+                                  {activity.activity_type === 'achievement_unlocked' &&
+                                    ` unlocked "${activity.activity_data?.achievement}"`}
                                 </p>
                                 <p className="text-xs text-void-500">@{activity.users?.username}</p>
                               </div>
@@ -465,18 +693,24 @@ const AdminPage: React.FC = () => {
                       <div className="space-y-4">
                         {stories.slice(0, 5).map((story, index) => (
                           <div key={story.id} className="flex items-center gap-3">
-                            <span className={`
+                            <span
+                              className={`
                               w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
                               ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' : ''}
                               ${index === 1 ? 'bg-gray-400/20 text-gray-400' : ''}
                               ${index === 2 ? 'bg-amber-600/20 text-amber-600' : ''}
                               ${index > 2 ? 'bg-void-800/50 text-void-500' : ''}
-                            `}>
+                            `}
+                            >
                               {index + 1}
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-void-200 truncate">{story.title}</p>
-                              <p className="text-xs text-void-500">{story.play_count.toLocaleString()} plays</p>
+                              <p className="text-sm font-medium text-void-200 truncate">
+                                {story.title}
+                              </p>
+                              <p className="text-xs text-void-500">
+                                {story.play_count.toLocaleString()} plays
+                              </p>
                             </div>
                             <div className="flex items-center gap-1 text-yellow-400">
                               <Icon name="StarIcon" size={14} />
@@ -545,7 +779,11 @@ const AdminPage: React.FC = () => {
                     <div className="p-6 border-b border-void-800/50">
                       <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                          <Icon name="MagnifyingGlassIcon" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-void-500" />
+                          <Icon
+                            name="MagnifyingGlassIcon"
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-void-500"
+                          />
                           <input
                             type="text"
                             placeholder="Search users..."
@@ -595,12 +833,16 @@ const AdminPage: React.FC = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4">
-                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getTierColor(user.subscription_tier)}`}>
+                                <span
+                                  className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getTierColor(user.subscription_tier)}`}
+                                >
                                   {user.subscription_tier.toUpperCase()}
                                 </span>
                               </td>
                               <td className="px-6 py-4 text-void-300">{user.stories_completed}</td>
-                              <td className="px-6 py-4 text-void-300">{formatReadingTime(user.total_reading_time)}</td>
+                              <td className="px-6 py-4 text-void-300">
+                                {formatReadingTime(user.total_reading_time)}
+                              </td>
                               <td className="px-6 py-4 text-void-500">{user.created_at}</td>
                               <td className="px-6 py-4 text-right">
                                 <div className="flex items-center justify-end gap-2">
@@ -637,8 +879,12 @@ const AdminPage: React.FC = () => {
                     <div className="p-6 border-t border-void-800/50 flex items-center justify-between">
                       <p className="text-sm text-void-500">Showing 1-5 of 15,847 users</p>
                       <div className="flex items-center gap-2">
-                        <SpectralButton variant="ghost" size="sm">Previous</SpectralButton>
-                        <SpectralButton variant="ghost" size="sm">Next</SpectralButton>
+                        <SpectralButton variant="ghost" size="sm">
+                          Previous
+                        </SpectralButton>
+                        <SpectralButton variant="ghost" size="sm">
+                          Next
+                        </SpectralButton>
                       </div>
                     </div>
                   </div>
@@ -660,7 +906,11 @@ const AdminPage: React.FC = () => {
                     <div className="p-6 border-b border-void-800/50">
                       <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                          <Icon name="MagnifyingGlassIcon" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-void-500" />
+                          <Icon
+                            name="MagnifyingGlassIcon"
+                            size={18}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-void-500"
+                          />
                           <input
                             type="text"
                             placeholder="Search stories..."
@@ -699,12 +949,18 @@ const AdminPage: React.FC = () => {
                                 <p className="font-medium text-void-200">{story.title}</p>
                               </td>
                               <td className="px-6 py-4">
-                                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(story.status)}`}>
+                                <span
+                                  className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(story.status)}`}
+                                >
                                   {story.status.charAt(0).toUpperCase() + story.status.slice(1)}
                                 </span>
                               </td>
-                              <td className="px-6 py-4 text-void-300">{story.play_count.toLocaleString()}</td>
-                              <td className="px-6 py-4 text-void-300">{story.completion_count.toLocaleString()}</td>
+                              <td className="px-6 py-4 text-void-300">
+                                {story.play_count.toLocaleString()}
+                              </td>
+                              <td className="px-6 py-4 text-void-300">
+                                {story.completion_count.toLocaleString()}
+                              </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center gap-1">
                                   <Icon name="StarIcon" size={14} className="text-yellow-400" />
@@ -761,8 +1017,8 @@ const AdminPage: React.FC = () => {
                     <h2 className="text-2xl font-bold text-void-100">Announcements</h2>
                     <p className="text-void-400">Create and manage platform-wide announcements</p>
                   </div>
-                  <SpectralButton 
-                    variant="primary" 
+                  <SpectralButton
+                    variant="primary"
                     onClick={() => {
                       setEditingAnnouncement(null);
                       resetAnnouncementForm();
@@ -793,7 +1049,9 @@ const AdminPage: React.FC = () => {
                         <Icon name="CheckCircleIcon" size={20} className="text-green-400" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.isActive).length}</p>
+                        <p className="text-2xl font-bold text-void-100">
+                          {announcements.filter((a) => a.isActive).length}
+                        </p>
                         <p className="text-sm text-void-500">Active</p>
                       </div>
                     </div>
@@ -804,7 +1062,9 @@ const AdminPage: React.FC = () => {
                         <Icon name="PinIcon" size={20} className="text-yellow-400" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.isPinned).length}</p>
+                        <p className="text-2xl font-bold text-void-100">
+                          {announcements.filter((a) => a.isPinned).length}
+                        </p>
                         <p className="text-sm text-void-500">Pinned</p>
                       </div>
                     </div>
@@ -815,7 +1075,9 @@ const AdminPage: React.FC = () => {
                         <Icon name="UsersIcon" size={20} className="text-purple-400" />
                       </div>
                       <div>
-                        <p className="text-2xl font-bold text-void-100">{announcements.filter(a => a.targetAudience !== 'all').length}</p>
+                        <p className="text-2xl font-bold text-void-100">
+                          {announcements.filter((a) => a.targetAudience !== 'all').length}
+                        </p>
                         <p className="text-sm text-void-500">Targeted</p>
                       </div>
                     </div>
@@ -827,10 +1089,22 @@ const AdminPage: React.FC = () => {
                   <div className="bg-void-950/80 backdrop-blur-xl rounded-xl">
                     {announcements.length === 0 ? (
                       <div className="p-12 text-center">
-                        <Icon name="MegaphoneIcon" size={48} className="text-void-600 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-void-300 mb-2">No Announcements Yet</h3>
-                        <p className="text-void-500 mb-6">Create your first announcement to notify users about updates, features, or maintenance.</p>
-                        <SpectralButton variant="primary" onClick={() => setShowAnnouncementModal(true)}>
+                        <Icon
+                          name="MegaphoneIcon"
+                          size={48}
+                          className="text-void-600 mx-auto mb-4"
+                        />
+                        <h3 className="text-xl font-semibold text-void-300 mb-2">
+                          No Announcements Yet
+                        </h3>
+                        <p className="text-void-500 mb-6">
+                          Create your first announcement to notify users about updates, features, or
+                          maintenance.
+                        </p>
+                        <SpectralButton
+                          variant="primary"
+                          onClick={() => setShowAnnouncementModal(true)}
+                        >
                           <Icon name="PlusIcon" size={18} className="mr-2" />
                           Create First Announcement
                         </SpectralButton>
@@ -847,24 +1121,36 @@ const AdminPage: React.FC = () => {
                               className="p-6 hover:bg-void-900/30 transition-colors"
                             >
                               <div className="flex items-start gap-4">
-                                <div className={`w-12 h-12 rounded-xl ${typeInfo.bg} flex items-center justify-center flex-shrink-0`}>
+                                <div
+                                  className={`w-12 h-12 rounded-xl ${typeInfo.bg} flex items-center justify-center flex-shrink-0`}
+                                >
                                   <Icon name={typeInfo.icon} size={24} className={typeInfo.color} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <h3 className="text-lg font-semibold text-void-100">{announcement.title}</h3>
+                                    <h3 className="text-lg font-semibold text-void-100">
+                                      {announcement.title}
+                                    </h3>
                                     {announcement.isPinned && (
-                                      <span className="px-2 py-0.5 rounded text-xs bg-yellow-500/20 text-yellow-400">Pinned</span>
+                                      <span className="px-2 py-0.5 rounded text-xs bg-yellow-500/20 text-yellow-400">
+                                        Pinned
+                                      </span>
                                     )}
                                     {!announcement.isActive && (
-                                      <span className="px-2 py-0.5 rounded text-xs bg-red-500/20 text-red-400">Inactive</span>
+                                      <span className="px-2 py-0.5 rounded text-xs bg-red-500/20 text-red-400">
+                                        Inactive
+                                      </span>
                                     )}
                                   </div>
-                                  <p className="text-void-400 mb-3 line-clamp-2">{announcement.content}</p>
+                                  <p className="text-void-400 mb-3 line-clamp-2">
+                                    {announcement.content}
+                                  </p>
                                   <div className="flex items-center gap-4 text-sm text-void-500">
                                     <span className="flex items-center gap-1">
                                       <Icon name="UsersIcon" size={14} />
-                                      {TARGET_AUDIENCES.find(t => t.value === announcement.targetAudience)?.label || announcement.targetAudience}
+                                      {TARGET_AUDIENCES.find(
+                                        (t) => t.value === announcement.targetAudience
+                                      )?.label || announcement.targetAudience}
                                     </span>
                                     <span className="flex items-center gap-1">
                                       <Icon name="ClockIcon" size={14} />
@@ -873,7 +1159,8 @@ const AdminPage: React.FC = () => {
                                     {announcement.expiresAt && (
                                       <span className="flex items-center gap-1">
                                         <Icon name="CalendarIcon" size={14} />
-                                        Expires: {new Date(announcement.expiresAt).toLocaleDateString()}
+                                        Expires:{' '}
+                                        {new Date(announcement.expiresAt).toLocaleDateString()}
                                       </span>
                                     )}
                                     {announcement.metadata?.linkUrl && (
@@ -901,7 +1188,10 @@ const AdminPage: React.FC = () => {
                                     whileTap={{ scale: 0.9 }}
                                     title={announcement.isActive ? 'Deactivate' : 'Activate'}
                                   >
-                                    <Icon name={announcement.isActive ? 'EyeIcon' : 'EyeSlashIcon'} size={16} />
+                                    <Icon
+                                      name={announcement.isActive ? 'EyeIcon' : 'EyeSlashIcon'}
+                                      size={16}
+                                    />
                                   </motion.button>
                                   <motion.button
                                     onClick={() => openEditModal(announcement)}
@@ -946,24 +1236,45 @@ const AdminPage: React.FC = () => {
                     <h3 className="text-xl font-semibold text-void-100 mb-6">Content Reports</h3>
                     <div className="space-y-4">
                       {MOCK_REPORTS.map((report) => (
-                        <div key={report.id} className="flex items-center gap-4 p-4 rounded-lg bg-void-900/50 border border-void-800/50">
-                          <div className={`
+                        <div
+                          key={report.id}
+                          className="flex items-center gap-4 p-4 rounded-lg bg-void-900/50 border border-void-800/50"
+                        >
+                          <div
+                            className={`
                             w-10 h-10 rounded-lg flex items-center justify-center
                             ${report.type === 'content' ? 'bg-orange-500/20' : ''}
                             ${report.type === 'user' ? 'bg-red-500/20' : ''}
                             ${report.type === 'bug' ? 'bg-blue-500/20' : ''}
-                          `}>
-                            <Icon 
-                              name={report.type === 'content' ? 'DocumentTextIcon' : report.type === 'user' ? 'UserIcon' : 'BugAntIcon'} 
-                              size={20} 
-                              className={report.type === 'content' ? 'text-orange-400' : report.type === 'user' ? 'text-red-400' : 'text-blue-400'}
+                          `}
+                          >
+                            <Icon
+                              name={
+                                report.type === 'content'
+                                  ? 'DocumentTextIcon'
+                                  : report.type === 'user'
+                                    ? 'UserIcon'
+                                    : 'BugAntIcon'
+                              }
+                              size={20}
+                              className={
+                                report.type === 'content'
+                                  ? 'text-orange-400'
+                                  : report.type === 'user'
+                                    ? 'text-red-400'
+                                    : 'text-blue-400'
+                              }
                             />
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-void-200">{report.title}</p>
-                            <p className="text-sm text-void-500">Reported by: {report.reporter} • {report.created_at}</p>
+                            <p className="text-sm text-void-500">
+                              Reported by: {report.reporter} • {report.created_at}
+                            </p>
                           </div>
-                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(report.status)}`}>
+                          <span
+                            className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(report.status)}`}
+                          >
                             {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                           </span>
                           <div className="flex gap-2">
@@ -1091,7 +1402,7 @@ const AdminPage: React.FC = () => {
                     <h2 className="text-xl font-bold text-void-100">
                       {editingAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
                     </h2>
-                    <button 
+                    <button
                       onClick={() => setShowAnnouncementModal(false)}
                       className="p-2 hover:bg-void-800/50 rounded-lg transition-colors"
                     >
@@ -1106,7 +1417,9 @@ const AdminPage: React.FC = () => {
                       <input
                         type="text"
                         value={announcementForm.title}
-                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, title: e.target.value }))}
+                        onChange={(e) =>
+                          setAnnouncementForm((prev) => ({ ...prev, title: e.target.value }))
+                        }
                         placeholder="Enter announcement title..."
                         className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
                       />
@@ -1119,17 +1432,26 @@ const AdminPage: React.FC = () => {
                         {ANNOUNCEMENT_TYPES.map((type) => (
                           <button
                             key={type.value}
-                            onClick={() => setAnnouncementForm(prev => ({ ...prev, type: type.value as any }))}
+                            onClick={() =>
+                              setAnnouncementForm((prev) => ({ ...prev, type: type.value as any }))
+                            }
                             className={`
                               p-3 rounded-lg border transition-all flex items-center gap-2
-                              ${announcementForm.type === type.value 
-                                ? `${type.bg} border-${type.color.split('-')[1]}-500/50` 
-                                : 'bg-void-900/50 border-void-700/50 hover:border-void-600/50'
+                              ${
+                                announcementForm.type === type.value
+                                  ? `${type.bg} border-${type.color.split('-')[1]}-500/50`
+                                  : 'bg-void-900/50 border-void-700/50 hover:border-void-600/50'
                               }
                             `}
                           >
                             <Icon name={type.icon} size={18} className={type.color} />
-                            <span className={announcementForm.type === type.value ? type.color : 'text-void-300'}>{type.label}</span>
+                            <span
+                              className={
+                                announcementForm.type === type.value ? type.color : 'text-void-300'
+                              }
+                            >
+                              {type.label}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -1137,10 +1459,14 @@ const AdminPage: React.FC = () => {
 
                     {/* Content */}
                     <div>
-                      <label className="block text-sm font-medium text-void-300 mb-2">Content</label>
+                      <label className="block text-sm font-medium text-void-300 mb-2">
+                        Content
+                      </label>
                       <textarea
                         value={announcementForm.content}
-                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, content: e.target.value }))}
+                        onChange={(e) =>
+                          setAnnouncementForm((prev) => ({ ...prev, content: e.target.value }))
+                        }
                         placeholder="Write your announcement content..."
                         rows={4}
                         className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none resize-none"
@@ -1149,14 +1475,23 @@ const AdminPage: React.FC = () => {
 
                     {/* Target Audience */}
                     <div>
-                      <label className="block text-sm font-medium text-void-300 mb-2">Target Audience</label>
+                      <label className="block text-sm font-medium text-void-300 mb-2">
+                        Target Audience
+                      </label>
                       <select
                         value={announcementForm.targetAudience}
-                        onChange={(e) => setAnnouncementForm(prev => ({ ...prev, targetAudience: e.target.value as any }))}
+                        onChange={(e) =>
+                          setAnnouncementForm((prev) => ({
+                            ...prev,
+                            targetAudience: e.target.value as any,
+                          }))
+                        }
                         className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 focus:border-spectral-cyan/50 focus:outline-none"
                       >
                         {TARGET_AUDIENCES.map((audience) => (
-                          <option key={audience.value} value={audience.value}>{audience.label}</option>
+                          <option key={audience.value} value={audience.value}>
+                            {audience.label}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -1164,27 +1499,35 @@ const AdminPage: React.FC = () => {
                     {/* Link */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-void-300 mb-2">Link URL (optional)</label>
+                        <label className="block text-sm font-medium text-void-300 mb-2">
+                          Link URL (optional)
+                        </label>
                         <input
                           type="text"
                           value={announcementForm.metadata?.linkUrl || ''}
-                          onChange={(e) => setAnnouncementForm(prev => ({ 
-                            ...prev, 
-                            metadata: { ...prev.metadata, linkUrl: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setAnnouncementForm((prev) => ({
+                              ...prev,
+                              metadata: { ...prev.metadata, linkUrl: e.target.value },
+                            }))
+                          }
                           placeholder="/path or https://..."
                           className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-void-300 mb-2">Link Text</label>
+                        <label className="block text-sm font-medium text-void-300 mb-2">
+                          Link Text
+                        </label>
                         <input
                           type="text"
                           value={announcementForm.metadata?.linkText || ''}
-                          onChange={(e) => setAnnouncementForm(prev => ({ 
-                            ...prev, 
-                            metadata: { ...prev.metadata, linkText: e.target.value }
-                          }))}
+                          onChange={(e) =>
+                            setAnnouncementForm((prev) => ({
+                              ...prev,
+                              metadata: { ...prev.metadata, linkText: e.target.value },
+                            }))
+                          }
                           placeholder="Learn More"
                           className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 placeholder-void-500 focus:border-spectral-cyan/50 focus:outline-none"
                         />
@@ -1194,11 +1537,15 @@ const AdminPage: React.FC = () => {
                     {/* Options */}
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-void-300 mb-2">Expires At (optional)</label>
+                        <label className="block text-sm font-medium text-void-300 mb-2">
+                          Expires At (optional)
+                        </label>
                         <input
                           type="datetime-local"
                           value={announcementForm.expiresAt}
-                          onChange={(e) => setAnnouncementForm(prev => ({ ...prev, expiresAt: e.target.value }))}
+                          onChange={(e) =>
+                            setAnnouncementForm((prev) => ({ ...prev, expiresAt: e.target.value }))
+                          }
                           className="w-full px-4 py-3 bg-void-900/50 border border-void-700/50 rounded-lg text-void-100 focus:border-spectral-cyan/50 focus:outline-none"
                         />
                       </div>
@@ -1207,7 +1554,12 @@ const AdminPage: React.FC = () => {
                           <input
                             type="checkbox"
                             checked={announcementForm.isPinned}
-                            onChange={(e) => setAnnouncementForm(prev => ({ ...prev, isPinned: e.target.checked }))}
+                            onChange={(e) =>
+                              setAnnouncementForm((prev) => ({
+                                ...prev,
+                                isPinned: e.target.checked,
+                              }))
+                            }
                             className="w-5 h-5 rounded border-void-600 bg-void-800 text-spectral-cyan focus:ring-spectral-cyan/50"
                           />
                           <div>
@@ -1220,20 +1572,29 @@ const AdminPage: React.FC = () => {
 
                     {/* Actions */}
                     <div className="flex justify-end gap-3 pt-4 border-t border-void-800/50">
-                      <SpectralButton variant="ghost" onClick={() => setShowAnnouncementModal(false)}>
+                      <SpectralButton
+                        variant="ghost"
+                        onClick={() => setShowAnnouncementModal(false)}
+                      >
                         Cancel
                       </SpectralButton>
-                      <SpectralButton 
-                        variant="primary" 
-                        onClick={editingAnnouncement ? handleUpdateAnnouncement : handleCreateAnnouncement}
+                      <SpectralButton
+                        variant="primary"
+                        onClick={
+                          editingAnnouncement ? handleUpdateAnnouncement : handleCreateAnnouncement
+                        }
                         disabled={!announcementForm.title || !announcementForm.content}
                       >
-                        <Icon name={editingAnnouncement ? 'CheckIcon' : 'PlusIcon'} size={18} className="mr-2" />
+                        <Icon
+                          name={editingAnnouncement ? 'CheckIcon' : 'PlusIcon'}
+                          size={18}
+                          className="mr-2"
+                        />
                         {editingAnnouncement ? 'Update Announcement' : 'Create Announcement'}
                       </SpectralButton>
                     </div>
                   </div>
-    </div>
+                </div>
               </GradientBorder>
             </motion.div>
           </motion.div>

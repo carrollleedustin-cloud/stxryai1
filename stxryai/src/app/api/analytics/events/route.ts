@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * User Analytics Events Endpoint
  * Receives user interaction events from the client.
- * 
+ *
  * In production, these would be sent to PostHog, Mixpanel, or Amplitude.
  */
 
@@ -22,14 +22,11 @@ const MAX_BUFFER_SIZE = 2000;
 
 export async function POST(request: NextRequest) {
   try {
-    const event = await request.json() as UserEvent;
+    const event = (await request.json()) as UserEvent;
 
     // Validate event structure
     if (!event.eventName || !event.category) {
-      return NextResponse.json(
-        { error: 'Invalid event format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid event format' }, { status: 400 });
     }
 
     // Add to buffer
@@ -59,20 +56,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to process event:', error);
-    return NextResponse.json(
-      { error: 'Failed to process event' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process event' }, { status: 500 });
   }
 }
 
 export async function GET(request: NextRequest) {
   // Only allow in development or for admins
   if (process.env.NODE_ENV !== 'development') {
-    return NextResponse.json(
-      { error: 'Not available in production' },
-      { status: 403 }
-    );
+    return NextResponse.json({ error: 'Not available in production' }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -81,12 +72,12 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '100', 10);
 
   let filteredEvents = eventsBuffer;
-  
+
   if (category) {
-    filteredEvents = filteredEvents.filter(e => e.category === category);
+    filteredEvents = filteredEvents.filter((e) => e.category === category);
   }
   if (eventName) {
-    filteredEvents = filteredEvents.filter(e => e.eventName === eventName);
+    filteredEvents = filteredEvents.filter((e) => e.eventName === eventName);
   }
 
   // Get recent events
@@ -121,4 +112,3 @@ export async function GET(request: NextRequest) {
     },
   });
 }
-

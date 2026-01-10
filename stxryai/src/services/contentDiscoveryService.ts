@@ -9,7 +9,15 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 // TYPES
 // ========================================
 
-export type Genre = 'fantasy' | 'sci-fi' | 'mystery' | 'romance' | 'horror' | 'adventure' | 'thriller' | 'historical';
+export type Genre =
+  | 'fantasy'
+  | 'sci-fi'
+  | 'mystery'
+  | 'romance'
+  | 'horror'
+  | 'adventure'
+  | 'thriller'
+  | 'historical';
 
 export interface StoryRecommendation {
   id: string;
@@ -45,7 +53,12 @@ export interface TrendingStory extends StoryRecommendation {
 export interface ForYouFeedItem {
   type: 'story' | 'collection' | 'author' | 'genre' | 'challenge';
   priority: number;
-  data: StoryRecommendation | StoryCollection | AuthorRecommendation | GenreRecommendation | ChallengeCard;
+  data:
+    | StoryRecommendation
+    | StoryCollection
+    | AuthorRecommendation
+    | GenreRecommendation
+    | ChallengeCard;
   reason: string;
 }
 
@@ -111,26 +124,26 @@ export interface UserPreferences {
 const SCORING_WEIGHTS = {
   // Trending algorithm weights
   trending: {
-    recentPlays: 0.35,      // Plays in last 24h
-    completionRate: 0.20,   // How many finish the story
-    rating: 0.15,           // Average rating
-    ratingVelocity: 0.15,   // New ratings in last 24h
-    socialShares: 0.15,     // Social shares
+    recentPlays: 0.35, // Plays in last 24h
+    completionRate: 0.2, // How many finish the story
+    rating: 0.15, // Average rating
+    ratingVelocity: 0.15, // New ratings in last 24h
+    socialShares: 0.15, // Social shares
   },
   // Recommendation weights
   recommendation: {
-    genreMatch: 0.30,       // Matches user's preferred genres
-    authorFollow: 0.20,     // From followed author
-    similarToLiked: 0.25,   // Similar to liked stories
-    rating: 0.15,           // Story quality
-    freshness: 0.10,        // Newer stories get a boost
+    genreMatch: 0.3, // Matches user's preferred genres
+    authorFollow: 0.2, // From followed author
+    similarToLiked: 0.25, // Similar to liked stories
+    rating: 0.15, // Story quality
+    freshness: 0.1, // Newer stories get a boost
   },
   // Similarity weights
   similarity: {
     genre: 0.35,
     tags: 0.25,
     author: 0.15,
-    length: 0.10,
+    length: 0.1,
     readersAlsoLiked: 0.15,
   },
 };
@@ -163,20 +176,28 @@ class ContentDiscoveryService {
     // Calculate cutoff date
     const cutoff = new Date();
     switch (timeframe) {
-      case '24h': cutoff.setHours(cutoff.getHours() - 24); break;
-      case '7d': cutoff.setDate(cutoff.getDate() - 7); break;
-      case '30d': cutoff.setDate(cutoff.getDate() - 30); break;
+      case '24h':
+        cutoff.setHours(cutoff.getHours() - 24);
+        break;
+      case '7d':
+        cutoff.setDate(cutoff.getDate() - 7);
+        break;
+      case '30d':
+        cutoff.setDate(cutoff.getDate() - 30);
+        break;
     }
 
     // Fetch stories with activity metrics
     let query = supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         *,
         users:author_id (id, username, avatar_url),
         story_plays!left (count),
         reviews!left (rating, created_at)
-      `)
+      `
+      )
       .eq('is_published', true)
       .order('play_count', { ascending: false })
       .limit(limit * 2); // Fetch extra for scoring
@@ -199,11 +220,11 @@ class ContentDiscoveryService {
         (r: any) => new Date(r.created_at) > cutoff
       ).length;
 
-      const trendingScore = 
-        (recentPlays * SCORING_WEIGHTS.trending.recentPlays) +
-        ((story.completion_rate || 0) * SCORING_WEIGHTS.trending.completionRate) +
-        ((story.rating || 0) / 5 * SCORING_WEIGHTS.trending.rating) +
-        (Math.min(recentRatings / 10, 1) * SCORING_WEIGHTS.trending.ratingVelocity);
+      const trendingScore =
+        recentPlays * SCORING_WEIGHTS.trending.recentPlays +
+        (story.completion_rate || 0) * SCORING_WEIGHTS.trending.completionRate +
+        ((story.rating || 0) / 5) * SCORING_WEIGHTS.trending.rating +
+        Math.min(recentRatings / 10, 1) * SCORING_WEIGHTS.trending.ratingVelocity;
 
       const trendingReason = this.getTrendingReason(story, recentPlays, recentRatings);
 
@@ -231,10 +252,7 @@ class ContentDiscoveryService {
   /**
    * Get personalized recommendations for a user
    */
-  async getRecommendations(
-    userId: string,
-    limit: number = 20
-  ): Promise<StoryRecommendation[]> {
+  async getRecommendations(userId: string, limit: number = 20): Promise<StoryRecommendation[]> {
     const supabase = this.getSupabase();
 
     // Fetch user preferences
@@ -243,10 +261,12 @@ class ContentDiscoveryService {
     // Fetch candidate stories
     const { data: stories, error } = await supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         *,
         users:author_id (id, username, avatar_url)
-      `)
+      `
+      )
       .eq('is_published', true)
       .not('id', 'in', `(${preferences.readingHistory.join(',') || 'null'})`)
       .order('rating', { ascending: false })
@@ -258,14 +278,14 @@ class ContentDiscoveryService {
     }
 
     // Score stories based on user preferences
-    const scoredStories = (stories || []).map(story => {
+    const scoredStories = (stories || []).map((story) => {
       const scores = this.calculateRecommendationScores(story, preferences);
-      const matchScore = 
-        (scores.genreMatch * SCORING_WEIGHTS.recommendation.genreMatch) +
-        (scores.authorFollow * SCORING_WEIGHTS.recommendation.authorFollow) +
-        (scores.similarToLiked * SCORING_WEIGHTS.recommendation.similarToLiked) +
-        ((story.rating || 0) / 5 * SCORING_WEIGHTS.recommendation.rating) +
-        (scores.freshness * SCORING_WEIGHTS.recommendation.freshness);
+      const matchScore =
+        scores.genreMatch * SCORING_WEIGHTS.recommendation.genreMatch +
+        scores.authorFollow * SCORING_WEIGHTS.recommendation.authorFollow +
+        scores.similarToLiked * SCORING_WEIGHTS.recommendation.similarToLiked +
+        ((story.rating || 0) / 5) * SCORING_WEIGHTS.recommendation.rating +
+        scores.freshness * SCORING_WEIGHTS.recommendation.freshness;
 
       return {
         ...this.mapStoryToRecommendation(story),
@@ -299,7 +319,7 @@ class ContentDiscoveryService {
     // Get trending stories
     const trending = await this.getTrending(5);
     trending.forEach((story, index) => {
-      if (!recommendations.find(r => r.id === story.id)) {
+      if (!recommendations.find((r) => r.id === story.id)) {
         feed.push({
           type: 'story',
           priority: 80 - index * 5,
@@ -325,7 +345,7 @@ class ContentDiscoveryService {
 
     // Get author recommendations
     const authorRecs = await this.getRecommendedAuthors(userId, 2);
-    authorRecs.forEach(author => {
+    authorRecs.forEach((author) => {
       feed.push({
         type: 'author',
         priority: 60,
@@ -344,10 +364,7 @@ class ContentDiscoveryService {
   /**
    * Get stories similar to a given story
    */
-  async getSimilarStories(
-    storyId: string,
-    limit: number = 10
-  ): Promise<StoryRecommendation[]> {
+  async getSimilarStories(storyId: string, limit: number = 10): Promise<StoryRecommendation[]> {
     const supabase = this.getSupabase();
 
     // Get the source story
@@ -364,10 +381,12 @@ class ContentDiscoveryService {
     // Find similar stories
     const { data: candidates, error } = await supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         *,
         users:author_id (id, username, avatar_url)
-      `)
+      `
+      )
       .eq('is_published', true)
       .neq('id', storyId)
       .limit(50);
@@ -378,9 +397,9 @@ class ContentDiscoveryService {
     }
 
     // Score by similarity
-    const scoredStories = (candidates || []).map(story => {
+    const scoredStories = (candidates || []).map((story) => {
       const similarityScore = this.calculateSimilarityScore(sourceStory, story);
-      
+
       return {
         ...this.mapStoryToRecommendation(story),
         matchScore: similarityScore,
@@ -414,18 +433,20 @@ class ContentDiscoveryService {
       return this.getSimilarStories(storyId, limit);
     }
 
-    const readerIds = readers.map(r => r.user_id);
+    const readerIds = readers.map((r) => r.user_id);
 
     // Find other stories these readers completed
     const { data: otherStories, error } = await supabase
       .from('user_progress')
-      .select(`
+      .select(
+        `
         story_id,
         stories!inner (
           *,
           users:author_id (id, username, avatar_url)
         )
-      `)
+      `
+      )
       .in('user_id', readerIds)
       .eq('is_completed', true)
       .neq('story_id', storyId);
@@ -436,11 +457,11 @@ class ContentDiscoveryService {
 
     // Count occurrences and score
     const storyScores = new Map<string, { story: any; count: number }>();
-    
-    otherStories.forEach(item => {
+
+    otherStories.forEach((item) => {
       const story = item.stories;
       if (!story) return;
-      
+
       const existing = storyScores.get(story.id);
       if (existing) {
         existing.count++;
@@ -454,9 +475,11 @@ class ContentDiscoveryService {
       .map(([id, { story, count }]) => ({
         ...this.mapStoryToRecommendation(story),
         matchScore: count / readers.length,
-        matchReasons: [`${Math.round(count / readers.length * 100)}% of readers also enjoyed this`],
+        matchReasons: [
+          `${Math.round((count / readers.length) * 100)}% of readers also enjoyed this`,
+        ],
       }))
-      .filter(r => !userId || r.id !== userId)
+      .filter((r) => !userId || r.id !== userId)
       .sort((a, b) => b.matchScore - a.matchScore)
       .slice(0, limit);
 
@@ -482,10 +505,12 @@ class ContentDiscoveryService {
 
     let dbQuery = supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         *,
         users:author_id (id, username, avatar_url)
-      `)
+      `
+      )
       .eq('is_published', true)
       .or(`title.ilike.%${query}%,description.ilike.%${query}%`);
 
@@ -527,7 +552,7 @@ class ContentDiscoveryService {
     }
 
     // Score by relevance if not using another sort
-    const results = (data || []).map(story => {
+    const results = (data || []).map((story) => {
       const relevanceScore = this.calculateRelevanceScore(story, query);
       return {
         ...this.mapStoryToRecommendation(story),
@@ -555,9 +580,11 @@ class ContentDiscoveryService {
       supabase.from('user_preferences').select('*').eq('user_id', userId).single(),
     ]);
 
-    const readingHistory = (progressData.data || []).map(p => p.story_id);
-    const completedStories = (progressData.data || []).filter(p => p.is_completed).map(p => p.story_id);
-    const likedStories = (likesData.data || []).map(l => l.story_id);
+    const readingHistory = (progressData.data || []).map((p) => p.story_id);
+    const completedStories = (progressData.data || [])
+      .filter((p) => p.is_completed)
+      .map((p) => p.story_id);
+    const likedStories = (likesData.data || []).map((l) => l.story_id);
 
     // Infer favorite genres from reading history
     const { data: historyStories } = await supabase
@@ -566,7 +593,7 @@ class ContentDiscoveryService {
       .in('id', readingHistory.slice(0, 50));
 
     const genreCounts: Record<string, number> = {};
-    (historyStories || []).forEach(s => {
+    (historyStories || []).forEach((s) => {
       genreCounts[s.genre] = (genreCounts[s.genre] || 0) + 1;
     });
 
@@ -589,8 +616,11 @@ class ContentDiscoveryService {
 
   private calculateRecommendationScores(story: any, preferences: UserPreferences) {
     return {
-      genreMatch: preferences.favoriteGenres.includes(story.genre) ? 1 : 
-                  preferences.dislikedGenres.includes(story.genre) ? 0 : 0.5,
+      genreMatch: preferences.favoriteGenres.includes(story.genre)
+        ? 1
+        : preferences.dislikedGenres.includes(story.genre)
+          ? 0
+          : 0.5,
       authorFollow: preferences.followedAuthors.includes(story.author_id) ? 1 : 0,
       similarToLiked: 0.5, // Would require more complex similarity calculation
       rating: (story.average_rating || 0) / 5,
@@ -640,7 +670,7 @@ class ContentDiscoveryService {
     if (titleLower === queryLower) score += 1;
     // Title contains query
     else if (titleLower.includes(queryLower)) score += 0.7;
-    
+
     // Description contains query
     if (descLower.includes(queryLower)) score += 0.3;
 
@@ -653,7 +683,7 @@ class ContentDiscoveryService {
   private calculateFreshnessScore(createdAt: string): number {
     const age = Date.now() - new Date(createdAt).getTime();
     const daysOld = age / (1000 * 60 * 60 * 24);
-    
+
     if (daysOld < 1) return 1;
     if (daysOld < 7) return 0.8;
     if (daysOld < 30) return 0.5;
@@ -661,12 +691,16 @@ class ContentDiscoveryService {
     return 0.1;
   }
 
-  private getTrendingReason(story: any, recentPlays: number, recentRatings: number): TrendingStory['trendingReason'] {
+  private getTrendingReason(
+    story: any,
+    recentPlays: number,
+    recentRatings: number
+  ): TrendingStory['trendingReason'] {
     if (story.is_staff_pick) return 'staff_pick';
-    
+
     const ageHours = (Date.now() - new Date(story.created_at).getTime()) / (1000 * 60 * 60);
     if (ageHours < 48) return 'new';
-    
+
     if (recentPlays > 100) return 'viral';
     if (recentRatings > 20) return 'hot';
     return 'rising';
@@ -674,11 +708,16 @@ class ContentDiscoveryService {
 
   private getTrendingReasonText(reason: TrendingStory['trendingReason']): string {
     switch (reason) {
-      case 'viral': return '🔥 Going viral';
-      case 'rising': return '📈 Rising fast';
-      case 'hot': return '💫 Hot right now';
-      case 'staff_pick': return '⭐ Staff Pick';
-      case 'new': return '✨ Just released';
+      case 'viral':
+        return '🔥 Going viral';
+      case 'rising':
+        return '📈 Rising fast';
+      case 'hot':
+        return '💫 Hot right now';
+      case 'staff_pick':
+        return '⭐ Staff Pick';
+      case 'new':
+        return '✨ Just released';
     }
   }
 
@@ -714,7 +753,9 @@ class ContentDiscoveryService {
     return reasons.length > 0 ? reasons : ['Similar story'];
   }
 
-  private mapStoryToRecommendation(story: any): Omit<StoryRecommendation, 'matchScore' | 'matchReasons'> {
+  private mapStoryToRecommendation(
+    story: any
+  ): Omit<StoryRecommendation, 'matchScore' | 'matchReasons'> {
     return {
       id: story.id,
       title: story.title,
@@ -743,10 +784,12 @@ class ContentDiscoveryService {
 
     const { data: stories, error } = await supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         *,
         users:author_id (id, username, avatar_url)
-      `)
+      `
+      )
       .eq('genre', genre)
       .eq('is_published', true)
       .order('rating', { ascending: false })
@@ -779,22 +822,27 @@ class ContentDiscoveryService {
     };
   }
 
-  private async getRecommendedAuthors(userId: string, limit: number): Promise<AuthorRecommendation[]> {
+  private async getRecommendedAuthors(
+    userId: string,
+    limit: number
+  ): Promise<AuthorRecommendation[]> {
     const supabase = this.getSupabase();
 
     const { data: authors, error } = await supabase
       .from('users')
-      .select(`
+      .select(
+        `
         *,
         stories:stories!author_id (genre)
-      `)
+      `
+      )
       .gt('stories_count', 0)
       .order('total_plays', { ascending: false })
       .limit(limit);
 
     if (error || !authors) return [];
 
-    return authors.map(author => {
+    return authors.map((author) => {
       const genreCounts: Record<string, number> = {};
       (author.stories || []).forEach((s: any) => {
         genreCounts[s.genre] = (genreCounts[s.genre] || 0) + 1;
@@ -821,4 +869,3 @@ class ContentDiscoveryService {
 }
 
 export const contentDiscoveryService = new ContentDiscoveryService();
-

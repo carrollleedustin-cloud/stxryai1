@@ -89,7 +89,9 @@ export function ReadingInsights({ insights, className = '' }: ReadingInsightsPro
             }`}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl`}>
+              <div
+                className={`w-12 h-12 rounded-lg bg-gradient-to-br ${insight.color} flex items-center justify-center text-2xl`}
+              >
                 {insight.icon}
               </div>
               {insight.value !== undefined && (
@@ -118,7 +120,9 @@ export function ReadingInsights({ insights, className = '' }: ReadingInsightsPro
 
       {filteredInsights.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No insights available yet. Keep reading to unlock insights!</p>
+          <p className="text-muted-foreground">
+            No insights available yet. Keep reading to unlock insights!
+          </p>
         </div>
       )}
     </div>
@@ -142,7 +146,7 @@ export function generateReadingInsights(data: {
       id: 'milestone-10',
       type: 'milestone',
       title: '10 Stories Read!',
-      description: 'You\'ve completed 10 stories. Keep up the great reading!',
+      description: "You've completed 10 stories. Keep up the great reading!",
       value: '10',
       icon: '🎉',
       color: 'from-green-500 to-emerald-500',
@@ -154,7 +158,7 @@ export function generateReadingInsights(data: {
       id: 'milestone-50',
       type: 'milestone',
       title: '50 Stories Milestone!',
-      description: 'You\'re a dedicated reader! 50 stories completed.',
+      description: "You're a dedicated reader! 50 stories completed.",
       value: '50',
       icon: '🌟',
       color: 'from-purple-500 to-pink-500',

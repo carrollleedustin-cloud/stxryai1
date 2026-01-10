@@ -37,9 +37,11 @@ export class CanonEnforcer {
     // Validate rule doesn't conflict with existing rules
     const existingRules = await this.getRulesForCategory(rule.seriesId, rule.ruleCategory);
     const conflicts = this.findRuleConflicts(rule, existingRules);
-    
+
     if (conflicts.length > 0) {
-      throw new Error(`Rule conflicts with existing rules: ${conflicts.map(c => c.ruleName).join(', ')}`);
+      throw new Error(
+        `Rule conflicts with existing rules: ${conflicts.map((c) => c.ruleName).join(', ')}`
+      );
     }
 
     const { data, error } = await this.supabase
@@ -79,7 +81,7 @@ export class CanonEnforcer {
     lockedAttributes?: string[]
   ): Promise<void> {
     const table = this.getTableForEntityType(entityType);
-    
+
     await this.supabase
       .from(table)
       .update({
@@ -138,10 +140,7 @@ export class CanonEnforcer {
   /**
    * Get rules for a specific category
    */
-  async getRulesForCategory(
-    seriesId: string,
-    category: string
-  ): Promise<CanonRule[]> {
+  async getRulesForCategory(seriesId: string, category: string): Promise<CanonRule[]> {
     const { data, error } = await this.supabase
       .from('canon_rules')
       .select('*')
@@ -178,7 +177,7 @@ export class CanonEnforcer {
       const characterViolations = await this.enforceCharacterCanon(
         content,
         context.charactersInvolved,
-        rules.filter(r => r.ruleCategory === 'character'),
+        rules.filter((r) => r.ruleCategory === 'character'),
         bookNumber
       );
       violations.push(...characterViolations);
@@ -189,7 +188,7 @@ export class CanonEnforcer {
       const worldViolations = await this.enforceWorldCanon(
         content,
         context.worldElementsReferenced,
-        rules.filter(r => r.ruleCategory === 'world' || r.ruleCategory === 'system'),
+        rules.filter((r) => r.ruleCategory === 'world' || r.ruleCategory === 'system'),
         bookNumber
       );
       violations.push(...worldViolations);
@@ -200,7 +199,7 @@ export class CanonEnforcer {
       const timelineViolations = await this.enforceTimelineCanon(
         content,
         context.timelineReferences,
-        rules.filter(r => r.ruleCategory === 'timeline'),
+        rules.filter((r) => r.ruleCategory === 'timeline'),
         bookNumber
       );
       violations.push(...timelineViolations);
@@ -211,7 +210,7 @@ export class CanonEnforcer {
       const relationshipViolations = await this.enforceRelationshipCanon(
         content,
         context.relationshipsInvolved,
-        rules.filter(r => r.ruleCategory === 'relationship')
+        rules.filter((r) => r.ruleCategory === 'relationship')
       );
       violations.push(...relationshipViolations);
     }
@@ -219,7 +218,10 @@ export class CanonEnforcer {
     // General rule enforcement
     const generalViolations = await this.enforceGeneralRules(
       content,
-      rules.filter(r => !['character', 'world', 'system', 'timeline', 'relationship'].includes(r.ruleCategory))
+      rules.filter(
+        (r) =>
+          !['character', 'world', 'system', 'timeline', 'relationship'].includes(r.ruleCategory)
+      )
     );
     violations.push(...generalViolations);
 
@@ -237,9 +239,9 @@ export class CanonEnforcer {
     }
 
     return {
-      isCanonCompliant: violations.filter(v => 
-        v.violationType === 'critical' || v.violationType === 'error'
-      ).length === 0,
+      isCanonCompliant:
+        violations.filter((v) => v.violationType === 'critical' || v.violationType === 'error')
+          .length === 0,
       violations,
       warnings,
       suggestions,
@@ -296,14 +298,16 @@ export class CanonEnforcer {
 
         for (const pattern of alivePatterns) {
           if (contentLower.includes(pattern)) {
-            violations.push(this.createViolation({
-              ruleId: undefined,
-              seriesId: character.seriesId!,
-              violationType: 'character_status',
-              description: `Character "${character.name}" is deceased but is described performing living actions`,
-              content: this.extractContext(content, contentLower.indexOf(pattern)),
-              severity: character.canonLockLevel === 'immutable' ? 'critical' : 'error',
-            }));
+            violations.push(
+              this.createViolation({
+                ruleId: undefined,
+                seriesId: character.seriesId!,
+                violationType: 'character_status',
+                description: `Character "${character.name}" is deceased but is described performing living actions`,
+                content: this.extractContext(content, contentLower.indexOf(pattern)),
+                severity: character.canonLockLevel === 'immutable' ? 'critical' : 'error',
+              })
+            );
             break;
           }
         }
@@ -312,15 +316,11 @@ export class CanonEnforcer {
       // Check for physical description violations
       if (character.physicalDescription) {
         const events = await this.engine.getCharacterEvents(characterId);
-        const physicalEvents = events.filter(e => e.eventType === 'physical' && e.isPermanent);
+        const physicalEvents = events.filter((e) => e.eventType === 'physical' && e.isPermanent);
 
         for (const event of physicalEvents) {
           // Check if the content contradicts the physical change
-          const contradictions = this.findPhysicalContradictions(
-            content,
-            character,
-            event
-          );
+          const contradictions = this.findPhysicalContradictions(content, character, event);
           violations.push(...contradictions);
         }
       }
@@ -328,11 +328,7 @@ export class CanonEnforcer {
       // Check locked attributes
       if (character.lockedAttributes && character.lockedAttributes.length > 0) {
         for (const attr of character.lockedAttributes) {
-          const attrViolation = await this.checkLockedAttributeViolation(
-            content,
-            character,
-            attr
-          );
+          const attrViolation = await this.checkLockedAttributeViolation(content, character, attr);
           if (attrViolation) {
             violations.push(attrViolation);
           }
@@ -340,9 +336,8 @@ export class CanonEnforcer {
       }
 
       // Check character-specific rules
-      const characterRules = rules.filter(r => 
-        r.appliesToEntityIds.includes(characterId) ||
-        r.appliesToEntityType === 'character'
+      const characterRules = rules.filter(
+        (r) => r.appliesToEntityIds.includes(characterId) || r.appliesToEntityType === 'character'
       );
 
       for (const rule of characterRules) {
@@ -389,19 +384,21 @@ export class CanonEnforcer {
             // Check if it's a historical reference
             const historicalIndicators = ['was', 'used to', 'once', 'former', 'ruins'];
             const context = this.extractContext(content, contentLower.indexOf(pattern), 100);
-            const isHistorical = historicalIndicators.some(ind => 
+            const isHistorical = historicalIndicators.some((ind) =>
               context.toLowerCase().includes(ind)
             );
 
             if (!isHistorical) {
-              violations.push(this.createViolation({
-                ruleId: undefined,
-                seriesId: element.seriesId,
-                violationType: 'world_element',
-                description: `"${element.name}" was destroyed in Book ${element.destroyedInBook} but is referenced as still existing`,
-                content: context,
-                severity: element.canonLockLevel === 'immutable' ? 'critical' : 'error',
-              }));
+              violations.push(
+                this.createViolation({
+                  ruleId: undefined,
+                  seriesId: element.seriesId,
+                  violationType: 'world_element',
+                  description: `"${element.name}" was destroyed in Book ${element.destroyedInBook} but is referenced as still existing`,
+                  content: context,
+                  severity: element.canonLockLevel === 'immutable' ? 'critical' : 'error',
+                })
+              );
               break;
             }
           }
@@ -412,30 +409,35 @@ export class CanonEnforcer {
       if (element.rules && element.rules.rules.length > 0) {
         for (const rule of element.rules.rules) {
           // This is a simplified check - would need NLP for thorough analysis
-          const ruleKeywords = rule.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-          const mentionsRule = ruleKeywords.some(kw => contentLower.includes(kw));
-          
+          const ruleKeywords = rule
+            .toLowerCase()
+            .split(/\s+/)
+            .filter((w) => w.length > 3);
+          const mentionsRule = ruleKeywords.some((kw) => contentLower.includes(kw));
+
           if (mentionsRule) {
             // Check if the rule is being violated
             const violatesRule = this.checkRuleText(content, rule, element.rules.constraints);
             if (violatesRule) {
-              violations.push(this.createViolation({
-                ruleId: undefined,
-                seriesId: element.seriesId,
-                violationType: 'world_rule',
-                description: `Content may violate world rule: "${rule}"`,
-                content: this.extractContext(content, contentLower.indexOf(ruleKeywords[0]!)),
-                severity: 'warning',
-              }));
+              violations.push(
+                this.createViolation({
+                  ruleId: undefined,
+                  seriesId: element.seriesId,
+                  violationType: 'world_rule',
+                  description: `Content may violate world rule: "${rule}"`,
+                  content: this.extractContext(content, contentLower.indexOf(ruleKeywords[0]!)),
+                  severity: 'warning',
+                })
+              );
             }
           }
         }
       }
 
       // Check element-specific canon rules
-      const elementRules = rules.filter(r =>
-        r.appliesToEntityIds.includes(elementId) ||
-        r.appliesToEntityType === element.elementType
+      const elementRules = rules.filter(
+        (r) =>
+          r.appliesToEntityIds.includes(elementId) || r.appliesToEntityType === element.elementType
       );
 
       for (const rule of elementRules) {
@@ -459,7 +461,7 @@ export class CanonEnforcer {
     bookNumber: number
   ): Promise<CanonViolation[]> {
     const violations: CanonViolation[] = [];
-    
+
     // Get timeline events
     for (const eventId of timelineRefs) {
       const { data: event } = await this.supabase
@@ -484,19 +486,22 @@ export class CanonEnforcer {
           if (content.toLowerCase().includes(futureEventLower)) {
             // Check if it's prophecy or foreshadowing
             const prophetic = ['prophesied', 'foretold', 'destined', 'vision', 'dream'];
-            const isProphetic = prophetic.some(p => 
-              content.toLowerCase().includes(p)
-            );
+            const isProphetic = prophetic.some((p) => content.toLowerCase().includes(p));
 
             if (!isProphetic) {
-              violations.push(this.createViolation({
-                ruleId: undefined,
-                seriesId: event.series_id,
-                violationType: 'timeline',
-                description: `Reference to future event "${futureEvent.event_name}" before it occurs`,
-                content: this.extractContext(content, content.toLowerCase().indexOf(futureEventLower)),
-                severity: 'error',
-              }));
+              violations.push(
+                this.createViolation({
+                  ruleId: undefined,
+                  seriesId: event.series_id,
+                  violationType: 'timeline',
+                  description: `Reference to future event "${futureEvent.event_name}" before it occurs`,
+                  content: this.extractContext(
+                    content,
+                    content.toLowerCase().indexOf(futureEventLower)
+                  ),
+                  severity: 'error',
+                })
+              );
             }
           }
         }
@@ -520,11 +525,13 @@ export class CanonEnforcer {
     for (const relId of relationshipIds) {
       const { data: rel } = await this.supabase
         .from('character_relationships')
-        .select(`
+        .select(
+          `
           *,
           character_a:persistent_characters!character_a_id(name),
           character_b:persistent_characters!character_b_id(name)
-        `)
+        `
+        )
         .eq('id', relId)
         .single();
 
@@ -548,14 +555,16 @@ export class CanonEnforcer {
 
         for (const pattern of friendlyPatterns) {
           if (contentLower.includes(pattern)) {
-            violations.push(this.createViolation({
-              ruleId: undefined,
-              seriesId: rel.series_id,
-              violationType: 'relationship',
-              description: `Characters ${rel.character_a?.name} and ${rel.character_b?.name} are enemies but are described acting friendly`,
-              content: this.extractContext(content, contentLower.indexOf(pattern)),
-              severity: 'warning',
-            }));
+            violations.push(
+              this.createViolation({
+                ruleId: undefined,
+                seriesId: rel.series_id,
+                violationType: 'relationship',
+                description: `Characters ${rel.character_a?.name} and ${rel.character_b?.name} are enemies but are described acting friendly`,
+                content: this.extractContext(content, contentLower.indexOf(pattern)),
+                severity: 'warning',
+              })
+            );
             break;
           }
         }
@@ -602,7 +611,7 @@ export class CanonEnforcer {
    * Record violations in the database
    */
   private async recordViolations(seriesId: string, violations: CanonViolation[]): Promise<void> {
-    const records = violations.map(v => ({
+    const records = violations.map((v) => ({
       rule_id: v.ruleId,
       series_id: seriesId,
       violation_type: v.violationType,
@@ -671,19 +680,17 @@ export class CanonEnforcer {
     }
   ): Promise<void> {
     // Create override record
-    await this.supabase
-      .from('canon_violations')
-      .insert({
-        rule_id: override.ruleId,
-        series_id: seriesId,
-        violation_type: 'intentional_override',
-        violation_description: override.overrideDescription,
-        is_intentional_override: true,
-        override_reason: override.reason,
-        resolution_status: 'overridden',
-        resolved_by: 'author',
-        resolved_at: new Date().toISOString(),
-      });
+    await this.supabase.from('canon_violations').insert({
+      rule_id: override.ruleId,
+      series_id: seriesId,
+      violation_type: 'intentional_override',
+      violation_description: override.overrideDescription,
+      is_intentional_override: true,
+      override_reason: override.reason,
+      resolution_status: 'overridden',
+      resolved_by: 'author',
+      resolved_at: new Date().toISOString(),
+    });
 
     // If there's a rule, deactivate or update it
     if (override.ruleId) {
@@ -707,13 +714,13 @@ export class CanonEnforcer {
     for (const existing of existingRules) {
       // Check for direct contradictions
       if (
-        newRule.ruleType === 'must' && existing.ruleType === 'must_not' ||
-        newRule.ruleType === 'must_not' && existing.ruleType === 'must'
+        (newRule.ruleType === 'must' && existing.ruleType === 'must_not') ||
+        (newRule.ruleType === 'must_not' && existing.ruleType === 'must')
       ) {
         // Check if they apply to the same entities
         const newEntities = new Set(newRule.appliesToEntityIds || []);
         const existingEntities = new Set(existing.appliesToEntityIds);
-        const overlap = [...newEntities].some(e => existingEntities.has(e));
+        const overlap = [...newEntities].some((e) => existingEntities.has(e));
 
         if (overlap || newRule.appliesToEntityType === existing.appliesToEntityType) {
           conflicts.push(existing);
@@ -772,9 +779,10 @@ export class CanonEnforcer {
     const nameLower = character.name.toLowerCase();
 
     // Common physical changes and their contradictions
-    if (event.eventDescription.toLowerCase().includes('lost') || 
-        event.eventDescription.toLowerCase().includes('missing')) {
-      
+    if (
+      event.eventDescription.toLowerCase().includes('lost') ||
+      event.eventDescription.toLowerCase().includes('missing')
+    ) {
       // Extract what was lost
       const lostParts = ['eye', 'arm', 'hand', 'leg', 'finger'];
       for (const part of lostParts) {
@@ -788,13 +796,15 @@ export class CanonEnforcer {
 
           for (const pattern of intactPatterns) {
             if (contentLower.includes(pattern)) {
-              violations.push(this.createViolation({
-                seriesId: character.seriesId!,
-                violationType: 'physical_continuity',
-                description: `${character.name} lost their ${part} but content suggests it's intact`,
-                content: this.extractContext(content, contentLower.indexOf(pattern)),
-                severity: event.canonLockLevel === 'immutable' ? 'critical' : 'error',
-              }));
+              violations.push(
+                this.createViolation({
+                  seriesId: character.seriesId!,
+                  violationType: 'physical_continuity',
+                  description: `${character.name} lost their ${part} but content suggests it's intact`,
+                  content: this.extractContext(content, contentLower.indexOf(pattern)),
+                  severity: event.canonLockLevel === 'immutable' ? 'critical' : 'error',
+                })
+              );
             }
           }
         }
@@ -889,11 +899,7 @@ export class CanonEnforcer {
     return null;
   }
 
-  private checkRuleText(
-    content: string,
-    rule: string,
-    constraints: string[]
-  ): boolean {
+  private checkRuleText(content: string, rule: string, constraints: string[]): boolean {
     // Simplified check - would need NLP for real implementation
     const ruleLower = rule.toLowerCase();
     const contentLower = content.toLowerCase();
@@ -914,7 +920,7 @@ export class CanonEnforcer {
 
   private extractForbiddenFromRule(ruleLower: string): string[] {
     const forbidden: string[] = [];
-    
+
     // Extract terms after "cannot", "must not", "never"
     const patterns = [
       /cannot\s+(\w+)/g,
@@ -1040,4 +1046,3 @@ export interface EnforcementResult {
 
 // Export singleton
 export const canonEnforcer = new CanonEnforcer();
-

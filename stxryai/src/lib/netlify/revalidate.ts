@@ -107,13 +107,10 @@ export function createRevalidationHandler(secret: string) {
           throw new Error(`Unknown revalidation type: ${type}`);
       }
 
-      return new Response(
-        JSON.stringify({ revalidated: true, type, id }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ revalidated: true, type, id }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } catch (error) {
       return new Response(
         JSON.stringify({
@@ -132,9 +129,7 @@ export function createRevalidationHandler(secret: string) {
  * Netlify background function helper.
  * Wraps a function to run as a Netlify background function.
  */
-export function createBackgroundHandler<T>(
-  handler: (payload: T) => Promise<void>
-) {
+export function createBackgroundHandler<T>(handler: (payload: T) => Promise<void>) {
   return async function backgroundHandler(request: Request) {
     try {
       const payload = await request.json();
@@ -145,13 +140,10 @@ export function createBackgroundHandler<T>(
         console.error('Background handler error:', error);
       });
 
-      return new Response(
-        JSON.stringify({ status: 'processing' }),
-        {
-          status: 202,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      return new Response(JSON.stringify({ status: 'processing' }), {
+        status: 202,
+        headers: { 'Content-Type': 'application/json' },
+      });
     } catch (error) {
       return new Response(
         JSON.stringify({

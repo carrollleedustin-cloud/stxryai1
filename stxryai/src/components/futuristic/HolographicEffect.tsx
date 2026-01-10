@@ -10,11 +10,11 @@ interface HolographicEffectProps {
   className?: string;
 }
 
-const HolographicEffect = ({ 
-  children, 
-  intensity = 1, 
+const HolographicEffect = ({
+  children,
+  intensity = 1,
   speed = 2,
-  className = '' 
+  className = '',
 }: HolographicEffectProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -39,10 +39,12 @@ const HolographicEffect = ({
     <div
       ref={ref}
       className={`relative holographic-wrapper ${className}`}
-      style={{
-        '--intensity': intensity,
-        '--speed': `${speed}s`,
-      } as React.CSSProperties}
+      style={
+        {
+          '--intensity': intensity,
+          '--speed': `${speed}s`,
+        } as React.CSSProperties
+      }
     >
       <div className="holographic-shimmer" />
       <div className="holographic-content">{children}</div>
@@ -51,4 +53,3 @@ const HolographicEffect = ({
 };
 
 export default HolographicEffect;
-

@@ -3,9 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Menu, X, Home, BookOpen, User, Settings, 
-  LogOut, LogIn, UserPlus, Sparkles, Compass 
+import {
+  Menu,
+  X,
+  Home,
+  BookOpen,
+  User,
+  Settings,
+  LogOut,
+  LogIn,
+  UserPlus,
+  Sparkles,
+  Compass,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { PrismPanel } from '@/components/ui/prism/PrismPanel';
@@ -25,7 +34,7 @@ const MobileNavigation = () => {
   // Prevent body scroll when menu is open
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    
+
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -111,7 +120,10 @@ const MobileNavigation = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed top-0 right-0 h-full w-80 max-w-[85vw] z-50 lg:hidden p-4"
             >
-              <PrismPanel tone="glass" className="h-full flex flex-col overflow-hidden !rounded-2xl border-white/10 shadow-2xl">
+              <PrismPanel
+                tone="glass"
+                className="h-full flex flex-col overflow-hidden !rounded-2xl border-white/10 shadow-2xl"
+              >
                 {/* Header */}
                 <div className="p-6 border-b border-white/5 relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-transparent pointer-events-none" />
@@ -121,7 +133,9 @@ const MobileNavigation = () => {
                         <Sparkles className="text-white" size={20} />
                       </div>
                       <div>
-                        <h2 className="font-bold text-lg text-white font-display tracking-tight">StxryAI</h2>
+                        <h2 className="font-bold text-lg text-white font-display tracking-tight">
+                          StxryAI
+                        </h2>
                         <p className="text-xs text-slate-400">Interactive Stories</p>
                       </div>
                     </div>
@@ -135,9 +149,7 @@ const MobileNavigation = () => {
                         <p className="text-sm font-medium truncate text-white">
                           {user.display_name || user.email}
                         </p>
-                        <p className="text-xs text-slate-400 truncate">
-                          {user.email}
-                        </p>
+                        <p className="text-xs text-slate-400 truncate">{user.email}</p>
                       </div>
                     </div>
                   )}
@@ -146,7 +158,7 @@ const MobileNavigation = () => {
                 {/* Navigation Items */}
                 <nav className="flex-1 overflow-y-auto scrollbar-modern p-4 space-y-2 relative z-10">
                   {navItems
-                    .filter(item => item.show)
+                    .filter((item) => item.show)
                     .map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname === item.path;
@@ -208,4 +220,3 @@ const MobileNavigation = () => {
 };
 
 export default MobileNavigation;
-

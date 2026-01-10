@@ -111,4 +111,3 @@ export const defaultMetadata: Metadata = createMetadata({
   title: defaultTitle,
   description: defaultDescription,
 });
-

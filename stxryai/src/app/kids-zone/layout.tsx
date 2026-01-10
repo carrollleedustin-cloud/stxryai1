@@ -28,19 +28,15 @@ export default function KidsZoneLayout({ children }: KidsZoneLayoutProps) {
     <div className="min-h-screen kids-theme">
       {/* Magical background */}
       <NebulaBackground variant="kids" particleCount={60} />
-      
+
       {/* Floating stars decoration */}
       <div className="floating-stars" />
-      
+
       {/* Main content */}
-      <main className="relative z-10 pb-32 pt-4">
-        {children}
-      </main>
-      
+      <main className="relative z-10 pb-32 pt-4">{children}</main>
+
       {/* Bottom navigation */}
       <MagicNav items={kidsNavItems} />
     </div>
   );
 }
-
-

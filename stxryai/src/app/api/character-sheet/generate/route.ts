@@ -117,15 +117,18 @@ export async function POST(request: NextRequest) {
     const birthData: BirthData = await request.json();
 
     // Validate required fields
-    if (!birthData.name || !birthData.birthDate || !birthData.birthTime || !birthData.birthCity || !birthData.birthCountry) {
-      return NextResponse.json(
-        { error: 'Missing required birth data fields' },
-        { status: 400 }
-      );
+    if (
+      !birthData.name ||
+      !birthData.birthDate ||
+      !birthData.birthTime ||
+      !birthData.birthCity ||
+      !birthData.birthCountry
+    ) {
+      return NextResponse.json({ error: 'Missing required birth data fields' }, { status: 400 });
     }
 
     // Format birth location
-    const birthLocation = birthData.birthState 
+    const birthLocation = birthData.birthState
       ? `${birthData.birthCity}, ${birthData.birthState}, ${birthData.birthCountry}`
       : `${birthData.birthCity}, ${birthData.birthCountry}`;
 
@@ -163,7 +166,10 @@ Please calculate the accurate astrological placements for this birth data and cr
       // Clean the response - remove any markdown code blocks if present
       let cleanedContent = response.content.trim();
       if (cleanedContent.startsWith('```')) {
-        cleanedContent = cleanedContent.replace(/```json?\n?/g, '').replace(/```$/g, '').trim();
+        cleanedContent = cleanedContent
+          .replace(/```json?\n?/g, '')
+          .replace(/```$/g, '')
+          .trim();
       }
       characterSheetData = JSON.parse(cleanedContent);
     } catch (parseError) {
@@ -199,4 +205,3 @@ Please calculate the accurate astrological placements for this birth data and cr
     );
   }
 }
-

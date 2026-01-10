@@ -3,7 +3,9 @@ import { z } from 'zod';
 // Accessibility Settings Validation Schema
 export const accessibilitySettingsSchema = z.object({
   fontSize: z.enum(['small', 'medium', 'large', 'extra-large']).default('medium'),
-  fontFamily: z.enum(['default', 'dyslexic', 'serif', 'sans-serif', 'monospace']).default('default'),
+  fontFamily: z
+    .enum(['default', 'dyslexic', 'serif', 'sans-serif', 'monospace'])
+    .default('default'),
   lineHeight: z.enum(['compact', 'normal', 'relaxed', 'loose']).default('normal'),
   letterSpacing: z.enum(['normal', 'wide', 'wider']).default('normal'),
   wordSpacing: z.enum(['normal', 'wide', 'wider']).default('normal'),

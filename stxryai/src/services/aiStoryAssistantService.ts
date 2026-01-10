@@ -11,7 +11,17 @@ export interface AIWritingSuggestion {
   userId: string;
   storyId?: string;
   chapterId?: string;
-  suggestionType: 'plot' | 'character' | 'dialogue' | 'description' | 'pacing' | 'tone' | 'grammar' | 'style' | 'continuity' | 'conflict';
+  suggestionType:
+    | 'plot'
+    | 'character'
+    | 'dialogue'
+    | 'description'
+    | 'pacing'
+    | 'tone'
+    | 'grammar'
+    | 'style'
+    | 'continuity'
+    | 'conflict';
   originalText?: string;
   suggestedText?: string;
   suggestionContext?: string;
@@ -56,7 +66,15 @@ export interface PlotDoctorAnalysis {
 export interface AIIdeaGeneration {
   id: string;
   userId: string;
-  generationType: 'story_concept' | 'character' | 'plot_twist' | 'world_building' | 'dialogue' | 'scene' | 'title' | 'synopsis';
+  generationType:
+    | 'story_concept'
+    | 'character'
+    | 'plot_twist'
+    | 'world_building'
+    | 'dialogue'
+    | 'scene'
+    | 'title'
+    | 'synopsis';
   prompt?: string;
   constraints: Record<string, any>;
   generatedIdeas: any[];
@@ -126,8 +144,17 @@ export class AIStoryAssistantService {
       suggestionTypes?: AIWritingSuggestion['suggestionType'][];
     }
   ): Promise<AIWritingSuggestion[]> {
-    const suggestionTypes = context.suggestionTypes || ['plot', 'character', 'dialogue', 'description', 'pacing', 'tone', 'style', 'continuity'];
-    
+    const suggestionTypes = context.suggestionTypes || [
+      'plot',
+      'character',
+      'dialogue',
+      'description',
+      'pacing',
+      'tone',
+      'style',
+      'continuity',
+    ];
+
     // Check if AI is configured
     if (!process.env.OPENAI_API_KEY && !process.env.ANTHROPIC_API_KEY) {
       console.warn('AI API key not configured - returning empty suggestions');
@@ -140,22 +167,24 @@ export class AIStoryAssistantService {
       try {
         const [characters, worldElements] = await Promise.all([
           this.narrativeEngine.getSeriesCharacters(context.seriesId),
-          this.narrativeEngine.getWorldElements(context.seriesId)
+          this.narrativeEngine.getWorldElements(context.seriesId),
         ]);
 
         if (characters.length > 0) {
-          narrativeContext += `\nCharacters in this series:\n${characters.map(c => `- ${c.name}: ${c.shortDescription}`).join('\n')}\n`;
+          narrativeContext += `\nCharacters in this series:\n${characters.map((c) => `- ${c.name}: ${c.shortDescription}`).join('\n')}\n`;
         }
 
         if (worldElements.length > 0) {
-          narrativeContext += `\nWorld Building Elements:\n${worldElements.map(w => `- ${w.name} (${w.elementType}): ${w.shortDescription}`).join('\n')}\n`;
-          
-          const locations = worldElements.filter(w => w.elementType === 'location');
+          narrativeContext += `\nWorld Building Elements:\n${worldElements.map((w) => `- ${w.name} (${w.elementType}): ${w.shortDescription}`).join('\n')}\n`;
+
+          const locations = worldElements.filter((w) => w.elementType === 'location');
           if (locations.length > 0) {
-            const locationDetails = await Promise.all(locations.map(l => this.narrativeEngine.getLocationDetails(l.id)));
+            const locationDetails = await Promise.all(
+              locations.map((l) => this.narrativeEngine.getLocationDetails(l.id))
+            );
             const validDetails = locationDetails.filter((d): d is any => d !== null);
             if (validDetails.length > 0) {
-              narrativeContext += `\nLocation Specifics:\n${validDetails.map(d => `- Terrain: ${d.terrain}, Climate: ${d.climate}`).join('\n')}\n`;
+              narrativeContext += `\nLocation Specifics:\n${validDetails.map((d) => `- Terrain: ${d.terrain}, Climate: ${d.climate}`).join('\n')}\n`;
             }
           }
         }
@@ -163,7 +192,7 @@ export class AIStoryAssistantService {
         // Add Active Ripples to context
         const ripples = await this.narrativeEngine.getActiveRipples(context.seriesId);
         if (ripples.length > 0) {
-          narrativeContext += `\nActive World Ripples (Long-term consequences):\n${ripples.map(r => `- ${r.title} (Intensity: ${r.intensity}): ${r.description}`).join('\n')}\n`;
+          narrativeContext += `\nActive World Ripples (Long-term consequences):\n${ripples.map((r) => `- ${r.title} (Intensity: ${r.intensity}): ${r.description}`).join('\n')}\n`;
         }
       } catch (e) {
         console.error('Error fetching narrative context:', e);
@@ -173,7 +202,7 @@ export class AIStoryAssistantService {
     try {
       // Import AI client
       const { generateCompletion } = await import('@/lib/ai/client');
-      
+
       const systemPrompt = `Analyze text and provide actionable suggestions. 
 Focus: ${suggestionTypes.join(', ')}. 
 ${narrativeContext ? `Series Context: ${narrativeContext}` : ''}
@@ -200,14 +229,16 @@ Return ONLY JSON array of objects: [{suggestionType, originalText, suggestedText
           parsedSuggestions = JSON.parse(jsonMatch[0]);
         } else {
           // Fallback: create suggestions from text analysis
-          parsedSuggestions = [{
-            suggestionType: 'style',
-            originalText: content.substring(0, 100),
-            suggestedText: content.substring(0, 100),
-            suggestionContext: 'AI analysis',
-            confidenceScore: 0.7,
-            reasoning: response.content.substring(0, 200),
-          }];
+          parsedSuggestions = [
+            {
+              suggestionType: 'style',
+              originalText: content.substring(0, 100),
+              suggestedText: content.substring(0, 100),
+              suggestionContext: 'AI analysis',
+              confidenceScore: 0.7,
+              reasoning: response.content.substring(0, 200),
+            },
+          ];
         }
       } catch (parseError) {
         console.error('Failed to parse AI suggestions:', parseError);
@@ -216,14 +247,16 @@ Return ONLY JSON array of objects: [{suggestionType, originalText, suggestedText
       }
 
       // Map to our format
-      const suggestions: Partial<AIWritingSuggestion>[] = parsedSuggestions.map((s: any, index: number) => ({
-        suggestionType: s.suggestionType || suggestionTypes[index % suggestionTypes.length],
-        originalText: s.originalText || content.substring(0, 100),
-        suggestedText: s.suggestedText || s.suggestion,
-        suggestionContext: s.suggestionContext || s.context || 'AI-generated suggestion',
-        confidenceScore: s.confidenceScore || 0.7,
-        reasoning: s.reasoning || s.explanation || 'AI analysis',
-      }));
+      const suggestions: Partial<AIWritingSuggestion>[] = parsedSuggestions.map(
+        (s: any, index: number) => ({
+          suggestionType: s.suggestionType || suggestionTypes[index % suggestionTypes.length],
+          originalText: s.originalText || content.substring(0, 100),
+          suggestedText: s.suggestedText || s.suggestion,
+          suggestionContext: s.suggestionContext || s.context || 'AI-generated suggestion',
+          confidenceScore: s.confidenceScore || 0.7,
+          reasoning: s.reasoning || s.explanation || 'AI analysis',
+        })
+      );
 
       const { data, error } = await this.supabase
         .from('ai_writing_suggestions')
@@ -336,7 +369,7 @@ Return ONLY JSON array of objects: [{suggestionType, originalText, suggestedText
     try {
       // Import AI client
       const { generateCompletion } = await import('@/lib/ai/client');
-      
+
       const systemPrompt = `Narrative analyst. Analyze for issues, inconsistencies, pacing.
 Return ONLY JSON:
 {
@@ -396,9 +429,13 @@ Return ONLY JSON:
           strength_count: (analysisResult.strengths || []).length,
           overall_score: analysisResult.overallScore,
           overall_feedback: analysisResult.overallFeedback,
-          severity_level: (analysisResult.issues || []).some((i: any) => i.severity === 'critical' || i.severity === 'high') 
-            ? 'high' 
-            : (analysisResult.issues || []).length > 0 ? 'medium' : 'low',
+          severity_level: (analysisResult.issues || []).some(
+            (i: any) => i.severity === 'critical' || i.severity === 'high'
+          )
+            ? 'high'
+            : (analysisResult.issues || []).length > 0
+              ? 'medium'
+              : 'low',
           ai_model: 'gpt-4o',
           analysis_parameters: {},
           tokens_used: response.usage.totalTokens,
@@ -417,10 +454,7 @@ Return ONLY JSON:
   /**
    * Get Plot Doctor analyses for a story
    */
-  async getPlotAnalyses(
-    userId: string,
-    storyId: string
-  ): Promise<PlotDoctorAnalysis[]> {
+  async getPlotAnalyses(userId: string, storyId: string): Promise<PlotDoctorAnalysis[]> {
     const { data, error } = await this.supabase
       .from('plot_doctor_analyses')
       .select('*')
@@ -453,7 +487,7 @@ Return ONLY JSON:
     try {
       // Import AI client
       const { generateCompletion } = await import('@/lib/ai/client');
-      
+
       const typePrompts: Record<string, string> = {
         story_concept: 'Generate creative story concepts',
         character: 'Generate interesting character ideas',
@@ -489,7 +523,7 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
           generatedIdeas = JSON.parse(jsonMatch[0]);
         } else {
           // Fallback: split by lines or create single idea
-          const lines = response.content.split('\n').filter(l => l.trim());
+          const lines = response.content.split('\n').filter((l) => l.trim());
           generatedIdeas = lines.slice(0, 5).map((line, i) => ({
             title: `Idea ${i + 1}`,
             description: line.trim(),
@@ -500,12 +534,14 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
       } catch (parseError) {
         console.error('Failed to parse idea generation:', parseError);
         // Create fallback ideas
-        generatedIdeas = [{
-          title: 'Generated Idea',
-          description: response.content.substring(0, 500),
-          keyElements: [],
-          potentialUseCases: [],
-        }];
+        generatedIdeas = [
+          {
+            title: 'Generated Idea',
+            description: response.content.substring(0, 500),
+            keyElements: [],
+            potentialUseCases: [],
+          },
+        ];
       }
 
       const { data, error } = await this.supabase
@@ -560,11 +596,7 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
   /**
    * Select and use an idea
    */
-  async useIdea(
-    ideaId: string,
-    ideaIndex: number,
-    storyId?: string
-  ): Promise<AIIdeaGeneration> {
+  async useIdea(ideaId: string, ideaIndex: number, storyId?: string): Promise<AIIdeaGeneration> {
     const idea = await this.getIdea(ideaId);
     if (!idea) throw new Error('Idea not found');
 
@@ -703,17 +735,17 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
         'gpt-4o-mini',
         [
           { role: 'system', content: 'You are a master puzzle designer for interactive stories.' },
-          { role: 'user', content: prompt }
+          { role: 'user', content: prompt },
         ],
         { temperature: 0.7, response_format: { type: 'json_object' } }
       );
 
       const data = JSON.parse(completion.message.content || '{}');
-      
+
       return {
         id: `puzzle-${Date.now()}`,
         ...data,
-        difficulty
+        difficulty,
       };
     } catch (error) {
       console.error('Error generating puzzle:', error);
@@ -725,7 +757,7 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
         answer: 'A keyboard',
         hint: 'You use it to write stories.',
         rewardXP: 50,
-        difficulty: 'easy'
+        difficulty: 'easy',
       };
     }
   }
@@ -832,4 +864,3 @@ Return ONLY JSON array of objects: [{title, description, keyElements[], potentia
 }
 
 export const aiStoryAssistantService = new AIStoryAssistantService();
-

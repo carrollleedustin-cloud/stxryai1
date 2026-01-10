@@ -55,7 +55,8 @@ export default function ModernCard({
 
       case 'holographic':
         return {
-          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1), rgba(251, 191, 36, 0.1))',
+          background:
+            'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1), rgba(251, 191, 36, 0.1))',
           backdropFilter: 'blur(20px)',
           border: '2px solid transparent',
           backgroundClip: 'padding-box',

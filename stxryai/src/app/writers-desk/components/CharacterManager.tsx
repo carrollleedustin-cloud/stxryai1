@@ -117,28 +117,51 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
           seriesId,
           authorId: user.id,
           name: createForm.name,
-          aliases: createForm.aliases.split(',').map(a => a.trim()).filter(Boolean),
+          aliases: createForm.aliases
+            .split(',')
+            .map((a) => a.trim())
+            .filter(Boolean),
           title: createForm.title || undefined,
           characterRole: createForm.characterRole,
           backstory: createForm.backstory || undefined,
           motivation: createForm.motivation || undefined,
           fatalFlaw: createForm.fatalFlaw || undefined,
-          ageAtSeriesStart: createForm.ageAtSeriesStart ? parseInt(createForm.ageAtSeriesStart) : undefined,
+          ageAtSeriesStart: createForm.ageAtSeriesStart
+            ? parseInt(createForm.ageAtSeriesStart)
+            : undefined,
           dialogueStyle: createForm.dialogueStyle || undefined,
           corePersonality: {
-            traits: createForm.traits.split(',').map(t => t.trim()).filter(Boolean),
-            values: createForm.values.split(',').map(v => v.trim()).filter(Boolean),
-            fears: createForm.fears.split(',').map(f => f.trim()).filter(Boolean),
-            desires: createForm.desires.split(',').map(d => d.trim()).filter(Boolean),
+            traits: createForm.traits
+              .split(',')
+              .map((t) => t.trim())
+              .filter(Boolean),
+            values: createForm.values
+              .split(',')
+              .map((v) => v.trim())
+              .filter(Boolean),
+            fears: createForm.fears
+              .split(',')
+              .map((f) => f.trim())
+              .filter(Boolean),
+            desires: createForm.desires
+              .split(',')
+              .map((d) => d.trim())
+              .filter(Boolean),
           },
           physicalDescription: {
             height: createForm.height || undefined,
             build: createForm.build || undefined,
             hairColor: createForm.hairColor || undefined,
             eyeColor: createForm.eyeColor || undefined,
-            distinguishingFeatures: createForm.distinguishingFeatures.split(',').map(f => f.trim()).filter(Boolean),
+            distinguishingFeatures: createForm.distinguishingFeatures
+              .split(',')
+              .map((f) => f.trim())
+              .filter(Boolean),
           },
-          speechPatterns: createForm.speechPatterns.split(',').map(s => s.trim()).filter(Boolean),
+          speechPatterns: createForm.speechPatterns
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
         }),
       });
 
@@ -146,11 +169,25 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
         fetchCharacters();
         setViewMode('grid');
         setCreateForm({
-          name: '', aliases: '', title: '', characterRole: 'supporting',
-          backstory: '', motivation: '', fatalFlaw: '', ageAtSeriesStart: '',
-          dialogueStyle: '', traits: '', values: '', fears: '', desires: '',
-          height: '', build: '', hairColor: '', eyeColor: '',
-          distinguishingFeatures: '', speechPatterns: '',
+          name: '',
+          aliases: '',
+          title: '',
+          characterRole: 'supporting',
+          backstory: '',
+          motivation: '',
+          fatalFlaw: '',
+          ageAtSeriesStart: '',
+          dialogueStyle: '',
+          traits: '',
+          values: '',
+          fears: '',
+          desires: '',
+          height: '',
+          build: '',
+          hairColor: '',
+          eyeColor: '',
+          distinguishingFeatures: '',
+          speechPatterns: '',
         });
       }
     } catch (error) {
@@ -158,14 +195,16 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
     }
   };
 
-  const filteredCharacters = characters.filter(c => {
+  const filteredCharacters = characters.filter((c) => {
     if (filterRole !== 'all' && c.role !== filterRole) return false;
     if (searchTerm && !c.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
 
-  const getRoleInfo = (role: string) => CHARACTER_ROLES.find(r => r.id === role) || CHARACTER_ROLES[3];
-  const getStatusInfo = (status: string) => CHARACTER_STATUSES.find(s => s.id === status) || CHARACTER_STATUSES[0];
+  const getRoleInfo = (role: string) =>
+    CHARACTER_ROLES.find((r) => r.id === role) || CHARACTER_ROLES[3];
+  const getStatusInfo = (status: string) =>
+    CHARACTER_STATUSES.find((s) => s.id === status) || CHARACTER_STATUSES[0];
 
   if (loading) {
     return (
@@ -209,8 +248,10 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
             className="px-4 py-2 bg-void-depth border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
           >
             <option value="all">All Roles</option>
-            {CHARACTER_ROLES.map(role => (
-              <option key={role.id} value={role.id}>{role.name}</option>
+            {CHARACTER_ROLES.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
             ))}
           </select>
           <div className="flex gap-2 ml-auto">
@@ -254,7 +295,7 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
               {/* Basic Info */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-text-secondary">Basic Information</h4>
-                
+
                 <div>
                   <label className="block text-sm text-text-tertiary mb-1">Name *</label>
                   <input
@@ -267,7 +308,9 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Aliases (comma-separated)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Aliases (comma-separated)
+                  </label>
                   <input
                     type="text"
                     value={createForm.aliases}
@@ -289,11 +332,15 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Age at Series Start</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Age at Series Start
+                    </label>
                     <input
                       type="number"
                       value={createForm.ageAtSeriesStart}
-                      onChange={(e) => setCreateForm({ ...createForm, ageAtSeriesStart: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, ageAtSeriesStart: e.target.value })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     />
                   </div>
@@ -303,11 +350,15 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                   <label className="block text-sm text-text-tertiary mb-1">Role</label>
                   <select
                     value={createForm.characterRole}
-                    onChange={(e) => setCreateForm({ ...createForm, characterRole: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, characterRole: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                   >
-                    {CHARACTER_ROLES.map(role => (
-                      <option key={role.id} value={role.id}>{role.icon} {role.name}</option>
+                    {CHARACTER_ROLES.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.icon} {role.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -316,9 +367,11 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
               {/* Personality */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-text-secondary">Personality & Psychology</h4>
-                
+
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Traits (comma-separated)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Traits (comma-separated)
+                  </label>
                   <input
                     type="text"
                     value={createForm.traits}
@@ -376,7 +429,7 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
               {/* Physical & Voice */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-text-secondary">Physical Description</h4>
-                
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm text-text-tertiary mb-1">Height</label>
@@ -424,11 +477,15 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Distinguishing Features</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Distinguishing Features
+                  </label>
                   <input
                     type="text"
                     value={createForm.distinguishingFeatures}
-                    onChange={(e) => setCreateForm({ ...createForm, distinguishingFeatures: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, distinguishingFeatures: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     placeholder="scar on left cheek, silver ring"
                   />
@@ -438,13 +495,15 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
               {/* Voice & Narrative */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-text-secondary">Voice & Background</h4>
-                
+
                 <div>
                   <label className="block text-sm text-text-tertiary mb-1">Dialogue Style</label>
                   <input
                     type="text"
                     value={createForm.dialogueStyle}
-                    onChange={(e) => setCreateForm({ ...createForm, dialogueStyle: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, dialogueStyle: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     placeholder="formal, witty, terse"
                   />
@@ -455,7 +514,9 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                   <input
                     type="text"
                     value={createForm.speechPatterns}
-                    onChange={(e) => setCreateForm({ ...createForm, speechPatterns: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, speechPatterns: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     placeholder="uses archaic words, speaks slowly"
                   />
@@ -524,7 +585,7 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
               filteredCharacters.map((character, index) => {
                 const roleInfo = getRoleInfo(character.role);
                 const statusInfo = getStatusInfo(character.status);
-                
+
                 return (
                   <motion.div
                     key={character.id}
@@ -543,23 +604,31 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-text-primary group-hover:text-spectral-cyan transition-colors truncate">
-                          {character.title ? `${character.title} ` : ''}{character.name}
+                          {character.title ? `${character.title} ` : ''}
+                          {character.name}
                         </h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className={`text-xs px-2 py-0.5 rounded-full bg-${roleInfo.color}/20 text-${roleInfo.color}`}>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full bg-${roleInfo.color}/20 text-${roleInfo.color}`}
+                          >
                             {roleInfo.name}
                           </span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full bg-${statusInfo.color}/20 text-${statusInfo.color}`}>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full bg-${statusInfo.color}/20 text-${statusInfo.color}`}
+                          >
                             {statusInfo.name}
                           </span>
                         </div>
                       </div>
                     </div>
-                    
+
                     {character.corePersonality.traits.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-1">
                         {character.corePersonality.traits.slice(0, 3).map((trait) => (
-                          <span key={trait} className="text-xs px-2 py-0.5 rounded bg-void-mist text-text-tertiary">
+                          <span
+                            key={trait}
+                            className="text-xs px-2 py-0.5 rounded bg-void-mist text-text-tertiary"
+                          >
                             {trait}
                           </span>
                         ))}
@@ -598,12 +667,17 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-text-primary">
-                    {selectedCharacter.title ? `${selectedCharacter.title} ` : ''}{selectedCharacter.name}
+                    {selectedCharacter.title ? `${selectedCharacter.title} ` : ''}
+                    {selectedCharacter.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm text-text-secondary">{getRoleInfo(selectedCharacter.role).name}</span>
+                    <span className="text-sm text-text-secondary">
+                      {getRoleInfo(selectedCharacter.role).name}
+                    </span>
                     <span className="text-text-tertiary">•</span>
-                    <span className={`text-sm text-${getStatusInfo(selectedCharacter.status).color}`}>
+                    <span
+                      className={`text-sm text-${getStatusInfo(selectedCharacter.status).color}`}
+                    >
                       {getStatusInfo(selectedCharacter.status).name}
                     </span>
                   </div>
@@ -623,10 +697,15 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-2">Personality Traits</h4>
+                  <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                    Personality Traits
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedCharacter.corePersonality.traits.map((trait) => (
-                      <span key={trait} className="px-3 py-1 rounded-full bg-spectral-cyan/10 text-spectral-cyan text-sm">
+                      <span
+                        key={trait}
+                        className="px-3 py-1 rounded-full bg-spectral-cyan/10 text-spectral-cyan text-sm"
+                      >
                         {trait}
                       </span>
                     ))}
@@ -637,7 +716,10 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                   <h4 className="text-sm font-semibold text-text-secondary mb-2">Values</h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedCharacter.corePersonality.values.map((value) => (
-                      <span key={value} className="px-3 py-1 rounded-full bg-spectral-violet/10 text-spectral-violet text-sm">
+                      <span
+                        key={value}
+                        className="px-3 py-1 rounded-full bg-spectral-violet/10 text-spectral-violet text-sm"
+                      >
                         {value}
                       </span>
                     ))}
@@ -645,7 +727,9 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
                 </div>
 
                 <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-2">Fears & Desires</h4>
+                  <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                    Fears & Desires
+                  </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <span className="text-xs text-text-tertiary">Fears:</span>
@@ -669,44 +753,66 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
 
               <div className="space-y-4">
                 <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-2">Physical Description</h4>
+                  <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                    Physical Description
+                  </h4>
                   <div className="text-sm text-text-secondary space-y-1">
                     {selectedCharacter.physicalDescription.height && (
-                      <p><span className="text-text-tertiary">Height:</span> {selectedCharacter.physicalDescription.height}</p>
+                      <p>
+                        <span className="text-text-tertiary">Height:</span>{' '}
+                        {selectedCharacter.physicalDescription.height}
+                      </p>
                     )}
                     {selectedCharacter.physicalDescription.build && (
-                      <p><span className="text-text-tertiary">Build:</span> {selectedCharacter.physicalDescription.build}</p>
+                      <p>
+                        <span className="text-text-tertiary">Build:</span>{' '}
+                        {selectedCharacter.physicalDescription.build}
+                      </p>
                     )}
                     {selectedCharacter.physicalDescription.hairColor && (
-                      <p><span className="text-text-tertiary">Hair:</span> {selectedCharacter.physicalDescription.hairColor}</p>
+                      <p>
+                        <span className="text-text-tertiary">Hair:</span>{' '}
+                        {selectedCharacter.physicalDescription.hairColor}
+                      </p>
                     )}
                     {selectedCharacter.physicalDescription.eyeColor && (
-                      <p><span className="text-text-tertiary">Eyes:</span> {selectedCharacter.physicalDescription.eyeColor}</p>
+                      <p>
+                        <span className="text-text-tertiary">Eyes:</span>{' '}
+                        {selectedCharacter.physicalDescription.eyeColor}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {selectedCharacter.physicalDescription.distinguishingFeatures.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Distinguishing Features</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Distinguishing Features
+                    </h4>
                     <ul className="text-sm text-text-secondary">
-                      {selectedCharacter.physicalDescription.distinguishingFeatures.map((feature) => (
-                        <li key={feature}>• {feature}</li>
-                      ))}
+                      {selectedCharacter.physicalDescription.distinguishingFeatures.map(
+                        (feature) => (
+                          <li key={feature}>• {feature}</li>
+                        )
+                      )}
                     </ul>
                   </div>
                 )}
 
                 {selectedCharacter.dialogueStyle && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Dialogue Style</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Dialogue Style
+                    </h4>
                     <p className="text-sm text-text-secondary">{selectedCharacter.dialogueStyle}</p>
                   </div>
                 )}
 
                 {selectedCharacter.speechPatterns.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Speech Patterns</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Speech Patterns
+                    </h4>
                     <ul className="text-sm text-text-secondary">
                       {selectedCharacter.speechPatterns.map((pattern) => (
                         <li key={pattern}>• {pattern}</li>
@@ -739,4 +845,3 @@ export default function CharacterManager({ seriesId, seriesTitle }: CharacterMan
     </div>
   );
 }
-

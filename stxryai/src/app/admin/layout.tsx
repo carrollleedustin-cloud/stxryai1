@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 /**
  * Admin Layout - Client-side authorization wrapper
- * 
+ *
  * Note: Server-side authorization is handled in middleware.ts
  * This provides a secondary client-side check and loading state.
  */
@@ -18,10 +18,12 @@ interface AdminProfile {
 
 function isAuthorized(profile: AdminProfile | null): boolean {
   if (!profile) return false;
-  return profile.is_admin === true || 
-         profile.role === 'admin' || 
-         profile.role === 'moderator' ||
-         profile.role === 'owner';
+  return (
+    profile.is_admin === true ||
+    profile.role === 'admin' ||
+    profile.role === 'moderator' ||
+    profile.role === 'owner'
+  );
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

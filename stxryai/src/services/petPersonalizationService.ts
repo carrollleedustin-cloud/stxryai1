@@ -33,7 +33,7 @@ export async function analyzeReadingPatterns(userId: string): Promise<ReadingPat
         .eq('user_id', userId)
         .order('last_read_at', { ascending: false })
         .limit(100),
-      
+
       // Activity logs
       supabase
         .from('user_activity')
@@ -41,7 +41,7 @@ export async function analyzeReadingPatterns(userId: string): Promise<ReadingPat
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(200),
-      
+
       // Stories read
       supabase
         .from('user_progress')
@@ -55,10 +55,14 @@ export async function analyzeReadingPatterns(userId: string): Promise<ReadingPat
     const completedStories = storiesData.data || [];
 
     // Calculate reading speed
-    const totalWords = completedStories.reduce((sum: number, p: any) => 
-      sum + (p.stories?.word_count || 0), 0);
-    const totalMinutes = progress.reduce((sum: number, p: any) => 
-      sum + (p.reading_time_minutes || 0), 0);
+    const totalWords = completedStories.reduce(
+      (sum: number, p: any) => sum + (p.stories?.word_count || 0),
+      0
+    );
+    const totalMinutes = progress.reduce(
+      (sum: number, p: any) => sum + (p.reading_time_minutes || 0),
+      0
+    );
     const averageReadingSpeed = totalMinutes > 0 ? totalWords / totalMinutes : 200;
 
     // Determine preferred time of day
@@ -70,18 +74,24 @@ export async function analyzeReadingPatterns(userId: string): Promise<ReadingPat
       else if (hour >= 17 && hour < 22) hourCounts.evening++;
       else hourCounts.night++;
     });
-    const preferredTimeOfDay = Object.entries(hourCounts)
-      .sort(([, a], [, b]) => b - a)[0]?.[0] as ReadingPattern['preferredTimeOfDay'] || 'afternoon';
+    const preferredTimeOfDay =
+      (Object.entries(hourCounts).sort(
+        ([, a], [, b]) => b - a
+      )[0]?.[0] as ReadingPattern['preferredTimeOfDay']) || 'afternoon';
 
     // Determine reading frequency
     const daysWithActivity = new Set(
       activities.map((a: any) => new Date(a.created_at).toDateString())
     ).size;
-    const totalDays = activities.length > 0 
-      ? Math.ceil((Date.now() - new Date(activities[activities.length - 1].created_at).getTime()) / (1000 * 60 * 60 * 24))
-      : 1;
+    const totalDays =
+      activities.length > 0
+        ? Math.ceil(
+            (Date.now() - new Date(activities[activities.length - 1].created_at).getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
+        : 1;
     const activityRatio = daysWithActivity / Math.max(totalDays, 1);
-    
+
     let readingFrequency: ReadingPattern['readingFrequency'] = 'sporadic';
     if (activityRatio > 0.7) readingFrequency = 'consistent';
     else if (activityRatio < 0.3 && activities.length > 10) readingFrequency = 'binge';
@@ -101,28 +111,32 @@ export async function analyzeReadingPatterns(userId: string): Promise<ReadingPat
     const sessionLengths = progress
       .map((p: any) => p.reading_time_minutes)
       .filter((m: number) => m > 0);
-    const averageSessionLength = sessionLengths.length > 0
-      ? sessionLengths.reduce((a: number, b: number) => a + b, 0) / sessionLengths.length
-      : 30;
+    const averageSessionLength =
+      sessionLengths.length > 0
+        ? sessionLengths.reduce((a: number, b: number) => a + b, 0) / sessionLengths.length
+        : 30;
 
     // Story length preference
     const wordCounts = completedStories.map((p: any) => p.stories?.word_count || 0);
-    const avgWordCount = wordCounts.length > 0
-      ? wordCounts.reduce((a: number, b: number) => a + b, 0) / wordCounts.length
-      : 0;
+    const avgWordCount =
+      wordCounts.length > 0
+        ? wordCounts.reduce((a: number, b: number) => a + b, 0) / wordCounts.length
+        : 0;
     const prefersLongStories = avgWordCount > 50000;
     const prefersShortStories = avgWordCount < 10000;
 
     // Genre exploration
-    const uniqueGenres = new Set(completedStories.map((p: any) => p.stories?.genre).filter(Boolean));
+    const uniqueGenres = new Set(
+      completedStories.map((p: any) => p.stories?.genre).filter(Boolean)
+    );
     const exploresManyGenres = uniqueGenres.size >= 5;
     const sticksToGenres = uniqueGenres.size <= 2 && completedStories.length > 5;
 
     // Interaction frequency
-    const interactions = activities.filter((a: any) => 
-      a.activity_type.includes('interaction') || a.activity_type.includes('pet')
+    const interactions = activities.filter(
+      (a: any) => a.activity_type.includes('interaction') || a.activity_type.includes('pet')
     ).length;
-    const interactionFrequency: ReadingPattern['interactionFrequency'] = 
+    const interactionFrequency: ReadingPattern['interactionFrequency'] =
       interactions > 50 ? 'high' : interactions > 20 ? 'medium' : 'low';
 
     return {
@@ -180,7 +194,7 @@ export function updateTraitsFromPatterns(
 
     const topGenre = patterns.favoriteGenres[0];
     const genreColor = genreColors[topGenre.toLowerCase()] || genreColors.fantasy;
-    
+
     // Blend with existing colors (70% existing, 30% genre influence)
     newTraits.primaryColor = blendColors(currentTraits.primaryColor, genreColor.primary, 0.3);
     newTraits.secondaryColor = blendColors(currentTraits.secondaryColor, genreColor.secondary, 0.3);
@@ -203,7 +217,8 @@ export function updateTraitsFromPatterns(
     newTraits.particleType = newTraits.particleType === 'none' ? 'stars' : newTraits.particleType;
     newTraits.glow = Math.min(100, newTraits.glow + 10);
   } else if (patterns.preferredTimeOfDay === 'morning') {
-    newTraits.particleType = newTraits.particleType === 'none' ? 'sparkles' : newTraits.particleType;
+    newTraits.particleType =
+      newTraits.particleType === 'none' ? 'sparkles' : newTraits.particleType;
   }
 
   // Reading frequency affects size and roundness
@@ -240,14 +255,12 @@ export function updateTraitsFromPatterns(
 /**
  * Calculate pet mood based on recent activity
  */
-export function calculateDynamicMood(
-  pet: StoryPet,
-  patterns: ReadingPattern
-): PetMood {
+export function calculateDynamicMood(pet: StoryPet, patterns: ReadingPattern): PetMood {
   const { stats, lastFed, lastInteraction } = pet;
-  
+
   // Time since last interaction
-  const hoursSinceInteraction = (Date.now() - new Date(lastInteraction).getTime()) / (1000 * 60 * 60);
+  const hoursSinceInteraction =
+    (Date.now() - new Date(lastInteraction).getTime()) / (1000 * 60 * 60);
   const hoursSinceFed = (Date.now() - new Date(lastFed).getTime()) / (1000 * 60 * 60);
 
   // Recent activity
@@ -261,7 +274,7 @@ export function calculateDynamicMood(
   if (stats.energy < 30) return 'sleepy';
   if (stats.happiness < 40) return 'sad';
   if (patterns.readingFrequency === 'binge' && recentActivity > 0.5) return 'excited';
-  
+
   return 'content';
 }
 
@@ -271,20 +284,20 @@ export function calculateDynamicMood(
 function blendColors(color1: string, color2: string, ratio: number): string {
   const hex1 = color1.replace('#', '');
   const hex2 = color2.replace('#', '');
-  
+
   const r1 = parseInt(hex1.substr(0, 2), 16);
   const g1 = parseInt(hex1.substr(2, 2), 16);
   const b1 = parseInt(hex1.substr(4, 2), 16);
-  
+
   const r2 = parseInt(hex2.substr(0, 2), 16);
   const g2 = parseInt(hex2.substr(2, 2), 16);
   const b2 = parseInt(hex2.substr(4, 2), 16);
-  
+
   const r = Math.round(r1 * (1 - ratio) + r2 * ratio);
   const g = Math.round(g1 * (1 - ratio) + g2 * ratio);
   const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
-  
-  return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+
+  return `#${[r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
 }
 
 /**
@@ -303,4 +316,3 @@ export function getVisualEffects(patterns: ReadingPattern): {
     colorShift: patterns.exploresManyGenres ? 0.2 : 0,
   };
 }
-

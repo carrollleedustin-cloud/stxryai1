@@ -87,7 +87,9 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
         ruleType: createForm.ruleType,
         lockLevel: createForm.lockLevel,
         appliesFromBook: createForm.appliesFromBook,
-        appliesUntilBook: createForm.appliesUntilBook ? parseInt(createForm.appliesUntilBook) : undefined,
+        appliesUntilBook: createForm.appliesUntilBook
+          ? parseInt(createForm.appliesUntilBook)
+          : undefined,
         violationMessage: createForm.violationMessage || undefined,
         validExamples: createForm.validExamples.split('\n').filter(Boolean),
         invalidExamples: createForm.invalidExamples.split('\n').filter(Boolean),
@@ -112,23 +114,32 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
     }
   };
 
-  const getCategoryInfo = (category: string) => RULE_CATEGORIES.find(c => c.id === category) || RULE_CATEGORIES[0];
-  const getTypeInfo = (type: string) => RULE_TYPES.find(t => t.id === type) || RULE_TYPES[0];
-  const getLockInfo = (level: CanonLockLevel) => LOCK_LEVELS.find(l => l.id === level) || LOCK_LEVELS[2];
+  const getCategoryInfo = (category: string) =>
+    RULE_CATEGORIES.find((c) => c.id === category) || RULE_CATEGORIES[0];
+  const getTypeInfo = (type: string) => RULE_TYPES.find((t) => t.id === type) || RULE_TYPES[0];
+  const getLockInfo = (level: CanonLockLevel) =>
+    LOCK_LEVELS.find((l) => l.id === level) || LOCK_LEVELS[2];
 
-  const filteredRules = rules.filter(r => {
+  const filteredRules = rules.filter((r) => {
     if (filterCategory !== 'all' && r.ruleCategory !== filterCategory) return false;
-    if (searchTerm && !r.ruleName.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !r.ruleDescription.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (
+      searchTerm &&
+      !r.ruleName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !r.ruleDescription.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+      return false;
     return true;
   });
 
-  const groupedRules = filteredRules.reduce((acc, rule) => {
-    const cat = rule.ruleCategory;
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(rule);
-    return acc;
-  }, {} as Record<string, CanonRule[]>);
+  const groupedRules = filteredRules.reduce(
+    (acc, rule) => {
+      const cat = rule.ruleCategory;
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(rule);
+      return acc;
+    },
+    {} as Record<string, CanonRule[]>
+  );
 
   if (loading) {
     return (
@@ -160,9 +171,9 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
       <div className="p-4 rounded-lg bg-gradient-to-r from-spectral-cyan/10 to-spectral-violet/10 border border-spectral-cyan/20">
         <h3 className="font-semibold text-text-primary mb-2">📜 What is the Canon Bible?</h3>
         <p className="text-sm text-text-secondary">
-          The Canon Bible is your source of truth for your series. Define rules that the AI must follow to maintain 
-          continuity. When you write or generate content, the AI will check against these rules to prevent 
-          contradictions and maintain narrative consistency.
+          The Canon Bible is your source of truth for your series. Define rules that the AI must
+          follow to maintain continuity. When you write or generate content, the AI will check
+          against these rules to prevent contradictions and maintain narrative consistency.
         </p>
       </div>
 
@@ -182,8 +193,10 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
             className="px-4 py-2 bg-void-depth border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
           >
             <option value="all">All Categories</option>
-            {RULE_CATEGORIES.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
+            {RULE_CATEGORIES.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
+              </option>
             ))}
           </select>
         </div>
@@ -201,7 +214,12 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-text-primary">Create Canon Rule</h3>
-              <button onClick={() => setViewMode('list')} className="text-text-tertiary hover:text-text-secondary">✕</button>
+              <button
+                onClick={() => setViewMode('list')}
+                className="text-text-tertiary hover:text-text-secondary"
+              >
+                ✕
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -239,10 +257,14 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Rule Description *</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Rule Description *
+                  </label>
                   <textarea
                     value={createForm.ruleDescription}
-                    onChange={(e) => setCreateForm({ ...createForm, ruleDescription: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, ruleDescription: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none"
                     placeholder="Describe the rule in detail..."
@@ -254,11 +276,18 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                     <label className="block text-sm text-text-tertiary mb-1">Rule Type</label>
                     <select
                       value={createForm.ruleType}
-                      onChange={(e) => setCreateForm({ ...createForm, ruleType: e.target.value as typeof createForm.ruleType })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          ruleType: e.target.value as typeof createForm.ruleType,
+                        })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     >
-                      {RULE_TYPES.map(type => (
-                        <option key={type.id} value={type.id}>{type.name} - {type.desc}</option>
+                      {RULE_TYPES.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name} - {type.desc}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -266,11 +295,18 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                     <label className="block text-sm text-text-tertiary mb-1">Lock Level</label>
                     <select
                       value={createForm.lockLevel}
-                      onChange={(e) => setCreateForm({ ...createForm, lockLevel: e.target.value as CanonLockLevel })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          lockLevel: e.target.value as CanonLockLevel,
+                        })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     >
-                      {LOCK_LEVELS.map(level => (
-                        <option key={level.id} value={level.id}>{level.name} - {level.desc}</option>
+                      {LOCK_LEVELS.map((level) => (
+                        <option key={level.id} value={level.id}>
+                          {level.name} - {level.desc}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -278,22 +314,33 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Applies From Book</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Applies From Book
+                    </label>
                     <input
                       type="number"
                       min="1"
                       value={createForm.appliesFromBook}
-                      onChange={(e) => setCreateForm({ ...createForm, appliesFromBook: parseInt(e.target.value) || 1 })}
+                      onChange={(e) =>
+                        setCreateForm({
+                          ...createForm,
+                          appliesFromBook: parseInt(e.target.value) || 1,
+                        })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-text-tertiary mb-1">Until Book (optional)</label>
+                    <label className="block text-sm text-text-tertiary mb-1">
+                      Until Book (optional)
+                    </label>
                     <input
                       type="number"
                       min="1"
                       value={createForm.appliesUntilBook}
-                      onChange={(e) => setCreateForm({ ...createForm, appliesUntilBook: e.target.value })}
+                      onChange={(e) =>
+                        setCreateForm({ ...createForm, appliesUntilBook: e.target.value })
+                      }
                       className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                       placeholder="Forever"
                     />
@@ -307,17 +354,23 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                   <input
                     type="text"
                     value={createForm.violationMessage}
-                    onChange={(e) => setCreateForm({ ...createForm, violationMessage: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, violationMessage: e.target.value })
+                    }
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan"
                     placeholder="Message shown when rule is violated"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Valid Examples (one per line)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Valid Examples (one per line)
+                  </label>
                   <textarea
                     value={createForm.validExamples}
-                    onChange={(e) => setCreateForm({ ...createForm, validExamples: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, validExamples: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none font-mono text-sm"
                     placeholder="Aria used telekinesis to move the book&#10;The wizard cast a spell of protection"
@@ -325,10 +378,14 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm text-text-tertiary mb-1">Invalid Examples (one per line)</label>
+                  <label className="block text-sm text-text-tertiary mb-1">
+                    Invalid Examples (one per line)
+                  </label>
                   <textarea
                     value={createForm.invalidExamples}
-                    onChange={(e) => setCreateForm({ ...createForm, invalidExamples: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, invalidExamples: e.target.value })
+                    }
                     rows={3}
                     className="w-full px-3 py-2 bg-void-base border border-void-mist rounded-lg text-text-primary focus:outline-none focus:border-spectral-cyan resize-none font-mono text-sm"
                     placeholder="The farmer used magic to grow crops&#10;John flew without wings or spells"
@@ -338,7 +395,10 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
             </div>
 
             <div className="flex justify-end gap-3 pt-6 border-t border-void-mist">
-              <button onClick={() => setViewMode('list')} className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors">
+              <button
+                onClick={() => setViewMode('list')}
+                className="px-4 py-2 text-text-secondary hover:text-text-primary transition-colors"
+              >
                 Cancel
               </button>
               <button
@@ -354,7 +414,13 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
 
         {/* List View */}
         {viewMode === 'list' && (
-          <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+          <motion.div
+            key="list"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-8"
+          >
             {Object.keys(groupedRules).length === 0 ? (
               <div className="text-center py-12 text-text-tertiary">
                 {rules.length === 0 ? (
@@ -380,7 +446,7 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                       {categoryRules.map((rule, index) => {
                         const typeInfo = getTypeInfo(rule.ruleType);
                         const lockInfo = getLockInfo(rule.lockLevel);
-                        
+
                         return (
                           <motion.div
                             key={rule.id}
@@ -396,11 +462,17 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
                                 <div className="flex items-center gap-3">
-                                  <h4 className="font-semibold text-text-primary">{rule.ruleName}</h4>
-                                  <span className={`text-xs px-2 py-0.5 rounded-full bg-${typeInfo.color}/20 text-${typeInfo.color}`}>
+                                  <h4 className="font-semibold text-text-primary">
+                                    {rule.ruleName}
+                                  </h4>
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded-full bg-${typeInfo.color}/20 text-${typeInfo.color}`}
+                                  >
                                     {typeInfo.name}
                                   </span>
-                                  <span className={`text-xs px-2 py-0.5 rounded-full bg-${lockInfo.color}/20 text-${lockInfo.color}`}>
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded-full bg-${lockInfo.color}/20 text-${lockInfo.color}`}
+                                  >
                                     {lockInfo.name}
                                   </span>
                                 </div>
@@ -412,7 +484,10 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                                 {rule.appliesFromBook === 1 && !rule.appliesUntilBook ? (
                                   'All books'
                                 ) : (
-                                  <>Book {rule.appliesFromBook}{rule.appliesUntilBook ? `-${rule.appliesUntilBook}` : '+'}</>
+                                  <>
+                                    Book {rule.appliesFromBook}
+                                    {rule.appliesUntilBook ? `-${rule.appliesUntilBook}` : '+'}
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -442,19 +517,28 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                 <div>
                   <h3 className="text-xl font-bold text-text-primary">{selectedRule.ruleName}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className={`text-sm px-2 py-0.5 rounded-full bg-${getTypeInfo(selectedRule.ruleType).color}/20 text-${getTypeInfo(selectedRule.ruleType).color}`}>
+                    <span
+                      className={`text-sm px-2 py-0.5 rounded-full bg-${getTypeInfo(selectedRule.ruleType).color}/20 text-${getTypeInfo(selectedRule.ruleType).color}`}
+                    >
                       {getTypeInfo(selectedRule.ruleType).name}
                     </span>
-                    <span className={`text-sm px-2 py-0.5 rounded-full bg-${getLockInfo(selectedRule.lockLevel).color}/20 text-${getLockInfo(selectedRule.lockLevel).color}`}>
+                    <span
+                      className={`text-sm px-2 py-0.5 rounded-full bg-${getLockInfo(selectedRule.lockLevel).color}/20 text-${getLockInfo(selectedRule.lockLevel).color}`}
+                    >
                       {getLockInfo(selectedRule.lockLevel).name}
                     </span>
                   </div>
                 </div>
               </div>
               <button
-                onClick={() => { setSelectedRule(null); setViewMode('list'); }}
+                onClick={() => {
+                  setSelectedRule(null);
+                  setViewMode('list');
+                }}
                 className="text-text-tertiary hover:text-text-secondary"
-              >✕</button>
+              >
+                ✕
+              </button>
             </div>
 
             <div className="space-y-6">
@@ -468,12 +552,16 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                   <h4 className="text-sm font-semibold text-text-secondary mb-2">Applies</h4>
                   <p className="text-text-primary">
                     Book {selectedRule.appliesFromBook}
-                    {selectedRule.appliesUntilBook ? ` to Book ${selectedRule.appliesUntilBook}` : ' onwards'}
+                    {selectedRule.appliesUntilBook
+                      ? ` to Book ${selectedRule.appliesUntilBook}`
+                      : ' onwards'}
                   </p>
                 </div>
                 {selectedRule.violationMessage && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">Violation Message</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      Violation Message
+                    </h4>
                     <p className="text-red-400">{selectedRule.violationMessage}</p>
                   </div>
                 )}
@@ -482,10 +570,15 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {selectedRule.validExamples.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">✅ Valid Examples</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      ✅ Valid Examples
+                    </h4>
                     <ul className="space-y-2">
                       {selectedRule.validExamples.map((example, i) => (
-                        <li key={i} className="text-sm text-green-400/80 p-2 bg-green-400/10 rounded">
+                        <li
+                          key={i}
+                          className="text-sm text-green-400/80 p-2 bg-green-400/10 rounded"
+                        >
                           {example}
                         </li>
                       ))}
@@ -494,7 +587,9 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
                 )}
                 {selectedRule.invalidExamples.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-text-secondary mb-2">❌ Invalid Examples</h4>
+                    <h4 className="text-sm font-semibold text-text-secondary mb-2">
+                      ❌ Invalid Examples
+                    </h4>
                     <ul className="space-y-2">
                       {selectedRule.invalidExamples.map((example, i) => (
                         <li key={i} className="text-sm text-red-400/80 p-2 bg-red-400/10 rounded">
@@ -521,4 +616,3 @@ export default function CanonBible({ seriesId, seriesTitle }: CanonBibleProps) {
     </div>
   );
 }
-

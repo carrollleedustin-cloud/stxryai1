@@ -222,7 +222,10 @@ function CharacterDetails({
               return (
                 <div key={idx} className="text-sm">
                   <span className="font-medium text-foreground">{otherChar.name}</span>
-                  <span className="text-muted-foreground"> - {rel.type} ({rel.strength}%)</span>
+                  <span className="text-muted-foreground">
+                    {' '}
+                    - {rel.type} ({rel.strength}%)
+                  </span>
                 </div>
               );
             })}
@@ -232,4 +235,3 @@ function CharacterDetails({
     </motion.div>
   );
 }
-

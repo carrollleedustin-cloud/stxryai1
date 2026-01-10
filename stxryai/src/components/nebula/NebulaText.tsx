@@ -42,7 +42,7 @@ export function NebulaTitle({
 }: NebulaTitleProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  
+
   return (
     <motion.h1
       ref={ref}
@@ -55,11 +55,15 @@ export function NebulaTitle({
         backgroundClip: 'text',
       }}
       initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { 
-        opacity: 1, 
-        y: 0,
-        backgroundPosition: animate ? ['0% 50%', '100% 50%', '0% 50%'] : '0% 50%',
-      } : {}}
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              y: 0,
+              backgroundPosition: animate ? ['0% 50%', '100% 50%', '0% 50%'] : '0% 50%',
+            }
+          : {}
+      }
       transition={{
         opacity: { duration: 0.6 },
         y: { duration: 0.6, ease: [0.4, 0, 0.2, 1] },
@@ -92,9 +96,9 @@ export function SplitText({
 }: SplitTextProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-50px' });
-  
+
   const letters = children.split('');
-  
+
   const containerVariants: Variants = {
     hidden: {},
     visible: {
@@ -104,15 +108,15 @@ export function SplitText({
       },
     },
   };
-  
+
   const letterVariants: Variants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 50,
       rotateX: -90,
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       rotateX: 0,
       transition: {
@@ -121,7 +125,7 @@ export function SplitText({
       },
     },
   };
-  
+
   return (
     <motion.span
       ref={ref}
@@ -183,7 +187,7 @@ export function GlowText({
     medium: '0 0 20px',
     high: '0 0 30px',
   };
-  
+
   return (
     <motion.span
       className={`inline-block ${className}`}
@@ -232,14 +236,14 @@ export function TypewriterText({
 }: TypewriterProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  
+
   useEffect(() => {
     let timeout: NodeJS.Timeout;
-    
+
     const startTyping = () => {
       setIsTyping(true);
       let i = 0;
-      
+
       const typeNextChar = () => {
         if (i < text.length) {
           setDisplayedText(text.slice(0, i + 1));
@@ -250,15 +254,15 @@ export function TypewriterText({
           onComplete?.();
         }
       };
-      
+
       timeout = setTimeout(typeNextChar, delay);
     };
-    
+
     startTyping();
-    
+
     return () => clearTimeout(timeout);
   }, [text, speed, delay, onComplete]);
-  
+
   return (
     <span className={className}>
       {displayedText}
@@ -266,7 +270,7 @@ export function TypewriterText({
         <motion.span
           className="inline-block w-[2px] h-[1em] ml-1 bg-current"
           animate={{ opacity: isTyping ? 1 : [1, 0] }}
-          transition={{ 
+          transition={{
             opacity: isTyping ? {} : { duration: 0.5, repeat: Infinity },
           }}
         />
@@ -296,7 +300,7 @@ export function MagicText({
 }: MagicTextProps) {
   const letters = children.split('');
   const colors = ['#9b5de5', '#f15bb5', '#fee440', '#00f5d4', '#00bbf9'];
-  
+
   return (
     <span className={`inline-flex ${className}`}>
       {letters.map((letter, i) => (
@@ -304,17 +308,24 @@ export function MagicText({
           key={`${letter}-${i}`}
           className="inline-block font-bold"
           style={{
-            color: color === 'rainbow' 
-              ? colors[i % colors.length]
-              : GLOW_COLORS[color === 'gold' ? 'gold' : color]?.color || '#ffffff',
+            color:
+              color === 'rainbow'
+                ? colors[i % colors.length]
+                : GLOW_COLORS[color === 'gold' ? 'gold' : color]?.color || '#ffffff',
             textShadow: `0 0 20px ${colors[i % colors.length]}50`,
           }}
-          animate={bounce ? {
-            y: [0, -10, 0],
-            scale: [1, 1.1, 1],
-          } : wobble ? {
-            rotate: [-5, 5, -5],
-          } : undefined}
+          animate={
+            bounce
+              ? {
+                  y: [0, -10, 0],
+                  scale: [1, 1.1, 1],
+                }
+              : wobble
+                ? {
+                    rotate: [-5, 5, -5],
+                  }
+                : undefined
+          }
           transition={{
             duration: 0.5,
             delay: i * 0.05,
@@ -351,38 +362,38 @@ export function AnimatedCounter({
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     if (!isInView) return;
-    
+
     let startTime: number;
     let animationFrame: number;
-    
+
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
-      
+
       // Easing function
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       setCount(Math.floor(easeOutQuart * end));
-      
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       }
     };
-    
+
     animationFrame = requestAnimationFrame(animate);
-    
+
     return () => cancelAnimationFrame(animationFrame);
   }, [isInView, end, duration]);
-  
+
   return (
     <span ref={ref} className={className}>
-      {prefix}{count.toLocaleString()}{suffix}
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
     </span>
   );
 }
 
 export default NebulaTitle;
-
-

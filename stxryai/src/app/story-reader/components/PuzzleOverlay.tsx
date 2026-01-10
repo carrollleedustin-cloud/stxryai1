@@ -20,7 +20,7 @@ export function PuzzleOverlay({ puzzle, onSolve, onClose }: PuzzleOverlayProps) 
   const handleSubmit = () => {
     setIsSubmitting(true);
     const correct = answer.toLowerCase().trim() === puzzle.answer.toLowerCase().trim();
-    
+
     setTimeout(() => {
       setIsCorrect(correct);
       setIsSubmitting(false);
@@ -45,11 +45,15 @@ export function PuzzleOverlay({ puzzle, onSolve, onClose }: PuzzleOverlayProps) 
           <div>
             <h3 className="text-xl font-bold text-foreground">Narrative Puzzle</h3>
             <p className="text-sm text-muted-foreground flex items-center gap-2">
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                puzzle.difficulty === 'easy' ? 'bg-green-500/20 text-green-500' :
-                puzzle.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-500' :
-                'bg-red-500/20 text-red-500'
-              }`}>
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                  puzzle.difficulty === 'easy'
+                    ? 'bg-green-500/20 text-green-500'
+                    : puzzle.difficulty === 'medium'
+                      ? 'bg-yellow-500/20 text-yellow-500'
+                      : 'bg-red-500/20 text-red-500'
+                }`}
+              >
                 {puzzle.difficulty}
               </span>
               • Earn {puzzle.rewardXP} XP
@@ -72,8 +76,8 @@ export function PuzzleOverlay({ puzzle, onSolve, onClose }: PuzzleOverlayProps) 
                       key={i}
                       onClick={() => setAnswer(opt)}
                       className={`p-4 rounded-xl border-2 text-left transition-all ${
-                        answer === opt 
-                          ? 'border-primary bg-primary/10' 
+                        answer === opt
+                          ? 'border-primary bg-primary/10'
                           : 'border-border bg-background hover:border-primary/50'
                       }`}
                     >
@@ -99,7 +103,7 @@ export function PuzzleOverlay({ puzzle, onSolve, onClose }: PuzzleOverlayProps) 
                   <Lightbulb size={16} />
                   Need a hint?
                 </button>
-                
+
                 <button
                   onClick={handleSubmit}
                   disabled={!answer.trim() || isSubmitting}
@@ -132,16 +136,25 @@ export function PuzzleOverlay({ puzzle, onSolve, onClose }: PuzzleOverlayProps) 
                   <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center text-white mb-2">
                     <Trophy size={40} />
                   </div>
-                  <h4 className="text-2xl font-bold text-green-600 dark:text-green-400">Brilliant!</h4>
-                  <p className="text-muted-foreground">You've solved the puzzle and earned {puzzle.rewardXP} XP.</p>
+                  <h4 className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    Brilliant!
+                  </h4>
+                  <p className="text-muted-foreground">
+                    You've solved the puzzle and earned {puzzle.rewardXP} XP.
+                  </p>
                 </>
               ) : (
                 <>
                   <div className="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center text-white mb-2">
                     <XCircle size={40} />
                   </div>
-                  <h4 className="text-2xl font-bold text-red-600 dark:text-red-400">Not quite...</h4>
-                  <p className="text-muted-foreground">The correct answer was: <span className="font-bold text-foreground">{puzzle.answer}</span></p>
+                  <h4 className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    Not quite...
+                  </h4>
+                  <p className="text-muted-foreground">
+                    The correct answer was:{' '}
+                    <span className="font-bold text-foreground">{puzzle.answer}</span>
+                  </p>
                 </>
               )}
               <button

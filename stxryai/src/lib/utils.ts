@@ -20,4 +20,3 @@ export function getRelativeTime(date: Date | string | number): string {
 export function generateCacheKey(...parts: (string | undefined)[]): string {
   return parts.filter(Boolean).join(':');
 }
-

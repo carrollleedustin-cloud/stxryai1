@@ -67,4 +67,3 @@ export function Card3D({ children, className = '', intensity = 15 }: Card3DProps
     </motion.div>
   );
 }
-

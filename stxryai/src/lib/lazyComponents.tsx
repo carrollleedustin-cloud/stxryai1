@@ -5,7 +5,7 @@ import { Suspense, ComponentType, ReactNode } from 'react';
 
 /**
  * Lazy Loading Utilities
- * 
+ *
  * Provides optimized dynamic imports with:
  * - Consistent loading states
  * - Error boundaries
@@ -14,7 +14,13 @@ import { Suspense, ComponentType, ReactNode } from 'react';
  */
 
 // Shared loading skeleton component
-export function LoadingSkeleton({ className = '', height = 'h-64' }: { className?: string; height?: string }) {
+export function LoadingSkeleton({
+  className = '',
+  height = 'h-64',
+}: {
+  className?: string;
+  height?: string;
+}) {
   return (
     <div className={`animate-pulse bg-void-800/50 rounded-lg ${height} ${className}`}>
       <div className="flex items-center justify-center h-full">
@@ -64,7 +70,7 @@ export function lazyLoad<T extends ComponentType<any>>(
 ) {
   const LazyComponent = dynamic(importFn, {
     ssr: options?.ssr ?? false,
-    loading: () => options?.loading as React.ReactElement ?? <LoadingSkeleton />,
+    loading: () => (options?.loading as React.ReactElement) ?? <LoadingSkeleton />,
   });
 
   if (options?.displayName) {
@@ -89,7 +95,8 @@ export const LazyPlayStyleAnalysis = dynamic(
 
 // Heavy animation components
 export const LazyAdvancedEffects = dynamic(
-  () => import('@/components/void/AdvancedEffects').then(mod => ({ default: mod.HolographicCard })),
+  () =>
+    import('@/components/void/AdvancedEffects').then((mod) => ({ default: mod.HolographicCard })),
   {
     ssr: false,
     loading: () => <CardLoadingSkeleton />,
@@ -97,13 +104,10 @@ export const LazyAdvancedEffects = dynamic(
 );
 
 // Story creation studio (heavy with form state)
-export const LazyStoryCreationStudio = dynamic(
-  () => import('@/app/story-creation-studio/page'),
-  {
-    ssr: false,
-    loading: () => <LoadingSkeleton height="h-screen" />,
-  }
-);
+export const LazyStoryCreationStudio = dynamic(() => import('@/app/story-creation-studio/page'), {
+  ssr: false,
+  loading: () => <LoadingSkeleton height="h-screen" />,
+});
 
 // Writers desk components
 export const LazySeriesCreationWizard = dynamic(
@@ -156,22 +160,16 @@ export const LazyDashboardInteractive = dynamic(
 );
 
 // Admin components (rarely accessed, should be lazy)
-export const LazyAdminPage = dynamic(
-  () => import('@/app/admin/page'),
-  {
-    ssr: false,
-    loading: () => <LoadingSkeleton height="h-screen" />,
-  }
-);
+export const LazyAdminPage = dynamic(() => import('@/app/admin/page'), {
+  ssr: false,
+  loading: () => <LoadingSkeleton height="h-screen" />,
+});
 
 // Settings page (heavy with forms)
-export const LazySettingsPage = dynamic(
-  () => import('@/app/settings/components/SettingsPage'),
-  {
-    ssr: false,
-    loading: () => <LoadingSkeleton height="h-screen" />,
-  }
-);
+export const LazySettingsPage = dynamic(() => import('@/app/settings/components/SettingsPage'), {
+  ssr: false,
+  loading: () => <LoadingSkeleton height="h-screen" />,
+});
 
 // ============================================
 // Suspense Wrapper Utility
@@ -183,11 +181,7 @@ interface SuspenseWrapperProps {
 }
 
 export function SuspenseWrapper({ children, fallback }: SuspenseWrapperProps) {
-  return (
-    <Suspense fallback={fallback ?? <LoadingSkeleton />}>
-      {children}
-    </Suspense>
-  );
+  return <Suspense fallback={fallback ?? <LoadingSkeleton />}>{children}</Suspense>;
 }
 
 // ============================================
@@ -208,4 +202,3 @@ export const routeLoaders = {
   leaderboards: () => import('@/app/leaderboards/page'),
   communityHub: () => import('@/app/community-hub/page'),
 };
-

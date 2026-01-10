@@ -33,10 +33,10 @@ export const userProgressService = {
         .eq('story_id', storyId)
         .single();
 
-      const { data, error } = await withTimeout(
-        queryPromise,
-        { timeout: 8000, errorMessage: 'Request timed out while loading progress' }
-      );
+      const { data, error } = await withTimeout(queryPromise, {
+        timeout: 8000,
+        errorMessage: 'Request timed out while loading progress',
+      });
 
       if (error && error.code !== 'PGRST116') {
         if (isConnectionError(error)) {
@@ -72,10 +72,10 @@ export const userProgressService = {
         .eq('user_id', userId)
         .order('last_read_at', { ascending: false });
 
-      const { data, error } = await withTimeout(
-        queryPromise,
-        { timeout: 8000, errorMessage: 'Request timed out while loading progress' }
-      );
+      const { data, error } = await withTimeout(queryPromise, {
+        timeout: 8000,
+        errorMessage: 'Request timed out while loading progress',
+      });
 
       if (error) {
         if (isConnectionError(error)) {
@@ -120,11 +120,9 @@ export const userProgressService = {
         });
     } else {
       // Still update streak even without reading time (just mark as read)
-      streakService
-        .updateStreak(userId)
-        .catch((err) => {
-          console.error('Failed to update reading streak:', err);
-        });
+      streakService.updateStreak(userId).catch((err) => {
+        console.error('Failed to update reading streak:', err);
+      });
     }
 
     return Array.isArray(data) ? data[0] : data;
@@ -161,10 +159,10 @@ export const userProgressService = {
         .eq('user_id', userId)
         .order('earned_at', { ascending: false });
 
-      const { data, error } = await withTimeout(
-        queryPromise,
-        { timeout: 8000, errorMessage: 'Request timed out while loading badges' }
-      );
+      const { data, error } = await withTimeout(queryPromise, {
+        timeout: 8000,
+        errorMessage: 'Request timed out while loading badges',
+      });
 
       if (error) {
         if (isConnectionError(error)) {

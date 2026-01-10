@@ -15,13 +15,13 @@ export { NebulaNav } from './NebulaNav';
 export { NebulaInput, NebulaTextarea, NebulaSelect } from './NebulaInput';
 
 // Typography
-export { 
-  NebulaTitle, 
-  SplitText, 
-  GlowText, 
-  TypewriterText, 
+export {
+  NebulaTitle,
+  SplitText,
+  GlowText,
+  TypewriterText,
   MagicText,
-  AnimatedCounter 
+  AnimatedCounter,
 } from './NebulaText';
 
 // Kids Zone Components
@@ -32,4 +32,3 @@ export { MagicNav, MagicTopBar, MagicBreadcrumb } from './MagicNav';
 // Effects
 export { ConstellationEffect } from './ConstellationEffect';
 export { PortalEffect, ParticleSystem } from './PortalEffect';
-

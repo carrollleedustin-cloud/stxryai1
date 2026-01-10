@@ -75,7 +75,8 @@ export default function ModernButton({
 
       case 'holographic':
         return {
-          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2), rgba(251, 191, 36, 0.2))',
+          background:
+            'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2), rgba(251, 191, 36, 0.2))',
           color: '#ffffff',
           border: '2px solid transparent',
           backgroundClip: 'padding-box',
@@ -162,7 +163,8 @@ export default function ModernButton({
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+            background:
+              'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
           }}
         />
       </motion.div>

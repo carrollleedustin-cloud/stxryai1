@@ -2,7 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { adaptiveStorytellingService, type UserReadingPreferences } from '@/services/adaptiveStorytellingService';
+import {
+  adaptiveStorytellingService,
+  type UserReadingPreferences,
+} from '@/services/adaptiveStorytellingService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -75,9 +78,7 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
   };
 
   const toggleArray = (array: string[], value: string) => {
-    return array.includes(value)
-      ? array.filter((v) => v !== value)
-      : [...array, value];
+    return array.includes(value) ? array.filter((v) => v !== value) : [...array, value];
   };
 
   if (loading) {
@@ -100,9 +101,7 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
 
       {/* Pacing */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Preferred Pacing
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Preferred Pacing</label>
         <div className="flex gap-2">
           {(['slow', 'medium', 'fast'] as const).map((pacing) => (
             <button
@@ -122,38 +121,45 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
 
       {/* Narrative Style */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Narrative Style
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Narrative Style</label>
         <div className="flex flex-wrap gap-2">
-          {['first_person', 'third_person', 'dialogue_heavy', 'descriptive', 'action_focused'].map((style) => (
-            <button
-              key={style}
-              onClick={() =>
-                setFormData({
-                  ...formData,
-                  preferredNarrativeStyle: toggleArray(formData.preferredNarrativeStyle, style),
-                })
-              }
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                formData.preferredNarrativeStyle.includes(style)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-gray-100 dark:bg-gray-800 text-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              {style.replace(/_/g, ' ')}
-            </button>
-          ))}
+          {['first_person', 'third_person', 'dialogue_heavy', 'descriptive', 'action_focused'].map(
+            (style) => (
+              <button
+                key={style}
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    preferredNarrativeStyle: toggleArray(formData.preferredNarrativeStyle, style),
+                  })
+                }
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                  formData.preferredNarrativeStyle.includes(style)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-gray-100 dark:bg-gray-800 text-foreground hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {style.replace(/_/g, ' ')}
+              </button>
+            )
+          )}
         </div>
       </div>
 
       {/* Themes */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Preferred Themes
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Preferred Themes</label>
         <div className="flex flex-wrap gap-2">
-          {['adventure', 'romance', 'mystery', 'fantasy', 'sci-fi', 'horror', 'comedy', 'drama'].map((theme) => (
+          {[
+            'adventure',
+            'romance',
+            'mystery',
+            'fantasy',
+            'sci-fi',
+            'horror',
+            'comedy',
+            'drama',
+          ].map((theme) => (
             <button
               key={theme}
               onClick={() =>
@@ -176,9 +182,7 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
 
       {/* Tone */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Preferred Tone
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Preferred Tone</label>
         <div className="flex flex-wrap gap-2">
           {['light', 'dark', 'humorous', 'serious', 'whimsical', 'gritty'].map((tone) => (
             <button
@@ -203,9 +207,7 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
 
       {/* Choice Frequency */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Choice Frequency
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Choice Frequency</label>
         <div className="flex gap-2">
           {(['low', 'medium', 'high'] as const).map((freq) => (
             <button
@@ -225,9 +227,7 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
 
       {/* Choice Complexity */}
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">
-          Choice Complexity
-        </label>
+        <label className="block text-sm font-medium text-foreground mb-2">Choice Complexity</label>
         <div className="flex gap-2">
           {(['simple', 'medium', 'complex'] as const).map((complexity) => (
             <button
@@ -259,11 +259,11 @@ export function ReadingPreferencesManager({ className = '' }: ReadingPreferences
       {preferences && (
         <div className="pt-4 border-t border-border">
           <p className="text-xs text-muted-foreground">
-            AI is learning your preferences from your reading behavior. These settings help personalize your experience.
+            AI is learning your preferences from your reading behavior. These settings help
+            personalize your experience.
           </p>
         </div>
       )}
     </div>
   );
 }
-

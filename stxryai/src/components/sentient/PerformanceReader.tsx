@@ -18,17 +18,17 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
   const [lastScrollTime, setLastScrollTime] = useState(Date.now());
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isWatching, setIsWatching] = useState(false);
-  
+
   const { scrollYProgress } = useScroll({
     container: containerRef,
   });
-  
+
   const opacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.02, 0.98]);
 
   // Parse content into words
   useEffect(() => {
-    const parsed = content.split(/\s+/).filter(w => w.length > 0);
+    const parsed = content.split(/\s+/).filter((w) => w.length > 0);
     setWords(parsed);
   }, [content]);
 
@@ -39,16 +39,16 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
 
     const handleScroll = () => {
       if (!containerRef.current) return;
-      
+
       const currentScroll = containerRef.current.scrollTop;
       const now = Date.now();
       const timeDelta = now - lastScrollTime;
-      
+
       if (timeDelta > 0) {
         const velocity = Math.abs(currentScroll - lastScrollTop) / timeDelta;
         setScrollVelocity(velocity);
         setLastScrollTime(now);
-        
+
         // Adapt reading pace based on scroll velocity
         if (velocity > 0.5) {
           setReadingPace(1.5); // Fast reader
@@ -58,30 +58,28 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
           setReadingPace(1);
         }
       }
-      
+
       lastScrollTop = currentScroll;
-      
+
       // Track visible words
       const container = containerRef.current;
       const containerRect = container.getBoundingClientRect();
       const wordElements = container.querySelectorAll('.word-emerge');
-      
+
       const newVisible = new Set<number>();
       wordElements.forEach((el, index) => {
         const rect = el.getBoundingClientRect();
-        if (
-          rect.top < containerRect.bottom &&
-          rect.bottom > containerRect.top
-        ) {
+        if (rect.top < containerRect.bottom && rect.bottom > containerRect.top) {
           newVisible.add(index);
         }
       });
-      
+
       setVisibleWords(newVisible);
-      
+
       // Report progress
       if (onProgress && containerRef.current) {
-        const progress = containerRef.current.scrollTop / 
+        const progress =
+          containerRef.current.scrollTop /
           (containerRef.current.scrollHeight - containerRef.current.clientHeight);
         onProgress(Math.min(1, Math.max(0, progress)));
       }
@@ -141,21 +139,21 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
   // Calculate stalk transform based on mouse position
   const getStalkTransform = (wordIndex: number, wordElement: HTMLElement | null) => {
     if (!wordElement || !isWatching) return { x: 0, y: 0 };
-    
+
     const rect = wordElement.getBoundingClientRect();
     const wordCenterX = rect.left + rect.width / 2;
     const wordCenterY = rect.top + rect.height / 2;
-    
+
     const deltaX = mousePosition.x - wordCenterX;
     const deltaY = mousePosition.y - wordCenterY;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const maxDistance = 300;
-    
+
     if (distance > maxDistance) return { x: 0, y: 0 };
-    
-    const intensity = 1 - (distance / maxDistance);
+
+    const intensity = 1 - distance / maxDistance;
     const maxOffset = 5;
-    
+
     return {
       x: (deltaX / distance) * maxOffset * intensity,
       y: (deltaY / distance) * maxOffset * intensity,
@@ -163,10 +161,10 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="performance-engine h-screen overflow-y-auto hide-scrollbar"
-      style={{ 
+      style={{
         background: 'var(--void-black)',
         position: 'relative',
       }}
@@ -201,10 +199,7 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
       />
 
       {/* Content Container */}
-      <motion.div
-        style={{ opacity, scale }}
-        className="sentient-container void-space"
-      >
+      <motion.div style={{ opacity, scale }} className="sentient-container void-space">
         {title && (
           <motion.h1
             className="neon-text breathing-text text-6xl mb-12"
@@ -221,7 +216,7 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
             const isVisible = visibleWords.has(index);
             const wordRef = useRef<HTMLSpanElement>(null);
             const stalk = getStalkTransform(index, wordRef.current);
-            
+
             return (
               <motion.span
                 key={index}
@@ -248,7 +243,7 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
                 }}
                 style={{
                   fontSize: `${14 + Math.sin(index * 0.1) * 2}px`,
-                  color: isVisible 
+                  color: isVisible
                     ? `hsl(${180 + Math.sin(index * 0.05) * 20}, 100%, ${50 + Math.sin(index * 0.1) * 10}%)`
                     : 'rgba(0, 255, 255, 0.2)',
                 }}
@@ -285,4 +280,3 @@ const PerformanceReader = ({ content, title, onProgress }: PerformanceReaderProp
 };
 
 export default PerformanceReader;
-

@@ -16,9 +16,24 @@ import { ArrowLeft, Check, Sparkles } from 'lucide-react';
  */
 
 const AVATARS = [
-  '👧', '👦', '🧒', '👶', '🦸‍♀️', '🦸‍♂️', 
-  '🧚‍♀️', '🧜‍♂️', '🦊', '🐰', '🐼', '🦁',
-  '🐸', '🦄', '🐱', '🐶', '🐻', '🐨',
+  '👧',
+  '👦',
+  '🧒',
+  '👶',
+  '🦸‍♀️',
+  '🦸‍♂️',
+  '🧚‍♀️',
+  '🧜‍♂️',
+  '🦊',
+  '🐰',
+  '🐼',
+  '🦁',
+  '🐸',
+  '🦄',
+  '🐱',
+  '🐶',
+  '🐻',
+  '🐨',
 ];
 
 const AGE_OPTIONS = [
@@ -35,7 +50,12 @@ const AGE_OPTIONS = [
 ];
 
 const CONTENT_PREFERENCES = [
-  { id: 'fantasy', label: 'Fantasy & Magic', emoji: '🧙', desc: 'Dragons, wizards, magical worlds' },
+  {
+    id: 'fantasy',
+    label: 'Fantasy & Magic',
+    emoji: '🧙',
+    desc: 'Dragons, wizards, magical worlds',
+  },
   { id: 'adventure', label: 'Adventure', emoji: '🗺️', desc: 'Exploration, quests, heroes' },
   { id: 'animals', label: 'Animal Stories', emoji: '🐾', desc: 'Friendly animal characters' },
   { id: 'space', label: 'Space & Science', emoji: '🚀', desc: 'Rockets, planets, discovery' },
@@ -59,7 +79,7 @@ export default function CreateChildProfilePage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Form state
   const [name, setName] = useState('');
   const [age, setAge] = useState('');
@@ -67,25 +87,24 @@ export default function CreateChildProfilePage() {
   const [preferences, setPreferences] = useState<string[]>([]);
   const [screenTime, setScreenTime] = useState('60');
   const [pin, setPin] = useState('');
-  
+
   const totalSteps = 4;
-  
+
   const handlePreferenceToggle = (id: string) => {
-    setPreferences(prev => 
-      prev.includes(id) 
-        ? prev.filter(p => p !== id)
-        : [...prev, id]
-    );
+    setPreferences((prev) => (prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]));
   };
-  
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       // Get current user
       const { createClient } = await import('@/lib/supabase/client');
       const supabase = createClient();
-      
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
       if (userError || !user) {
         throw new Error('You must be logged in to create a child profile');
       }
@@ -93,9 +112,20 @@ export default function CreateChildProfilePage() {
       // Save child profile to database
       // Note: This assumes a 'family_profiles' or 'child_profiles' table exists
       // If the table structure is different, adjust accordingly
-      const { error: saveError } = await supabase
-        .from('family_profiles')
-        .insert({
+      const { error: saveError } = await supabase.from('family_profiles').insert({
+        parent_id: user.id,
+        name: name,
+        age: parseInt(age),
+        avatar: avatar,
+        preferences: preferences,
+        screen_time_limit: screenTime === 'unlimited' ? null : parseInt(screenTime),
+        pin: pin,
+        created_at: new Date().toISOString(),
+      });
+
+      if (saveError) {
+        // If table doesn't exist, try alternative table name
+        const { error: altError } = await supabase.from('child_profiles').insert({
           parent_id: user.id,
           name: name,
           age: parseInt(age),
@@ -105,21 +135,6 @@ export default function CreateChildProfilePage() {
           pin: pin,
           created_at: new Date().toISOString(),
         });
-
-      if (saveError) {
-        // If table doesn't exist, try alternative table name
-        const { error: altError } = await supabase
-          .from('child_profiles')
-          .insert({
-            parent_id: user.id,
-            name: name,
-            age: parseInt(age),
-            avatar: avatar,
-            preferences: preferences,
-            screen_time_limit: screenTime === 'unlimited' ? null : parseInt(screenTime),
-            pin: pin,
-            created_at: new Date().toISOString(),
-          });
 
         if (altError) {
           console.error('Failed to save profile:', altError);
@@ -137,17 +152,22 @@ export default function CreateChildProfilePage() {
       setIsSubmitting(false);
     }
   };
-  
+
   const canProceed = () => {
     switch (step) {
-      case 1: return name.length >= 2 && age && avatar;
-      case 2: return preferences.length >= 1;
-      case 3: return screenTime;
-      case 4: return pin.length === 4;
-      default: return false;
+      case 1:
+        return name.length >= 2 && age && avatar;
+      case 2:
+        return preferences.length >= 1;
+      case 3:
+        return screenTime;
+      case 4:
+        return pin.length === 4;
+      default:
+        return false;
     }
   };
-  
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Header */}
@@ -156,11 +176,15 @@ export default function CreateChildProfilePage() {
           <ArrowLeft size={18} />
         </NebulaButton>
         <div>
-          <NebulaTitle size="sm" gradient="aurora">Create Child Profile</NebulaTitle>
-          <p className="text-white/60 mt-1">Step {step} of {totalSteps}</p>
+          <NebulaTitle size="sm" gradient="aurora">
+            Create Child Profile
+          </NebulaTitle>
+          <p className="text-white/60 mt-1">
+            Step {step} of {totalSteps}
+          </p>
         </div>
       </div>
-      
+
       {/* Progress bar */}
       <div className="mb-8">
         <div className="h-2 bg-white/10 rounded-full overflow-hidden">
@@ -172,7 +196,7 @@ export default function CreateChildProfilePage() {
           />
         </div>
       </div>
-      
+
       {/* Step Content */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -189,7 +213,7 @@ export default function CreateChildProfilePage() {
                 <span className="text-2xl">👋</span>
                 Let&apos;s get to know your child
               </h2>
-              
+
               <div className="space-y-6">
                 <NebulaInput
                   label="Child's Name"
@@ -198,7 +222,7 @@ export default function CreateChildProfilePage() {
                   onChange={(e) => setName(e.target.value)}
                   hint="This is how we'll greet them in the app"
                 />
-                
+
                 <NebulaSelect
                   label="Age"
                   options={AGE_OPTIONS}
@@ -206,7 +230,7 @@ export default function CreateChildProfilePage() {
                   onChange={setAge}
                   placeholder="Select age"
                 />
-                
+
                 <div>
                   <label className="block text-sm font-medium text-white/70 mb-3">
                     Choose an Avatar
@@ -219,12 +243,11 @@ export default function CreateChildProfilePage() {
                         onClick={() => setAvatar(av)}
                         className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl transition-all"
                         style={{
-                          background: avatar === av 
-                            ? 'linear-gradient(135deg, rgba(0,255,213,0.2), rgba(128,32,255,0.2))'
-                            : 'rgba(255,255,255,0.05)',
-                          border: avatar === av
-                            ? '2px solid #00ffd5'
-                            : '2px solid transparent',
+                          background:
+                            avatar === av
+                              ? 'linear-gradient(135deg, rgba(0,255,213,0.2), rgba(128,32,255,0.2))'
+                              : 'rgba(255,255,255,0.05)',
+                          border: avatar === av ? '2px solid #00ffd5' : '2px solid transparent',
                         }}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
@@ -237,7 +260,7 @@ export default function CreateChildProfilePage() {
               </div>
             </NebulaCard>
           )}
-          
+
           {/* Step 2: Content Preferences */}
           {step === 2 && (
             <NebulaCard>
@@ -245,12 +268,14 @@ export default function CreateChildProfilePage() {
                 <span className="text-2xl">📚</span>
                 What does {name || 'your child'} like to read?
               </h2>
-              <p className="text-white/60 mb-6">Select all that apply. You can change this later.</p>
-              
+              <p className="text-white/60 mb-6">
+                Select all that apply. You can change this later.
+              </p>
+
               <div className="grid sm:grid-cols-2 gap-3">
                 {CONTENT_PREFERENCES.map((pref) => {
                   const isSelected = preferences.includes(pref.id);
-                  
+
                   return (
                     <motion.button
                       key={pref.id}
@@ -290,7 +315,7 @@ export default function CreateChildProfilePage() {
               </div>
             </NebulaCard>
           )}
-          
+
           {/* Step 3: Screen Time */}
           {step === 3 && (
             <NebulaCard>
@@ -298,12 +323,14 @@ export default function CreateChildProfilePage() {
                 <span className="text-2xl">⏰</span>
                 Daily Reading Time
               </h2>
-              <p className="text-white/60 mb-6">Set a daily limit for {name || 'your child'}&apos;s reading time.</p>
-              
+              <p className="text-white/60 mb-6">
+                Set a daily limit for {name || 'your child'}&apos;s reading time.
+              </p>
+
               <div className="space-y-3">
                 {SCREEN_TIME_OPTIONS.map((option) => {
                   const isSelected = screenTime === option.value;
-                  
+
                   return (
                     <motion.button
                       key={option.value}
@@ -335,13 +362,13 @@ export default function CreateChildProfilePage() {
                   );
                 })}
               </div>
-              
+
               <p className="text-sm text-white/40 mt-4">
                 💡 You can adjust this anytime from the Family Dashboard
               </p>
             </NebulaCard>
           )}
-          
+
           {/* Step 4: PIN Setup */}
           {step === 4 && (
             <NebulaCard>
@@ -352,7 +379,7 @@ export default function CreateChildProfilePage() {
               <p className="text-white/60 mb-6">
                 This PIN will be required to access parental controls and make changes.
               </p>
-              
+
               <NebulaInput
                 label="4-Digit PIN"
                 type="password"
@@ -362,7 +389,7 @@ export default function CreateChildProfilePage() {
                 onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                 hint="Choose a PIN you'll remember but your child won't guess"
               />
-              
+
               {/* Preview Card */}
               {name && (
                 <div className="mt-8 p-6 rounded-xl" style={{ background: 'rgba(0,255,213,0.05)' }}>
@@ -374,10 +401,12 @@ export default function CreateChildProfilePage() {
                       <p className="font-bold text-white text-lg">{name}</p>
                       <p className="text-white/60">{age} years old</p>
                       <div className="flex gap-2 mt-2">
-                        {preferences.slice(0, 3).map(p => {
-                          const pref = CONTENT_PREFERENCES.find(x => x.id === p);
+                        {preferences.slice(0, 3).map((p) => {
+                          const pref = CONTENT_PREFERENCES.find((x) => x.id === p);
                           return pref ? (
-                            <span key={p} className="text-lg">{pref.emoji}</span>
+                            <span key={p} className="text-lg">
+                              {pref.emoji}
+                            </span>
                           ) : null;
                         })}
                         {preferences.length > 3 && (
@@ -392,7 +421,7 @@ export default function CreateChildProfilePage() {
           )}
         </motion.div>
       </AnimatePresence>
-      
+
       {/* Navigation */}
       <div className="flex gap-4 mt-8">
         {step > 1 && (
@@ -401,12 +430,9 @@ export default function CreateChildProfilePage() {
           </NebulaButton>
         )}
         <div className="flex-1" />
-        
+
         {step < totalSteps ? (
-          <NebulaButton 
-            onClick={() => setStep(step + 1)}
-            disabled={!canProceed()}
-          >
+          <NebulaButton onClick={() => setStep(step + 1)} disabled={!canProceed()}>
             Continue
           </NebulaButton>
         ) : (
@@ -423,5 +449,3 @@ export default function CreateChildProfilePage() {
     </div>
   );
 }
-
-

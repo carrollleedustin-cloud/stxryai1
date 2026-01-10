@@ -118,71 +118,72 @@ export const FONT_FAMILIES = {
 
 export const accessibilityService = {
   /**
-    * Get user's accessibility settings
-    */
-   async getUserSettings(userId: string): Promise<AccessibilitySettings> {
-     try {
-       const { data, error } = await supabase
-         .from('user_accessibility_settings')
-         .select('*')
-         .eq('user_id', userId)
-         .single();
+   * Get user's accessibility settings
+   */
+  async getUserSettings(userId: string): Promise<AccessibilitySettings> {
+    try {
+      const { data, error } = await supabase
+        .from('user_accessibility_settings')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
 
-       if (error) {
-         console.error('Error fetching accessibility settings:', error);
-         return DEFAULT_ACCESSIBILITY_SETTINGS;
-       }
+      if (error) {
+        console.error('Error fetching accessibility settings:', error);
+        return DEFAULT_ACCESSIBILITY_SETTINGS;
+      }
 
-       if (!data) {
-         return DEFAULT_ACCESSIBILITY_SETTINGS;
-       }
+      if (!data) {
+        return DEFAULT_ACCESSIBILITY_SETTINGS;
+      }
 
-       return {
-         ...DEFAULT_ACCESSIBILITY_SETTINGS,
-         ...data.settings,
-       };
-     } catch (error) {
-       console.error('Unexpected error in getUserSettings:', error);
-       return DEFAULT_ACCESSIBILITY_SETTINGS;
-     }
-   },
+      return {
+        ...DEFAULT_ACCESSIBILITY_SETTINGS,
+        ...data.settings,
+      };
+    } catch (error) {
+      console.error('Unexpected error in getUserSettings:', error);
+      return DEFAULT_ACCESSIBILITY_SETTINGS;
+    }
+  },
 
   /**
-    * Save user's accessibility settings
-    */
-   async saveUserSettings(
-     userId: string,
-     settings: Partial<AccessibilitySettings>
-   ): Promise<boolean> {
-     try {
-       const { error } = await supabase.from('user_accessibility_settings').upsert({
-         user_id: userId,
-         settings: settings,
-         updated_at: new Date().toISOString(),
-       });
+   * Save user's accessibility settings
+   */
+  async saveUserSettings(
+    userId: string,
+    settings: Partial<AccessibilitySettings>
+  ): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('user_accessibility_settings').upsert({
+        user_id: userId,
+        settings: settings,
+        updated_at: new Date().toISOString(),
+      });
 
-       if (error) {
-         console.error('Error saving accessibility settings:', error);
-         return false;
-       }
+      if (error) {
+        console.error('Error saving accessibility settings:', error);
+        return false;
+      }
 
-       return true;
-     } catch (error) {
-       console.error('Unexpected error in saveUserSettings:', error);
-       return false;
-     }
-   },
+      return true;
+    } catch (error) {
+      console.error('Unexpected error in saveUserSettings:', error);
+      return false;
+    }
+  },
 
   /**
    * Generate CSS variables from settings
    */
   generateCSSVariables(settings: AccessibilitySettings): Record<string, string> {
-    const themeColors = settings.theme === 'custom'
-      ? {
-          background: settings.customBackground || THEME_COLORS.light.background,
-          text: settings.customText || THEME_COLORS.light.text,
-        }
-      : THEME_COLORS[settings.theme] || THEME_COLORS.light;
+    const themeColors =
+      settings.theme === 'custom'
+        ? {
+            background: settings.customBackground || THEME_COLORS.light.background,
+            text: settings.customText || THEME_COLORS.light.text,
+          }
+        : THEME_COLORS[settings.theme] || THEME_COLORS.light;
 
     return {
       '--reading-font-size': FONT_SIZES[settings.fontSize],
@@ -322,10 +323,7 @@ export const accessibilityService = {
   /**
    * Calculate reading time based on settings
    */
-  calculateReadingTime(
-    wordCount: number,
-    settings: AccessibilitySettings
-  ): number {
+  calculateReadingTime(wordCount: number, settings: AccessibilitySettings): number {
     // Base reading speed (words per minute)
     let wpm = 200;
 

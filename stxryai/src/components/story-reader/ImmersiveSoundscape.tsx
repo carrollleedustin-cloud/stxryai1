@@ -122,8 +122,9 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
     const ambientAudio = audioLayers.ambient.audio;
     if (!ambientAudio) return;
 
-    const audioSrc = audioLayersConfig.ambient[emotionalState as keyof typeof audioLayersConfig.ambient] ||
-                    audioLayersConfig.ambient.neutral;
+    const audioSrc =
+      audioLayersConfig.ambient[emotionalState as keyof typeof audioLayersConfig.ambient] ||
+      audioLayersConfig.ambient.neutral;
 
     if (ambientAudio.src !== audioSrc) {
       ambientAudio.src = audioSrc;
@@ -134,9 +135,9 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
         ambientAudio.play().catch(() => {
           // Handle autoplay restrictions
         });
-        setAudioLayers(prev => ({
+        setAudioLayers((prev) => ({
           ...prev,
-          ambient: { ...prev.ambient, isPlaying: true }
+          ambient: { ...prev.ambient, isPlaying: true },
         }));
       }
     }
@@ -150,19 +151,21 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
     if (!heartbeatAudio) return;
 
     const shouldPlayHeartbeat = ['fear', 'anger', 'joy'].includes(emotionalState);
-    const heartbeatSrc = audioLayersConfig.heartbeat[emotionalState as keyof typeof audioLayersConfig.heartbeat] ||
-                        audioLayersConfig.heartbeat.neutral;
+    const heartbeatSrc =
+      audioLayersConfig.heartbeat[emotionalState as keyof typeof audioLayersConfig.heartbeat] ||
+      audioLayersConfig.heartbeat.neutral;
 
     if (shouldPlayHeartbeat && heartbeatAudio.src !== heartbeatSrc) {
       heartbeatAudio.src = heartbeatSrc;
       heartbeatAudio.loop = true;
-      heartbeatAudio.volume = audioLayers.heartbeat.volume * volume * (emotionalState === 'fear' ? 1.2 : 0.8);
+      heartbeatAudio.volume =
+        audioLayers.heartbeat.volume * volume * (emotionalState === 'fear' ? 1.2 : 0.8);
 
       if (isEnabled) {
         heartbeatAudio.play().catch(() => {});
-        setAudioLayers(prev => ({
+        setAudioLayers((prev) => ({
           ...prev,
-          heartbeat: { ...prev.heartbeat, isPlaying: true }
+          heartbeat: { ...prev.heartbeat, isPlaying: true },
         }));
       }
     } else if (!shouldPlayHeartbeat && audioLayers.heartbeat.isPlaying) {
@@ -173,9 +176,9 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
           requestAnimationFrame(fadeOut);
         } else {
           heartbeatAudio.pause();
-          setAudioLayers(prev => ({
+          setAudioLayers((prev) => ({
             ...prev,
-            heartbeat: { ...prev.heartbeat, isPlaying: false }
+            heartbeat: { ...prev.heartbeat, isPlaying: false },
           }));
         }
       };
@@ -196,7 +199,7 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
   useEffect(() => {
     if (!isInitialized) return;
 
-    Object.values(audioLayers).forEach(layer => {
+    Object.values(audioLayers).forEach((layer) => {
       if (layer.audio && layer.isPlaying) {
         // Adjust playback rate based on reading speed
         const speedMultiplier = 0.8 + (readingSpeed - 0.5) * 0.4;
@@ -226,11 +229,12 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
       environmentalAudio.loop = true;
       environmentalAudio.volume = audioLayers.environmental.volume * volume * 0.5;
 
-      if (isEnabled && Math.random() < 0.3) { // 30% chance to play environmental audio
+      if (isEnabled && Math.random() < 0.3) {
+        // 30% chance to play environmental audio
         environmentalAudio.play().catch(() => {});
-        setAudioLayers(prev => ({
+        setAudioLayers((prev) => ({
           ...prev,
-          environmental: { ...prev.environmental, isPlaying: true }
+          environmental: { ...prev.environmental, isPlaying: true },
         }));
 
         // Auto-fade after 30 seconds
@@ -241,9 +245,9 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
               requestAnimationFrame(fadeOut);
             } else {
               environmentalAudio.pause();
-              setAudioLayers(prev => ({
+              setAudioLayers((prev) => ({
                 ...prev,
-                environmental: { ...prev.environmental, isPlaying: false }
+                environmental: { ...prev.environmental, isPlaying: false },
               }));
             }
           };
@@ -256,7 +260,7 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
   // Cleanup
   useEffect(() => {
     return () => {
-      Object.values(audioLayers).forEach(layer => {
+      Object.values(audioLayers).forEach((layer) => {
         if (layer.audio) {
           layer.audio.pause();
           layer.audio.src = '';
@@ -314,7 +318,9 @@ export const ImmersiveSoundscape: React.FC<ImmersiveSoundscapeProps> = ({
 };
 
 // Utility function to play UI sounds from anywhere in the app
-export const playStorySound = (soundType: 'pageTurn' | 'choiceSelect' | 'achievement' | 'notification') => {
+export const playStorySound = (
+  soundType: 'pageTurn' | 'choiceSelect' | 'achievement' | 'notification'
+) => {
   if (typeof window !== 'undefined' && (window as any).playStorySound) {
     (window as any).playStorySound(soundType);
   }

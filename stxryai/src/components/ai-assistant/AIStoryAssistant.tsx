@@ -2,7 +2,12 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { aiStoryAssistantService, type AIWritingSuggestion, type PlotDoctorAnalysis, type AIIdeaGeneration } from '@/services/aiStoryAssistantService';
+import {
+  aiStoryAssistantService,
+  type AIWritingSuggestion,
+  type PlotDoctorAnalysis,
+  type AIIdeaGeneration,
+} from '@/services/aiStoryAssistantService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -15,7 +20,9 @@ interface AIStoryAssistantProps {
 
 export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStoryAssistantProps) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'suggestions' | 'plot-doctor' | 'ideas'>('suggestions');
+  const [activeTab, setActiveTab] = useState<'suggestions' | 'plot-doctor' | 'ideas'>(
+    'suggestions'
+  );
   const [suggestions, setSuggestions] = useState<AIWritingSuggestion[]>([]);
   const [analyses, setAnalyses] = useState<PlotDoctorAnalysis[]>([]);
   const [ideas, setIdeas] = useState<AIIdeaGeneration[]>([]);
@@ -37,7 +44,10 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
       setLoading(true);
       switch (activeTab) {
         case 'suggestions':
-          const suggestionsData = await aiStoryAssistantService.getUserSuggestions(user.id, storyId);
+          const suggestionsData = await aiStoryAssistantService.getUserSuggestions(
+            user.id,
+            storyId
+          );
           setSuggestions(suggestionsData);
           break;
         case 'plot-doctor':
@@ -174,7 +184,9 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
             </div>
           ) : suggestions.length === 0 ? (
             <div className="text-center py-12 bg-card border-2 border-border rounded-xl">
-              <p className="text-muted-foreground">No suggestions yet. Generate some to get started!</p>
+              <p className="text-muted-foreground">
+                No suggestions yet. Generate some to get started!
+              </p>
             </div>
           ) : (
             suggestions.map((suggestion, index) => (
@@ -200,7 +212,9 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
                     {suggestion.originalText && (
                       <div className="mb-2">
                         <p className="text-sm text-muted-foreground mb-1">Original:</p>
-                        <p className="text-foreground bg-gray-100 dark:bg-gray-800 p-2 rounded">{suggestion.originalText}</p>
+                        <p className="text-foreground bg-gray-100 dark:bg-gray-800 p-2 rounded">
+                          {suggestion.originalText}
+                        </p>
                       </div>
                     )}
                     {suggestion.suggestedText && (
@@ -212,7 +226,9 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
                       </div>
                     )}
                     {suggestion.reasoning && (
-                      <p className="text-sm text-muted-foreground mt-2 italic">{suggestion.reasoning}</p>
+                      <p className="text-sm text-muted-foreground mt-2 italic">
+                        {suggestion.reasoning}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -274,8 +290,14 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
                 </div>
               ) : analyses.length === 0 ? (
                 <div className="text-center py-12 bg-card border-2 border-border rounded-xl">
-                  <Icon name="BeakerIcon" size={48} className="mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No analyses yet. Run Plot Doctor to analyze your story!</p>
+                  <Icon
+                    name="BeakerIcon"
+                    size={48}
+                    className="mx-auto text-muted-foreground mb-4"
+                  />
+                  <p className="text-muted-foreground">
+                    No analyses yet. Run Plot Doctor to analyze your story!
+                  </p>
                 </div>
               ) : (
                 analyses.map((analysis, index) => (
@@ -336,9 +358,7 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
             <h3 className="text-lg font-bold text-foreground mb-4">Generate Ideas</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Idea Type
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-2">Idea Type</label>
                 <select
                   value={ideaType}
                   onChange={(e) => setIdeaType(e.target.value as any)}
@@ -386,7 +406,9 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
             </div>
           ) : ideas.length === 0 ? (
             <div className="text-center py-12 bg-card border-2 border-border rounded-xl">
-              <p className="text-muted-foreground">No ideas generated yet. Create some to get started!</p>
+              <p className="text-muted-foreground">
+                No ideas generated yet. Create some to get started!
+              </p>
             </div>
           ) : (
             ideas.map((idea, index) => (
@@ -438,4 +460,3 @@ export function AIStoryAssistant({ storyId, chapterId, className = '' }: AIStory
     </div>
   );
 }
-

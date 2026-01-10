@@ -24,25 +24,25 @@ export interface CanonAwareGenerationOptions {
   seriesId: string;
   bookId?: string;
   chapterNumber?: number;
-  
+
   // Generation type
   type: 'continuation' | 'dialogue' | 'description' | 'action' | 'chapter_outline' | 'scene';
-  
+
   // Current content context
   currentContent?: string;
   previousContent?: string;
-  
+
   // User prompt/direction
   prompt?: string;
-  
+
   // Character focus
   characterIds?: string[];
-  
+
   // Constraints
   wordCount?: { min: number; max: number };
   mustIncludeElements?: string[];
   mustAvoidElements?: string[];
-  
+
   // Generation parameters
   temperature?: number;
   creativity?: 'low' | 'medium' | 'high';
@@ -52,7 +52,7 @@ export interface CanonAwareGenerationResult {
   success: boolean;
   content: string;
   wordCount: number;
-  
+
   // Context used
   contextUsed: {
     charactersIncluded: string[];
@@ -60,11 +60,11 @@ export interface CanonAwareGenerationResult {
     arcsAdvanced: string[];
     rulesApplied: string[];
   };
-  
+
   // Canon checking
   violations: CanonViolation[];
   warnings: string[];
-  
+
   // Suggestions
   foreshadowingOpportunities?: string[];
   characterDevelopmentSuggestions?: string[];
@@ -78,7 +78,9 @@ class CanonAwareAIService {
   /**
    * Generate content with full series context and canon awareness
    */
-  async generateWithContext(options: CanonAwareGenerationOptions): Promise<CanonAwareGenerationResult> {
+  async generateWithContext(
+    options: CanonAwareGenerationOptions
+  ): Promise<CanonAwareGenerationResult> {
     const { seriesId, bookId, chapterNumber, type, currentContent, prompt, characterIds } = options;
 
     // Step 1: Compile generation context
@@ -99,7 +101,7 @@ class CanonAwareAIService {
     let characters: PersistentCharacter[] = [];
     if (characterIds && characterIds.length > 0) {
       const allCharacters = await persistentNarrativeEngine.getSeriesCharacters(seriesId);
-      characters = allCharacters.filter(c => characterIds.includes(c.id));
+      characters = allCharacters.filter((c) => characterIds.includes(c.id));
     } else if (context?.activeCharacters) {
       // Use active characters from context
       const allCharacters = await persistentNarrativeEngine.getSeriesCharacters(seriesId);
@@ -143,10 +145,12 @@ class CanonAwareAIService {
       content: generatedContent,
       wordCount,
       contextUsed: {
-        charactersIncluded: characters.map(c => c.name),
+        charactersIncluded: characters.map((c) => c.name),
         worldElementsReferenced: [], // TODO: Extract from content
-        arcsAdvanced: context?.activeArcs.map(a => a.name) || [],
-        rulesApplied: rules.map(r => r.ruleName || r.ruleDescription?.substring(0, 50) || 'unnamed rule'),
+        arcsAdvanced: context?.activeArcs.map((a) => a.name) || [],
+        rulesApplied: rules.map(
+          (r) => r.ruleName || r.ruleDescription?.substring(0, 50) || 'unnamed rule'
+        ),
       },
       violations,
       warnings,
@@ -186,7 +190,7 @@ Your role is to generate high-quality, consistent narrative content that respect
     // Add character context
     if (characters.length > 0) {
       systemPrompt += `CHARACTERS IN THIS SCENE:\n`;
-      characters.forEach(char => {
+      characters.forEach((char) => {
         systemPrompt += `\n• ${char.name} (${char.characterRole})\n`;
         if (char.currentStatus !== 'active') {
           systemPrompt += `  STATUS: ${char.currentStatus}\n`;
@@ -210,7 +214,7 @@ Your role is to generate high-quality, consistent narrative content that respect
     // Add active arcs context
     if (context?.activeArcs?.length > 0) {
       systemPrompt += `ACTIVE STORY ARCS (weave these in naturally):\n`;
-      context.activeArcs.forEach(arc => {
+      context.activeArcs.forEach((arc) => {
         systemPrompt += `• ${arc.name} (${arc.status}, ${arc.completion}% complete)\n`;
       });
       systemPrompt += '\n';
@@ -219,7 +223,7 @@ Your role is to generate high-quality, consistent narrative content that respect
     // Add canon rules
     if (rules.length > 0) {
       systemPrompt += `CANON RULES (you MUST follow these):\n`;
-      rules.forEach(rule => {
+      rules.forEach((rule) => {
         const typeLabel = rule.ruleType?.toUpperCase() || 'RULE';
         systemPrompt += `• [${typeLabel}] ${rule.ruleDescription}\n`;
       });
@@ -229,7 +233,7 @@ Your role is to generate high-quality, consistent narrative content that respect
     // Add pending foreshadowing
     if (context?.pendingPayoffs?.length > 0) {
       systemPrompt += `FORESHADOWING TO PAY OFF (if appropriate):\n`;
-      context.pendingPayoffs.slice(0, 3).forEach(payoff => {
+      context.pendingPayoffs.slice(0, 3).forEach((payoff) => {
         systemPrompt += `• ${payoff}\n`;
       });
       systemPrompt += '\n';
@@ -263,7 +267,7 @@ Your role is to generate high-quality, consistent narrative content that respect
         break;
 
       case 'dialogue':
-        userPrompt = `Write a dialogue scene between ${characters.map(c => c.name).join(' and ')}.`;
+        userPrompt = `Write a dialogue scene between ${characters.map((c) => c.name).join(' and ')}.`;
         if (currentContent) {
           userPrompt += `\n\nContext: ${currentContent}`;
         }
@@ -285,7 +289,7 @@ Your role is to generate high-quality, consistent narrative content that respect
       case 'action':
         userPrompt = `Write a dynamic action sequence.`;
         if (characters.length > 0) {
-          userPrompt += ` Characters involved: ${characters.map(c => c.name).join(', ')}.`;
+          userPrompt += ` Characters involved: ${characters.map((c) => c.name).join(', ')}.`;
         }
         if (currentContent) {
           userPrompt += `\n\nContext: ${currentContent}`;
@@ -308,7 +312,7 @@ Your role is to generate high-quality, consistent narrative content that respect
       case 'scene':
         userPrompt = `Write a complete scene.`;
         if (characters.length > 0) {
-          userPrompt += ` Featuring: ${characters.map(c => c.name).join(', ')}.`;
+          userPrompt += ` Featuring: ${characters.map((c) => c.name).join(', ')}.`;
         }
         if (prompt) {
           userPrompt += `\n\nScene: ${prompt}`;
@@ -431,18 +435,21 @@ GENERATION TYPE: Complete Scene
   /**
    * Generate warnings based on violations and context
    */
-  private generateWarnings(violations: CanonViolation[], context: GenerationContext | null): string[] {
+  private generateWarnings(
+    violations: CanonViolation[],
+    context: GenerationContext | null
+  ): string[] {
     const warnings: string[] = [];
 
     // Add violation-based warnings
-    violations.forEach(v => {
+    violations.forEach((v) => {
       if (v.violationDescription) {
         warnings.push(`Canon issue: ${v.violationDescription}`);
       }
     });
 
     // Add context-based warnings
-    if (context?.activeArcs.some(arc => arc.completion > 90 && arc.status !== 'resolved')) {
+    if (context?.activeArcs.some((arc) => arc.completion > 90 && arc.status !== 'resolved')) {
       warnings.push('Some arcs are near completion - consider payoff moments');
     }
 
@@ -477,9 +484,12 @@ GENERATION TYPE: Complete Scene
     if (options.temperature !== undefined) return options.temperature;
 
     switch (options.creativity) {
-      case 'low': return 0.5;
-      case 'high': return 0.9;
-      default: return 0.7;
+      case 'low':
+        return 0.5;
+      case 'high':
+        return 0.9;
+      default:
+        return 0.7;
     }
   }
 
@@ -540,4 +550,3 @@ GENERATION TYPE: Complete Scene
 
 // Export singleton instance
 export const canonAwareAIService = new CanonAwareAIService();
-

@@ -16,14 +16,16 @@ export function Confetti({
   colors = ['#8b5cf6', '#ec4899', '#3b82f6', '#10b981', '#f59e0b'],
   duration = 3,
 }: ConfettiProps) {
-  const [particles, setParticles] = useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    color: string;
-    rotation: number;
-    delay: number;
-  }>>([]);
+  const [particles, setParticles] = useState<
+    Array<{
+      id: number;
+      x: number;
+      y: number;
+      color: string;
+      rotation: number;
+      delay: number;
+    }>
+  >([]);
 
   useEffect(() => {
     if (trigger) {
@@ -74,4 +76,3 @@ export function Confetti({
     </div>
   );
 }
-

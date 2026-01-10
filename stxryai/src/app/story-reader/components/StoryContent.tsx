@@ -64,9 +64,9 @@ export default function StoryContent({
       <PrismPanel tone="glass" className="relative overflow-hidden shadow-elevation-3 group">
         {/* Holographic background effect */}
         <div className="holographic-wrapper absolute inset-0 opacity-20 pointer-events-none">
-           <div className="holographic-shimmer" style={{ '--speed': '8s' } as any} />
+          <div className="holographic-shimmer" style={{ '--speed': '8s' } as any} />
         </div>
-        
+
         {/* Particle field for atmosphere */}
         <div className="particle-field bg-[url('/particles.png')] bg-repeat opacity-10 animate-float" />
 
@@ -80,7 +80,7 @@ export default function StoryContent({
                 </span>
                 <span>Chapter {chapterNumber}</span>
               </div>
-              
+
               <PrismText variant="h1" gradient="silver" className="leading-tight drop-shadow-lg">
                 {chapter?.title || 'Untitled Chapter'}
               </PrismText>
@@ -104,10 +104,10 @@ export default function StoryContent({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
               >
-                <p 
-                  className="whitespace-pre-wrap text-slate-200 drop-shadow-sm" 
+                <p
+                  className="whitespace-pre-wrap text-slate-200 drop-shadow-sm"
                   style={{ fontSize: `${fontSize}px`, lineHeight: 1.8 }}
                 >
                   {chapter?.content || 'No content available.'}
@@ -116,7 +116,7 @@ export default function StoryContent({
 
               {/* AI-generated segments (whisper channel) */}
               {aiSegments && aiSegments.length > 0 && (
-                <motion.aside 
+                <motion.aside
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
@@ -145,7 +145,7 @@ export default function StoryContent({
             </div>
           </div>
         </div>
-        
+
         {/* Bottom fade for scroll indication */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-20" />
       </PrismPanel>

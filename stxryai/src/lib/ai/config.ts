@@ -72,12 +72,7 @@ export const DEFAULT_AI_CONFIG: Omit<AIConfig, 'apiKey'> = {
 
 // Model options for each provider
 export const AI_MODELS = {
-  openai: [
-    'gpt-4o',
-    'gpt-4o-mini',
-    'gpt-4-turbo',
-    'gpt-4',
-  ],
+  openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4'],
   anthropic: [
     'claude-3-5-sonnet-20241022',
     'claude-3-5-haiku-20241022',
@@ -91,7 +86,9 @@ export function getAIApiKey(provider: AIProvider): string {
   const key = provider === 'openai' ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY;
 
   if (!key) {
-    throw new Error(`${provider.toUpperCase()} API key not configured. Please set ${provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY'} environment variable.`);
+    throw new Error(
+      `${provider.toUpperCase()} API key not configured. Please set ${provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY'} environment variable.`
+    );
   }
 
   return key;
@@ -126,13 +123,11 @@ export function getAIConfig(): AIConfig {
 export function getTaskConfig(task: keyof typeof TASK_CONFIGS): AIConfig {
   const provider = getActiveProvider();
   const taskConfig = TASK_CONFIGS[task];
-  
+
   return {
     provider,
     apiKey: getAIApiKey(provider),
-    model: provider === 'openai' 
-      ? taskConfig.model 
-      : ANTHROPIC_MODELS.default,
+    model: provider === 'openai' ? taskConfig.model : ANTHROPIC_MODELS.default,
     maxTokens: taskConfig.maxTokens,
     temperature: taskConfig.temperature,
   };

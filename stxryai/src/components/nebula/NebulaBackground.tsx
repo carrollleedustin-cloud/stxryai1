@@ -43,12 +43,12 @@ export function NebulaBackground({
   const containerRef = useRef<HTMLDivElement>(null);
   const [stars, setStars] = useState<Star[]>([]);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const smoothMouseX = useSpring(mouseX, { stiffness: 50, damping: 20 });
   const smoothMouseY = useSpring(mouseY, { stiffness: 50, damping: 20 });
-  
+
   // Initialize stars
   useEffect(() => {
     const updateDimensions = () => {
@@ -56,18 +56,18 @@ export function NebulaBackground({
         setDimensions({ width: window.innerWidth, height: window.innerHeight });
       }
     };
-    
+
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
-  
+
   useEffect(() => {
     if (dimensions.width === 0) return;
-    
+
     const colors = COLORS[variant];
     const newStars: Star[] = [];
-    
+
     for (let i = 0; i < particleCount; i++) {
       newStars.push({
         id: i,
@@ -79,39 +79,43 @@ export function NebulaBackground({
         color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
-    
+
     setStars(newStars);
   }, [dimensions, particleCount, variant]);
-  
+
   // Mouse tracking
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!interactive) return;
-    mouseX.set(e.clientX);
-    mouseY.set(e.clientY);
-  }, [interactive, mouseX, mouseY]);
-  
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!interactive) return;
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    },
+    [interactive, mouseX, mouseY]
+  );
+
   // Background gradient transforms based on mouse
   const gradientX = useTransform(smoothMouseX, [0, dimensions.width], [20, 80]);
   const gradientY = useTransform(smoothMouseY, [0, dimensions.height], [20, 80]);
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`fixed inset-0 overflow-hidden pointer-events-none ${className}`}
       style={{ zIndex: -1 }}
     >
       {/* Base gradient layer */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0"
         style={{
-          background: variant === 'kids' 
-            ? 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
-            : variant === 'subtle'
-            ? 'linear-gradient(180deg, #03030a 0%, #070714 50%, #0c0c1e 100%)'
-            : 'linear-gradient(180deg, #000000 0%, #03030a 30%, #070714 60%, #0c0c1e 100%)',
+          background:
+            variant === 'kids'
+              ? 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
+              : variant === 'subtle'
+                ? 'linear-gradient(180deg, #03030a 0%, #070714 50%, #0c0c1e 100%)'
+                : 'linear-gradient(180deg, #000000 0%, #03030a 30%, #070714 60%, #0c0c1e 100%)',
         }}
       />
-      
+
       {/* Interactive nebula clouds */}
       <motion.div
         className="absolute inset-0"
@@ -123,7 +127,7 @@ export function NebulaBackground({
         }}
         onMouseMove={handleMouseMove}
       />
-      
+
       {/* Animated nebula blob 1 */}
       <motion.div
         className="absolute"
@@ -132,9 +136,10 @@ export function NebulaBackground({
           height: '60vw',
           left: '10%',
           top: '20%',
-          background: variant === 'kids'
-            ? 'radial-gradient(circle, rgba(155,93,229,0.1) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(0,255,213,0.05) 0%, transparent 70%)',
+          background:
+            variant === 'kids'
+              ? 'radial-gradient(circle, rgba(155,93,229,0.1) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(0,255,213,0.05) 0%, transparent 70%)',
           filter: 'blur(60px)',
           borderRadius: '40% 60% 60% 40% / 60% 40% 60% 40%',
         }}
@@ -154,7 +159,7 @@ export function NebulaBackground({
           ease: 'easeInOut',
         }}
       />
-      
+
       {/* Animated nebula blob 2 */}
       <motion.div
         className="absolute"
@@ -163,9 +168,10 @@ export function NebulaBackground({
           height: '50vw',
           right: '10%',
           bottom: '20%',
-          background: variant === 'kids'
-            ? 'radial-gradient(circle, rgba(241,91,181,0.1) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(128,32,255,0.05) 0%, transparent 70%)',
+          background:
+            variant === 'kids'
+              ? 'radial-gradient(circle, rgba(241,91,181,0.1) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(128,32,255,0.05) 0%, transparent 70%)',
           filter: 'blur(50px)',
           borderRadius: '60% 40% 50% 50% / 40% 60% 40% 60%',
         }}
@@ -185,7 +191,7 @@ export function NebulaBackground({
           ease: 'easeInOut',
         }}
       />
-      
+
       {/* Star field */}
       <svg className="absolute inset-0 w-full h-full">
         {stars.map((star) => (
@@ -211,7 +217,7 @@ export function NebulaBackground({
           />
         ))}
       </svg>
-      
+
       {/* Constellation lines (subtle) */}
       <svg className="absolute inset-0 w-full h-full opacity-20">
         {stars.slice(0, 20).map((star, i) => {
@@ -219,7 +225,7 @@ export function NebulaBackground({
           if (!nextStar) return null;
           const distance = Math.hypot(nextStar.x - star.x, nextStar.y - star.y);
           if (distance > 300) return null;
-          
+
           return (
             <motion.line
               key={`line-${i}`}
@@ -236,9 +242,9 @@ export function NebulaBackground({
           );
         })}
       </svg>
-      
+
       {/* Grain overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
@@ -275,7 +281,7 @@ export function ShootingStar({ delay = 0 }: { delay?: number }) {
         ease: 'easeOut',
       }}
     >
-      <div 
+      <div
         className="absolute -top-px left-0 w-24 h-px"
         style={{
           background: 'linear-gradient(90deg, rgba(0,255,213,0.8), transparent)',
@@ -288,5 +294,3 @@ export function ShootingStar({ delay = 0 }: { delay?: number }) {
 }
 
 export default NebulaBackground;
-
-

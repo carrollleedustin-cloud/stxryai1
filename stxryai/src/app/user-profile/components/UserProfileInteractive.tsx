@@ -4,8 +4,20 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import VoidBackground from '@/components/void/VoidBackground';
-import { EtherealNav, TemporalHeading, StaggerContainer, StaggerItem, AnimatedCounter, ParticleField } from '@/components/void';
-import { HolographicCard, RevealOnScroll, GradientBorder, NeonText } from '@/components/void/AdvancedEffects';
+import {
+  EtherealNav,
+  TemporalHeading,
+  StaggerContainer,
+  StaggerItem,
+  AnimatedCounter,
+  ParticleField,
+} from '@/components/void';
+import {
+  HolographicCard,
+  RevealOnScroll,
+  GradientBorder,
+  NeonText,
+} from '@/components/void/AdvancedEffects';
 import SpectralButton from '@/components/void/SpectralButton';
 import { UserProfile, Story, Achievement } from '@/types/database';
 import { ReadingClub } from '@/services/communityService';
@@ -57,26 +69,36 @@ const UserProfileInteractive = ({
   const router = useRouter();
   const { user, profile, loading } = useAuth();
   const [isHydrated, setIsHydrated] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'achievements' | 'history' | 'social'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'achievements' | 'history' | 'social'>(
+    'overview'
+  );
   const [readingHistory, setReadingHistory] = useState<any[]>([]);
   const [characterSheet, setCharacterSheet] = useState<CharacterSheet | null>(null);
 
   // Use real user data if logged in, otherwise use mock data
-  const currentUser = user && profile ? {
-    id: user.id,
-    name: profile.display_name || profile.username || 'User',
-    username: profile.username || 'user',
-    avatar: profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
-    bio: profile.bio || 'No bio yet. Edit your profile to add one!',
-    isPremium: profile.subscription_tier !== 'free',
-    joinDate: new Date(profile.created_at || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-    location: profile.location || null,
-    website: profile.website || null,
-  } : initialUser;
+  const currentUser =
+    user && profile
+      ? {
+          id: user.id,
+          name: profile.display_name || profile.username || 'User',
+          username: profile.username || 'user',
+          avatar:
+            profile.avatar_url ||
+            'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+          bio: profile.bio || 'No bio yet. Edit your profile to add one!',
+          isPremium: profile.subscription_tier !== 'free',
+          joinDate: new Date(profile.created_at || Date.now()).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          }),
+          location: profile.location || null,
+          website: profile.website || null,
+        }
+      : initialUser;
 
   useEffect(() => {
     setIsHydrated(true);
-    
+
     // Load character sheet from localStorage
     const savedSheet = localStorage.getItem('stxryai_character_sheet');
     if (savedSheet) {
@@ -86,7 +108,7 @@ const UserProfileInteractive = ({
         console.error('Failed to parse character sheet:', e);
       }
     }
-    
+
     const fetchReadingHistory = async () => {
       try {
         const userId = user?.id || initialUser.id;
@@ -123,7 +145,9 @@ const UserProfileInteractive = ({
             <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-8 text-center">
               <Icon name="UserCircleIcon" size={64} className="text-spectral-cyan mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-void-100 mb-2">Sign In Required</h2>
-              <p className="text-void-400 mb-6">Please sign in to view your profile and access all features.</p>
+              <p className="text-void-400 mb-6">
+                Please sign in to view your profile and access all features.
+              </p>
               <Link href="/authentication?redirect=/user-profile">
                 <SpectralButton variant="primary" size="lg" className="w-full">
                   <Icon name="ArrowRightOnRectangleIcon" size={20} className="mr-2" />
@@ -153,10 +177,14 @@ const UserProfileInteractive = ({
 
   const getRarityGlow = (rarity: string) => {
     switch (rarity) {
-      case 'legendary': return 'shadow-xl shadow-yellow-500/30';
-      case 'epic': return 'shadow-lg shadow-purple-500/30';
-      case 'rare': return 'shadow-md shadow-blue-500/30';
-      default: return '';
+      case 'legendary':
+        return 'shadow-xl shadow-yellow-500/30';
+      case 'epic':
+        return 'shadow-lg shadow-purple-500/30';
+      case 'rare':
+        return 'shadow-md shadow-blue-500/30';
+      default:
+        return '';
     }
   };
 
@@ -178,7 +206,10 @@ const UserProfileInteractive = ({
                       className="relative w-32 h-32 md:w-40 md:h-40"
                       whileHover={{ scale: 1.05 }}
                     >
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-spectral-cyan via-spectral-violet to-spectral-pink animate-spin-slow" style={{ animationDuration: '8s' }} />
+                      <div
+                        className="absolute inset-0 rounded-full bg-gradient-to-br from-spectral-cyan via-spectral-violet to-spectral-pink animate-spin-slow"
+                        style={{ animationDuration: '8s' }}
+                      />
                       <img
                         src={currentUser.avatar}
                         alt={currentUser.name}
@@ -195,7 +226,9 @@ const UserProfileInteractive = ({
                   {/* Info */}
                   <div className="flex-1 text-center md:text-left">
                     <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                      <h1 className="text-3xl md:text-4xl font-bold text-void-100">{currentUser.name}</h1>
+                      <h1 className="text-3xl md:text-4xl font-bold text-void-100">
+                        {currentUser.name}
+                      </h1>
                       {currentUser.isPremium && (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-yellow-400 text-sm font-medium">
                           <Icon name="CrownIcon" size={14} />
@@ -217,7 +250,10 @@ const UserProfileInteractive = ({
                         </span>
                       )}
                       {currentUser.website && (
-                        <a href={currentUser.website} className="flex items-center gap-1 text-spectral-cyan hover:underline">
+                        <a
+                          href={currentUser.website}
+                          className="flex items-center gap-1 text-spectral-cyan hover:underline"
+                        >
                           <Icon name="LinkIcon" size={14} />
                           Website
                         </a>
@@ -233,15 +269,15 @@ const UserProfileInteractive = ({
                         Edit Profile
                       </SpectralButton>
                     </Link>
-                    <SpectralButton 
-                      variant="ghost" 
+                    <SpectralButton
+                      variant="ghost"
                       size="md"
                       onClick={() => {
                         if (navigator.share) {
                           navigator.share({
                             title: `${currentUser.name}'s Profile`,
                             text: `Check out ${currentUser.name}'s profile on StxryAI`,
-                            url: window.location.href
+                            url: window.location.href,
                           });
                         } else {
                           navigator.clipboard.writeText(window.location.href);
@@ -296,9 +332,10 @@ const UserProfileInteractive = ({
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     relative px-6 py-3 rounded-lg font-medium transition-all duration-300 flex items-center gap-2
-                    ${activeTab === tab.id 
-                      ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50' 
-                      : 'bg-void-900/50 text-void-400 border border-void-700/50 hover:border-spectral-cyan/30'
+                    ${
+                      activeTab === tab.id
+                        ? 'bg-gradient-to-r from-spectral-cyan/20 to-spectral-violet/20 text-void-100 border border-spectral-cyan/50'
+                        : 'bg-void-900/50 text-void-400 border border-void-700/50 hover:border-spectral-cyan/30'
                     }
                   `}
                   whileHover={{ scale: 1.02 }}
@@ -332,8 +369,13 @@ const UserProfileInteractive = ({
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                       {Object.entries(initialChoicePatterns).map(([pattern, value]) => (
-                        <div key={pattern} className="text-center p-4 rounded-lg bg-void-900/50 border border-void-800/50">
-                          <div className="text-2xl font-bold text-spectral-cyan mb-1">{value as number}%</div>
+                        <div
+                          key={pattern}
+                          className="text-center p-4 rounded-lg bg-void-900/50 border border-void-800/50"
+                        >
+                          <div className="text-2xl font-bold text-spectral-cyan mb-1">
+                            {value as number}%
+                          </div>
                           <p className="text-sm text-void-500 capitalize">{pattern}</p>
                         </div>
                       ))}
@@ -371,7 +413,11 @@ const UserProfileInteractive = ({
                             whileHover={{ scale: 1.02 }}
                           >
                             <div className="aspect-[3/2] relative">
-                              <img src={story.cover} alt={story.title} className="w-full h-full object-cover" />
+                              <img
+                                src={story.cover}
+                                alt={story.title}
+                                className="w-full h-full object-cover"
+                              />
                               <div className="absolute inset-0 bg-gradient-to-t from-void-950 via-void-950/50 to-transparent" />
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -459,35 +505,51 @@ const UserProfileInteractive = ({
                         {/* Core Signs */}
                         <div className="text-center">
                           <div className="flex justify-center gap-2 mb-3">
-                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.sunSign)}</span>
-                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.moonSign)}</span>
-                            <span className="text-3xl">{getZodiacEmoji(characterSheet.coreAlignment.risingSign)}</span>
+                            <span className="text-3xl">
+                              {getZodiacEmoji(characterSheet.coreAlignment.sunSign)}
+                            </span>
+                            <span className="text-3xl">
+                              {getZodiacEmoji(characterSheet.coreAlignment.moonSign)}
+                            </span>
+                            <span className="text-3xl">
+                              {getZodiacEmoji(characterSheet.coreAlignment.risingSign)}
+                            </span>
                           </div>
                           <h4 className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-spectral-cyan to-spectral-violet">
                             {characterSheet.personalityArchetype.title}
                           </h4>
-                          <p className="text-sm text-void-500 italic mt-1">"{characterSheet.coreAlignment.tagline}"</p>
+                          <p className="text-sm text-void-500 italic mt-1">
+                            "{characterSheet.coreAlignment.tagline}"
+                          </p>
                         </div>
 
                         {/* Core Signs Grid */}
                         <div className="grid grid-cols-3 gap-2">
                           <div className="text-center p-2 rounded-lg bg-void-900/50">
                             <p className="text-xs text-void-500">Sun</p>
-                            <p className="text-sm font-bold text-yellow-400">{characterSheet.coreAlignment.sunSign}</p>
+                            <p className="text-sm font-bold text-yellow-400">
+                              {characterSheet.coreAlignment.sunSign}
+                            </p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-void-900/50">
                             <p className="text-xs text-void-500">Moon</p>
-                            <p className="text-sm font-bold text-blue-300">{characterSheet.coreAlignment.moonSign}</p>
+                            <p className="text-sm font-bold text-blue-300">
+                              {characterSheet.coreAlignment.moonSign}
+                            </p>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-void-900/50">
                             <p className="text-xs text-void-500">Rising</p>
-                            <p className="text-sm font-bold text-purple-400">{characterSheet.coreAlignment.risingSign}</p>
+                            <p className="text-sm font-bold text-purple-400">
+                              {characterSheet.coreAlignment.risingSign}
+                            </p>
                           </div>
                         </div>
 
                         {/* Signature Quote */}
                         <div className="p-3 rounded-lg bg-gradient-to-br from-spectral-cyan/10 to-spectral-violet/10 border border-spectral-cyan/20">
-                          <p className="text-sm text-void-300 italic text-center">{characterSheet.signatureQuote}</p>
+                          <p className="text-sm text-void-300 italic text-center">
+                            {characterSheet.signatureQuote}
+                          </p>
                         </div>
 
                         <Link href="/profile/character-sheet" className="block">
@@ -500,7 +562,7 @@ const UserProfileInteractive = ({
                       <div className="text-center py-6">
                         <motion.div
                           className="text-5xl mb-4"
-                          animate={{ 
+                          animate={{
                             scale: [1, 1.1, 1],
                             rotate: [0, 5, -5, 0],
                           }}
@@ -509,7 +571,8 @@ const UserProfileInteractive = ({
                           🌟
                         </motion.div>
                         <p className="text-void-400 mb-4">
-                          Discover your cosmic blueprint with a personalized Character Sheet based on your birth chart.
+                          Discover your cosmic blueprint with a personalized Character Sheet based
+                          on your birth chart.
                         </p>
                         <Link href="/profile/character-sheet">
                           <SpectralButton variant="primary" size="sm" className="w-full">
@@ -550,7 +613,9 @@ const UserProfileInteractive = ({
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-void-100 truncate">{friend.name}</p>
                             <p className="text-xs text-void-500 truncate">
-                              {friend.isOnline ? friend.currentStory : `Last seen ${friend.lastActive}`}
+                              {friend.isOnline
+                                ? friend.currentStory
+                                : `Last seen ${friend.lastActive}`}
                             </p>
                           </div>
                           <SpectralButton variant="ghost" size="sm">
@@ -591,13 +656,19 @@ const UserProfileInteractive = ({
                             <div className="flex items-center gap-2">
                               <p className="font-medium text-void-100 truncate">{club.name}</p>
                               {club.role === 'admin' && (
-                                <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">Admin</span>
+                                <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">
+                                  Admin
+                                </span>
                               )}
                               {club.role === 'moderator' && (
-                                <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">Mod</span>
+                                <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">
+                                  Mod
+                                </span>
                               )}
                             </div>
-                            <p className="text-xs text-void-500">{club.memberCount?.toLocaleString()} members</p>
+                            <p className="text-xs text-void-500">
+                              {club.memberCount?.toLocaleString()} members
+                            </p>
                           </div>
                         </motion.div>
                       ))}
@@ -648,7 +719,10 @@ const UserProfileInteractive = ({
                     <div className="flex items-center justify-between mb-8">
                       <div>
                         <h2 className="text-2xl font-bold text-void-100">Achievements</h2>
-                        <p className="text-void-500">{initialAchievements.filter((a: any) => a.unlockedAt).length} of {initialAchievements.length} unlocked</p>
+                        <p className="text-void-500">
+                          {initialAchievements.filter((a: any) => a.unlockedAt).length} of{' '}
+                          {initialAchievements.length} unlocked
+                        </p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2 text-sm">
@@ -675,19 +749,22 @@ const UserProfileInteractive = ({
                           key={achievement.id}
                           className={`
                             relative p-4 rounded-xl border transition-all
-                            ${achievement.unlockedAt 
-                              ? `bg-void-900/50 border-void-700/50 ${getRarityGlow(achievement.rarity)}`
-                              : 'bg-void-950/50 border-void-800/30 opacity-50'
+                            ${
+                              achievement.unlockedAt
+                                ? `bg-void-900/50 border-void-700/50 ${getRarityGlow(achievement.rarity)}`
+                                : 'bg-void-950/50 border-void-800/30 opacity-50'
                             }
                           `}
                           whileHover={{ scale: achievement.unlockedAt ? 1.02 : 1 }}
                         >
                           <div className="flex items-start gap-4">
-                            <div className={`
+                            <div
+                              className={`
                               w-14 h-14 rounded-xl flex items-center justify-center text-2xl
                               bg-gradient-to-br ${rarityColors[achievement.rarity] || rarityColors.common}
                               ${!achievement.unlockedAt && 'grayscale'}
-                            `}>
+                            `}
+                            >
                               {achievement.icon === 'BookOpenIcon' && '📖'}
                               {achievement.icon === 'BoltIcon' && '⚡'}
                               {achievement.icon === 'MoonIcon' && '🌙'}
@@ -701,19 +778,30 @@ const UserProfileInteractive = ({
                               {achievement.progress !== undefined && achievement.maxProgress && (
                                 <div className="mt-2">
                                   <div className="flex justify-between text-xs text-void-500 mb-1">
-                                    <span>{achievement.progress} / {achievement.maxProgress}</span>
-                                    <span>{Math.round((achievement.progress / achievement.maxProgress) * 100)}%</span>
+                                    <span>
+                                      {achievement.progress} / {achievement.maxProgress}
+                                    </span>
+                                    <span>
+                                      {Math.round(
+                                        (achievement.progress / achievement.maxProgress) * 100
+                                      )}
+                                      %
+                                    </span>
                                   </div>
                                   <div className="h-1.5 bg-void-800 rounded-full overflow-hidden">
                                     <div
                                       className={`h-full rounded-full bg-gradient-to-r ${rarityColors[achievement.rarity]}`}
-                                      style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
+                                      style={{
+                                        width: `${(achievement.progress / achievement.maxProgress) * 100}%`,
+                                      }}
                                     />
                                   </div>
                                 </div>
                               )}
                               {achievement.unlockedAt && (
-                                <p className="text-xs text-void-600 mt-2">Unlocked {achievement.unlockedAt}</p>
+                                <p className="text-xs text-void-600 mt-2">
+                                  Unlocked {achievement.unlockedAt}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -762,8 +850,8 @@ const UserProfileInteractive = ({
                                 <div
                                   className="h-full bg-gradient-to-r from-spectral-cyan to-spectral-violet rounded-full"
                                   style={{ width: `${story.completionRate}%` }}
-              />
-            </div>
+                                />
+                              </div>
                               <span className="text-xs text-void-400">{story.completionRate}%</span>
                             </div>
                           </div>
@@ -866,10 +954,14 @@ const UserProfileInteractive = ({
                               <div className="flex items-center gap-2">
                                 <h3 className="font-semibold text-void-100">{club.name}</h3>
                                 {club.role === 'admin' && (
-                                  <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">Admin</span>
+                                  <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400 text-xs">
+                                    Admin
+                                  </span>
                                 )}
                                 {club.role === 'moderator' && (
-                                  <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">Mod</span>
+                                  <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 text-xs">
+                                    Mod
+                                  </span>
                                 )}
                               </div>
                               <p className="text-sm text-void-500 mt-1">{club.description}</p>
@@ -884,8 +976,8 @@ const UserProfileInteractive = ({
                           </div>
                         </div>
                       ))}
-            </div>
-          </div>
+                    </div>
+                  </div>
                 </GradientBorder>
               </motion.div>
             )}

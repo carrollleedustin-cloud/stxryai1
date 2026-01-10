@@ -167,54 +167,54 @@ export const NOTIFICATION_TEMPLATES: Record<
 
 export const notificationService = {
   /**
-    * Get user's notifications
-    */
-   async getNotifications(
-     userId: string,
-     options?: {
-       unreadOnly?: boolean;
-       limit?: number;
-       offset?: number;
-     }
-   ): Promise<Notification[]> {
-     try {
-       if (!userId || typeof userId !== 'string') {
-         console.error('Invalid userId provided to getNotifications');
-         return [];
-       }
+   * Get user's notifications
+   */
+  async getNotifications(
+    userId: string,
+    options?: {
+      unreadOnly?: boolean;
+      limit?: number;
+      offset?: number;
+    }
+  ): Promise<Notification[]> {
+    try {
+      if (!userId || typeof userId !== 'string') {
+        console.error('Invalid userId provided to getNotifications');
+        return [];
+      }
 
-       let query = supabase
-         .from('notifications')
-         .select('*')
-         .eq('user_id', userId)
-         .eq('is_archived', false)
-         .order('created_at', { ascending: false });
+      let query = supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_archived', false)
+        .order('created_at', { ascending: false });
 
-       if (options?.unreadOnly) {
-         query = query.eq('is_read', false);
-       }
+      if (options?.unreadOnly) {
+        query = query.eq('is_read', false);
+      }
 
-       if (options?.limit) {
-         query = query.limit(Math.min(options.limit, 100)); // Max 100
-       }
+      if (options?.limit) {
+        query = query.limit(Math.min(options.limit, 100)); // Max 100
+      }
 
-       if (options?.offset) {
-         query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
-       }
+      if (options?.offset) {
+        query = query.range(options.offset, options.offset + (options.limit || 20) - 1);
+      }
 
-       const { data, error } = await query;
+      const { data, error } = await query;
 
-       if (error) {
-         console.error('Database error fetching notifications:', error);
-         return [];
-       }
+      if (error) {
+        console.error('Database error fetching notifications:', error);
+        return [];
+      }
 
-       return data || [];
-     } catch (error) {
-       console.error('Unexpected error in getNotifications:', error);
-       return [];
-     }
-   },
+      return data || [];
+    } catch (error) {
+      console.error('Unexpected error in getNotifications:', error);
+      return [];
+    }
+  },
 
   /**
    * Get unread count
@@ -274,15 +274,30 @@ export const notificationService = {
     const prefs = await this.getUserPreferences(userId);
     if (prefs?.push_enabled && this.shouldSendPush(type, prefs)) {
       // Map notification type to push notification type
-      let pushType: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation' | undefined;
+      let pushType:
+        | 'story_update'
+        | 'friend_activity'
+        | 'engagement_reminder'
+        | 'social'
+        | 'personalized_recommendation'
+        | undefined;
       const storyTypes: NotificationType[] = ['story_comment', 'story_rating', 'story_featured'];
-      const socialTypes: NotificationType[] = ['follower_new', 'following_activity', 'club_invite', 'club_activity'];
-      const reminderTypes: NotificationType[] = ['reading_reminder', 'streak_milestone', 'goal_completed'];
-      
+      const socialTypes: NotificationType[] = [
+        'follower_new',
+        'following_activity',
+        'club_invite',
+        'club_activity',
+      ];
+      const reminderTypes: NotificationType[] = [
+        'reading_reminder',
+        'streak_milestone',
+        'goal_completed',
+      ];
+
       if (storyTypes.includes(type)) pushType = 'story_update';
       else if (socialTypes.includes(type)) pushType = 'social';
       else if (reminderTypes.includes(type)) pushType = 'engagement_reminder';
-      
+
       await this.sendPushNotification(userId, title, message, options?.actionUrl, {
         notificationType: pushType,
         tag: type,
@@ -440,8 +455,18 @@ export const notificationService = {
 
     // Check type-specific preferences
     const storyTypes: NotificationType[] = ['story_comment', 'story_rating', 'story_featured'];
-    const socialTypes: NotificationType[] = ['follower_new', 'following_activity', 'club_invite', 'club_activity'];
-    const achievementTypes: NotificationType[] = ['achievement_unlocked', 'badge_earned', 'streak_milestone', 'goal_completed'];
+    const socialTypes: NotificationType[] = [
+      'follower_new',
+      'following_activity',
+      'club_invite',
+      'club_activity',
+    ];
+    const achievementTypes: NotificationType[] = [
+      'achievement_unlocked',
+      'badge_earned',
+      'streak_milestone',
+      'goal_completed',
+    ];
     const reminderTypes: NotificationType[] = ['reading_reminder'];
 
     if (storyTypes.includes(type)) return prefs.push_story_activity;
@@ -455,10 +480,7 @@ export const notificationService = {
   /**
    * Subscribe to push notifications
    */
-  async subscribeToPush(
-    userId: string,
-    subscription: PushSubscription
-  ): Promise<boolean> {
+  async subscribeToPush(userId: string, subscription: PushSubscription): Promise<boolean> {
     const { error } = await supabase.from('push_subscriptions').upsert({
       user_id: userId,
       endpoint: subscription.endpoint,
@@ -508,7 +530,12 @@ export const notificationService = {
       data?: Record<string, any>;
       tag?: string;
       requireInteraction?: boolean;
-      notificationType?: 'story_update' | 'friend_activity' | 'engagement_reminder' | 'social' | 'personalized_recommendation';
+      notificationType?:
+        | 'story_update'
+        | 'friend_activity'
+        | 'engagement_reminder'
+        | 'social'
+        | 'personalized_recommendation';
     }
   ): Promise<boolean> {
     try {
@@ -547,10 +574,7 @@ export const notificationService = {
   /**
    * Subscribe to real-time notifications
    */
-  subscribeToRealtime(
-    userId: string,
-    callback: (notification: Notification) => void
-  ): () => void {
+  subscribeToRealtime(userId: string, callback: (notification: Notification) => void): () => void {
     const subscription = supabase
       .channel(`notifications:${userId}`)
       .on(
@@ -598,10 +622,7 @@ export const notificationService = {
       is_archived: false,
     }));
 
-    const { data, error } = await supabase
-      .from('notifications')
-      .insert(notifications)
-      .select('id');
+    const { data, error } = await supabase.from('notifications').insert(notifications).select('id');
 
     if (error) {
       console.error('Error creating batch notifications:', error);

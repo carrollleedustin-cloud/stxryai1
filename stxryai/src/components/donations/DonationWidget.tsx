@@ -35,9 +35,8 @@ export default function DonationWidget({ compact = false, onClose }: DonationWid
 
   const getCurrentTier = () => {
     const amount = getAmount();
-    return tiers.find(t => 
-      amount >= t.minAmount && 
-      (t.maxAmount === undefined || amount <= t.maxAmount)
+    return tiers.find(
+      (t) => amount >= t.minAmount && (t.maxAmount === undefined || amount <= t.maxAmount)
     );
   };
 
@@ -90,7 +89,7 @@ export default function DonationWidget({ compact = false, onClose }: DonationWid
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => window.location.href = '/donate'}
+        onClick={() => (window.location.href = '/donate')}
         className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 rounded-full text-white font-medium shadow-lg shadow-pink-500/25 transition-all"
       >
         <Heart className="w-4 h-4" />
@@ -119,9 +118,7 @@ export default function DonationWidget({ compact = false, onClose }: DonationWid
           <Heart className="w-8 h-8" />
           <h2 className="text-2xl font-bold">Support StxryAI</h2>
         </div>
-        <p className="text-pink-100">
-          Help us build the future of interactive storytelling
-        </p>
+        <p className="text-pink-100">Help us build the future of interactive storytelling</p>
       </div>
 
       <div className="p-6">
@@ -259,8 +256,8 @@ export default function DonationWidget({ compact = false, onClose }: DonationWid
 
             {/* Info */}
             <p className="text-center text-xs text-gray-500 mt-4">
-              Donations support platform development. You'll receive a special badge 
-              displayed next to your username. No gameplay advantages - just our gratitude!
+              Donations support platform development. You'll receive a special badge displayed next
+              to your username. No gameplay advantages - just our gratitude!
             </p>
           </>
         )}
@@ -288,14 +285,14 @@ export default function DonationWidget({ compact = false, onClose }: DonationWid
 }
 
 // Badge display component for user profiles
-export function DonationBadge({ 
-  emoji, 
-  tier, 
-  size = 'md' 
-}: { 
-  emoji: string; 
-  tier: string; 
-  size?: 'sm' | 'md' | 'lg' 
+export function DonationBadge({
+  emoji,
+  tier,
+  size = 'md',
+}: {
+  emoji: string;
+  tier: string;
+  size?: 'sm' | 'md' | 'lg';
 }) {
   const sizeClasses = {
     sm: 'text-sm',
@@ -313,4 +310,3 @@ export function DonationBadge({
     </span>
   );
 }
-

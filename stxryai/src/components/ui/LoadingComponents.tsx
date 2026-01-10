@@ -77,7 +77,13 @@ export function PulseLoader() {
 }
 
 // Full Page Loader
-export function FullPageLoader({ message = 'Loading...', progress }: { message?: string; progress?: number }) {
+export function FullPageLoader({
+  message = 'Loading...',
+  progress,
+}: {
+  message?: string;
+  progress?: number;
+}) {
   return (
     <div className="fixed inset-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="text-center space-y-6 max-w-sm w-full px-4">

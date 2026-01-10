@@ -76,13 +76,13 @@ export function MagicButton({
 }: MagicButtonProps) {
   const [isPressed, setIsPressed] = useState(false);
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([]);
-  
+
   const variantStyle = VARIANTS[variant];
   const sizeStyle = SIZES[size];
-  
+
   const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     if (disabled || loading) return;
-    
+
     // Create sparkles
     const rect = e.currentTarget.getBoundingClientRect();
     const newSparkles = Array.from({ length: 6 }, (_, i) => ({
@@ -90,13 +90,13 @@ export function MagicButton({
       x: Math.random() * rect.width,
       y: Math.random() * rect.height,
     }));
-    
+
     setSparkles(newSparkles);
     setTimeout(() => setSparkles([]), 800);
-    
+
     onClick?.();
   };
-  
+
   const buttonContent = (
     <>
       {/* Sparkle explosions */}
@@ -120,12 +120,9 @@ export function MagicButton({
           </motion.span>
         ))}
       </AnimatePresence>
-      
+
       {/* Shine effect */}
-      <motion.div
-        className="absolute inset-0 rounded-full overflow-hidden"
-        initial={false}
-      >
+      <motion.div className="absolute inset-0 rounded-full overflow-hidden" initial={false}>
         <motion.div
           className="absolute inset-0"
           style={{
@@ -138,7 +135,7 @@ export function MagicButton({
           transition={{ duration: 0.4 }}
         />
       </motion.div>
-      
+
       {/* Loading spinner */}
       {loading && (
         <motion.span
@@ -153,9 +150,9 @@ export function MagicButton({
           />
         </motion.span>
       )}
-      
+
       {/* Content */}
-      <span 
+      <span
         className="relative z-10 flex items-center justify-center gap-3"
         style={{ opacity: loading ? 0 : 1 }}
       >
@@ -166,7 +163,7 @@ export function MagicButton({
       </span>
     </>
   );
-  
+
   const buttonStyles = {
     display: 'inline-flex',
     alignItems: 'center',
@@ -187,9 +184,9 @@ export function MagicButton({
     textDecoration: 'none',
     boxShadow: `0 8px 0 ${variantStyle.shadowColor}`,
   };
-  
+
   const MotionComponent = href ? motion.create(Link) : motion.button;
-  
+
   return (
     <MotionComponent
       href={href as string}
@@ -200,20 +197,32 @@ export function MagicButton({
       disabled={disabled || loading}
       className={className}
       style={buttonStyles}
-      whileHover={!disabled ? {
-        scale: variantStyle.hoverScale,
-        y: -4,
-        boxShadow: `0 12px 0 ${variantStyle.shadowColor}`,
-      } : undefined}
-      whileTap={!disabled ? {
-        scale: 0.95,
-        y: 4,
-        boxShadow: `0 4px 0 ${variantStyle.shadowColor}`,
-      } : undefined}
-      animate={isPressed ? {
-        y: 4,
-        boxShadow: `0 4px 0 ${variantStyle.shadowColor}`,
-      } : undefined}
+      whileHover={
+        !disabled
+          ? {
+              scale: variantStyle.hoverScale,
+              y: -4,
+              boxShadow: `0 12px 0 ${variantStyle.shadowColor}`,
+            }
+          : undefined
+      }
+      whileTap={
+        !disabled
+          ? {
+              scale: 0.95,
+              y: 4,
+              boxShadow: `0 4px 0 ${variantStyle.shadowColor}`,
+            }
+          : undefined
+      }
+      animate={
+        isPressed
+          ? {
+              y: 4,
+              boxShadow: `0 4px 0 ${variantStyle.shadowColor}`,
+            }
+          : undefined
+      }
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
     >
       {buttonContent}
@@ -249,13 +258,13 @@ export function MagicIconButton({
     md: { button: 'w-14 h-14', icon: 'text-2xl' },
     lg: { button: 'w-18 h-18', icon: 'text-3xl' },
   };
-  
+
   const variants = {
     primary: 'bg-gradient-to-br from-purple-500 to-pink-500',
     secondary: 'bg-gradient-to-br from-cyan-400 to-blue-500',
     ghost: 'bg-white/10 hover:bg-white/20',
   };
-  
+
   return (
     <div className={`flex flex-col items-center gap-2 ${className}`}>
       <motion.button
@@ -269,7 +278,7 @@ export function MagicIconButton({
         }}
       >
         <span className={sizes[size].icon}>{icon}</span>
-        
+
         {/* Badge */}
         {badge !== undefined && badge > 0 && (
           <motion.span
@@ -282,10 +291,8 @@ export function MagicIconButton({
           </motion.span>
         )}
       </motion.button>
-      
-      {label && (
-        <span className="text-xs font-semibold text-white/70">{label}</span>
-      )}
+
+      {label && <span className="text-xs font-semibold text-white/70">{label}</span>}
     </div>
   );
 }
@@ -317,9 +324,9 @@ export function ChoiceButton({
     cyan: { bg: 'rgba(0,245,212,0.2)', border: '#00f5d4', glow: 'rgba(0,245,212,0.4)' },
     gold: { bg: 'rgba(254,228,64,0.2)', border: '#fee440', glow: 'rgba(254,228,64,0.4)' },
   };
-  
+
   const scheme = colors[color];
-  
+
   return (
     <motion.button
       className="w-full relative text-left"
@@ -338,12 +345,10 @@ export function ChoiceButton({
         }}
       >
         <div className="flex items-center gap-4">
-          {emoji && (
-            <span className="text-3xl flex-shrink-0">{emoji}</span>
-          )}
-          <span 
+          {emoji && <span className="text-3xl flex-shrink-0">{emoji}</span>}
+          <span
             className="text-lg font-medium"
-            style={{ 
+            style={{
               fontFamily: 'var(--font-kids)',
               color: selected ? scheme.border : '#ffffff',
             }}
@@ -359,7 +364,7 @@ export function ChoiceButton({
           </motion.span>
         </div>
       </div>
-      
+
       {/* Selection indicator line */}
       <motion.div
         className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 rounded-full"
@@ -372,5 +377,3 @@ export function ChoiceButton({
 }
 
 export default MagicButton;
-
-

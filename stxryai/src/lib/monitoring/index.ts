@@ -1,6 +1,6 @@
 /**
  * StxryAI Monitoring & Observability Stack
- * 
+ *
  * Provides:
  * - Performance monitoring
  * - Error tracking
@@ -63,7 +63,12 @@ class PerformanceMonitor {
   /**
    * Record a performance metric
    */
-  recordMetric(name: string, value: number, unit: PerformanceMetric['unit'], metadata?: Record<string, string | number | boolean>) {
+  recordMetric(
+    name: string,
+    value: number,
+    unit: PerformanceMetric['unit'],
+    metadata?: Record<string, string | number | boolean>
+  ) {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -88,7 +93,11 @@ class PerformanceMonitor {
   /**
    * Measure execution time of an async function
    */
-  async measureAsync<T>(name: string, fn: () => Promise<T>, metadata?: Record<string, string | number | boolean>): Promise<T> {
+  async measureAsync<T>(
+    name: string,
+    fn: () => Promise<T>,
+    metadata?: Record<string, string | number | boolean>
+  ): Promise<T> {
     const start = performance.now();
     try {
       const result = await fn();
@@ -105,7 +114,11 @@ class PerformanceMonitor {
   /**
    * Measure execution time of a sync function
    */
-  measureSync<T>(name: string, fn: () => T, metadata?: Record<string, string | number | boolean>): T {
+  measureSync<T>(
+    name: string,
+    fn: () => T,
+    metadata?: Record<string, string | number | boolean>
+  ): T {
     const start = performance.now();
     try {
       const result = fn();
@@ -161,7 +174,11 @@ class PerformanceMonitor {
       const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       if (navEntry) {
         this.recordMetric('TTFB', navEntry.responseStart - navEntry.requestStart, 'ms');
-        this.recordMetric('DOMContentLoaded', navEntry.domContentLoadedEventEnd - navEntry.startTime, 'ms');
+        this.recordMetric(
+          'DOMContentLoaded',
+          navEntry.domContentLoadedEventEnd - navEntry.startTime,
+          'ms'
+        );
         this.recordMetric('Load', navEntry.loadEventEnd - navEntry.startTime, 'ms');
       }
     } catch {
@@ -180,7 +197,10 @@ class PerformanceMonitor {
    * Get metrics summary
    */
   getSummary(): Record<string, { avg: number; min: number; max: number; count: number }> {
-    const summary: Record<string, { avg: number; min: number; max: number; count: number; values: number[] }> = {};
+    const summary: Record<
+      string,
+      { avg: number; min: number; max: number; count: number; values: number[] }
+    > = {};
 
     this.metrics.forEach((metric) => {
       if (!summary[metric.name]) {
@@ -226,7 +246,11 @@ class ErrorTracker {
   /**
    * Track an error
    */
-  trackError(error: Error | string, source: ErrorEvent['source'] = 'client', metadata?: Record<string, unknown>) {
+  trackError(
+    error: Error | string,
+    source: ErrorEvent['source'] = 'client',
+    metadata?: Record<string, unknown>
+  ) {
     const errorEvent: ErrorEvent = {
       message: typeof error === 'string' ? error : error.message,
       stack: typeof error === 'string' ? undefined : error.stack,
@@ -357,7 +381,8 @@ class APIMonitor {
    */
   wrapFetch(originalFetch: typeof fetch): typeof fetch {
     return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+      const url =
+        typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
       const method = (init?.method || 'GET').toUpperCase() as APIMetric['method'];
       const start = performance.now();
 
@@ -520,7 +545,7 @@ export const userAnalytics = new UserAnalytics();
 // Initialize global error handlers
 if (typeof window !== 'undefined') {
   errorTracker.setupGlobalHandlers();
-  
+
   // Start capturing web vitals after page load
   if (document.readyState === 'complete') {
     performanceMonitor.captureWebVitals();
@@ -540,4 +565,3 @@ const monitoring = {
 };
 
 export default monitoring;
-

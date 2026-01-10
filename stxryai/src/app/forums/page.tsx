@@ -15,23 +15,175 @@ import { toast } from 'sonner';
 
 // Mock data for forums
 const MOCK_CATEGORIES = [
-  { id: '1', name: 'General Discussion', description: 'Talk about anything related to interactive stories', icon: 'ChatBubbleLeftRightIcon', threads: 2456, posts: 18920, color: 'from-spectral-cyan to-blue-500' },
-  { id: '2', name: 'Story Recommendations', description: 'Share and discover amazing stories', icon: 'BookmarkIcon', threads: 1234, posts: 8765, color: 'from-spectral-violet to-purple-500' },
-  { id: '3', name: 'Writing Tips & Craft', description: 'Improve your storytelling skills', icon: 'PencilSquareIcon', threads: 892, posts: 5643, color: 'from-spectral-pink to-pink-500' },
-  { id: '4', name: 'Feedback & Reviews', description: 'Get and give constructive feedback', icon: 'ChatBubbleBottomCenterTextIcon', threads: 1567, posts: 12340, color: 'from-yellow-400 to-orange-500' },
-  { id: '5', name: 'Community Events', description: 'Challenges, marathons, and competitions', icon: 'CalendarDaysIcon', threads: 345, posts: 2890, color: 'from-green-400 to-emerald-500' },
-  { id: '6', name: 'Bug Reports & Support', description: 'Get help and report issues', icon: 'WrenchScrewdriverIcon', threads: 456, posts: 1890, color: 'from-red-400 to-rose-500' },
+  {
+    id: '1',
+    name: 'General Discussion',
+    description: 'Talk about anything related to interactive stories',
+    icon: 'ChatBubbleLeftRightIcon',
+    threads: 2456,
+    posts: 18920,
+    color: 'from-spectral-cyan to-blue-500',
+  },
+  {
+    id: '2',
+    name: 'Story Recommendations',
+    description: 'Share and discover amazing stories',
+    icon: 'BookmarkIcon',
+    threads: 1234,
+    posts: 8765,
+    color: 'from-spectral-violet to-purple-500',
+  },
+  {
+    id: '3',
+    name: 'Writing Tips & Craft',
+    description: 'Improve your storytelling skills',
+    icon: 'PencilSquareIcon',
+    threads: 892,
+    posts: 5643,
+    color: 'from-spectral-pink to-pink-500',
+  },
+  {
+    id: '4',
+    name: 'Feedback & Reviews',
+    description: 'Get and give constructive feedback',
+    icon: 'ChatBubbleBottomCenterTextIcon',
+    threads: 1567,
+    posts: 12340,
+    color: 'from-yellow-400 to-orange-500',
+  },
+  {
+    id: '5',
+    name: 'Community Events',
+    description: 'Challenges, marathons, and competitions',
+    icon: 'CalendarDaysIcon',
+    threads: 345,
+    posts: 2890,
+    color: 'from-green-400 to-emerald-500',
+  },
+  {
+    id: '6',
+    name: 'Bug Reports & Support',
+    description: 'Get help and report issues',
+    icon: 'WrenchScrewdriverIcon',
+    threads: 456,
+    posts: 1890,
+    color: 'from-red-400 to-rose-500',
+  },
 ];
 
 const MOCK_RECENT_THREADS = [
-  { id: '1', title: 'What makes a great plot twist? Share your favorites!', category: 'General Discussion', author: { name: 'StoryMaster', avatar: 'https://img.rocket.new/generatedImages/rocket_gen_img_17f211366-1764756733705.png' }, replies: 156, views: 2340, lastActivity: '5 min ago', pinned: true, hot: true },
-  { id: '2', title: 'December Reading Challenge: 10 Stories in 10 Days', category: 'Community Events', author: { name: 'BookClub', avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg' }, replies: 445, views: 8920, lastActivity: '12 min ago', pinned: true, hot: true },
-  { id: '3', title: 'How to write compelling dialogue - A comprehensive guide', category: 'Writing Tips & Craft', author: { name: 'Wordsmith', avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg' }, replies: 89, views: 1567, lastActivity: '25 min ago', pinned: false, hot: true },
-  { id: '4', title: 'Looking for mystery recommendations!', category: 'Story Recommendations', author: { name: 'MysteryFan', avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg' }, replies: 67, views: 890, lastActivity: '1 hour ago', pinned: false, hot: false },
-  { id: '5', title: 'The Midnight Carnival - Story Discussion (SPOILERS)', category: 'General Discussion', author: { name: 'HorrorLover', avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg' }, replies: 234, views: 4521, lastActivity: '2 hours ago', pinned: false, hot: true },
-  { id: '6', title: 'New feature request: Reading statistics export', category: 'Bug Reports & Support', author: { name: 'TechReader', avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg' }, replies: 23, views: 456, lastActivity: '3 hours ago', pinned: false, hot: false },
-  { id: '7', title: 'Best sci-fi stories of 2024 - Community picks', category: 'Story Recommendations', author: { name: 'SciFiExplorer', avatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg' }, replies: 178, views: 3890, lastActivity: '4 hours ago', pinned: false, hot: true },
-  { id: '8', title: 'Character development tips for branching narratives', category: 'Writing Tips & Craft', author: { name: 'Novelist', avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg' }, replies: 45, views: 678, lastActivity: '5 hours ago', pinned: false, hot: false },
+  {
+    id: '1',
+    title: 'What makes a great plot twist? Share your favorites!',
+    category: 'General Discussion',
+    author: {
+      name: 'StoryMaster',
+      avatar: 'https://img.rocket.new/generatedImages/rocket_gen_img_17f211366-1764756733705.png',
+    },
+    replies: 156,
+    views: 2340,
+    lastActivity: '5 min ago',
+    pinned: true,
+    hot: true,
+  },
+  {
+    id: '2',
+    title: 'December Reading Challenge: 10 Stories in 10 Days',
+    category: 'Community Events',
+    author: {
+      name: 'BookClub',
+      avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
+    },
+    replies: 445,
+    views: 8920,
+    lastActivity: '12 min ago',
+    pinned: true,
+    hot: true,
+  },
+  {
+    id: '3',
+    title: 'How to write compelling dialogue - A comprehensive guide',
+    category: 'Writing Tips & Craft',
+    author: {
+      name: 'Wordsmith',
+      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+    },
+    replies: 89,
+    views: 1567,
+    lastActivity: '25 min ago',
+    pinned: false,
+    hot: true,
+  },
+  {
+    id: '4',
+    title: 'Looking for mystery recommendations!',
+    category: 'Story Recommendations',
+    author: {
+      name: 'MysteryFan',
+      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    },
+    replies: 67,
+    views: 890,
+    lastActivity: '1 hour ago',
+    pinned: false,
+    hot: false,
+  },
+  {
+    id: '5',
+    title: 'The Midnight Carnival - Story Discussion (SPOILERS)',
+    category: 'General Discussion',
+    author: {
+      name: 'HorrorLover',
+      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    },
+    replies: 234,
+    views: 4521,
+    lastActivity: '2 hours ago',
+    pinned: false,
+    hot: true,
+  },
+  {
+    id: '6',
+    title: 'New feature request: Reading statistics export',
+    category: 'Bug Reports & Support',
+    author: {
+      name: 'TechReader',
+      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+    },
+    replies: 23,
+    views: 456,
+    lastActivity: '3 hours ago',
+    pinned: false,
+    hot: false,
+  },
+  {
+    id: '7',
+    title: 'Best sci-fi stories of 2024 - Community picks',
+    category: 'Story Recommendations',
+    author: {
+      name: 'SciFiExplorer',
+      avatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
+    },
+    replies: 178,
+    views: 3890,
+    lastActivity: '4 hours ago',
+    pinned: false,
+    hot: true,
+  },
+  {
+    id: '8',
+    title: 'Character development tips for branching narratives',
+    category: 'Writing Tips & Craft',
+    author: {
+      name: 'Novelist',
+      avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
+    },
+    replies: 45,
+    views: 678,
+    lastActivity: '5 hours ago',
+    pinned: false,
+    hot: false,
+  },
 ];
 
 const ForumsPage: React.FC = () => {
@@ -70,7 +222,7 @@ const ForumsPage: React.FC = () => {
       toast.error('Please fill in all fields');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       // In a real implementation, this would call the API
@@ -86,16 +238,18 @@ const ForumsPage: React.FC = () => {
     }
   };
 
-  const filteredThreads = MOCK_RECENT_THREADS.filter(thread => {
+  const filteredThreads = MOCK_RECENT_THREADS.filter((thread) => {
     const matchesSearch = thread.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || thread.category === MOCK_CATEGORIES.find(c => c.id === selectedCategory)?.name;
+    const matchesCategory =
+      !selectedCategory ||
+      thread.category === MOCK_CATEGORIES.find((c) => c.id === selectedCategory)?.name;
     return matchesSearch && matchesCategory;
   });
 
   return (
     <VoidBackground variant="aurora">
       <EtherealNav />
-      
+
       <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -105,7 +259,9 @@ const ForumsPage: React.FC = () => {
                 <TemporalHeading level={2} accent className="mb-2">
                   Forums
                 </TemporalHeading>
-                <p className="text-void-400">Join the conversation with fellow readers and writers</p>
+                <p className="text-void-400">
+                  Join the conversation with fellow readers and writers
+                </p>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
                 <SpectralButton variant="primary" size="md" onClick={handleNewThread}>
@@ -120,7 +276,11 @@ const ForumsPage: React.FC = () => {
           <RevealOnScroll delay={0.1}>
             <div className="flex flex-col md:flex-row gap-4 mb-8">
               <div className="flex-1 relative">
-                <Icon name="MagnifyingGlassIcon" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-void-500" />
+                <Icon
+                  name="MagnifyingGlassIcon"
+                  size={18}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-void-500"
+                />
                 <input
                   type="text"
                   placeholder="Search discussions..."
@@ -184,10 +344,14 @@ const ForumsPage: React.FC = () => {
                         whileTap={{ scale: 0.98 }}
                       >
                         <HolographicCard className="p-6 h-full">
-                          <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4`}>
+                          <div
+                            className={`w-14 h-14 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4`}
+                          >
                             <Icon name={category.icon} size={28} className="text-void-950" />
                           </div>
-                          <h3 className="text-lg font-semibold text-void-100 mb-2">{category.name}</h3>
+                          <h3 className="text-lg font-semibold text-void-100 mb-2">
+                            {category.name}
+                          </h3>
                           <p className="text-sm text-void-500 mb-4">{category.description}</p>
                           <div className="flex items-center gap-4 text-sm text-void-400">
                             <span className="flex items-center gap-1">
@@ -218,8 +382,11 @@ const ForumsPage: React.FC = () => {
                   <div className="flex items-center gap-2 mb-6">
                     <span className="text-sm text-void-500">Filtering by:</span>
                     <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-spectral-cyan/20 text-spectral-cyan text-sm border border-spectral-cyan/30">
-                      {MOCK_CATEGORIES.find(c => c.id === selectedCategory)?.name}
-                      <button onClick={() => setSelectedCategory(null)} className="hover:text-void-100">
+                      {MOCK_CATEGORIES.find((c) => c.id === selectedCategory)?.name}
+                      <button
+                        onClick={() => setSelectedCategory(null)}
+                        className="hover:text-void-100"
+                      >
                         <Icon name="XMarkIcon" size={14} />
                       </button>
                     </span>
@@ -316,20 +483,36 @@ const ForumsPage: React.FC = () => {
 
                     {filteredThreads.length === 0 && (
                       <div className="py-16 text-center">
-                        <Icon name="MagnifyingGlassIcon" size={48} className="text-void-600 mx-auto mb-4" />
+                        <Icon
+                          name="MagnifyingGlassIcon"
+                          size={48}
+                          className="text-void-600 mx-auto mb-4"
+                        />
                         <p className="text-void-400">No threads found matching your search.</p>
                       </div>
                     )}
 
                     {/* Pagination */}
                     <div className="p-6 border-t border-void-800/50 flex items-center justify-between">
-                      <p className="text-sm text-void-500">Showing 1-8 of {filteredThreads.length} threads</p>
+                      <p className="text-sm text-void-500">
+                        Showing 1-8 of {filteredThreads.length} threads
+                      </p>
                       <div className="flex items-center gap-2">
-                        <SpectralButton variant="ghost" size="sm">Previous</SpectralButton>
-                        <span className="px-3 py-1 rounded-lg bg-spectral-cyan/20 text-spectral-cyan text-sm">1</span>
-                        <span className="px-3 py-1 rounded-lg text-void-400 hover:bg-void-800/50 cursor-pointer text-sm">2</span>
-                        <span className="px-3 py-1 rounded-lg text-void-400 hover:bg-void-800/50 cursor-pointer text-sm">3</span>
-                        <SpectralButton variant="ghost" size="sm">Next</SpectralButton>
+                        <SpectralButton variant="ghost" size="sm">
+                          Previous
+                        </SpectralButton>
+                        <span className="px-3 py-1 rounded-lg bg-spectral-cyan/20 text-spectral-cyan text-sm">
+                          1
+                        </span>
+                        <span className="px-3 py-1 rounded-lg text-void-400 hover:bg-void-800/50 cursor-pointer text-sm">
+                          2
+                        </span>
+                        <span className="px-3 py-1 rounded-lg text-void-400 hover:bg-void-800/50 cursor-pointer text-sm">
+                          3
+                        </span>
+                        <SpectralButton variant="ghost" size="sm">
+                          Next
+                        </SpectralButton>
                       </div>
                     </div>
                   </div>
@@ -349,7 +532,7 @@ const ForumsPage: React.FC = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div 
+            <div
               className="absolute inset-0 bg-void-950/80 backdrop-blur-sm"
               onClick={() => setShowNewThreadModal(false)}
             />
@@ -373,7 +556,9 @@ const ForumsPage: React.FC = () => {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-void-300 mb-2">Category</label>
+                      <label className="block text-sm font-medium text-void-300 mb-2">
+                        Category
+                      </label>
                       <select
                         value={newThreadCategory}
                         onChange={(e) => setNewThreadCategory(e.target.value)}
@@ -400,7 +585,9 @@ const ForumsPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-void-300 mb-2">Content</label>
+                      <label className="block text-sm font-medium text-void-300 mb-2">
+                        Content
+                      </label>
                       <textarea
                         value={newThreadContent}
                         onChange={(e) => setNewThreadContent(e.target.value)}
@@ -412,10 +599,7 @@ const ForumsPage: React.FC = () => {
                   </div>
 
                   <div className="flex justify-end gap-3 mt-6">
-                    <SpectralButton
-                      variant="ghost"
-                      onClick={() => setShowNewThreadModal(false)}
-                    >
+                    <SpectralButton variant="ghost" onClick={() => setShowNewThreadModal(false)}>
                       Cancel
                     </SpectralButton>
                     <SpectralButton

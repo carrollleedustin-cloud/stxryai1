@@ -178,19 +178,22 @@ export class TTSService {
   ): Promise<CharacterVoice> {
     const { data, error } = await this.supabase
       .from('character_voices')
-      .upsert({
-        story_id: storyId,
-        character_name: characterName,
-        voice_id: voiceId,
-        custom_speed: settings?.customSpeed,
-        custom_pitch: settings?.customPitch,
-        custom_stability: settings?.customStability,
-        custom_similarity_boost: settings?.customSimilarityBoost,
-        voice_description: settings?.voiceDescription,
-        emotion_mappings: settings?.emotionMappings || {},
-      }, {
-        onConflict: 'story_id,character_name',
-      })
+      .upsert(
+        {
+          story_id: storyId,
+          character_name: characterName,
+          voice_id: voiceId,
+          custom_speed: settings?.customSpeed,
+          custom_pitch: settings?.customPitch,
+          custom_stability: settings?.customStability,
+          custom_similarity_boost: settings?.customSimilarityBoost,
+          voice_description: settings?.voiceDescription,
+          emotion_mappings: settings?.emotionMappings || {},
+        },
+        {
+          onConflict: 'story_id,character_name',
+        }
+      )
       .select()
       .single();
 
@@ -264,7 +267,7 @@ export class TTSService {
         const openaiResponse = await fetch('https://api.openai.com/v1/audio/speech', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -276,8 +279,12 @@ export class TTSService {
         });
 
         if (!openaiResponse.ok) {
-          const error = await openaiResponse.json().catch(() => ({ error: { message: 'Unknown error' } }));
-          throw new Error(`OpenAI TTS API error: ${error.error?.message || openaiResponse.statusText}`);
+          const error = await openaiResponse
+            .json()
+            .catch(() => ({ error: { message: 'Unknown error' } }));
+          throw new Error(
+            `OpenAI TTS API error: ${error.error?.message || openaiResponse.statusText}`
+          );
         }
 
         // Convert response to blob and upload to storage
@@ -324,9 +331,10 @@ export class TTSService {
           .from('audio_generations')
           .update({
             generation_status: 'failed',
-            error_message: provider === 'openai' 
-              ? 'OpenAI API key not configured' 
-              : `Provider ${provider} not yet implemented`,
+            error_message:
+              provider === 'openai'
+                ? 'OpenAI API key not configured'
+                : `Provider ${provider} not yet implemented`,
           })
           .eq('id', initialRecord.id)
           .select()
@@ -355,10 +363,7 @@ export class TTSService {
   /**
    * Get user's audio generations
    */
-  async getUserAudioGenerations(
-    userId: string,
-    storyId?: string
-  ): Promise<AudioGeneration[]> {
+  async getUserAudioGenerations(userId: string, storyId?: string): Promise<AudioGeneration[]> {
     let query = this.supabase
       .from('audio_generations')
       .select('*')
@@ -465,20 +470,23 @@ export class TTSService {
   ): Promise<UserTTSPreferences> {
     const { data, error } = await this.supabase
       .from('user_tts_preferences')
-      .upsert({
-        user_id: userId,
-        default_voice_id: preferences.defaultVoiceId,
-        default_speed: preferences.defaultSpeed,
-        default_pitch: preferences.defaultPitch,
-        auto_play_enabled: preferences.autoPlayEnabled,
-        background_playback_enabled: preferences.backgroundPlaybackEnabled,
-        skip_silence: preferences.skipSilence,
-        preferred_quality_tier: preferences.preferredQualityTier,
-        use_character_voices: preferences.useCharacterVoices,
-        premium_voices_enabled: preferences.premiumVoicesEnabled,
-      }, {
-        onConflict: 'user_id',
-      })
+      .upsert(
+        {
+          user_id: userId,
+          default_voice_id: preferences.defaultVoiceId,
+          default_speed: preferences.defaultSpeed,
+          default_pitch: preferences.defaultPitch,
+          auto_play_enabled: preferences.autoPlayEnabled,
+          background_playback_enabled: preferences.backgroundPlaybackEnabled,
+          skip_silence: preferences.skipSilence,
+          preferred_quality_tier: preferences.preferredQualityTier,
+          use_character_voices: preferences.useCharacterVoices,
+          premium_voices_enabled: preferences.premiumVoicesEnabled,
+        },
+        {
+          onConflict: 'user_id',
+        }
+      )
       .select()
       .single();
 
@@ -524,7 +532,9 @@ export class TTSService {
       customSpeed: data.custom_speed ? parseFloat(data.custom_speed) : undefined,
       customPitch: data.custom_pitch ? parseFloat(data.custom_pitch) : undefined,
       customStability: data.custom_stability ? parseFloat(data.custom_stability) : undefined,
-      customSimilarityBoost: data.custom_similarity_boost ? parseFloat(data.custom_similarity_boost) : undefined,
+      customSimilarityBoost: data.custom_similarity_boost
+        ? parseFloat(data.custom_similarity_boost)
+        : undefined,
       voiceDescription: data.voice_description,
       emotionMappings: data.emotion_mappings || {},
       metadata: data.metadata || {},
@@ -543,7 +553,9 @@ export class TTSService {
       voiceId: data.voice_id,
       characterName: data.character_name,
       audioUrl: data.audio_url,
-      audioDurationSeconds: data.audio_duration_seconds ? parseFloat(data.audio_duration_seconds) : undefined,
+      audioDurationSeconds: data.audio_duration_seconds
+        ? parseFloat(data.audio_duration_seconds)
+        : undefined,
       audioFileSizeBytes: data.audio_file_size_bytes,
       audioFormat: data.audio_format,
       speed: parseFloat(data.speed || '1.0'),
@@ -605,4 +617,3 @@ export class TTSService {
 }
 
 export const ttsService = new TTSService();
-

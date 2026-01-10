@@ -12,9 +12,9 @@ interface Particle {
   color: string;
 }
 
-const ParticleField = ({ 
+const ParticleField = ({
   particleCount = 50,
-  className = '' 
+  className = '',
 }: {
   particleCount?: number;
   className?: string;
@@ -51,7 +51,7 @@ const ParticleField = ({
     const colors = [
       'rgba(139, 92, 246, 0.8)', // purple
       'rgba(236, 72, 153, 0.8)', // pink
-      'rgba(6, 182, 212, 0.8)',  // cyan
+      'rgba(6, 182, 212, 0.8)', // cyan
     ];
 
     particlesRef.current = Array.from({ length: particleCount }, () => ({
@@ -138,4 +138,3 @@ const ParticleField = ({
 };
 
 export default ParticleField;
-

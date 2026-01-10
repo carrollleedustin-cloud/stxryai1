@@ -44,7 +44,8 @@ const COLOR_SCHEMES = {
     accent: '#fee440',
   },
   rainbow: {
-    gradient: 'linear-gradient(135deg, rgba(155,93,229,0.2), rgba(241,91,181,0.2), rgba(0,245,212,0.2))',
+    gradient:
+      'linear-gradient(135deg, rgba(155,93,229,0.2), rgba(241,91,181,0.2), rgba(0,245,212,0.2))',
     border: 'rgba(255,255,255,0.3)',
     glow: '0 0 30px rgba(155,93,229,0.3), 0 0 30px rgba(241,91,181,0.3)',
     accent: '#f15bb5',
@@ -61,10 +62,10 @@ export function MagicCard({
 }: MagicCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
-  
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  
+
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), {
     stiffness: 150,
     damping: 20,
@@ -73,22 +74,25 @@ export function MagicCard({
     stiffness: 150,
     damping: 20,
   });
-  
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
-  }, [mouseX, mouseY]);
-  
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      mouseX.set(x);
+      mouseY.set(y);
+    },
+    [mouseX, mouseY]
+  );
+
   const handleMouseLeave = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
     setIsHovered(false);
   }, [mouseX, mouseY]);
-  
+
   const scheme = COLOR_SCHEMES[color];
 
   return (
@@ -114,7 +118,8 @@ export function MagicCard({
         <motion.div
           className="absolute inset-[-2px] rounded-[24px]"
           style={{
-            background: 'conic-gradient(from 0deg, #9b5de5, #f15bb5, #fee440, #00f5d4, #00bbf9, #9b5de5)',
+            background:
+              'conic-gradient(from 0deg, #9b5de5, #f15bb5, #fee440, #00f5d4, #00bbf9, #9b5de5)',
             opacity: isHovered ? 0.8 : 0.4,
             filter: 'blur(2px)',
           }}
@@ -122,7 +127,7 @@ export function MagicCard({
           transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
         />
       )}
-      
+
       {/* Main card body */}
       <div
         className="relative rounded-[22px] p-6 overflow-hidden"
@@ -134,13 +139,13 @@ export function MagicCard({
         }}
       >
         {/* Inner glow */}
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `radial-gradient(circle at 50% 0%, ${scheme.accent}20, transparent 70%)`,
           }}
         />
-        
+
         {/* Sparkle effects */}
         {sparkles && isHovered && (
           <>
@@ -171,7 +176,7 @@ export function MagicCard({
             ))}
           </>
         )}
-        
+
         {/* Content */}
         <div className="relative z-10">{children}</div>
       </div>
@@ -205,7 +210,7 @@ export function MagicStoryCard({
   className = '',
 }: MagicStoryCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  
+
   return (
     <motion.div
       className={`relative rounded-3xl overflow-hidden cursor-pointer ${className}`}
@@ -217,10 +222,10 @@ export function MagicStoryCard({
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
       {/* Cover image or placeholder */}
-      <div 
+      <div
         className="aspect-[3/4] w-full relative"
         style={{
-          background: cover 
+          background: cover
             ? `url(${cover}) center/cover`
             : 'linear-gradient(135deg, #9b5de5, #f15bb5, #00f5d4)',
         }}
@@ -239,40 +244,34 @@ export function MagicStoryCard({
             NEW! ⭐
           </motion.div>
         )}
-        
+
         {/* Age badge */}
         {ageRange && (
-          <div 
-            className="absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-semibold bg-black/50 text-white"
-          >
+          <div className="absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-semibold bg-black/50 text-white">
             Ages {ageRange}
           </div>
         )}
-        
+
         {/* Gradient overlay */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             background: 'linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.8) 100%)',
           }}
         />
-        
+
         {/* Title and info */}
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 
+          <h3
             className="text-lg font-bold text-white mb-1 line-clamp-2"
             style={{ fontFamily: 'var(--font-kids)' }}
           >
             {title}
           </h3>
-          {author && (
-            <p className="text-sm text-white/70">{author}</p>
-          )}
-          {duration && (
-            <p className="text-xs text-white/50 mt-1">📚 {duration} read</p>
-          )}
+          {author && <p className="text-sm text-white/70">{author}</p>}
+          {duration && <p className="text-xs text-white/50 mt-1">📚 {duration} read</p>}
         </div>
-        
+
         {/* Play button on hover */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center bg-black/30"
@@ -337,9 +336,9 @@ export function MagicAvatar({
             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
           />
         )}
-        
+
         {/* Avatar image */}
-        <div 
+        <div
           className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white/20"
           style={{
             background: `url(${avatar}) center/cover`,
@@ -352,7 +351,7 @@ export function MagicAvatar({
             </div>
           )}
         </div>
-        
+
         {/* Check mark for selected */}
         {isSelected && (
           <motion.div
@@ -365,11 +364,11 @@ export function MagicAvatar({
           </motion.div>
         )}
       </div>
-      
+
       {/* Name */}
-      <span 
+      <span
         className="text-sm font-semibold"
-        style={{ 
+        style={{
           fontFamily: 'var(--font-kids)',
           color: isSelected ? '#00f5d4' : '#ffffff',
         }}
@@ -381,5 +380,3 @@ export function MagicAvatar({
 }
 
 export default MagicCard;
-
-

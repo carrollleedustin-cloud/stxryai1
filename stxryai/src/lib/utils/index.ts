@@ -1,13 +1,19 @@
 /**
  * Consolidated Utility Functions
- * 
+ *
  * This file centralizes common utilities to avoid code duplication.
  * Import from '@/lib/utils' instead of implementing inline.
  */
 
 // Re-export existing utilities
 export { debounce, throttle } from './debounce';
-export { showToast, showSuccessToast, showErrorToast, showLoadingToast, dismissToast } from './toast';
+export {
+  showToast,
+  showSuccessToast,
+  showErrorToast,
+  showLoadingToast,
+  dismissToast,
+} from './toast';
 
 // ============================================
 // Retry Logic
@@ -30,17 +36,14 @@ export interface RetryOptions {
 
 /**
  * Execute an async function with retry logic
- * 
+ *
  * @example
  * const result = await withRetry(
  *   () => fetchData(),
  *   { attempts: 3, delay: 1000 }
  * );
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const {
     attempts = 3,
     delay = 1000,
@@ -245,7 +248,7 @@ export function getRelativeTime(date: Date | string | number): string {
   if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
   if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
   if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-  
+
   return then.toLocaleDateString();
 }
 
@@ -327,12 +330,15 @@ export function unique<T>(arr: T[]): T[] {
  * Group array by key
  */
 export function groupBy<T>(arr: T[], key: keyof T): Record<string, T[]> {
-  return arr.reduce((acc, item) => {
-    const groupKey = String(item[key]);
-    if (!acc[groupKey]) acc[groupKey] = [];
-    acc[groupKey].push(item);
-    return acc;
-  }, {} as Record<string, T[]>);
+  return arr.reduce(
+    (acc, item) => {
+      const groupKey = String(item[key]);
+      if (!acc[groupKey]) acc[groupKey] = [];
+      acc[groupKey].push(item);
+      return acc;
+    },
+    {} as Record<string, T[]>
+  );
 }
 
 /**
@@ -471,4 +477,3 @@ export function getScrollPercentage(): number {
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   return docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 }
-

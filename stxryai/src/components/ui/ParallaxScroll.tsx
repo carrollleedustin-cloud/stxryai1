@@ -42,10 +42,5 @@ interface ParallaxContainerProps {
 }
 
 export function ParallaxContainer({ children, className = '' }: ParallaxContainerProps) {
-  return (
-    <div className={`relative overflow-hidden ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`relative overflow-hidden ${className}`}>{children}</div>;
 }
-

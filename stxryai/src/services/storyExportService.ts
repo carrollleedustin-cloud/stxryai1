@@ -98,7 +98,8 @@ export const storyExportService = {
   async fetchStoryForExport(storyId: string): Promise<ExportedStory | null> {
     const { data: story } = await supabase
       .from('stories')
-      .select(`
+      .select(
+        `
         id,
         title,
         description,
@@ -107,7 +108,8 @@ export const storyExportService = {
         created_at,
         updated_at,
         author:author_id (display_name)
-      `)
+      `
+      )
       .eq('id', storyId)
       .single();
 
@@ -115,13 +117,15 @@ export const storyExportService = {
 
     const { data: chapters } = await supabase
       .from('chapters')
-      .select(`
+      .select(
+        `
         id,
         title,
         content,
         order,
         author_notes
-      `)
+      `
+      )
       .eq('story_id', storyId)
       .order('order', { ascending: true });
 
@@ -572,14 +576,8 @@ h1 { font-size: 1.5em; margin-bottom: 1em; }
   /**
    * Update export job status
    */
-  async updateExportJob(
-    jobId: string,
-    updates: Partial<ExportJob>
-  ): Promise<void> {
-    await supabase
-      .from('story_exports')
-      .update(updates)
-      .eq('id', jobId);
+  async updateExportJob(jobId: string, updates: Partial<ExportJob>): Promise<void> {
+    await supabase.from('story_exports').update(updates).eq('id', jobId);
   },
 
   /**

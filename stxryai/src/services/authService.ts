@@ -31,12 +31,16 @@ export const authService = {
   }) {
     // Check Supabase configuration first
     if (!getIsSupabaseConfigured()) {
-      throw new Error('Authentication service is not configured. Please check your environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY).');
+      throw new Error(
+        'Authentication service is not configured. Please check your environment variables (NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY).'
+      );
     }
 
     const supabase = getSupabase();
     if (!supabase) {
-      throw new Error('Unable to initialize authentication client. Please check your Supabase configuration.');
+      throw new Error(
+        'Unable to initialize authentication client. Please check your Supabase configuration.'
+      );
     }
 
     // Validate inputs
@@ -89,14 +93,22 @@ export const authService = {
 
     if (error) {
       // Provide more specific error messages
-      if (error.message.includes('User already registered') || error.message.includes('already registered')) {
+      if (
+        error.message.includes('User already registered') ||
+        error.message.includes('already registered')
+      ) {
         throw new Error('This email is already registered. Please sign in instead.');
       }
       if (error.message.includes('invalid email')) {
         throw new Error('Please provide a valid email address.');
       }
-      if (error.message.includes('Failed to fetch') || error.message.includes('AuthRetryableFetchError')) {
-        throw new Error('Cannot connect to authentication service. Please check your internet connection and try again. If the problem persists, your Supabase project may be paused.');
+      if (
+        error.message.includes('Failed to fetch') ||
+        error.message.includes('AuthRetryableFetchError')
+      ) {
+        throw new Error(
+          'Cannot connect to authentication service. Please check your internet connection and try again. If the problem persists, your Supabase project may be paused.'
+        );
       }
       // Re-throw the error with its original message
       throw new Error(error.message || 'Failed to create account. Please try again.');
@@ -347,9 +359,7 @@ export const authService = {
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
 
     const avatarUrl = urlData.publicUrl;
 

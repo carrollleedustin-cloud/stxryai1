@@ -5,13 +5,13 @@ export const dynamic = 'force-dynamic';
 /**
  * Dynamic sitemap generation for StxryAI
  * Next.js 14 App Router automatically serves this at /sitemap.xml
- * 
+ *
  * Uses actual lastModified dates from the database to prevent unnecessary recrawls.
  * This ensures search engines only recrawl when content actually changes.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://stxryai.com';
-  
+
   // Get the most recent story update date for dynamic pages
   // This represents when story content was last actually modified
   let mostRecentStoryUpdate: Date | null = null;
@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    
+
     if (!error && data) {
       const updatedAt = (data as { updated_at: string | null }).updated_at;
       if (updatedAt) {
@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Use the most recent story update, or a fallback date if no stories exist
   // Fallback represents when the site was initially launched
   const dynamicContentDate = mostRecentStoryUpdate || new Date('2024-01-01');
-  
+
   // Static pages with fixed lastModified dates
   // IMPORTANT: Update these dates when you actually modify the content of these pages
   // This prevents search engines from unnecessarily recrawling unchanged pages
@@ -137,4 +137,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return publicRoutes;
 }
-

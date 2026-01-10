@@ -46,7 +46,10 @@ export class CollectiveMilestoneService {
   /**
    * Updates a milestone progress (should be called by a background worker or after relevant actions)
    */
-  public async incrementProgress(type: CollectiveMilestone['type'], amount: number = 1): Promise<void> {
+  public async incrementProgress(
+    type: CollectiveMilestone['type'],
+    amount: number = 1
+  ): Promise<void> {
     const { data: milestones, error: fetchError } = await this.supabase
       .from('collective_milestones')
       .select('id, currentValue, targetValue')
@@ -59,9 +62,9 @@ export class CollectiveMilestoneService {
       const newValue = milestone.currentValue + amount;
       const { error: updateError } = await this.supabase
         .from('collective_milestones')
-        .update({ 
+        .update({
           currentValue: newValue,
-          isActive: newValue < milestone.targetValue
+          isActive: newValue < milestone.targetValue,
         })
         .eq('id', milestone.id);
 

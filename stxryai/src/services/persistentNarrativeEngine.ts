@@ -2,7 +2,7 @@
  * Persistent Narrative Engine
  * The core system for multi-book series with persistent memory,
  * character evolution, worldbuilding archives, and canon enforcement.
- * 
+ *
  * This transforms story generation from a stateless operation into
  * a continuity-aware literary engine.
  */
@@ -88,16 +88,35 @@ export class PersistentNarrativeEngine {
    * Get series with full overview
    */
   async getSeriesOverview(seriesId: string): Promise<SeriesOverview> {
-    const [series, books, characterCount, worldCount, arcCount, notes, violations] = await Promise.all([
-      this.getSeries(seriesId),
-      this.getSeriesBooks(seriesId),
-      this.supabase.from('persistent_characters').select('id', { count: 'exact' }).eq('series_id', seriesId),
-      this.supabase.from('world_elements').select('id', { count: 'exact' }).eq('series_id', seriesId),
-      // Use correct Supabase PostgREST syntax for NOT IN filter (no quotes around enum values)
-      this.supabase.from('narrative_arcs').select('id', { count: 'exact' }).eq('series_id', seriesId).not('arc_status', 'in', '(resolved,abandoned)'),
-      this.supabase.from('continuity_notes').select('id', { count: 'exact' }).eq('series_id', seriesId).eq('is_resolved', false),
-      this.supabase.from('canon_violations').select('id', { count: 'exact' }).eq('series_id', seriesId).eq('resolution_status', 'pending'),
-    ]);
+    const [series, books, characterCount, worldCount, arcCount, notes, violations] =
+      await Promise.all([
+        this.getSeries(seriesId),
+        this.getSeriesBooks(seriesId),
+        this.supabase
+          .from('persistent_characters')
+          .select('id', { count: 'exact' })
+          .eq('series_id', seriesId),
+        this.supabase
+          .from('world_elements')
+          .select('id', { count: 'exact' })
+          .eq('series_id', seriesId),
+        // Use correct Supabase PostgREST syntax for NOT IN filter (no quotes around enum values)
+        this.supabase
+          .from('narrative_arcs')
+          .select('id', { count: 'exact' })
+          .eq('series_id', seriesId)
+          .not('arc_status', 'in', '(resolved,abandoned)'),
+        this.supabase
+          .from('continuity_notes')
+          .select('id', { count: 'exact' })
+          .eq('series_id', seriesId)
+          .eq('is_resolved', false),
+        this.supabase
+          .from('canon_violations')
+          .select('id', { count: 'exact' })
+          .eq('series_id', seriesId)
+          .eq('resolution_status', 'pending'),
+      ]);
 
     const totalWordCount = books.reduce((sum, book) => sum + (book.currentWordCount || 0), 0);
 
@@ -357,7 +376,10 @@ export class PersistentNarrativeEngine {
   /**
    * Update character
    */
-  async updateCharacter(characterId: string, updates: Partial<PersistentCharacter>): Promise<PersistentCharacter> {
+  async updateCharacter(
+    characterId: string,
+    updates: Partial<PersistentCharacter>
+  ): Promise<PersistentCharacter> {
     // Check for locked attributes
     const character = await this.getCharacter(characterId);
     if (character?.canonLockLevel === 'immutable') {
@@ -481,14 +503,18 @@ export class PersistentNarrativeEngine {
   /**
    * Get character relationships
    */
-  async getCharacterRelationships(characterId: string): Promise<Array<{ otherCharacter: PersistentCharacter; relationship: CharacterRelationship }>> {
+  async getCharacterRelationships(
+    characterId: string
+  ): Promise<Array<{ otherCharacter: PersistentCharacter; relationship: CharacterRelationship }>> {
     const { data, error } = await this.supabase
       .from('character_relationships')
-      .select(`
+      .select(
+        `
         *,
         character_a:persistent_characters!character_a_id(*),
         character_b:persistent_characters!character_b_id(*)
-      `)
+      `
+      )
       .or(`character_a_id.eq.${characterId},character_b_id.eq.${characterId}`);
 
     if (error) throw error;
@@ -511,32 +537,38 @@ export class PersistentNarrativeEngine {
     relationship: Partial<CharacterRelationship>
   ): Promise<CharacterRelationship> {
     // Ensure consistent ordering
-    const [firstId, secondId] = characterAId < characterBId 
-      ? [characterAId, characterBId] 
-      : [characterBId, characterAId];
-    
+    const [firstId, secondId] =
+      characterAId < characterBId ? [characterAId, characterBId] : [characterBId, characterAId];
+
     const isReversed = characterAId !== firstId;
 
     const { data, error } = await this.supabase
       .from('character_relationships')
-      .upsert({
-        character_a_id: firstId,
-        character_b_id: secondId,
-        series_id: seriesId,
-        relationship_type_a_to_b: isReversed ? relationship.relationshipTypeBToA : relationship.relationshipTypeAToB,
-        relationship_type_b_to_a: isReversed ? relationship.relationshipTypeAToB : relationship.relationshipTypeBToA,
-        intensity_a_to_b: isReversed ? relationship.intensityBToA : relationship.intensityAToB,
-        intensity_b_to_a: isReversed ? relationship.intensityAToB : relationship.intensityBToA,
-        relationship_history: relationship.relationshipHistory,
-        first_meeting_description: relationship.firstMeetingDescription,
-        current_dynamic: relationship.currentDynamic,
-        tension_points: relationship.tensionPoints || [],
-        shared_history: relationship.sharedHistory || [],
-        is_active: relationship.isActive ?? true,
-        canon_lock_level: relationship.canonLockLevel || 'soft',
-      }, {
-        onConflict: 'character_a_id,character_b_id,series_id',
-      })
+      .upsert(
+        {
+          character_a_id: firstId,
+          character_b_id: secondId,
+          series_id: seriesId,
+          relationship_type_a_to_b: isReversed
+            ? relationship.relationshipTypeBToA
+            : relationship.relationshipTypeAToB,
+          relationship_type_b_to_a: isReversed
+            ? relationship.relationshipTypeAToB
+            : relationship.relationshipTypeBToA,
+          intensity_a_to_b: isReversed ? relationship.intensityBToA : relationship.intensityAToB,
+          intensity_b_to_a: isReversed ? relationship.intensityAToB : relationship.intensityBToA,
+          relationship_history: relationship.relationshipHistory,
+          first_meeting_description: relationship.firstMeetingDescription,
+          current_dynamic: relationship.currentDynamic,
+          tension_points: relationship.tensionPoints || [],
+          shared_history: relationship.sharedHistory || [],
+          is_active: relationship.isActive ?? true,
+          canon_lock_level: relationship.canonLockLevel || 'soft',
+        },
+        {
+          onConflict: 'character_a_id,character_b_id,series_id',
+        }
+      )
       .select()
       .single();
 
@@ -663,7 +695,9 @@ export class PersistentNarrativeEngine {
   /**
    * Get world element with hierarchy
    */
-  async getWorldElementWithChildren(elementId: string): Promise<WorldElement & { children: WorldElement[] }> {
+  async getWorldElementWithChildren(
+    elementId: string
+  ): Promise<WorldElement & { children: WorldElement[] }> {
     const [element, children] = await Promise.all([
       this.supabase.from('world_elements').select('*').eq('id', elementId).single(),
       this.supabase.from('world_elements').select('*').eq('parent_element_id', elementId),
@@ -680,7 +714,10 @@ export class PersistentNarrativeEngine {
   /**
    * Update world element
    */
-  async updateWorldElement(elementId: string, updates: Partial<WorldElement>): Promise<WorldElement> {
+  async updateWorldElement(
+    elementId: string,
+    updates: Partial<WorldElement>
+  ): Promise<WorldElement> {
     const { data, error } = await this.supabase
       .from('world_elements')
       .update({
@@ -785,8 +822,11 @@ export class PersistentNarrativeEngine {
 
     // Get relevant character and world data
     const [characters, worldElements] = await Promise.all([
-      context?.charactersInvolved 
-        ? this.supabase.from('persistent_characters').select('*').in('id', context.charactersInvolved)
+      context?.charactersInvolved
+        ? this.supabase
+            .from('persistent_characters')
+            .select('*')
+            .in('id', context.charactersInvolved)
         : Promise.resolve({ data: [] }),
       context?.worldElementsReferenced
         ? this.supabase.from('world_elements').select('*').in('id', context.worldElementsReferenced)
@@ -809,7 +849,7 @@ export class PersistentNarrativeEngine {
     // Record violations
     if (violations.length > 0) {
       await this.supabase.from('canon_violations').insert(
-        violations.map(v => ({
+        violations.map((v) => ({
           rule_id: v.ruleId,
           series_id: seriesId,
           violation_type: v.violationType,
@@ -839,8 +879,13 @@ export class PersistentNarrativeEngine {
         // Check for deceased characters being described as alive
         if (charData.current_status === 'deceased') {
           const name = charData.name.toLowerCase();
-          const aliveIndicators = [`${name} said`, `${name} walked`, `${name} looked`, `${name} smiled`];
-          
+          const aliveIndicators = [
+            `${name} said`,
+            `${name} walked`,
+            `${name} looked`,
+            `${name} smiled`,
+          ];
+
           for (const indicator of aliveIndicators) {
             if (contentLower.includes(indicator)) {
               return {
@@ -867,9 +912,17 @@ export class PersistentNarrativeEngine {
     // World-specific rules
     if (rule.ruleCategory === 'world' || rule.ruleCategory === 'system') {
       for (const element of context.worldElements) {
-        if (!element.is_active && element.destroyed_in_book && element.destroyed_in_book <= context.bookNumber) {
+        if (
+          !element.is_active &&
+          element.destroyed_in_book &&
+          element.destroyed_in_book <= context.bookNumber
+        ) {
           const name = element.name.toLowerCase();
-          if (contentLower.includes(name) && !contentLower.includes(`former ${name}`) && !contentLower.includes(`ruins of ${name}`)) {
+          if (
+            contentLower.includes(name) &&
+            !contentLower.includes(`former ${name}`) &&
+            !contentLower.includes(`ruins of ${name}`)
+          ) {
             return {
               id: '',
               ruleId: rule.id,
@@ -1094,7 +1147,10 @@ export class PersistentNarrativeEngine {
   /**
    * Get continuity notes
    */
-  async getContinuityNotes(seriesId: string, unresolvedOnly: boolean = false): Promise<ContinuityNote[]> {
+  async getContinuityNotes(
+    seriesId: string,
+    unresolvedOnly: boolean = false
+  ): Promise<ContinuityNote[]> {
     let query = this.supabase
       .from('continuity_notes')
       .select('*')
@@ -1196,7 +1252,10 @@ export class PersistentNarrativeEngine {
    */
   async analyzeRevisionImpact(requestId: string): Promise<{
     affectedChapters: string[];
-    requiredChanges: Record<string, Array<{ type: string; description: string; suggestedEdit: string }>>;
+    requiredChanges: Record<
+      string,
+      Array<{ type: string; description: string; suggestedEdit: string }>
+    >;
   }> {
     // Update status to analyzing
     await this.supabase
@@ -1214,7 +1273,10 @@ export class PersistentNarrativeEngine {
 
     // Find affected chapters based on entity type
     let affectedChapters: string[] = [];
-    const requiredChanges: Record<string, Array<{ type: string; description: string; suggestedEdit: string }>> = {};
+    const requiredChanges: Record<
+      string,
+      Array<{ type: string; description: string; suggestedEdit: string }>
+    > = {};
 
     if (request.affects_entity_type === 'character') {
       // Find chapters where character appears
@@ -1275,9 +1337,12 @@ export class PersistentNarrativeEngine {
     if (oldValue.physicalDescription && newValue.physicalDescription) {
       const oldFeatures = oldValue.physicalDescription.distinguishingFeatures || [];
       const newFeatures = newValue.physicalDescription.distinguishingFeatures || [];
-      
+
       for (const feature of oldFeatures) {
-        if (!newFeatures.includes(feature) && content.toLowerCase().includes(feature.toLowerCase())) {
+        if (
+          !newFeatures.includes(feature) &&
+          content.toLowerCase().includes(feature.toLowerCase())
+        ) {
           changes.push({
             type: 'physical_description',
             description: `Remove or update reference to "${feature}"`,
@@ -1324,7 +1389,7 @@ export class PersistentNarrativeEngine {
       .insert({
         ...ripple,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -1359,7 +1424,7 @@ export class PersistentNarrativeEngine {
         is_active: false,
         resolved_at: new Date().toISOString(),
         consequence_summary: resolution,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', rippleId);
 
@@ -1742,4 +1807,3 @@ export class PersistentNarrativeEngine {
 
 // Export singleton instance
 export const persistentNarrativeEngine = new PersistentNarrativeEngine();
-

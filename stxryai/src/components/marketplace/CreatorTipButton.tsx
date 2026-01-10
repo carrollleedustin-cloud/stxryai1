@@ -15,11 +15,7 @@ interface CreatorTipButtonProps {
 
 const TIP_AMOUNTS = [5, 10, 25, 50, 100];
 
-export function CreatorTipButton({
-  creatorId,
-  storyId,
-  className = '',
-}: CreatorTipButtonProps) {
+export function CreatorTipButton({ creatorId, storyId, className = '' }: CreatorTipButtonProps) {
   const { user } = useAuth();
   const [showTipModal, setShowTipModal] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -133,7 +129,9 @@ export function CreatorTipButton({
                   Custom Amount
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
                   <input
                     type="number"
                     min="1"
@@ -188,5 +186,3 @@ export function CreatorTipButton({
     </>
   );
 }
-
-

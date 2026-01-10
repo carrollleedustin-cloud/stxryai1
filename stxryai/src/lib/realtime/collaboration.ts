@@ -130,7 +130,9 @@ export class CollaborationManager {
   /**
    * Broadcast edit to collaborators
    */
-  async broadcastEdit(edit: Omit<CollaborativeEdit, 'id' | 'timestamp' | 'version'>): Promise<void> {
+  async broadcastEdit(
+    edit: Omit<CollaborativeEdit, 'id' | 'timestamp' | 'version'>
+  ): Promise<void> {
     if (!this.channel) return;
 
     const fullEdit: CollaborativeEdit = {

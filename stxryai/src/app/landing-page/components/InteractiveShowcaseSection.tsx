@@ -184,7 +184,11 @@ export default function InteractiveShowcaseSection() {
                                   : 'border-border'
                               }`}
                             >
-                              {selectedChoice === index ? <Check aria-hidden="true" size={16} /> : index + 1}
+                              {selectedChoice === index ? (
+                                <Check aria-hidden="true" size={16} />
+                              ) : (
+                                index + 1
+                              )}
                             </div>
                             <span className="flex-1">{choice}</span>
                           </div>

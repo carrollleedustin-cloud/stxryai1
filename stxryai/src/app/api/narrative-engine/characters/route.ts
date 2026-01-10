@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     const seriesId = searchParams.get('seriesId');
 
     if (!seriesId) {
-      return NextResponse.json(
-        { error: 'seriesId is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'seriesId is required' }, { status: 400 });
     }
 
     const characters = await persistentNarrativeEngine.getSeriesCharacters(seriesId);
@@ -39,10 +36,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Failed to fetch characters:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch characters' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch characters' }, { status: 500 });
   }
 }
 
@@ -104,10 +98,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(character, { status: 201 });
   } catch (error) {
     console.error('Failed to create character:', error);
-    return NextResponse.json(
-      { error: 'Failed to create character' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create character' }, { status: 500 });
   }
 }
-

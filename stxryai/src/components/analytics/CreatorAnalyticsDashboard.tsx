@@ -2,7 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import { analyticsService, type AnalyticsOverview, type StoryPerformance, type RevenueAnalytics, type AudienceInsights } from '@/services/analyticsService';
+import {
+  analyticsService,
+  type AnalyticsOverview,
+  type StoryPerformance,
+  type RevenueAnalytics,
+  type AudienceInsights,
+} from '@/services/analyticsService';
 import { useAuth } from '@/contexts/AuthContext';
 import Icon from '@/components/ui/AppIcon';
 import { toast } from 'react-hot-toast';
@@ -18,8 +24,12 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
   const [revenueAnalytics, setRevenueAnalytics] = useState<RevenueAnalytics[]>([]);
   const [audienceInsights, setAudienceInsights] = useState<AudienceInsights | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'stories' | 'revenue' | 'audience'>('overview');
-  const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
+  const [activeTab, setActiveTab] = useState<'overview' | 'stories' | 'revenue' | 'audience'>(
+    'overview'
+  );
+  const [selectedPeriod, setSelectedPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>(
+    'monthly'
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -191,9 +201,7 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
             </div>
             <div className="bg-card border-2 border-border rounded-xl p-4">
               <div className="text-sm text-muted-foreground mb-1">Total Stories</div>
-              <div className="text-2xl font-bold text-foreground">
-                {overview.totalStories}
-              </div>
+              <div className="text-2xl font-bold text-foreground">{overview.totalStories}</div>
             </div>
           </div>
 
@@ -251,9 +259,7 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <div className="text-lg font-bold text-foreground mb-2">
-                      Story Performance
-                    </div>
+                    <div className="text-lg font-bold text-foreground mb-2">Story Performance</div>
                     <div className="text-sm text-muted-foreground">
                       Last updated: {new Date(performance.lastCalculatedAt).toLocaleString()}
                     </div>
@@ -303,7 +309,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                           style={{ width: `${Math.min(performance.engagementScore, 100)}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium">{performance.engagementScore.toFixed(0)}</span>
+                      <span className="text-sm font-medium">
+                        {performance.engagementScore.toFixed(0)}
+                      </span>
                     </div>
                   </div>
                   <div>
@@ -315,7 +323,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                           style={{ width: `${Math.min(performance.popularityScore, 100)}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium">{performance.popularityScore.toFixed(0)}</span>
+                      <span className="text-sm font-medium">
+                        {performance.popularityScore.toFixed(0)}
+                      </span>
                     </div>
                   </div>
                   <div>
@@ -327,7 +337,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                           style={{ width: `${Math.min(performance.revenueScore, 100)}%` }}
                         />
                       </div>
-                      <span className="text-sm font-medium">{performance.revenueScore.toFixed(0)}</span>
+                      <span className="text-sm font-medium">
+                        {performance.revenueScore.toFixed(0)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -356,9 +368,12 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <div className="text-lg font-bold text-foreground">
-                      {new Date(revenue.periodStart).toLocaleDateString()} - {new Date(revenue.periodEnd).toLocaleDateString()}
+                      {new Date(revenue.periodStart).toLocaleDateString()} -{' '}
+                      {new Date(revenue.periodEnd).toLocaleDateString()}
                     </div>
-                    <div className="text-sm text-muted-foreground capitalize">{revenue.periodType}</div>
+                    <div className="text-sm text-muted-foreground capitalize">
+                      {revenue.periodType}
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-foreground">
@@ -374,14 +389,18 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                     <div className="text-xl font-bold text-foreground">
                       ${revenue.purchaseRevenue.toFixed(2)}
                     </div>
-                    <div className="text-xs text-muted-foreground">{revenue.purchaseCount} transactions</div>
+                    <div className="text-xs text-muted-foreground">
+                      {revenue.purchaseCount} transactions
+                    </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                     <div className="text-sm text-muted-foreground mb-1">Subscriptions</div>
                     <div className="text-xl font-bold text-foreground">
                       ${revenue.subscriptionRevenue.toFixed(2)}
                     </div>
-                    <div className="text-xs text-muted-foreground">{revenue.subscriptionCount} active</div>
+                    <div className="text-xs text-muted-foreground">
+                      {revenue.subscriptionCount} active
+                    </div>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                     <div className="text-sm text-muted-foreground mb-1">Tips</div>
@@ -432,7 +451,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                       .map(([country, count]) => (
                         <div key={country} className="flex items-center justify-between">
                           <span className="text-sm text-foreground">{country}</span>
-                          <span className="text-sm font-medium text-muted-foreground">{count as number}</span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {count as number}
+                          </span>
                         </div>
                       ))}
                   </div>
@@ -446,7 +467,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                       .map(([device, count]) => (
                         <div key={device} className="flex items-center justify-between">
                           <span className="text-sm text-foreground capitalize">{device}</span>
-                          <span className="text-sm font-medium text-muted-foreground">{count as number}</span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {count as number}
+                          </span>
                         </div>
                       ))}
                   </div>
@@ -482,7 +505,9 @@ export function CreatorAnalyticsDashboard({ className = '' }: CreatorAnalyticsDa
                       .map(([age, count]) => (
                         <div key={age} className="flex items-center justify-between">
                           <span className="text-sm text-foreground">{age}</span>
-                          <span className="text-sm font-medium text-muted-foreground">{count as number}</span>
+                          <span className="text-sm font-medium text-muted-foreground">
+                            {count as number}
+                          </span>
                         </div>
                       ))}
                   </div>

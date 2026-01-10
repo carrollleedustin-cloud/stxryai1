@@ -14,34 +14,181 @@ import { MagicTopBar } from '@/components/nebula/MagicNav';
 
 const allStories = [
   // Dragons
-  { id: '1', title: 'The Dragon Who Lost His Fire', author: 'Sarah Wonder', ageRange: '5-8', duration: '10 min', category: 'dragons', isNew: true, isFeatured: true },
-  { id: '2', title: 'Ember and the Crystal Cave', author: 'Tom Fire', ageRange: '6-9', duration: '15 min', category: 'dragons', isNew: false },
-  { id: '3', title: 'The Friendly Dragon School', author: 'Lucy Flame', ageRange: '4-7', duration: '8 min', category: 'dragons', isNew: true },
-  
+  {
+    id: '1',
+    title: 'The Dragon Who Lost His Fire',
+    author: 'Sarah Wonder',
+    ageRange: '5-8',
+    duration: '10 min',
+    category: 'dragons',
+    isNew: true,
+    isFeatured: true,
+  },
+  {
+    id: '2',
+    title: 'Ember and the Crystal Cave',
+    author: 'Tom Fire',
+    ageRange: '6-9',
+    duration: '15 min',
+    category: 'dragons',
+    isNew: false,
+  },
+  {
+    id: '3',
+    title: 'The Friendly Dragon School',
+    author: 'Lucy Flame',
+    ageRange: '4-7',
+    duration: '8 min',
+    category: 'dragons',
+    isNew: true,
+  },
+
   // Space
-  { id: '4', title: 'Princess Astro Goes to Space', author: 'Mike Stars', ageRange: '4-7', duration: '8 min', category: 'space', isNew: false, isFeatured: true },
-  { id: '5', title: 'The Moon Rabbit\'s Adventure', author: 'Luna Silver', ageRange: '5-8', duration: '12 min', category: 'space', isNew: true },
-  { id: '6', title: 'Robot Friends on Mars', author: 'Zack Zero', ageRange: '6-9', duration: '14 min', category: 'space', isNew: false },
-  
+  {
+    id: '4',
+    title: 'Princess Astro Goes to Space',
+    author: 'Mike Stars',
+    ageRange: '4-7',
+    duration: '8 min',
+    category: 'space',
+    isNew: false,
+    isFeatured: true,
+  },
+  {
+    id: '5',
+    title: "The Moon Rabbit's Adventure",
+    author: 'Luna Silver',
+    ageRange: '5-8',
+    duration: '12 min',
+    category: 'space',
+    isNew: true,
+  },
+  {
+    id: '6',
+    title: 'Robot Friends on Mars',
+    author: 'Zack Zero',
+    ageRange: '6-9',
+    duration: '14 min',
+    category: 'space',
+    isNew: false,
+  },
+
   // Fairy Tales
-  { id: '7', title: 'The Magical Garden', author: 'Emma Green', ageRange: '6-9', duration: '12 min', category: 'fairytales', isNew: true },
-  { id: '8', title: 'The Princess and the Unicorn', author: 'Rose Gold', ageRange: '4-7', duration: '10 min', category: 'fairytales', isNew: false },
-  { id: '9', title: 'Fairy Forest Friends', author: 'Lily Wing', ageRange: '5-8', duration: '9 min', category: 'fairytales', isNew: false },
-  
+  {
+    id: '7',
+    title: 'The Magical Garden',
+    author: 'Emma Green',
+    ageRange: '6-9',
+    duration: '12 min',
+    category: 'fairytales',
+    isNew: true,
+  },
+  {
+    id: '8',
+    title: 'The Princess and the Unicorn',
+    author: 'Rose Gold',
+    ageRange: '4-7',
+    duration: '10 min',
+    category: 'fairytales',
+    isNew: false,
+  },
+  {
+    id: '9',
+    title: 'Fairy Forest Friends',
+    author: 'Lily Wing',
+    ageRange: '5-8',
+    duration: '9 min',
+    category: 'fairytales',
+    isNew: false,
+  },
+
   // Heroes
-  { id: '10', title: 'Super Sam Saves the Day', author: 'Max Power', ageRange: '5-8', duration: '11 min', category: 'heroes', isNew: true },
-  { id: '11', title: 'The Brave Little Hero', author: 'Alex Strong', ageRange: '4-7', duration: '8 min', category: 'heroes', isNew: false },
-  { id: '12', title: 'Captain Kindness', author: 'Joy Heart', ageRange: '6-9', duration: '13 min', category: 'heroes', isNew: true },
-  
+  {
+    id: '10',
+    title: 'Super Sam Saves the Day',
+    author: 'Max Power',
+    ageRange: '5-8',
+    duration: '11 min',
+    category: 'heroes',
+    isNew: true,
+  },
+  {
+    id: '11',
+    title: 'The Brave Little Hero',
+    author: 'Alex Strong',
+    ageRange: '4-7',
+    duration: '8 min',
+    category: 'heroes',
+    isNew: false,
+  },
+  {
+    id: '12',
+    title: 'Captain Kindness',
+    author: 'Joy Heart',
+    ageRange: '6-9',
+    duration: '13 min',
+    category: 'heroes',
+    isNew: true,
+  },
+
   // Animals
-  { id: '13', title: 'The Curious Kitten', author: 'Paws Pet', ageRange: '3-6', duration: '6 min', category: 'animals', isNew: false },
-  { id: '14', title: 'Bunny\'s Big Day', author: 'Hop Happy', ageRange: '4-7', duration: '7 min', category: 'animals', isNew: true },
-  { id: '15', title: 'Jungle Friends Forever', author: 'Wild Will', ageRange: '5-8', duration: '12 min', category: 'animals', isNew: false },
-  
+  {
+    id: '13',
+    title: 'The Curious Kitten',
+    author: 'Paws Pet',
+    ageRange: '3-6',
+    duration: '6 min',
+    category: 'animals',
+    isNew: false,
+  },
+  {
+    id: '14',
+    title: "Bunny's Big Day",
+    author: 'Hop Happy',
+    ageRange: '4-7',
+    duration: '7 min',
+    category: 'animals',
+    isNew: true,
+  },
+  {
+    id: '15',
+    title: 'Jungle Friends Forever',
+    author: 'Wild Will',
+    ageRange: '5-8',
+    duration: '12 min',
+    category: 'animals',
+    isNew: false,
+  },
+
   // Adventure
-  { id: '16', title: 'Robot Best Friends', author: 'Tom Tech', ageRange: '5-8', duration: '15 min', category: 'adventure', isNew: false, isFeatured: true },
-  { id: '17', title: 'The Treasure Map Mystery', author: 'Jack Quest', ageRange: '6-9', duration: '14 min', category: 'adventure', isNew: true },
-  { id: '18', title: 'The Enchanted Treehouse', author: 'Oak Wood', ageRange: '5-8', duration: '11 min', category: 'adventure', isNew: false },
+  {
+    id: '16',
+    title: 'Robot Best Friends',
+    author: 'Tom Tech',
+    ageRange: '5-8',
+    duration: '15 min',
+    category: 'adventure',
+    isNew: false,
+    isFeatured: true,
+  },
+  {
+    id: '17',
+    title: 'The Treasure Map Mystery',
+    author: 'Jack Quest',
+    ageRange: '6-9',
+    duration: '14 min',
+    category: 'adventure',
+    isNew: true,
+  },
+  {
+    id: '18',
+    title: 'The Enchanted Treehouse',
+    author: 'Oak Wood',
+    ageRange: '5-8',
+    duration: '11 min',
+    category: 'adventure',
+    isNew: false,
+  },
 ];
 
 const categories = [
@@ -68,9 +215,10 @@ export default function KidsZoneStoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredStories = allStories
-    .filter(story => {
+    .filter((story) => {
       if (selectedCategory !== 'all' && story.category !== selectedCategory) return false;
-      if (searchQuery && !story.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (searchQuery && !story.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        return false;
       return true;
     })
     .sort((a, b) => {
@@ -80,28 +228,23 @@ export default function KidsZoneStoriesPage() {
       return 0;
     });
 
-  const featuredStories = allStories.filter(s => s.isFeatured);
+  const featuredStories = allStories.filter((s) => s.isFeatured);
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
       <MagicTopBar showCoins={coins} />
-      
+
       <div className="mt-20">
         {/* Header */}
         <section className="mb-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <h1
               className="text-4xl sm:text-5xl font-bold mb-3"
               style={{ fontFamily: 'var(--font-kids)' }}
             >
               <MagicText>Story Library</MagicText>
             </h1>
-            <p className="text-lg text-white/70">
-              Discover amazing adventures! 📚
-            </p>
+            <p className="text-lg text-white/70">Discover amazing adventures! 📚</p>
           </motion.div>
         </section>
 
@@ -121,7 +264,7 @@ export default function KidsZoneStoriesPage() {
         {/* Featured Stories */}
         {selectedCategory === 'all' && !searchQuery && (
           <section className="mb-10">
-            <h2 
+            <h2
               className="text-2xl font-bold mb-4 text-white"
               style={{ fontFamily: 'var(--font-kids)' }}
             >
@@ -138,9 +281,12 @@ export default function KidsZoneStoriesPage() {
                   <MagicCard color="rainbow" sparkles>
                     <div className="flex flex-col items-center text-center">
                       <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl mb-3">
-                        {categories.find(c => c.id === story.category)?.emoji}
+                        {categories.find((c) => c.id === story.category)?.emoji}
                       </div>
-                      <h3 className="text-lg font-bold text-white mb-1" style={{ fontFamily: 'var(--font-kids)' }}>
+                      <h3
+                        className="text-lg font-bold text-white mb-1"
+                        style={{ fontFamily: 'var(--font-kids)' }}
+                      >
                         {story.title}
                       </h3>
                       <p className="text-sm text-white/50 mb-2">{story.author}</p>
@@ -252,4 +398,3 @@ export default function KidsZoneStoriesPage() {
     </div>
   );
 }
-

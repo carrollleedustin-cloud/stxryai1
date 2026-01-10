@@ -81,13 +81,15 @@ export const DynamicPacingIndicator: React.FC<DynamicPacingIndicatorProps> = ({
       // Generate suggestion
       let suggestion = 'Perfect pacing';
       if (rhythm === 'fast') {
-        suggestion = emotionalIntensity > 0.6
-          ? 'Take a breath, intense moment ahead'
-          : 'Consider slowing down to savor the details';
+        suggestion =
+          emotionalIntensity > 0.6
+            ? 'Take a breath, intense moment ahead'
+            : 'Consider slowing down to savor the details';
       } else if (rhythm === 'slow') {
-        suggestion = chapterComplexity < 0.4
-          ? 'You might enjoy picking up the pace'
-          : 'Good, complex content deserves attention';
+        suggestion =
+          chapterComplexity < 0.4
+            ? 'You might enjoy picking up the pace'
+            : 'Good, complex content deserves attention';
       } else if (rhythm === 'erratic') {
         suggestion = 'Try to find a comfortable rhythm';
       }
@@ -109,7 +111,7 @@ export const DynamicPacingIndicator: React.FC<DynamicPacingIndicatorProps> = ({
   // Pulse animation for intensity
   useEffect(() => {
     const animate = () => {
-      setPulseIntensity(prev => {
+      setPulseIntensity((prev) => {
         const target = pacingData.intensity;
         const diff = target - prev;
         return prev + diff * 0.05; // Smooth interpolation
@@ -162,7 +164,7 @@ export const DynamicPacingIndicator: React.FC<DynamicPacingIndicatorProps> = ({
   const positionStyles = {
     'top-right': 'fixed top-20 right-6 z-40',
     'bottom-right': 'fixed bottom-20 right-6 z-40',
-    'floating': 'fixed top-1/2 right-6 transform -translate-y-1/2 z-40',
+    floating: 'fixed top-1/2 right-6 transform -translate-y-1/2 z-40',
   };
 
   const getRhythmIcon = () => {
@@ -238,9 +240,7 @@ export const DynamicPacingIndicator: React.FC<DynamicPacingIndicatorProps> = ({
                 <div className="text-xs font-ui tracking-widest uppercase opacity-70">
                   Reading Rhythm
                 </div>
-                <div className="text-sm font-medium capitalize">
-                  {pacingData.rhythm}
-                </div>
+                <div className="text-sm font-medium capitalize">{pacingData.rhythm}</div>
               </div>
             </div>
 
@@ -267,9 +267,7 @@ export const DynamicPacingIndicator: React.FC<DynamicPacingIndicatorProps> = ({
             </div>
 
             {/* Emotional intensity bars */}
-            <div className="flex items-end gap-1 mb-3">
-              {getIntensityBars()}
-            </div>
+            <div className="flex items-end gap-1 mb-3">{getIntensityBars()}</div>
 
             {/* Suggestion */}
             {showSuggestions && (

@@ -270,8 +270,9 @@ export default function StoryCreationStudioPage() {
                     New: Writer's Desk for Series Authors
                   </h2>
                   <p className="text-sm text-gray-300 max-w-xl">
-                    Building a multi-book series? The Writer's Desk offers persistent character management, 
-                    world-building archives, canon enforcement, and AI that knows your entire story universe.
+                    Building a multi-book series? The Writer's Desk offers persistent character
+                    management, world-building archives, canon enforcement, and AI that knows your
+                    entire story universe.
                   </p>
                 </div>
               </div>
@@ -283,7 +284,12 @@ export default function StoryCreationStudioPage() {
               >
                 <span>Open Writer's Desk</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
                 </svg>
               </button>
             </div>
@@ -299,8 +305,8 @@ export default function StoryCreationStudioPage() {
             </span>
           </div>
           <p className="text-gray-600">
-            Create interactive fiction with AI assistance and branching narratives. 
-            For multi-book series with persistent characters, use the Writer's Desk.
+            Create interactive fiction with AI assistance and branching narratives. For multi-book
+            series with persistent characters, use the Writer's Desk.
           </p>
         </div>
 
@@ -477,7 +483,7 @@ export default function StoryCreationStudioPage() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <span>✨</span> Story Mode & AI Settings
                   </h3>
-                  
+
                   {/* Story Mode Selection */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -485,23 +491,23 @@ export default function StoryCreationStudioPage() {
                     </label>
                     <div className="grid grid-cols-1 gap-3">
                       {[
-                        { 
-                          value: 'static', 
-                          label: 'Static Story', 
+                        {
+                          value: 'static',
+                          label: 'Static Story',
                           desc: 'You write everything. Readers follow your exact narrative.',
-                          icon: '📖'
+                          icon: '📖',
                         },
-                        { 
-                          value: 'ai_choices', 
-                          label: 'AI Choices', 
+                        {
+                          value: 'ai_choices',
+                          label: 'AI Choices',
                           desc: 'AI generates choices at chapter ends. Readers pick from options.',
-                          icon: '🔀'
+                          icon: '🔀',
                         },
-                        { 
-                          value: 'ai_infinite', 
-                          label: 'Infinite AI Story', 
+                        {
+                          value: 'ai_infinite',
+                          label: 'Infinite AI Story',
                           desc: 'Full AI branching with companion memory. Premium users can write custom choices.',
-                          icon: '♾️'
+                          icon: '♾️',
                         },
                       ].map((mode) => (
                         <label
@@ -517,7 +523,9 @@ export default function StoryCreationStudioPage() {
                             name="storyMode"
                             value={mode.value}
                             checked={metadata.storyMode === mode.value}
-                            onChange={(e) => setMetadata({ ...metadata, storyMode: e.target.value as any })}
+                            onChange={(e) =>
+                              setMetadata({ ...metadata, storyMode: e.target.value as any })
+                            }
                             className="mt-1"
                           />
                           <div className="flex-1">
@@ -540,7 +548,9 @@ export default function StoryCreationStudioPage() {
                       </label>
                       <select
                         value={metadata.customChoiceTier}
-                        onChange={(e) => setMetadata({ ...metadata, customChoiceTier: e.target.value as any })}
+                        onChange={(e) =>
+                          setMetadata({ ...metadata, customChoiceTier: e.target.value as any })
+                        }
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       >
                         <option value="none">No one (preset choices only)</option>
@@ -549,7 +559,8 @@ export default function StoryCreationStudioPage() {
                         <option value="all">Everyone</option>
                       </select>
                       <p className="text-xs text-gray-500 mt-2">
-                        Custom choices let readers type their own path instead of picking from options.
+                        Custom choices let readers type their own path instead of picking from
+                        options.
                       </p>
                     </div>
                   )}
@@ -569,11 +580,13 @@ export default function StoryCreationStudioPage() {
                         <input
                           type="checkbox"
                           checked={metadata.enableAICompanion}
-                          onChange={(e) => setMetadata({ ...metadata, enableAICompanion: e.target.checked })}
+                          onChange={(e) =>
+                            setMetadata({ ...metadata, enableAICompanion: e.target.checked })
+                          }
                           className="h-5 w-5 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
                         />
                       </div>
-                      
+
                       {metadata.enableAICompanion && (
                         <div className="space-y-3 pt-3 border-t border-cyan-200">
                           <div>
@@ -583,7 +596,9 @@ export default function StoryCreationStudioPage() {
                             <input
                               type="text"
                               value={metadata.companionName || ''}
-                              onChange={(e) => setMetadata({ ...metadata, companionName: e.target.value })}
+                              onChange={(e) =>
+                                setMetadata({ ...metadata, companionName: e.target.value })
+                              }
                               placeholder="e.g., Luna, Sage, Echo..."
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                             />
@@ -594,14 +609,20 @@ export default function StoryCreationStudioPage() {
                             </label>
                             <select
                               value={metadata.companionPersonality || ''}
-                              onChange={(e) => setMetadata({ ...metadata, companionPersonality: e.target.value })}
+                              onChange={(e) =>
+                                setMetadata({ ...metadata, companionPersonality: e.target.value })
+                              }
                               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
                             >
                               <option value="">Select personality...</option>
                               <option value="guide">Wise Guide - Offers hints and wisdom</option>
-                              <option value="friend">Friendly Companion - Supportive and encouraging</option>
+                              <option value="friend">
+                                Friendly Companion - Supportive and encouraging
+                              </option>
                               <option value="mentor">Mentor - Challenges reader to grow</option>
-                              <option value="trickster">Trickster - Playful and unpredictable</option>
+                              <option value="trickster">
+                                Trickster - Playful and unpredictable
+                              </option>
                               <option value="mystery">Mysterious - Cryptic and enigmatic</option>
                             </select>
                           </div>

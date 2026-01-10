@@ -78,7 +78,7 @@ describe('OptimizedStoryService', () => {
 
       // Both should return the same cached result
       expect(story1).toEqual(story2);
-      
+
       // Cache should have a hit
       const stats = optimizedStoryService.getCacheStats();
       expect(stats.hits).toBeGreaterThan(0);
@@ -86,10 +86,10 @@ describe('OptimizedStoryService', () => {
 
     it('should invalidate cache when requested', async () => {
       await optimizedStoryService.getStoryById('story-1');
-      
+
       // Invalidate the cache
       optimizedStoryService.invalidateStory('story-1');
-      
+
       // Cache should be empty for this key
       const stats = optimizedStoryService.getCacheStats();
       // After invalidation, next request will be a miss
@@ -99,7 +99,7 @@ describe('OptimizedStoryService', () => {
   describe('Query Optimization', () => {
     it('should fetch story with chapters in one query', async () => {
       const result = await optimizedStoryService.getStoryWithChapters('story-1');
-      
+
       // Result should include nested chapters
       expect(result).toBeDefined();
     });
@@ -107,7 +107,7 @@ describe('OptimizedStoryService', () => {
     it('should batch fetch multiple stories', async () => {
       const storyIds = ['story-1', 'story-2', 'story-3'];
       const results = await optimizedStoryService.getStoriesByIds(storyIds);
-      
+
       // Should return array of stories
       expect(Array.isArray(results)).toBe(true);
     });
@@ -116,7 +116,7 @@ describe('OptimizedStoryService', () => {
   describe('Type Safety', () => {
     it('should return properly typed Story objects', async () => {
       const story = await optimizedStoryService.getStoryById('story-1');
-      
+
       if (story) {
         // TypeScript should infer these properties
         expect(typeof story.id).toBe('string');
@@ -127,7 +127,7 @@ describe('OptimizedStoryService', () => {
 
     it('should return properly typed Chapter objects with choices', async () => {
       const chapters = await optimizedStoryService.getChaptersWithChoices('story-1');
-      
+
       expect(Array.isArray(chapters)).toBe(true);
       if (chapters.length > 0) {
         const chapter = chapters[0];
@@ -142,7 +142,7 @@ describe('OptimizedStoryService', () => {
       const stories = await optimizedStoryService.getFilteredStories({
         genres: ['fantasy', 'sci-fi'],
       });
-      
+
       expect(Array.isArray(stories)).toBe(true);
     });
 
@@ -150,7 +150,7 @@ describe('OptimizedStoryService', () => {
       const stories = await optimizedStoryService.getFilteredStories({
         minRating: 4.0,
       });
-      
+
       expect(Array.isArray(stories)).toBe(true);
     });
 
@@ -158,11 +158,11 @@ describe('OptimizedStoryService', () => {
       const popularStories = await optimizedStoryService.getFilteredStories({
         sortBy: 'popular',
       });
-      
+
       const newestStories = await optimizedStoryService.getFilteredStories({
         sortBy: 'newest',
       });
-      
+
       expect(Array.isArray(popularStories)).toBe(true);
       expect(Array.isArray(newestStories)).toBe(true);
     });
@@ -172,12 +172,12 @@ describe('OptimizedStoryService', () => {
         page: 1,
         pageSize: 10,
       });
-      
+
       const page2 = await optimizedStoryService.getFilteredStories({
         page: 2,
         pageSize: 10,
       });
-      
+
       expect(Array.isArray(page1)).toBe(true);
       expect(Array.isArray(page2)).toBe(true);
     });
@@ -186,13 +186,13 @@ describe('OptimizedStoryService', () => {
   describe('Featured & Trending', () => {
     it('should fetch featured stories', async () => {
       const featured = await optimizedStoryService.getFeaturedStories(5);
-      
+
       expect(Array.isArray(featured)).toBe(true);
     });
 
     it('should fetch trending stories', async () => {
       const trending = await optimizedStoryService.getTrendingStories(10);
-      
+
       expect(Array.isArray(trending)).toBe(true);
     });
   });
@@ -206,15 +206,15 @@ describe('QueryCache', () => {
   it('should store and retrieve values', () => {
     queryCache.set('test-key', { data: 'test' }, 60000);
     const result = queryCache.get<{ data: string }>('test-key');
-    
+
     expect(result).toEqual({ data: 'test' });
   });
 
   it('should return null for expired entries', async () => {
     queryCache.set('test-key', { data: 'test' }, 1); // 1ms TTL
-    
-    await new Promise(resolve => setTimeout(resolve, 10));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     const result = queryCache.get('test-key');
     expect(result).toBeNull();
   });
@@ -223,9 +223,9 @@ describe('QueryCache', () => {
     queryCache.set('story:1', { id: '1' }, 60000);
     queryCache.set('story:2', { id: '2' }, 60000);
     queryCache.set('user:1', { id: '1' }, 60000);
-    
+
     queryCache.invalidatePattern('^story:');
-    
+
     expect(queryCache.get('story:1')).toBeNull();
     expect(queryCache.get('story:2')).toBeNull();
     expect(queryCache.get('user:1')).not.toBeNull();
@@ -234,14 +234,13 @@ describe('QueryCache', () => {
   it('should track cache statistics', async () => {
     // Miss
     await queryCache.getOrSet('key1', async () => 'value1');
-    
+
     // Hit
     await queryCache.getOrSet('key1', async () => 'value1');
-    
+
     const stats = queryCache.getStats();
     expect(stats.hits).toBe(1);
     expect(stats.misses).toBe(1);
     expect(stats.hitRate).toBe(0.5);
   });
 });
-

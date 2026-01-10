@@ -14,7 +14,7 @@
   --neon-green: #00ff41;
   --neon-blue: #0080ff;
   --neon-red: #ff0040;
-  
+
   /* Black Glass Depths */
   --void-black: #000000;
   --void-deep: #0a0a0a;
@@ -22,13 +22,20 @@
   --void-elevated: #1a1a1a;
   --void-glass: rgba(17, 17, 17, 0.85);
   --void-glass-heavy: rgba(10, 10, 10, 0.95);
-  
+
   /* Neon Glows */
-  --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.1);
-  --glow-magenta: 0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3), 0 0 60px rgba(255, 0, 255, 0.1);
-  --glow-green: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.3), 0 0 60px rgba(0, 255, 65, 0.1);
-  --glow-blue: 0 0 20px rgba(0, 128, 255, 0.5), 0 0 40px rgba(0, 128, 255, 0.3), 0 0 60px rgba(0, 128, 255, 0.1);
-  
+  --glow-cyan:
+    0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(0, 255, 255, 0.3),
+    0 0 60px rgba(0, 255, 255, 0.1);
+  --glow-magenta:
+    0 0 20px rgba(255, 0, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3),
+    0 0 60px rgba(255, 0, 255, 0.1);
+  --glow-green:
+    0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.3), 0 0 60px rgba(0, 255, 65, 0.1);
+  --glow-blue:
+    0 0 20px rgba(0, 128, 255, 0.5), 0 0 40px rgba(0, 128, 255, 0.3),
+    0 0 60px rgba(0, 128, 255, 0.1);
+
   /* Rain-soaked Reflections */
   --rain-streak: linear-gradient(
     180deg,
@@ -36,7 +43,7 @@
     rgba(0, 255, 255, 0.1) 50%,
     transparent 100%
   );
-  
+
   /* Data Streams */
   --data-stream: repeating-linear-gradient(
     0deg,
@@ -45,17 +52,17 @@
     rgba(0, 255, 255, 0.03) 2px,
     rgba(0, 255, 255, 0.03) 4px
   );
-  
+
   /* Typography - Breathing */
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Inter', sans-serif;
-  
+
   /* Motion - Ritualistic */
   --motion-slow: 2s cubic-bezier(0.23, 1, 0.32, 1);
   --motion-medium: 0.8s cubic-bezier(0.23, 1, 0.32, 1);
   --motion-fast: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   --motion-predatory: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  
+
   /* Depth Layers */
   --depth-1: 0 2px 8px rgba(0, 0, 0, 0.8);
   --depth-2: 0 4px 16px rgba(0, 0, 0, 0.9);
@@ -82,7 +89,7 @@ html.sentient body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: 
+  background:
     var(--data-stream),
     radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.05) 0%, transparent 50%);
@@ -92,8 +99,12 @@ html.sentient body::before {
 }
 
 @keyframes rain-drift {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(100vh); }
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
 }
 
 /* Neon Text Glow */
@@ -116,11 +127,12 @@ html.sentient body::before {
 
 /* Breathing Typography */
 @keyframes breathe {
-  0%, 100% { 
+  0%,
+  100% {
     letter-spacing: 0.05em;
     opacity: 1;
   }
-  50% { 
+  50% {
     letter-spacing: 0.08em;
     opacity: 0.8;
   }
@@ -135,14 +147,18 @@ html.sentient body::before {
   background: var(--void-glass);
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(0, 255, 255, 0.1);
-  box-shadow: var(--depth-2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow:
+    var(--depth-2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-void-heavy {
   background: var(--void-glass-heavy);
   backdrop-filter: blur(30px) saturate(200%);
   border: 1px solid rgba(0, 255, 255, 0.2);
-  box-shadow: var(--depth-3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow:
+    var(--depth-3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Predatory Hover States */
@@ -172,14 +188,14 @@ html.sentient body::before {
 
 /* Data Stream Animation */
 @keyframes data-flow {
-  0% { 
+  0% {
     background-position: 0 0;
     opacity: 0.3;
   }
   50% {
     opacity: 0.6;
   }
-  100% { 
+  100% {
     background-position: 0 100vh;
     opacity: 0.3;
   }
@@ -197,7 +213,8 @@ html.sentient body::before {
 
 /* Neon Pulse */
 @keyframes neon-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     filter: brightness(1);
   }
@@ -262,7 +279,8 @@ html.sentient body::before {
 }
 
 @keyframes ritual-float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   25% {
@@ -293,7 +311,8 @@ html.sentient body::before {
 }
 
 @keyframes watching-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
@@ -370,8 +389,13 @@ html.sentient body::before {
 }
 
 @keyframes bleed-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 /* Scroll Tension Indicator */
@@ -450,4 +474,3 @@ html.sentient body::before {
     cursor: none !important;
   }
 }
-

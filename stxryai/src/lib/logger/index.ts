@@ -124,14 +124,16 @@ class Logger {
     if (level === 'error' && this.isProduction) {
       // Dynamic import to avoid bundling error tracking if not configured
       // This works on both server and client - the error tracking service handles the environment
-      import('@/lib/error-tracking').then(({ errorTracking }) => {
-        errorTracking.captureException(error || new Error(message), {
-          level: 'error',
-          extra: context,
+      import('@/lib/error-tracking')
+        .then(({ errorTracking }) => {
+          errorTracking.captureException(error || new Error(message), {
+            level: 'error',
+            extra: context,
+          });
+        })
+        .catch(() => {
+          // Error tracking not available, silently fail
         });
-      }).catch(() => {
-        // Error tracking not available, silently fail
-      });
     }
   }
 

@@ -97,7 +97,9 @@ export default function CharacterEvolution({
   const [events, setEvents] = useState<CharacterEvent[]>([]);
   const [relationships, setRelationships] = useState<Relationship[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<'timeline' | 'relationships' | 'traits' | 'dialogue'>('timeline');
+  const [activeSection, setActiveSection] = useState<
+    'timeline' | 'relationships' | 'traits' | 'dialogue'
+  >('timeline');
 
   useEffect(() => {
     loadCharacters();
@@ -157,32 +159,48 @@ export default function CharacterEvolution({
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'protagonist': return 'from-amber-500 to-orange-500';
-      case 'antagonist': return 'from-red-500 to-rose-500';
-      case 'deuteragonist': return 'from-purple-500 to-pink-500';
-      case 'supporting': return 'from-blue-500 to-cyan-500';
-      default: return 'from-slate-500 to-slate-600';
+      case 'protagonist':
+        return 'from-amber-500 to-orange-500';
+      case 'antagonist':
+        return 'from-red-500 to-rose-500';
+      case 'deuteragonist':
+        return 'from-purple-500 to-pink-500';
+      case 'supporting':
+        return 'from-blue-500 to-cyan-500';
+      default:
+        return 'from-slate-500 to-slate-600';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <User className="w-4 h-4 text-emerald-400" />;
-      case 'deceased': return <Skull className="w-4 h-4 text-red-400" />;
-      case 'missing': return <AlertTriangle className="w-4 h-4 text-amber-400" />;
-      case 'transformed': return <Sparkles className="w-4 h-4 text-purple-400" />;
-      default: return <User className="w-4 h-4 text-slate-400" />;
+      case 'active':
+        return <User className="w-4 h-4 text-emerald-400" />;
+      case 'deceased':
+        return <Skull className="w-4 h-4 text-red-400" />;
+      case 'missing':
+        return <AlertTriangle className="w-4 h-4 text-amber-400" />;
+      case 'transformed':
+        return <Sparkles className="w-4 h-4 text-purple-400" />;
+      default:
+        return <User className="w-4 h-4 text-slate-400" />;
     }
   };
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'physical': return <Zap className="w-4 h-4 text-amber-400" />;
-      case 'psychological': return <Heart className="w-4 h-4 text-pink-400" />;
-      case 'relational': return <GitBranch className="w-4 h-4 text-purple-400" />;
-      case 'status': return <Shield className="w-4 h-4 text-blue-400" />;
-      case 'ability': return <Sparkles className="w-4 h-4 text-emerald-400" />;
-      default: return <Clock className="w-4 h-4 text-slate-400" />;
+      case 'physical':
+        return <Zap className="w-4 h-4 text-amber-400" />;
+      case 'psychological':
+        return <Heart className="w-4 h-4 text-pink-400" />;
+      case 'relational':
+        return <GitBranch className="w-4 h-4 text-purple-400" />;
+      case 'status':
+        return <Shield className="w-4 h-4 text-blue-400" />;
+      case 'ability':
+        return <Sparkles className="w-4 h-4 text-emerald-400" />;
+      default:
+        return <Clock className="w-4 h-4 text-slate-400" />;
     }
   };
 
@@ -218,7 +236,9 @@ export default function CharacterEvolution({
                     whileHover={{ x: 4 }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor(char.role)} flex items-center justify-center text-white font-bold text-sm`}>
+                      <div
+                        className={`w-10 h-10 rounded-full bg-gradient-to-br ${getRoleColor(char.role)} flex items-center justify-center text-white font-bold text-sm`}
+                      >
                         {char.name.charAt(0)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -251,7 +271,9 @@ export default function CharacterEvolution({
             {/* Character Header */}
             <div className="p-6 border-b border-white/10 bg-gradient-to-r from-purple-900/20 to-pink-900/20">
               <div className="flex items-start gap-6">
-                <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${getRoleColor(selectedCharacter.role)} flex items-center justify-center text-white font-bold text-3xl`}>
+                <div
+                  className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${getRoleColor(selectedCharacter.role)} flex items-center justify-center text-white font-bold text-3xl`}
+                >
                   {selectedCharacter.name.charAt(0)}
                 </div>
                 <div className="flex-1">
@@ -273,11 +295,15 @@ export default function CharacterEvolution({
                     </p>
                   )}
                   <div className="flex items-center gap-4 text-sm">
-                    <span className={`px-2 py-1 rounded-full capitalize ${
-                      selectedCharacter.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' :
-                      selectedCharacter.status === 'deceased' ? 'bg-red-500/20 text-red-400' :
-                      'bg-slate-500/20 text-slate-400'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full capitalize ${
+                        selectedCharacter.status === 'active'
+                          ? 'bg-emerald-500/20 text-emerald-400'
+                          : selectedCharacter.status === 'deceased'
+                            ? 'bg-red-500/20 text-red-400'
+                            : 'bg-slate-500/20 text-slate-400'
+                      }`}
+                    >
                       {selectedCharacter.status}
                     </span>
                     <span className="text-slate-400">
@@ -337,16 +363,10 @@ export default function CharacterEvolution({
                   />
                 )}
                 {activeSection === 'traits' && (
-                  <TraitsView
-                    key="traits"
-                    character={selectedCharacter}
-                  />
+                  <TraitsView key="traits" character={selectedCharacter} />
                 )}
                 {activeSection === 'dialogue' && (
-                  <DialogueView
-                    key="dialogue"
-                    character={selectedCharacter}
-                  />
+                  <DialogueView key="dialogue" character={selectedCharacter} />
                 )}
               </AnimatePresence>
             </div>
@@ -375,24 +395,36 @@ function EvolutionTimeline({
 }) {
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'physical': return <Zap className="w-4 h-4" />;
-      case 'psychological': return <Heart className="w-4 h-4" />;
-      case 'relational': return <GitBranch className="w-4 h-4" />;
-      case 'status': return <Shield className="w-4 h-4" />;
-      case 'ability': return <Sparkles className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
+      case 'physical':
+        return <Zap className="w-4 h-4" />;
+      case 'psychological':
+        return <Heart className="w-4 h-4" />;
+      case 'relational':
+        return <GitBranch className="w-4 h-4" />;
+      case 'status':
+        return <Shield className="w-4 h-4" />;
+      case 'ability':
+        return <Sparkles className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
     }
   };
 
   const getEventColor = (type: string, isPermanent: boolean) => {
     if (isPermanent) {
       switch (type) {
-        case 'physical': return 'border-amber-500 bg-amber-500/10';
-        case 'psychological': return 'border-pink-500 bg-pink-500/10';
-        case 'relational': return 'border-purple-500 bg-purple-500/10';
-        case 'status': return 'border-blue-500 bg-blue-500/10';
-        case 'ability': return 'border-emerald-500 bg-emerald-500/10';
-        default: return 'border-slate-500 bg-slate-500/10';
+        case 'physical':
+          return 'border-amber-500 bg-amber-500/10';
+        case 'psychological':
+          return 'border-pink-500 bg-pink-500/10';
+        case 'relational':
+          return 'border-purple-500 bg-purple-500/10';
+        case 'status':
+          return 'border-blue-500 bg-blue-500/10';
+        case 'ability':
+          return 'border-emerald-500 bg-emerald-500/10';
+        default:
+          return 'border-slate-500 bg-slate-500/10';
       }
     }
     return 'border-white/20 bg-white/5';
@@ -427,15 +459,20 @@ function EvolutionTimeline({
                 className="relative pl-16"
               >
                 {/* Event dot */}
-                <div className={`absolute left-4 w-5 h-5 rounded-full border-2 ${getEventColor(event.eventType, event.isPermanent)} flex items-center justify-center`}>
+                <div
+                  className={`absolute left-4 w-5 h-5 rounded-full border-2 ${getEventColor(event.eventType, event.isPermanent)} flex items-center justify-center`}
+                >
                   {getEventIcon(event.eventType)}
                 </div>
 
-                <div className={`p-4 rounded-xl border ${event.isPermanent ? getEventColor(event.eventType, true) : 'border-white/10 bg-white/5'}`}>
+                <div
+                  className={`p-4 rounded-xl border ${event.isPermanent ? getEventColor(event.eventType, true) : 'border-white/10 bg-white/5'}`}
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                        Book {event.bookNumber}{event.chapterNumber ? `, Chapter ${event.chapterNumber}` : ''}
+                        Book {event.bookNumber}
+                        {event.chapterNumber ? `, Chapter ${event.chapterNumber}` : ''}
                       </span>
                       <h4 className="text-white font-medium mt-1">{event.description}</h4>
                     </div>
@@ -452,9 +489,7 @@ function EvolutionTimeline({
                   </div>
 
                   {event.cause && (
-                    <p className="text-sm text-slate-400 mb-2">
-                      Cause: {event.cause}
-                    </p>
+                    <p className="text-sm text-slate-400 mb-2">Cause: {event.cause}</p>
                   )}
 
                   {/* State change visualization */}
@@ -495,7 +530,9 @@ function EvolutionTimeline({
         <div className="text-center py-12">
           <Clock className="w-12 h-12 mx-auto mb-4 text-slate-600" />
           <p className="text-slate-400">No events recorded yet.</p>
-          <p className="text-slate-500 text-sm">Track injuries, transformations, and key moments.</p>
+          <p className="text-slate-500 text-sm">
+            Track injuries, transformations, and key moments.
+          </p>
         </div>
       )}
     </motion.div>
@@ -512,13 +549,20 @@ function RelationshipsView({
 }) {
   const getRelationshipColor = (type: string) => {
     switch (type) {
-      case 'ally': return 'text-emerald-400 bg-emerald-500/20';
-      case 'enemy': return 'text-red-400 bg-red-500/20';
-      case 'family': return 'text-amber-400 bg-amber-500/20';
-      case 'romantic': return 'text-pink-400 bg-pink-500/20';
-      case 'mentor': return 'text-purple-400 bg-purple-500/20';
-      case 'rival': return 'text-orange-400 bg-orange-500/20';
-      default: return 'text-slate-400 bg-slate-500/20';
+      case 'ally':
+        return 'text-emerald-400 bg-emerald-500/20';
+      case 'enemy':
+        return 'text-red-400 bg-red-500/20';
+      case 'family':
+        return 'text-amber-400 bg-amber-500/20';
+      case 'romantic':
+        return 'text-pink-400 bg-pink-500/20';
+      case 'mentor':
+        return 'text-purple-400 bg-purple-500/20';
+      case 'rival':
+        return 'text-orange-400 bg-orange-500/20';
+      default:
+        return 'text-slate-400 bg-slate-500/20';
     }
   };
 
@@ -550,7 +594,9 @@ function RelationshipsView({
                   </div>
                   <div>
                     <h4 className="text-white font-medium">{rel.otherCharacterName}</h4>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${getRelationshipColor(rel.type)}`}>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${getRelationshipColor(rel.type)}`}
+                    >
                       {rel.type}
                     </span>
                   </div>
@@ -566,10 +612,13 @@ function RelationshipsView({
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${
-                      rel.type === 'enemy' ? 'bg-red-500' :
-                      rel.type === 'romantic' ? 'bg-pink-500' :
-                      rel.type === 'ally' ? 'bg-emerald-500' :
-                      'bg-purple-500'
+                      rel.type === 'enemy'
+                        ? 'bg-red-500'
+                        : rel.type === 'romantic'
+                          ? 'bg-pink-500'
+                          : rel.type === 'ally'
+                            ? 'bg-emerald-500'
+                            : 'bg-purple-500'
                     }`}
                     style={{ width: `${rel.intensity * 10}%` }}
                   />
@@ -585,7 +634,10 @@ function RelationshipsView({
                   <span className="text-xs text-slate-500">Tension points:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {rel.tensionPoints.map((point, i) => (
-                      <span key={i} className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400">
+                      <span
+                        key={i}
+                        className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400"
+                      >
                         {point}
                       </span>
                     ))}
@@ -627,7 +679,10 @@ function TraitsView({ character }: { character: Character }) {
           <div key={section.key} className="p-4 rounded-xl border border-white/10 bg-white/5">
             <h4 className={`text-${section.color}-400 font-medium mb-3`}>{section.label}</h4>
             <div className="flex flex-wrap gap-2">
-              {(character.corePersonality[section.key as keyof typeof character.corePersonality] || []).map((item: string, i: number) => (
+              {(
+                character.corePersonality[section.key as keyof typeof character.corePersonality] ||
+                []
+              ).map((item: string, i: number) => (
                 <span
                   key={i}
                   className={`px-3 py-1 rounded-full bg-${section.color}-500/20 text-${section.color}-400 text-sm`}
@@ -635,9 +690,10 @@ function TraitsView({ character }: { character: Character }) {
                   {item}
                 </span>
               ))}
-              {(character.corePersonality[section.key as keyof typeof character.corePersonality] || []).length === 0 && (
-                <span className="text-slate-500 text-sm">None defined</span>
-              )}
+              {(
+                character.corePersonality[section.key as keyof typeof character.corePersonality] ||
+                []
+              ).length === 0 && <span className="text-slate-500 text-sm">None defined</span>}
             </div>
           </div>
         ))}
@@ -649,7 +705,9 @@ function TraitsView({ character }: { character: Character }) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           {['height', 'build', 'hairColor', 'eyeColor'].map((key) => (
             <div key={key}>
-              <span className="text-xs text-slate-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+              <span className="text-xs text-slate-500 capitalize">
+                {key.replace(/([A-Z])/g, ' $1')}
+              </span>
               <p className="text-white">{(character.physicalDescription as any)[key] || '—'}</p>
             </div>
           ))}
@@ -659,7 +717,10 @@ function TraitsView({ character }: { character: Character }) {
             <span className="text-xs text-slate-500">Distinguishing Features</span>
             <div className="flex flex-wrap gap-2 mt-1">
               {character.physicalDescription.distinguishingFeatures.map((feature, i) => (
-                <span key={i} className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-sm">
+                <span
+                  key={i}
+                  className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-sm"
+                >
                   {feature}
                 </span>
               ))}
@@ -716,7 +777,10 @@ function DialogueView({ character }: { character: Character }) {
             </p>
             <div className="flex flex-wrap gap-2">
               {character.lockedAttributes.map((attr, i) => (
-                <span key={i} className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-sm">
+                <span
+                  key={i}
+                  className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-sm"
+                >
                   {attr}
                 </span>
               ))}
@@ -727,4 +791,3 @@ function DialogueView({ character }: { character: Character }) {
     </motion.div>
   );
 }
-

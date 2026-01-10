@@ -139,9 +139,7 @@ async function generateWithAnthropic(
     max_tokens: config.maxTokens,
     temperature: config.temperature,
     system: systemPrompt,
-    messages: [
-      { role: 'user', content: userPrompt },
-    ],
+    messages: [{ role: 'user', content: userPrompt }],
   });
 
   const content = response.content[0].type === 'text' ? response.content[0].text : '';
@@ -237,15 +235,19 @@ Provide scores (0-100) for:
 
 Also provide 3-5 specific suggestions for improvement.`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'analysis',
-    tone: 'analytical',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.3, // Lower temperature for analytical tasks
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'analysis',
+      tone: 'analytical',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.3, // Lower temperature for analytical tasks
+    }
+  );
 
   // Parse response (in production, use structured output)
   return {
@@ -373,15 +375,19 @@ ${content}
 
 Maintain the core story while enhancing the ${enhancementType}.`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'general',
-    tone: 'enhanced',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.7,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'general',
+      tone: 'enhanced',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.7,
+    }
+  );
 
   return response.content;
 }
@@ -408,15 +414,19 @@ For each chapter, provide:
 - Character development
 - Plot progression`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: context.genre || 'fantasy',
-    tone: context.tone || 'adventurous',
-    characters: context.characters || [],
-    worldElements: context.worldElements || [],
-    plotPoints: context.plotPoints || [],
-  }, {
-    temperature: 0.8,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: context.genre || 'fantasy',
+      tone: context.tone || 'adventurous',
+      characters: context.characters || [],
+      worldElements: context.worldElements || [],
+      plotPoints: context.plotPoints || [],
+    },
+    {
+      temperature: 0.8,
+    }
+  );
 
   // Parse response (in production, use structured output)
   return Array.from({ length: chapterCount }, (_, i) => ({
@@ -494,15 +504,19 @@ Include:
 3. Potential catchphrases
 4. Example dialogue lines`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'character-development',
-    tone: 'analytical',
-    characters: [{ name: characterName, role: 'protagonist', personality }],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.7,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'character-development',
+      tone: 'analytical',
+      characters: [{ name: characterName, role: 'protagonist', personality }],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.7,
+    }
+  );
 
   return {
     vocabulary: ['eloquent', 'precise', 'thoughtful'],
@@ -518,12 +532,14 @@ Include:
 export async function detectPlotHoles(
   storyContent: string,
   context: StoryContext
-): Promise<Array<{
-  type: 'inconsistency' | 'plot-hole' | 'continuity-error';
-  severity: 'low' | 'medium' | 'high';
-  description: string;
-  suggestion: string;
-}>> {
+): Promise<
+  Array<{
+    type: 'inconsistency' | 'plot-hole' | 'continuity-error';
+    severity: 'low' | 'medium' | 'high';
+    description: string;
+    suggestion: string;
+  }>
+> {
   const prompt = `Analyze this story for plot holes, inconsistencies, and continuity errors:
 
 ${storyContent}
@@ -551,7 +567,7 @@ For each issue, provide:
       type: 'plot-hole',
       severity: 'medium',
       description: 'Character motivation unclear',
-      suggestion: 'Add scene explaining character\'s background',
+      suggestion: "Add scene explaining character's background",
     },
   ];
 }
@@ -563,12 +579,14 @@ export async function generateAlternativeEndings(
   storyContent: string,
   context: StoryContext,
   count: number = 3
-): Promise<Array<{
-  title: string;
-  description: string;
-  content: string;
-  tone: string;
-}>> {
+): Promise<
+  Array<{
+    title: string;
+    description: string;
+    content: string;
+    tone: string;
+  }>
+> {
   const prompt = `Generate ${count} alternative endings for this story:
 
 ${storyContent}
@@ -612,15 +630,19 @@ Titles should be:
 - 2-6 words
 - Unique and creative`;
 
-  const response = await generateStoryContent(prompt, {
-    genre,
-    tone: 'creative',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.95,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre,
+      tone: 'creative',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.95,
+    }
+  );
 
   return response.content.split('\n').filter((line) => line.trim().length > 0);
 }
@@ -648,15 +670,19 @@ Focus on:
 - Plot progression
 - Important revelations`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'summary',
-    tone: 'concise',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.3,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'summary',
+      tone: 'concise',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.3,
+    }
+  );
 
   return response.content;
 }
@@ -681,15 +707,19 @@ Tags should be:
 - Genre-appropriate
 - Include themes, tropes, and elements`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'tagging',
-    tone: 'analytical',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.4,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'tagging',
+      tone: 'analytical',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.4,
+    }
+  );
 
   return response.content.split(',').map((tag) => tag.trim());
 }
@@ -711,15 +741,19 @@ Check for:
 
 List only warnings that apply.`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'analysis',
-    tone: 'objective',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.2,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'analysis',
+      tone: 'objective',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.2,
+    }
+  );
 
   return response.content.split('\n').filter((line) => line.trim().length > 0);
 }
@@ -748,15 +782,19 @@ Focus on:
 
 Provide the improved version and list major changes made.`;
 
-  const response = await generateStoryContent(prompt, {
-    genre: 'editing',
-    tone: 'professional',
-    characters: [],
-    worldElements: [],
-    plotPoints: [],
-  }, {
-    temperature: 0.3,
-  });
+  const response = await generateStoryContent(
+    prompt,
+    {
+      genre: 'editing',
+      tone: 'professional',
+      characters: [],
+      worldElements: [],
+      plotPoints: [],
+    },
+    {
+      temperature: 0.3,
+    }
+  );
 
   return {
     improved: response.content,
@@ -771,11 +809,13 @@ export async function generateContinuationSuggestions(
   currentContent: string,
   context: StoryContext,
   count: number = 5
-): Promise<Array<{
-  direction: string;
+): Promise<
+  Array<{
+    direction: string;
     description: string;
-  impact: 'low' | 'medium' | 'high';
-}>> {
+    impact: 'low' | 'medium' | 'high';
+  }>
+> {
   const prompt = `Based on the current story, suggest ${count} possible directions for continuation:
 
 ${currentContent}

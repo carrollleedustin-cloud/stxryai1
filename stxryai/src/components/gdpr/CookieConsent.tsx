@@ -29,7 +29,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
       try {
         const sessionId = getSessionId();
         const prefs = await gdprService.getCookiePreferences(user?.id || null, sessionId);
-        
+
         setPreferences({
           essential: prefs.essential,
           analytics: prefs.analytics,
@@ -53,7 +53,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
 
   const getSessionId = (): string => {
     if (typeof window === 'undefined') return '';
-    
+
     let sessionId = localStorage.getItem('session_id');
     if (!sessionId) {
       sessionId = crypto.randomUUID();
@@ -74,7 +74,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
       };
 
       await gdprService.updateCookiePreferences(user?.id || null, sessionId, newPrefs);
-      
+
       // Record consents if user is logged in
       if (user) {
         await Promise.all([
@@ -107,7 +107,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
       };
 
       await gdprService.updateCookiePreferences(user?.id || null, sessionId, newPrefs);
-      
+
       if (user) {
         await Promise.all([
           gdprService.recordConsent(user.id, 'analytics', false),
@@ -131,7 +131,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
     try {
       const sessionId = getSessionId();
       await gdprService.updateCookiePreferences(user?.id || null, sessionId, preferences);
-      
+
       if (user) {
         await Promise.all([
           gdprService.recordConsent(user.id, 'analytics', preferences.analytics),
@@ -170,9 +170,7 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
           {!showDetails ? (
             <div className="flex items-start gap-4">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  Cookie Preferences
-                </h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Cookie Preferences</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   We use cookies to enhance your experience, analyze site usage, and assist in
                   marketing efforts. You can customize your preferences below.
@@ -325,4 +323,3 @@ export function CookieConsent({ className = '' }: CookieConsentProps) {
     </AnimatePresence>
   );
 }
-

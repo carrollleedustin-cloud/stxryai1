@@ -129,28 +129,22 @@ export class WorldbuildingArchive {
     if (!element) throw new Error('Element not found');
 
     // Get related elements
-    const related = element.relatedElements.length > 0
-      ? await this.supabase
-          .from('world_elements')
-          .select('*')
-          .in('id', element.relatedElements)
-      : { data: [] };
+    const related =
+      element.relatedElements.length > 0
+        ? await this.supabase.from('world_elements').select('*').in('id', element.relatedElements)
+        : { data: [] };
 
     // Get conflicting elements
-    const conflicts = element.conflictsWith.length > 0
-      ? await this.supabase
-          .from('world_elements')
-          .select('*')
-          .in('id', element.conflictsWith)
-      : { data: [] };
+    const conflicts =
+      element.conflictsWith.length > 0
+        ? await this.supabase.from('world_elements').select('*').in('id', element.conflictsWith)
+        : { data: [] };
 
     // Get dependent elements
-    const dependencies = element.dependsOn.length > 0
-      ? await this.supabase
-          .from('world_elements')
-          .select('*')
-          .in('id', element.dependsOn)
-      : { data: [] };
+    const dependencies =
+      element.dependsOn.length > 0
+        ? await this.supabase.from('world_elements').select('*').in('id', element.dependsOn)
+        : { data: [] };
 
     // Get children
     const children = await this.supabase
@@ -250,11 +244,15 @@ export class WorldbuildingArchive {
     bookNumber: number,
     reason: string
   ): Promise<WorldElement> {
-    return this.updateElement(elementId, {
-      isActive: false,
-      destroyedInBook: bookNumber,
-      destructionReason: reason,
-    }, true);
+    return this.updateElement(
+      elementId,
+      {
+        isActive: false,
+        destroyedInBook: bookNumber,
+        destructionReason: reason,
+      },
+      true
+    );
   }
 
   // ==========================================================================
@@ -269,8 +267,8 @@ export class WorldbuildingArchive {
     const element = await this.createElement({
       seriesId: location.seriesId,
       authorId: location.authorId,
-      parentElementId: location.parentLocationId 
-        ? (await this.getLocationElement(location.parentLocationId))?.id 
+      parentElementId: location.parentLocationId
+        ? (await this.getLocationElement(location.parentLocationId))?.id
         : undefined,
       elementType: 'geography',
       name: location.name,
@@ -484,7 +482,7 @@ export class WorldbuildingArchive {
       if (limitLower.includes('only') || limitLower.includes('must')) {
         // Check if the ability respects the limitation
         const requiredTerms = this.extractRequiredTerms(limitLower);
-        const hasRequired = requiredTerms.some(term => descLower.includes(term));
+        const hasRequired = requiredTerms.some((term) => descLower.includes(term));
         if (!hasRequired && requiredTerms.length > 0) {
           issues.push(`Ability may not respect limitation: "${limitation}"`);
         }
@@ -588,7 +586,7 @@ export class WorldbuildingArchive {
 
     for (const faction of factions) {
       for (const allyId of faction.alliedFactions) {
-        const ally = factions.find(f => f.id === allyId);
+        const ally = factions.find((f) => f.id === allyId);
         if (ally) {
           relationships.push({
             factionA: faction.factionName,
@@ -600,7 +598,7 @@ export class WorldbuildingArchive {
       }
 
       for (const enemyId of faction.enemyFactions) {
-        const enemy = factions.find(f => f.id === enemyId);
+        const enemy = factions.find((f) => f.id === enemyId);
         if (enemy) {
           relationships.push({
             factionA: faction.factionName,
@@ -613,7 +611,7 @@ export class WorldbuildingArchive {
     }
 
     return {
-      factions: factions.map(f => ({ id: f.id, name: f.factionName, type: f.factionType })),
+      factions: factions.map((f) => ({ id: f.id, name: f.factionName, type: f.factionType })),
       relationships,
     };
   }
@@ -652,21 +650,19 @@ export class WorldbuildingArchive {
       affectedCharacters?: string[];
     }
   ): Promise<void> {
-    await this.supabase
-      .from('world_element_history')
-      .insert({
-        element_id: elementId,
-        book_id: details.bookId,
-        chapter_id: details.chapterId,
-        change_description: `${changeType}: ${JSON.stringify(details.changes || {})}`,
-        change_cause: details.cause,
-        change_type: changeType,
-        previous_state: details.previous || {},
-        new_state: details.changes || {},
-        affected_elements: details.affectedElements || [],
-        affected_characters: details.affectedCharacters || [],
-        is_canon: true,
-      });
+    await this.supabase.from('world_element_history').insert({
+      element_id: elementId,
+      book_id: details.bookId,
+      chapter_id: details.chapterId,
+      change_description: `${changeType}: ${JSON.stringify(details.changes || {})}`,
+      change_cause: details.cause,
+      change_type: changeType,
+      previous_state: details.previous || {},
+      new_state: details.changes || {},
+      affected_elements: details.affectedElements || [],
+      affected_characters: details.affectedCharacters || [],
+      is_canon: true,
+    });
   }
 
   /**
@@ -688,7 +684,7 @@ export class WorldbuildingArchive {
    */
   async checkWorldConsistency(seriesId: string): Promise<ConsistencyCheckResult> {
     const issues: WorldConsistencyIssue[] = [];
-    
+
     // Get all elements
     const elements = await this.getElements(seriesId);
     const systems = await this.getSystems(seriesId);
@@ -727,11 +723,15 @@ export class WorldbuildingArchive {
     for (const faction of factions) {
       // Enemy of my ally should not be my ally
       for (const allyId of faction.alliedFactions) {
-        const ally = factions.find(f => f.id === allyId);
+        const ally = factions.find((f) => f.id === allyId);
         if (ally) {
-          const sharedEnemies = ally.enemyFactions.filter(e => faction.alliedFactions.includes(e));
+          const sharedEnemies = ally.enemyFactions.filter((e) =>
+            faction.alliedFactions.includes(e)
+          );
           if (sharedEnemies.length > 0) {
-            const enemyNames = sharedEnemies.map(id => factions.find(f => f.id === id)?.factionName);
+            const enemyNames = sharedEnemies.map(
+              (id) => factions.find((f) => f.id === id)?.factionName
+            );
             issues.push({
               type: 'relationship_conflict',
               severity: 'warning',
@@ -744,7 +744,7 @@ export class WorldbuildingArchive {
     }
 
     return {
-      isConsistent: issues.filter(i => i.severity === 'error').length === 0,
+      isConsistent: issues.filter((i) => i.severity === 'error').length === 0,
       issues,
       checkedAt: new Date().toISOString(),
     };
@@ -756,11 +756,9 @@ export class WorldbuildingArchive {
 
   private async validateAgainstExisting(element: CreateWorldElementInput): Promise<void> {
     const existing = await this.getElements(element.seriesId, element.elementType);
-    
+
     // Check for name conflicts
-    const nameConflict = existing.find(
-      e => e.name.toLowerCase() === element.name.toLowerCase()
-    );
+    const nameConflict = existing.find((e) => e.name.toLowerCase() === element.name.toLowerCase());
     if (nameConflict) {
       throw new Error(`An element with the name "${element.name}" already exists`);
     }
@@ -770,19 +768,23 @@ export class WorldbuildingArchive {
     for (const relatedId of relatedIds) {
       const related = await this.getElement(relatedId);
       if (related && !related.relatedElements.includes(newElementId)) {
-        await this.updateElement(relatedId, {
-          relatedElements: [...related.relatedElements, newElementId],
-        }, false);
+        await this.updateElement(
+          relatedId,
+          {
+            relatedElements: [...related.relatedElements, newElementId],
+          },
+          false
+        );
       }
     }
   }
 
   private buildElementHierarchy(elements: WorldElement[]): ElementNode[] {
-    const rootElements = elements.filter(e => !e.parentElementId);
-    
+    const rootElements = elements.filter((e) => !e.parentElementId);
+
     // Track visited elements to prevent infinite recursion from circular references
     const visited = new Set<string>();
-    
+
     const buildNode = (element: WorldElement): ElementNode => {
       // Guard against circular references
       if (visited.has(element.id)) {
@@ -792,20 +794,18 @@ export class WorldbuildingArchive {
           children: [], // Stop recursion at circular reference
         };
       }
-      
+
       visited.add(element.id);
-      
+
       const node: ElementNode = {
         element,
-        children: elements
-          .filter(e => e.parentElementId === element.id)
-          .map(buildNode),
+        children: elements.filter((e) => e.parentElementId === element.id).map(buildNode),
       };
-      
+
       // Remove from visited after processing children to allow same element
       // to appear in different branches (though this shouldn't happen with proper parent-child)
       visited.delete(element.id);
-      
+
       return node;
     };
 
@@ -843,13 +843,11 @@ export class WorldbuildingArchive {
   }
 
   private buildLocationTree(locations: WorldLocation[]): LocationNode[] {
-    const rootLocations = locations.filter(l => !l.parentLocationId);
-    
+    const rootLocations = locations.filter((l) => !l.parentLocationId);
+
     const buildNode = (location: WorldLocation): LocationNode => ({
       location,
-      children: locations
-        .filter(l => l.parentLocationId === location.id)
-        .map(buildNode),
+      children: locations.filter((l) => l.parentLocationId === location.id).map(buildNode),
     });
 
     return rootLocations.map(buildNode);
@@ -864,17 +862,17 @@ export class WorldbuildingArchive {
     return {
       totalElements: elements.length,
       byType: {
-        geography: elements.filter(e => e.elementType === 'geography').length,
-        culture: elements.filter(e => e.elementType === 'culture').length,
-        religion: elements.filter(e => e.elementType === 'religion').length,
-        magic_system: elements.filter(e => e.elementType === 'magic_system').length,
-        technology: elements.filter(e => e.elementType === 'technology').length,
-        political: elements.filter(e => e.elementType === 'political').length,
+        geography: elements.filter((e) => e.elementType === 'geography').length,
+        culture: elements.filter((e) => e.elementType === 'culture').length,
+        religion: elements.filter((e) => e.elementType === 'religion').length,
+        magic_system: elements.filter((e) => e.elementType === 'magic_system').length,
+        technology: elements.filter((e) => e.elementType === 'technology').length,
+        political: elements.filter((e) => e.elementType === 'political').length,
       },
       totalLocations: locations.length,
       totalSystems: systems.length,
       totalFactions: factions.length,
-      activeFactions: factions.filter(f => f.isActive).length,
+      activeFactions: factions.filter((f) => f.isActive).length,
     };
   }
 
@@ -887,15 +885,14 @@ export class WorldbuildingArchive {
       return [...visited, elementId];
     }
 
-    const element = allElements.find(e => e.id === elementId);
+    const element = allElements.find((e) => e.id === elementId);
     if (!element) return [];
 
     for (const depId of element.dependsOn) {
-      const result = await this.checkCircularDependencies(
-        depId,
-        allElements,
-        [...visited, elementId]
-      );
+      const result = await this.checkCircularDependencies(depId, allElements, [
+        ...visited,
+        elementId,
+      ]);
       if (result.length > 0) return result;
     }
 
@@ -930,12 +927,14 @@ export class WorldbuildingArchive {
     ];
 
     for (const [term1, term2] of opposites) {
-      if ((aLower.includes(term1) && bLower.includes(term2)) ||
-          (aLower.includes(term2) && bLower.includes(term1))) {
+      if (
+        (aLower.includes(term1) && bLower.includes(term2)) ||
+        (aLower.includes(term2) && bLower.includes(term1))
+      ) {
         // Check if they're talking about the same subject
         const wordsA = new Set(aLower.split(/\s+/));
         const wordsB = new Set(bLower.split(/\s+/));
-        const intersection = [...wordsA].filter(w => wordsB.has(w));
+        const intersection = [...wordsA].filter((w) => wordsB.has(w));
         if (intersection.length > 3) {
           return true;
         }
@@ -947,35 +946,35 @@ export class WorldbuildingArchive {
 
   private extractForbiddenTerms(law: string): string[] {
     const forbidden: string[] = [];
-    
+
     // Use regex with capture groups to properly extract the forbidden action/term
     const cannotMatches = law.matchAll(/cannot\s+(\w+(?:\s+\w+)?)/gi);
     const impossibleMatches = law.matchAll(/impossible\s+to\s+(\w+(?:\s+\w+)?)/gi);
-    
+
     for (const match of cannotMatches) {
       if (match[1]) forbidden.push(match[1].trim());
     }
     for (const match of impossibleMatches) {
       if (match[1]) forbidden.push(match[1].trim());
     }
-    
+
     return forbidden;
   }
 
   private extractRequiredTerms(limitation: string): string[] {
     const required: string[] = [];
-    
+
     // Use regex with capture groups to properly extract the required action/term
     const onlyMatches = limitation.matchAll(/only\s+(\w+(?:\s+\w+)?)/gi);
     const mustMatches = limitation.matchAll(/must\s+(\w+(?:\s+\w+)?)/gi);
-    
+
     for (const match of onlyMatches) {
       if (match[1]) required.push(match[1].trim());
     }
     for (const match of mustMatches) {
       if (match[1]) required.push(match[1].trim());
     }
-    
+
     return required;
   }
 
@@ -1279,4 +1278,3 @@ export interface WorldConsistencyIssue {
 
 // Export singleton
 export const worldbuildingArchive = new WorldbuildingArchive();
-

@@ -82,13 +82,7 @@ export function ReadingCalendarHeatmap({
   };
 
   const getIntensityLabel = (intensity: number): string => {
-    const labels = [
-      'No reading',
-      'Less than 15 min',
-      '15-30 min',
-      '30-60 min',
-      'More than 60 min',
-    ];
+    const labels = ['No reading', 'Less than 15 min', '15-30 min', '30-60 min', 'More than 60 min'];
     return labels[intensity] || labels[0];
   };
 
@@ -164,9 +158,7 @@ export function ReadingCalendarHeatmap({
                     )} ${hoveredDate === date ? 'ring-2 ring-blue-500 scale-110' : ''}`}
                     style={{ minWidth: '12px', minHeight: '12px' }}
                     title={
-                      date
-                        ? `${new Date(date).toLocaleDateString()}: ${readingTime} minutes`
-                        : ''
+                      date ? `${new Date(date).toLocaleDateString()}: ${readingTime} minutes` : ''
                     }
                     onMouseEnter={() => setHoveredDate(date)}
                     onMouseLeave={() => setHoveredDate(null)}
@@ -207,4 +199,3 @@ export function ReadingCalendarHeatmap({
     </div>
   );
 }
-

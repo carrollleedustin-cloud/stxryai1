@@ -120,17 +120,22 @@ export class ChallengeService {
   /**
    * Get user's progress on monthly challenges
    */
-  async getUserMonthlyChallenges(userId: string, month?: Date): Promise<UserMonthlyChallengeProgress[]> {
+  async getUserMonthlyChallenges(
+    userId: string,
+    month?: Date
+  ): Promise<UserMonthlyChallengeProgress[]> {
     const targetMonth = month || new Date();
     const monthStart = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
     const monthStartStr = monthStart.toISOString().split('T')[0];
 
     const { data, error } = await this.supabase
       .from('user_monthly_challenges')
-      .select(`
+      .select(
+        `
         *,
         challenge:monthly_challenges!inner(challenge_month)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .eq('challenge.challenge_month', monthStartStr);
 
@@ -263,7 +268,7 @@ export class ChallengeService {
         const { achievementService } = await import('@/services/achievementService');
         const xpReward = challenge.data.xp_reward || 100;
         await achievementService.awardXp(userId, xpReward, 'monthly_challenge_completed');
-        
+
         // Award badge if challenge has one
         if (challenge.data.badge_id) {
           // Badge awarding would be handled by achievement service
@@ -433,10 +438,12 @@ export class ChallengeService {
     // Get all participants ordered by score
     const { data: participants, error } = await this.supabase
       .from('competition_participants')
-      .select(`
+      .select(
+        `
         *,
         user:user_profiles!inner(display_name, avatar_url)
-      `)
+      `
+      )
       .eq('competition_id', competitionId)
       .order('score', { ascending: false });
 
@@ -466,9 +473,7 @@ export class ChallengeService {
     }));
 
     if (leaderboardEntries.length > 0) {
-      await this.supabase
-        .from('competition_leaderboard')
-        .insert(leaderboardEntries);
+      await this.supabase.from('competition_leaderboard').insert(leaderboardEntries);
     }
   }
 
@@ -614,5 +619,3 @@ export class ChallengeService {
 }
 
 export const challengeService = new ChallengeService();
-
-

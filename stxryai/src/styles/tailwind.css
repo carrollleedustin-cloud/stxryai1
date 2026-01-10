@@ -35,7 +35,7 @@
     --void-elevated: #111116;
     --void-mist: #1a1a21;
     --void-whisper: #24242d;
-    
+
     /* SPECTRAL ACCENTS - Bioluminescent presence */
     --spectral-cyan: #00f5d4;
     --spectral-cyan-dim: #00c4a7;
@@ -44,24 +44,24 @@
     --spectral-amber: #f59e0b;
     --spectral-rose: #f43f5e;
     --spectral-emerald: #10b981;
-    
+
     /* PLASMA CORE - Living energy */
     --plasma-orange: #ff6b35;
     --plasma-pink: #ff2e97;
     --plasma-blue: #0ea5e9;
-    
+
     /* GHOST TEXT - Layered typography */
     --text-primary: #f8fafc;
     --text-secondary: rgba(248, 250, 252, 0.72);
     --text-tertiary: rgba(248, 250, 252, 0.48);
     --text-ghost: rgba(248, 250, 252, 0.24);
     --text-whisper: rgba(248, 250, 252, 0.12);
-    
+
     /* MEMBRANE BORDERS - Barely there */
     --membrane: rgba(248, 250, 252, 0.06);
     --membrane-hover: rgba(248, 250, 252, 0.12);
     --membrane-active: rgba(0, 245, 212, 0.2);
-    
+
     /* DIMENSIONAL SHADOWS */
     --shadow-void: 0 0 0 1px rgba(0, 0, 0, 0.5);
     --shadow-depth-1: 0 4px 20px -2px rgba(0, 0, 0, 0.7);
@@ -69,45 +69,61 @@
     --shadow-depth-3: 0 20px 60px -8px rgba(0, 0, 0, 0.9);
     --shadow-spectral: 0 0 60px -10px rgba(0, 245, 212, 0.3);
     --shadow-plasma: 0 0 80px -10px rgba(255, 107, 53, 0.25);
-    
+
     /* GLOW EFFECTS - Inner light */
-    --glow-cyan: 0 0 20px rgba(0, 245, 212, 0.4), 0 0 40px rgba(0, 245, 212, 0.2), 0 0 60px rgba(0, 245, 212, 0.1);
+    --glow-cyan:
+      0 0 20px rgba(0, 245, 212, 0.4), 0 0 40px rgba(0, 245, 212, 0.2),
+      0 0 60px rgba(0, 245, 212, 0.1);
     --glow-violet: 0 0 20px rgba(123, 44, 191, 0.4), 0 0 40px rgba(123, 44, 191, 0.2);
     --glow-text: 0 0 30px rgba(0, 245, 212, 0.15);
-    
+
     /* GRADIENTS - Dimensional transitions */
-    --gradient-void: linear-gradient(180deg, var(--void-absolute) 0%, var(--void-deep) 50%, var(--void-surface) 100%);
-    --gradient-spectral: linear-gradient(135deg, var(--spectral-cyan) 0%, var(--spectral-violet) 100%);
+    --gradient-void: linear-gradient(
+      180deg,
+      var(--void-absolute) 0%,
+      var(--void-deep) 50%,
+      var(--void-surface) 100%
+    );
+    --gradient-spectral: linear-gradient(
+      135deg,
+      var(--spectral-cyan) 0%,
+      var(--spectral-violet) 100%
+    );
     --gradient-plasma: linear-gradient(135deg, var(--plasma-orange) 0%, var(--plasma-pink) 100%);
-    --gradient-aurora: linear-gradient(135deg, var(--spectral-violet) 0%, var(--spectral-cyan) 50%, var(--plasma-pink) 100%);
-    
+    --gradient-aurora: linear-gradient(
+      135deg,
+      var(--spectral-violet) 0%,
+      var(--spectral-cyan) 50%,
+      var(--plasma-pink) 100%
+    );
+
     /* RADII - Organic geometry */
     --radius-whisper: 4px;
     --radius-soft: 8px;
     --radius-organic: 16px;
     --radius-flowing: 24px;
     --radius-infinite: 9999px;
-    
+
     /* MOTION - Ritualistic timing */
     --ease-breath: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-emergence: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-departure: cubic-bezier(0.7, 0, 0.84, 0);
     --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-    
+
     --duration-instant: 100ms;
     --duration-quick: 200ms;
     --duration-medium: 400ms;
     --duration-slow: 800ms;
     --duration-ritual: 1200ms;
     --duration-meditative: 2000ms;
-    
+
     /* TYPOGRAPHY */
     --font-display: 'Cinzel', serif;
     --font-prose: 'Literata', Georgia, serif;
     --font-ui: 'Outfit', system-ui, sans-serif;
     --font-literary: 'Cormorant Garamond', Garamond, serif;
     --font-mono: 'Fira Code', monospace;
-    
+
     /* Tailwind compatibility */
     --color-background: var(--void-absolute);
     --color-foreground: var(--text-primary);
@@ -145,7 +161,7 @@
   * {
     border-color: var(--membrane);
   }
-  
+
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
@@ -154,7 +170,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   body {
     font-family: var(--font-ui);
     font-weight: 400;
@@ -165,20 +181,20 @@
     min-height: 100vh;
     position: relative;
   }
-  
+
   /* THE COSMIC BACKGROUND - Subtle depth */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: 
+    background:
       radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 245, 212, 0.03) 0%, transparent 50%),
       radial-gradient(ellipse 60% 40% at 80% 60%, rgba(123, 44, 191, 0.03) 0%, transparent 50%),
       radial-gradient(ellipse 100% 80% at 50% 100%, rgba(255, 107, 53, 0.02) 0%, transparent 40%);
     pointer-events: none;
     z-index: 0;
   }
-  
+
   /* NOISE TEXTURE - Analog grain */
   body::after {
     content: '';
@@ -190,16 +206,21 @@
     z-index: 1;
     mix-blend-mode: overlay;
   }
-  
+
   /* TYPOGRAPHY HIERARCHY */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     font-weight: 500;
     letter-spacing: 0.04em;
     line-height: 1.2;
     color: var(--text-primary);
   }
-  
+
   .font-display {
     font-family: 'Space Grotesk', sans-serif;
   }
@@ -209,17 +230,17 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-  
+
   h2 {
     font-size: clamp(1.75rem, 5vw, 3rem);
     letter-spacing: 0.06em;
   }
-  
+
   h3 {
     font-size: clamp(1.25rem, 3vw, 2rem);
     letter-spacing: 0.04em;
   }
-  
+
   p {
     font-family: var(--font-prose);
     font-size: 1.125rem;
@@ -228,48 +249,50 @@
     font-weight: 400;
     font-optical-sizing: auto;
   }
-  
+
   /* SELECTION - Spectral highlight */
   ::selection {
     background: rgba(0, 245, 212, 0.2);
     color: var(--text-primary);
     text-shadow: var(--glow-text);
   }
-  
+
   /* FOCUS STATES - Dimensional rings */
   :focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--void-absolute), 0 0 0 4px var(--spectral-cyan);
+    box-shadow:
+      0 0 0 2px var(--void-absolute),
+      0 0 0 4px var(--spectral-cyan);
   }
-  
+
   /* LINKS */
   a {
     color: var(--spectral-cyan);
     text-decoration: none;
     transition: color var(--duration-quick) var(--ease-breath);
   }
-  
+
   a:hover {
     color: var(--text-primary);
     text-shadow: var(--glow-cyan);
   }
-  
+
   /* SCROLLBAR - Ethereal presence */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: var(--void-whisper);
     border-radius: var(--radius-infinite);
     transition: background var(--duration-quick) var(--ease-breath);
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--spectral-cyan);
   }
@@ -280,11 +303,10 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @layer components {
-  
   /* ─────────────────────────────────────────────────────────────────────────────
      VOID SURFACES - Glass that swallows light
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .void-surface {
     background: var(--void-surface);
     border: 1px solid var(--membrane);
@@ -292,19 +314,15 @@
     position: relative;
     overflow: hidden;
   }
-  
+
   .void-surface::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.02) 0%,
-      transparent 50%
-    );
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
     pointer-events: none;
   }
-  
+
   .void-glass {
     background: rgba(10, 10, 13, 0.8);
     backdrop-filter: blur(40px) saturate(150%);
@@ -312,7 +330,7 @@
     border: 1px solid var(--membrane);
     border-radius: var(--radius-organic);
   }
-  
+
   .void-glass-heavy {
     background: rgba(5, 5, 7, 0.92);
     backdrop-filter: blur(60px) saturate(180%);
@@ -320,25 +338,25 @@
     border: 1px solid var(--membrane-hover);
     box-shadow: var(--shadow-depth-2);
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      DIMENSIONAL CARDS - Floating in the void
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .dimensional-card {
     background: var(--void-elevated);
     border: 1px solid var(--membrane);
     border-radius: var(--radius-organic);
     padding: 2rem;
     position: relative;
-    transition: 
+    transition:
       transform var(--duration-medium) var(--ease-emergence),
       box-shadow var(--duration-medium) var(--ease-breath),
       border-color var(--duration-quick) var(--ease-breath);
     transform-style: preserve-3d;
     perspective: 1000px;
   }
-  
+
   .dimensional-card::before {
     content: '';
     position: absolute;
@@ -354,21 +372,21 @@
     transition: opacity var(--duration-medium) var(--ease-breath);
     pointer-events: none;
   }
-  
+
   .dimensional-card:hover {
     transform: translateY(-8px) scale(1.01);
     border-color: var(--membrane-active);
     box-shadow: var(--shadow-depth-2), var(--shadow-spectral);
   }
-  
+
   .dimensional-card:hover::before {
     opacity: 1;
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      SPECTRAL BUTTONS - Glowing invitations
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .btn-spectral {
     display: inline-flex;
     align-items: center;
@@ -387,40 +405,36 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: 
+    transition:
       transform var(--duration-quick) var(--ease-elastic),
       box-shadow var(--duration-medium) var(--ease-breath);
     box-shadow: var(--shadow-spectral);
   }
-  
+
   .btn-spectral::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.3) 0%,
-      transparent 50%
-    );
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
     opacity: 0;
     transition: opacity var(--duration-quick) var(--ease-breath);
   }
-  
+
   .btn-spectral:hover {
     transform: translateY(-2px) scale(1.02);
-    box-shadow: 
+    box-shadow:
       var(--shadow-spectral),
       0 0 100px -20px rgba(0, 245, 212, 0.5);
   }
-  
+
   .btn-spectral:hover::before {
     opacity: 1;
   }
-  
+
   .btn-spectral:active {
     transform: translateY(0) scale(0.98);
   }
-  
+
   .btn-ghost {
     display: inline-flex;
     align-items: center;
@@ -439,10 +453,9 @@
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: 
-      all var(--duration-quick) var(--ease-breath);
+    transition: all var(--duration-quick) var(--ease-breath);
   }
-  
+
   .btn-ghost::before {
     content: '';
     position: absolute;
@@ -451,17 +464,17 @@
     opacity: 0;
     transition: opacity var(--duration-medium) var(--ease-breath);
   }
-  
+
   .btn-ghost:hover {
     border-color: var(--spectral-cyan);
     color: var(--spectral-cyan);
     text-shadow: var(--glow-cyan);
   }
-  
+
   .btn-ghost:hover::before {
     opacity: 0.05;
   }
-  
+
   .btn-plasma {
     display: inline-flex;
     align-items: center;
@@ -483,16 +496,16 @@
     transition: all var(--duration-quick) var(--ease-elastic);
     box-shadow: var(--shadow-plasma);
   }
-  
+
   .btn-plasma:hover {
     transform: translateY(-2px) scale(1.02);
     filter: brightness(1.1);
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      TEMPORAL INPUTS - Fields that breathe
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .input-temporal {
     width: 100%;
     padding: 1rem 1.25rem;
@@ -502,34 +515,34 @@
     background: var(--void-mist);
     border: 1px solid var(--membrane);
     border-radius: var(--radius-soft);
-    transition: 
+    transition:
       border-color var(--duration-quick) var(--ease-breath),
       box-shadow var(--duration-medium) var(--ease-breath),
       background var(--duration-quick) var(--ease-breath);
   }
-  
+
   .input-temporal::placeholder {
     color: var(--text-ghost);
   }
-  
+
   .input-temporal:hover {
     border-color: var(--membrane-hover);
     background: var(--void-whisper);
   }
-  
+
   .input-temporal:focus {
     outline: none;
     border-color: var(--spectral-cyan);
     background: var(--void-whisper);
-    box-shadow: 
+    box-shadow:
       0 0 0 4px rgba(0, 245, 212, 0.1),
       var(--shadow-spectral);
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      PROSE CONTAINER - For reading immersion
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .prose-void {
     font-family: var(--font-prose);
     font-size: 1.25rem;
@@ -538,16 +551,16 @@
     max-width: 65ch;
     margin: 0 auto;
   }
-  
+
   .prose-void p {
     margin-bottom: 1.5em;
     text-indent: 1.5em;
   }
-  
+
   .prose-void p:first-of-type {
     text-indent: 0;
   }
-  
+
   .prose-void p:first-of-type::first-letter {
     font-family: var(--font-literary);
     font-size: 4em;
@@ -557,11 +570,11 @@
     color: var(--spectral-cyan);
     text-shadow: var(--glow-cyan);
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      NAVIGATION - Ethereal wayfinding
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .nav-ethereal {
     position: fixed;
     top: 0;
@@ -579,12 +592,12 @@
     -webkit-backdrop-filter: blur(20px);
     transition: all var(--duration-medium) var(--ease-breath);
   }
-  
+
   .nav-ethereal.scrolled {
     background: rgba(5, 5, 7, 0.95);
     box-shadow: var(--shadow-depth-1);
   }
-  
+
   .nav-link {
     font-family: var(--font-ui);
     font-size: 0.75rem;
@@ -596,7 +609,7 @@
     position: relative;
     transition: color var(--duration-quick) var(--ease-breath);
   }
-  
+
   .nav-link::after {
     content: '';
     position: absolute;
@@ -605,25 +618,25 @@
     width: 0;
     height: 1px;
     background: var(--spectral-cyan);
-    transition: 
+    transition:
       width var(--duration-quick) var(--ease-emergence),
       left var(--duration-quick) var(--ease-emergence);
     box-shadow: var(--glow-cyan);
   }
-  
+
   .nav-link:hover {
     color: var(--spectral-cyan);
   }
-  
+
   .nav-link:hover::after {
     width: 80%;
     left: 10%;
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      BADGES & TAGS - Floating markers
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .badge-spectral {
     display: inline-flex;
     align-items: center;
@@ -639,7 +652,7 @@
     border: 1px solid rgba(0, 245, 212, 0.2);
     border-radius: var(--radius-infinite);
   }
-  
+
   .badge-plasma {
     display: inline-flex;
     align-items: center;
@@ -655,11 +668,11 @@
     border: 1px solid rgba(255, 107, 53, 0.2);
     border-radius: var(--radius-infinite);
   }
-  
+
   /* ─────────────────────────────────────────────────────────────────────────────
      DIVIDERS - Spatial separators
      ───────────────────────────────────────────────────────────────────────────── */
-  
+
   .divider-spectral {
     height: 1px;
     background: linear-gradient(
@@ -671,15 +684,10 @@
     );
     opacity: 0.3;
   }
-  
+
   .divider-fade {
     height: 1px;
-  background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--membrane-hover) 50%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg, transparent 0%, var(--membrane-hover) 50%, transparent 100%);
   }
 }
 
@@ -688,118 +696,122 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 @layer utilities {
-  
   /* TEXT UTILITIES */
   .text-spectral {
     color: var(--spectral-cyan);
   }
-  
+
   .text-spectral-glow {
     color: var(--spectral-cyan);
     text-shadow: var(--glow-cyan);
   }
-  
+
   .text-plasma {
     background: var(--gradient-plasma);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  
+
   .text-aurora {
     background: var(--gradient-aurora);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     background-size: 200% 200%;
     animation: aurora-shift 8s ease infinite;
-}
+  }
 
   @keyframes aurora-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 
   .text-ghost {
     color: var(--text-ghost);
   }
-  
+
   .text-whisper {
     color: var(--text-whisper);
   }
-  
+
   /* FONT UTILITIES */
   .font-display {
     font-family: var(--font-display);
   }
-  
+
   .font-prose {
     font-family: var(--font-prose);
   }
-  
+
   .font-literary {
     font-family: var(--font-literary);
   }
-  
+
   .font-ui {
     font-family: var(--font-ui);
   }
-  
+
   .font-mono {
     font-family: var(--font-mono);
   }
-  
+
   /* TRACKING (Letter Spacing) */
   .tracking-vast {
     letter-spacing: 0.2em;
   }
-  
+
   .tracking-wide {
     letter-spacing: 0.1em;
   }
-  
+
   .tracking-prose {
     letter-spacing: 0.02em;
   }
-  
+
   /* CONTAINER */
   .container-void {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
   }
-  
+
   .container-prose {
     max-width: 75ch;
     margin: 0 auto;
     padding: 0 2rem;
   }
-  
+
   /* SPACING */
   .section-void {
     padding: 8rem 0;
   }
-  
+
   .section-breathing {
     padding: 12rem 0;
   }
-  
+
   /* HIDE SCROLLBAR */
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* BLUR BACKGROUNDS */
   .blur-void {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
   }
-  
+
   .blur-heavy {
     backdrop-filter: blur(80px);
     -webkit-backdrop-filter: blur(80px);
@@ -829,24 +841,41 @@
 }
 
 /* STAGGER DELAYS */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
-.stagger-6 { animation-delay: 0.6s; }
-.stagger-7 { animation-delay: 0.7s; }
-.stagger-8 { animation-delay: 0.8s; }
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+.stagger-6 {
+  animation-delay: 0.6s;
+}
+.stagger-7 {
+  animation-delay: 0.7s;
+}
+.stagger-8 {
+  animation-delay: 0.8s;
+}
 
 /* PULSE - Breathing rhythm */
 @keyframes pulse-spectral {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     box-shadow: var(--glow-cyan);
   }
   50% {
     opacity: 0.7;
-    box-shadow: 
+    box-shadow:
       0 0 40px rgba(0, 245, 212, 0.6),
       0 0 80px rgba(0, 245, 212, 0.4);
   }
@@ -858,7 +887,8 @@
 
 /* FLOAT - Weightless presence */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   25% {
@@ -896,7 +926,8 @@
 
 /* GLOW PULSE */
 @keyframes glow-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 20px rgba(0, 245, 212, 0.3));
   }
   50% {
@@ -910,7 +941,8 @@
 
 /* AURORA WAVE - Background gradient animation */
 @keyframes auroraWave {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 0.3;
   }
@@ -922,7 +954,8 @@
 
 /* AMBIENT ORB 1 - Cyan floating orb */
 @keyframes ambientOrb1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   50% {
@@ -932,7 +965,8 @@
 
 /* AMBIENT ORB 2 - Violet floating orb */
 @keyframes ambientOrb2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   50% {
@@ -942,8 +976,14 @@
 
 /* TYPEWRITER CURSOR */
 @keyframes blink-cursor {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .cursor-blink::after {
@@ -955,7 +995,8 @@
 
 /* GLITCH EFFECT */
 @keyframes glitch-shift {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(-2px, 0);
     opacity: 0.7;
   }
@@ -989,7 +1030,8 @@
 
 /* BOUNCE SLOW */
 @keyframes bounce-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1021,8 +1063,12 @@
 
 /* ORBITAL - Slow rotation */
 @keyframes orbital {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-orbital {
@@ -1051,7 +1097,8 @@
 
 /* BREATHING TEXT */
 @keyframes breathe-text {
-  0%, 100% {
+  0%,
+  100% {
     letter-spacing: 0.02em;
     opacity: 0.9;
   }
@@ -1088,7 +1135,7 @@
 .reader-content p {
   margin-bottom: 1.75em;
   text-indent: 2em;
-  transition: 
+  transition:
     color var(--duration-medium) var(--ease-breath),
     transform var(--duration-medium) var(--ease-breath);
 }
@@ -1219,32 +1266,35 @@
   :root {
     --radius-organic: 12px;
   }
-  
+
   body::before {
-    background: 
-      radial-gradient(ellipse 100% 50% at 50% 0%, rgba(0, 245, 212, 0.05) 0%, transparent 50%);
+    background: radial-gradient(
+      ellipse 100% 50% at 50% 0%,
+      rgba(0, 245, 212, 0.05) 0%,
+      transparent 50%
+    );
   }
-  
+
   h1 {
     letter-spacing: 0.05em;
   }
-  
+
   .section-void {
     padding: 4rem 0;
   }
-  
+
   .section-breathing {
     padding: 6rem 0;
   }
-  
+
   .container-void {
     padding: 0 1rem;
   }
-  
+
   .dimensional-card {
     padding: 1.5rem;
   }
-  
+
   .dimensional-card:hover {
     transform: translateY(-4px);
   }
@@ -1273,12 +1323,12 @@
     background: white;
     color: black;
   }
-  
+
   body::before,
   body::after {
     display: none;
   }
-  
+
   .reader-content {
     font-size: 12pt;
     line-height: 1.6;

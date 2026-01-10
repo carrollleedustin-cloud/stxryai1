@@ -198,10 +198,7 @@ Generate compelling continuation options that:
   /**
    * Generate fallback suggestions when AI is unavailable
    */
-  generateFallbackSuggestions(
-    context: StoryContext,
-    count: number
-  ): ContinuationSuggestion[] {
+  generateFallbackSuggestions(context: StoryContext, count: number): ContinuationSuggestion[] {
     const genreStyle = GENRE_STYLES[context.genre.toLowerCase()] || GENRE_STYLES.adventure;
     const suggestions: ContinuationSuggestion[] = [];
 
@@ -322,10 +319,7 @@ Generate compelling continuation options that:
   /**
    * Generate writing prompts for authors
    */
-  async getWritingPrompts(
-    genre: string,
-    theme?: string
-  ): Promise<WritingPrompt[]> {
+  async getWritingPrompts(genre: string, theme?: string): Promise<WritingPrompt[]> {
     const genreStyle = GENRE_STYLES[genre.toLowerCase()] || GENRE_STYLES.adventure;
 
     const prompts: WritingPrompt[] = [

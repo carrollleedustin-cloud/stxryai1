@@ -10,4 +10,3 @@ export function PrismDivider({ className }: { className?: string }) {
     </div>
   );
 }
-

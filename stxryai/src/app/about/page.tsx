@@ -20,12 +20,14 @@ const AboutPage = () => {
     {
       icon: <BookOpen className="w-6 h-6" />,
       title: 'Stories for Everyone',
-      description: 'We believe interactive fiction should be accessible to readers of all ages and backgrounds.',
+      description:
+        'We believe interactive fiction should be accessible to readers of all ages and backgrounds.',
     },
     {
       icon: <Sparkles className="w-6 h-6" />,
       title: 'AI-Powered Creativity',
-      description: 'We harness cutting-edge AI to create unique, personalized storytelling experiences.',
+      description:
+        'We harness cutting-edge AI to create unique, personalized storytelling experiences.',
     },
     {
       icon: <Heart className="w-6 h-6" />,
@@ -35,7 +37,8 @@ const AboutPage = () => {
     {
       icon: <Shield className="w-6 h-6" />,
       title: 'Safe & Family-Friendly',
-      description: 'We maintain a safe environment with robust content moderation and family controls.',
+      description:
+        'We maintain a safe environment with robust content moderation and family controls.',
     },
   ];
 
@@ -50,7 +53,7 @@ const AboutPage = () => {
     <VoidBackground variant="subtle">
       <ParticleField particleCount={30} color="rgba(0, 245, 212, 0.15)" />
       <EtherealNav />
-      
+
       <main className="relative min-h-screen pt-20">
         {/* Hero Section */}
         <section className="relative py-20 px-6">
@@ -70,8 +73,9 @@ const AboutPage = () => {
                 </span>
               </h1>
               <p className="text-lg text-text-secondary max-w-2xl mx-auto font-prose leading-relaxed">
-                StxryAI is an AI-powered interactive fiction platform that lets you explore infinite 
-                story possibilities. Every choice you make shapes a unique narrative crafted just for you.
+                StxryAI is an AI-powered interactive fiction platform that lets you explore infinite
+                story possibilities. Every choice you make shapes a unique narrative crafted just
+                for you.
               </p>
             </motion.div>
           </div>
@@ -91,10 +95,10 @@ const AboutPage = () => {
                 <h2 className="font-display text-2xl text-text-primary">Our Mission</h2>
               </div>
               <p className="text-text-secondary font-prose text-lg leading-relaxed">
-                We're on a mission to revolutionize storytelling by combining the art of narrative 
-                with the power of artificial intelligence. Our platform empowers readers to become 
-                active participants in their stories, making choices that genuinely matter and lead 
-                to unique outcomes. We believe that everyone has a story to explore, and we're here 
+                We're on a mission to revolutionize storytelling by combining the art of narrative
+                with the power of artificial intelligence. Our platform empowers readers to become
+                active participants in their stories, making choices that genuinely matter and lead
+                to unique outcomes. We believe that everyone has a story to explore, and we're here
                 to help them find it.
               </p>
             </motion.div>
@@ -112,7 +116,7 @@ const AboutPage = () => {
             >
               What We Stand For
             </motion.h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {values.map((value, index) => (
                 <motion.div
@@ -145,10 +149,10 @@ const AboutPage = () => {
             >
               Our Journey
             </motion.h2>
-            
+
             <div className="relative">
               <div className="absolute left-1/2 -translate-x-px h-full w-0.5 bg-membrane" />
-              
+
               {milestones.map((milestone, index) => (
                 <motion.div
                   key={index}
@@ -190,7 +194,9 @@ const AboutPage = () => {
                   transition={{ delay: index * 0.1 }}
                   className="void-glass rounded-2xl p-6 text-center"
                 >
-                  <p className="text-3xl md:text-4xl font-display text-spectral-cyan mb-2">{stat.value}</p>
+                  <p className="text-3xl md:text-4xl font-display text-spectral-cyan mb-2">
+                    {stat.value}
+                  </p>
                   <p className="text-text-tertiary font-ui text-sm">{stat.label}</p>
                 </motion.div>
               ))}
@@ -207,7 +213,9 @@ const AboutPage = () => {
               viewport={{ once: true }}
               className="void-glass-heavy rounded-3xl p-12"
             >
-              <h2 className="font-display text-3xl text-text-primary mb-4">Ready to Start Your Story?</h2>
+              <h2 className="font-display text-3xl text-text-primary mb-4">
+                Ready to Start Your Story?
+              </h2>
               <p className="text-text-secondary font-prose mb-8">
                 Join thousands of readers exploring infinite narratives.
               </p>
@@ -227,4 +235,3 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
-

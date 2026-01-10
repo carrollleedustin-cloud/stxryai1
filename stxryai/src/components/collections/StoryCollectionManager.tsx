@@ -65,7 +65,7 @@ export function StoryCollectionManager({
       // TODO: Replace with actual API call
       // const data = await collectionService.getUserCollections(userId);
       // setCollections(data);
-      
+
       // Mock data for now
       setCollections([]);
     } catch (error) {
@@ -83,7 +83,7 @@ export function StoryCollectionManager({
       // TODO: Replace with actual API call
       // const collection = await collectionService.createCollection(userId, newCollection);
       // setCollections([...collections, collection]);
-      
+
       setShowCreateModal(false);
       setNewCollection({
         name: '',
@@ -153,7 +153,9 @@ export function StoryCollectionManager({
               onClick={() => onCollectionSelect?.(collection.id)}
               className="bg-card border border-border rounded-xl p-6 cursor-pointer hover:shadow-lg transition-all"
             >
-              <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${collection.color} flex items-center justify-center text-3xl mb-4`}>
+              <div
+                className={`w-16 h-16 rounded-xl bg-gradient-to-br ${collection.color} flex items-center justify-center text-3xl mb-4`}
+              >
                 {collection.icon}
               </div>
               <h3 className="text-xl font-bold text-foreground mb-2">{collection.name}</h3>
@@ -318,4 +320,3 @@ export function StoryCollectionManager({
     </div>
   );
 }
-

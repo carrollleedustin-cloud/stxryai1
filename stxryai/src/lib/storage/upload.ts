@@ -137,8 +137,12 @@ async function optimizeImage(
 
     const bitmapOrImg = await createImageBitmapSafe(blob);
 
-    const width = 'width' in bitmapOrImg ? bitmapOrImg.width : (bitmapOrImg as HTMLImageElement).naturalWidth;
-    const height = 'height' in bitmapOrImg ? bitmapOrImg.height : (bitmapOrImg as HTMLImageElement).naturalHeight;
+    const width =
+      'width' in bitmapOrImg ? bitmapOrImg.width : (bitmapOrImg as HTMLImageElement).naturalWidth;
+    const height =
+      'height' in bitmapOrImg
+        ? bitmapOrImg.height
+        : (bitmapOrImg as HTMLImageElement).naturalHeight;
 
     const scale = width > maxWidth ? maxWidth / width : 1;
     const targetWidth = Math.max(1, Math.round(width * scale));
@@ -162,15 +166,25 @@ async function optimizeImage(
 
     // Prefer WebP for better compression when supported, else JPEG; preserve PNG for PNGs unless resized
     const isPng = file.type === 'image/png';
-    const outputType = isPng && scale === 1 ? 'image/png' : ('image/webp' in document.createElement('canvas') ? 'image/webp' : 'image/jpeg');
+    const outputType =
+      isPng && scale === 1
+        ? 'image/png'
+        : 'image/webp' in document.createElement('canvas')
+          ? 'image/webp'
+          : 'image/jpeg';
 
-    const blobOut: Blob = await new Promise((resolve) => canvas.toBlob(b => resolve(b as Blob), outputType, quality));
+    const blobOut: Blob = await new Promise((resolve) =>
+      canvas.toBlob((b) => resolve(b as Blob), outputType, quality)
+    );
     if (!blobOut) return null;
 
     // Cap name extension to match output type
     const ext = outputType.includes('webp') ? 'webp' : outputType.includes('png') ? 'png' : 'jpg';
     const base = file.name.replace(/\.[^.]+$/, '');
-    const optimizedFile = new File([blobOut], `${base}.${ext}`, { type: outputType, lastModified: Date.now() });
+    const optimizedFile = new File([blobOut], `${base}.${ext}`, {
+      type: outputType,
+      lastModified: Date.now(),
+    });
     return optimizedFile;
   } catch (err) {
     console.warn('optimizeImage error', err);

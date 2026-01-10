@@ -237,10 +237,7 @@ export const storyAnalyticsService = {
   /**
    * Get engagement trends over time
    */
-  async getEngagementTrends(
-    storyId: string,
-    days: number = 30
-  ): Promise<EngagementTrend[]> {
+  async getEngagementTrends(storyId: string, days: number = 30): Promise<EngagementTrend[]> {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
@@ -254,11 +251,14 @@ export const storyAnalyticsService = {
     if (!sessions) return [];
 
     // Group by date
-    const dailyData: Record<string, {
-      views: number;
-      users: Set<string>;
-      totalDuration: number;
-    }> = {};
+    const dailyData: Record<
+      string,
+      {
+        views: number;
+        users: Set<string>;
+        totalDuration: number;
+      }
+    > = {};
 
     // Initialize all days
     for (let i = 0; i < days; i++) {
@@ -303,9 +303,8 @@ export const storyAnalyticsService = {
           views: data.views,
           new_readers: newReaders,
           returning_readers: data.users.size - newReaders,
-          average_session_duration: data.views > 0
-            ? Math.round(data.totalDuration / data.views)
-            : 0,
+          average_session_duration:
+            data.views > 0 ? Math.round(data.totalDuration / data.views) : 0,
         };
       })
       .sort((a, b) => a.date.localeCompare(b.date));
@@ -361,7 +360,10 @@ export const storyAnalyticsService = {
     const { data: choices } = await supabase
       .from('user_choices')
       .select('chapter_id, choice_text')
-      .in('chapter_id', chapters.map((c) => c.id));
+      .in(
+        'chapter_id',
+        chapters.map((c) => c.id)
+      );
 
     if (!choices) return [];
 
@@ -393,9 +395,7 @@ export const storyAnalyticsService = {
       });
     });
 
-    return allChoices
-      .sort((a, b) => b.selection_count - a.selection_count)
-      .slice(0, limit);
+    return allChoices.sort((a, b) => b.selection_count - a.selection_count).slice(0, limit);
   },
 
   /**
@@ -506,12 +506,14 @@ export const storyAnalyticsService = {
     // Recent comments
     const { data: recentComments } = await supabase
       .from('story_comments')
-      .select(`
+      .select(
+        `
         created_at,
         content,
         story_id,
         user:user_id (display_name)
-      `)
+      `
+      )
       .in('story_id', storyIds)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -531,12 +533,14 @@ export const storyAnalyticsService = {
     // Recent ratings
     const { data: recentRatings } = await supabase
       .from('story_ratings')
-      .select(`
+      .select(
+        `
         created_at,
         rating,
         story_id,
         user:user_id (display_name)
-      `)
+      `
+      )
       .in('story_id', storyIds)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -554,22 +558,24 @@ export const storyAnalyticsService = {
     });
 
     // Sort by timestamp
-    recentActivity.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    recentActivity.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 
     // Calculate engagement summary
-    const thisWeekSessions = sessions?.filter(
-      (s) => new Date(s.started_at) >= weekAgo
-    ).length || 0;
+    const thisWeekSessions = sessions?.filter((s) => new Date(s.started_at) >= weekAgo).length || 0;
 
-    const lastWeekSessions = sessions?.filter(
-      (s) => new Date(s.started_at) >= twoWeeksAgo && new Date(s.started_at) < weekAgo
-    ).length || 0;
+    const lastWeekSessions =
+      sessions?.filter(
+        (s) => new Date(s.started_at) >= twoWeeksAgo && new Date(s.started_at) < weekAgo
+      ).length || 0;
 
-    const growthPercentage = lastWeekSessions > 0
-      ? Math.round(((thisWeekSessions - lastWeekSessions) / lastWeekSessions) * 100)
-      : thisWeekSessions > 0 ? 100 : 0;
+    const growthPercentage =
+      lastWeekSessions > 0
+        ? Math.round(((thisWeekSessions - lastWeekSessions) / lastWeekSessions) * 100)
+        : thisWeekSessions > 0
+          ? 100
+          : 0;
 
     return {
       overview: {

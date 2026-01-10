@@ -100,9 +100,7 @@ export const collectionService = {
   /**
    * Get a collection with its stories
    */
-  async getCollectionWithStories(
-    collectionId: string
-  ): Promise<CollectionWithStories | null> {
+  async getCollectionWithStories(collectionId: string): Promise<CollectionWithStories | null> {
     const { data: collection, error: collectionError } = await supabase
       .from('story_collections')
       .select(
@@ -194,10 +192,7 @@ export const collectionService = {
   /**
    * Remove a story from a collection
    */
-  async removeStoryFromCollection(
-    collectionId: string,
-    storyId: string
-  ): Promise<boolean> {
+  async removeStoryFromCollection(collectionId: string, storyId: string): Promise<boolean> {
     const { error } = await supabase
       .from('collection_stories')
       .delete()
@@ -220,10 +215,7 @@ export const collectionService = {
   /**
    * Reorder stories in a collection
    */
-  async reorderCollectionStories(
-    collectionId: string,
-    storyIds: string[]
-  ): Promise<boolean> {
+  async reorderCollectionStories(collectionId: string, storyIds: string[]): Promise<boolean> {
     const updates = storyIds.map((storyId, index) => ({
       collection_id: collectionId,
       story_id: storyId,
@@ -251,7 +243,9 @@ export const collectionService = {
    */
   async updateCollection(
     collectionId: string,
-    updates: Partial<Pick<StoryCollection, 'name' | 'description' | 'is_public' | 'cover_image_url'>>
+    updates: Partial<
+      Pick<StoryCollection, 'name' | 'description' | 'is_public' | 'cover_image_url'>
+    >
   ): Promise<boolean> {
     const { error } = await supabase
       .from('story_collections')
@@ -274,22 +268,13 @@ export const collectionService = {
    */
   async deleteCollection(collectionId: string): Promise<boolean> {
     // Delete collection stories first
-    await supabase
-      .from('collection_stories')
-      .delete()
-      .eq('collection_id', collectionId);
+    await supabase.from('collection_stories').delete().eq('collection_id', collectionId);
 
     // Delete followers
-    await supabase
-      .from('collection_followers')
-      .delete()
-      .eq('collection_id', collectionId);
+    await supabase.from('collection_followers').delete().eq('collection_id', collectionId);
 
     // Delete collection
-    const { error } = await supabase
-      .from('story_collections')
-      .delete()
-      .eq('id', collectionId);
+    const { error } = await supabase.from('story_collections').delete().eq('id', collectionId);
 
     if (error) {
       console.error('Error deleting collection:', error);
@@ -302,10 +287,7 @@ export const collectionService = {
   /**
    * Follow a public collection
    */
-  async followCollection(
-    collectionId: string,
-    userId: string
-  ): Promise<boolean> {
+  async followCollection(collectionId: string, userId: string): Promise<boolean> {
     const { error } = await supabase.from('collection_followers').insert({
       collection_id: collectionId,
       user_id: userId,
@@ -326,10 +308,7 @@ export const collectionService = {
   /**
    * Unfollow a collection
    */
-  async unfollowCollection(
-    collectionId: string,
-    userId: string
-  ): Promise<boolean> {
+  async unfollowCollection(collectionId: string, userId: string): Promise<boolean> {
     const { error } = await supabase
       .from('collection_followers')
       .delete()
@@ -351,10 +330,7 @@ export const collectionService = {
   /**
    * Check if user follows a collection
    */
-  async isFollowingCollection(
-    collectionId: string,
-    userId: string
-  ): Promise<boolean> {
+  async isFollowingCollection(collectionId: string, userId: string): Promise<boolean> {
     const { data } = await supabase
       .from('collection_followers')
       .select('id')

@@ -177,10 +177,12 @@ export class AnalyticsService {
   async getCreatorStoriesPerformance(creatorId: string): Promise<StoryPerformance[]> {
     const { data, error } = await this.supabase
       .from('story_performance_tracking')
-      .select(`
+      .select(
+        `
         *,
         stories!inner(author_id)
-      `)
+      `
+      )
       .eq('stories.author_id', creatorId)
       .order('overall_score', { ascending: false });
 
@@ -213,7 +215,7 @@ export class AnalyticsService {
       .select('id, title')
       .eq('author_id', creatorId);
 
-    const storyIds = stories?.map(s => s.id) || [];
+    const storyIds = stories?.map((s) => s.id) || [];
 
     if (storyIds.length === 0) {
       return this.getEmptyOverview();
@@ -234,78 +236,68 @@ export class AnalyticsService {
         .from('reading_progress')
         .select('id', { count: 'exact', head: true })
         .in('story_id', storyIds),
-      
+
       // Unique readers
-      this.supabase
-        .from('reading_progress')
-        .select('user_id')
-        .in('story_id', storyIds),
-      
+      this.supabase.from('reading_progress').select('user_id').in('story_id', storyIds),
+
       // Total likes
       this.supabase
         .from('story_likes')
         .select('id', { count: 'exact', head: true })
         .in('story_id', storyIds),
-      
+
       // Total comments
       this.supabase
         .from('comments')
         .select('id', { count: 'exact', head: true })
         .in('story_id', storyIds),
-      
+
       // Reviews and rating
-      this.supabase
-        .from('reviews')
-        .select('rating')
-        .in('story_id', storyIds),
-      
+      this.supabase.from('reviews').select('rating').in('story_id', storyIds),
+
       // Purchases
       this.supabase
         .from('story_purchases')
         .select('amount_paid')
         .in('story_id', storyIds)
         .eq('payment_status', 'succeeded'),
-      
+
       // Earnings
-      this.supabase
-        .from('creator_earnings')
-        .select('creator_earnings')
-        .eq('creator_id', creatorId),
+      this.supabase.from('creator_earnings').select('creator_earnings').eq('creator_id', creatorId),
     ]);
 
     const totalViews = viewsResult.count || 0;
-    const uniqueReaders = new Set(readersResult.data?.map(r => r.user_id) || []).size;
+    const uniqueReaders = new Set(readersResult.data?.map((r) => r.user_id) || []).size;
     const totalLikes = likesResult.count || 0;
     const totalComments = commentsResult.count || 0;
     const reviews = reviewsResult.data || [];
     const totalReviews = reviews.length;
-    const averageRating = reviews.length > 0
-      ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
-      : 0;
+    const averageRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length
+        : 0;
     const purchases = purchasesResult.data || [];
     const totalRevenue = purchases.reduce((sum, p) => sum + parseFloat(p.amount_paid || '0'), 0);
     const earnings = earningsResult.data || [];
-    const totalEarnings = earnings.reduce((sum, e) => sum + parseFloat(e.creator_earnings || '0'), 0);
+    const totalEarnings = earnings.reduce(
+      (sum, e) => sum + parseFloat(e.creator_earnings || '0'),
+      0
+    );
 
     // Get top performing stories
     const performances = await this.getCreatorStoriesPerformance(creatorId);
-    const topPerformingStories = performances
-      .slice(0, 5)
-      .map(p => ({
-        storyId: p.storyId,
-        title: stories?.find(s => s.id === p.storyId)?.title || 'Unknown',
-        views: p.currentViews,
-        revenue: p.totalRevenue,
-        rating: p.currentRating,
-      }));
+    const topPerformingStories = performances.slice(0, 5).map((p) => ({
+      storyId: p.storyId,
+      title: stories?.find((s) => s.id === p.storyId)?.title || 'Unknown',
+      views: p.currentViews,
+      revenue: p.totalRevenue,
+      rating: p.currentRating,
+    }));
 
-    const engagementRate = totalReaders > 0
-      ? ((totalLikes + totalComments) / totalReaders) * 100
-      : 0;
+    const engagementRate =
+      totalReaders > 0 ? ((totalLikes + totalComments) / totalReaders) * 100 : 0;
 
-    const conversionRate = totalReaders > 0
-      ? (purchases.length / totalReaders) * 100
-      : 0;
+    const conversionRate = totalReaders > 0 ? (purchases.length / totalReaders) * 100 : 0;
 
     return {
       totalStories: storyIds.length,

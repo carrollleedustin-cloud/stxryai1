@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Load theme from localStorage on mount (client-side only)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     setMounted(true);
     try {
       const stored = localStorage.getItem('theme') as Theme;

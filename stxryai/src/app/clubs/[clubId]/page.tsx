@@ -17,7 +17,7 @@ export default function ClubDetailPage() {
   const { clubId } = useParams() as { clubId: string };
   const { user } = useAuth();
   const router = useRouter();
-  
+
   const [club, setClub] = useState<any>(null);
   const [challenges, setChallenges] = useState<ClubChallenge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,9 +29,9 @@ export default function ClubDetailPage() {
         setLoading(true);
         const [clubData, challengeData] = await Promise.all([
           communityService.getClubById(clubId),
-          clubChallengeService.getClubChallenges(clubId)
+          clubChallengeService.getClubChallenges(clubId),
         ]);
-        
+
         setClub(clubData);
         setChallenges(challengeData);
       } catch (error) {
@@ -71,13 +71,16 @@ export default function ClubDetailPage() {
   return (
     <VoidBackground>
       <EtherealNav />
-      
+
       <main className="pt-24 pb-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Club Header */}
           <div className="relative rounded-3xl overflow-hidden mb-8 h-64 md:h-80">
-            <img 
-              src={club.cover_image || 'https://images.unsplash.com/photo-1514894780063-5881f71e8ce8?q=80&w=2070&auto=format&fit=crop'} 
+            <img
+              src={
+                club.cover_image ||
+                'https://images.unsplash.com/photo-1514894780063-5881f71e8ce8?q=80&w=2070&auto=format&fit=crop'
+              }
               alt={club.name}
               className="w-full h-full object-cover"
             />
@@ -114,14 +117,14 @@ export default function ClubDetailPage() {
             {[
               { id: 'overview', label: 'Overview', icon: 'Squares2X2Icon' },
               { id: 'challenges', label: 'Challenges', icon: 'TrophyIcon' },
-              { id: 'members', label: 'Members', icon: 'UserGroupIcon' }
+              { id: 'members', label: 'Members', icon: 'UserGroupIcon' },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === tab.id 
-                    ? 'border-spectral-cyan text-spectral-cyan bg-spectral-cyan/5' 
+                  activeTab === tab.id
+                    ? 'border-spectral-cyan text-spectral-cyan bg-spectral-cyan/5'
                     : 'border-transparent text-void-400 hover:text-void-100 hover:bg-void-800/30'
                 }`}
               >
@@ -145,7 +148,11 @@ export default function ClubDetailPage() {
                   >
                     <section>
                       <h3 className="text-xl font-semibold text-void-100 mb-4 flex items-center gap-2">
-                        <Icon name="InformationCircleIcon" size={24} className="text-spectral-cyan" />
+                        <Icon
+                          name="InformationCircleIcon"
+                          size={24}
+                          className="text-spectral-cyan"
+                        />
                         About the Club
                       </h3>
                       <div className="p-6 rounded-2xl bg-void-900/50 border border-void-800 text-void-300 leading-relaxed">
@@ -159,14 +166,21 @@ export default function ClubDetailPage() {
                           <Icon name="FireIcon" size={24} className="text-spectral-pink" />
                           Active Challenges
                         </h3>
-                        <SpectralButton variant="ghost" size="sm" onClick={() => setActiveTab('challenges')}>
+                        <SpectralButton
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setActiveTab('challenges')}
+                        >
                           View All
                         </SpectralButton>
                       </div>
                       <div className="grid gap-4">
-                        {challenges.filter(c => c.status === 'active').slice(0, 2).map((challenge) => (
-                          <ChallengeCard key={challenge.id} challenge={challenge} />
-                        ))}
+                        {challenges
+                          .filter((c) => c.status === 'active')
+                          .slice(0, 2)
+                          .map((challenge) => (
+                            <ChallengeCard key={challenge.id} challenge={challenge} />
+                          ))}
                       </div>
                     </section>
                   </motion.div>
@@ -206,7 +220,10 @@ export default function ClubDetailPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Member list would go here */}
                       {[1, 2, 3, 4, 5].map((m) => (
-                        <div key={m} className="p-4 rounded-xl bg-void-900/50 border border-void-800 flex items-center gap-4">
+                        <div
+                          key={m}
+                          className="p-4 rounded-xl bg-void-900/50 border border-void-800 flex items-center gap-4"
+                        >
                           <div className="w-12 h-12 rounded-full bg-spectral-violet/20 border border-spectral-violet/30 flex items-center justify-center text-spectral-violet">
                             <Icon name="UserIcon" size={24} />
                           </div>
@@ -237,22 +254,26 @@ export default function ClubDetailPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-void-400 text-sm">Activity Level</span>
-                    <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-bold uppercase">High</span>
+                    <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-bold uppercase">
+                      High
+                    </span>
                   </div>
                 </div>
               </section>
 
               <section className="p-6 rounded-2xl bg-gradient-to-br from-spectral-cyan/10 to-spectral-violet/10 border border-spectral-cyan/20">
                 <h3 className="text-lg font-semibold text-void-100 mb-2">Club Goal</h3>
-                <p className="text-xs text-void-400 mb-4">Collective progress towards a permanent reward.</p>
+                <p className="text-xs text-void-400 mb-4">
+                  Collective progress towards a permanent reward.
+                </p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-void-300">Total Words Written</span>
                     <span className="text-spectral-cyan font-bold">754,230 / 1M</span>
                   </div>
                   <div className="w-full h-2 bg-void-950 rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-spectral-cyan" 
+                    <motion.div
+                      className="h-full bg-spectral-cyan"
                       initial={{ width: 0 }}
                       animate={{ width: '75%' }}
                       transition={{ duration: 1, delay: 0.5 }}
@@ -269,15 +290,23 @@ export default function ClubDetailPage() {
   );
 }
 
-function ChallengeCard({ challenge, showDetails = false }: { challenge: ClubChallenge, showDetails?: boolean }) {
+function ChallengeCard({
+  challenge,
+  showDetails = false,
+}: {
+  challenge: ClubChallenge;
+  showDetails?: boolean;
+}) {
   const progress = (challenge.current_value / challenge.target_value) * 100;
-  
+
   return (
     <div className="p-6 rounded-2xl bg-void-900/50 border border-void-800 group hover:border-spectral-cyan/30 transition-all duration-300">
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className={`w-2 h-2 rounded-full ${challenge.status === 'active' ? 'bg-spectral-cyan' : 'bg-green-400'} animate-pulse`} />
+            <span
+              className={`w-2 h-2 rounded-full ${challenge.status === 'active' ? 'bg-spectral-cyan' : 'bg-green-400'} animate-pulse`}
+            />
             <span className="text-[10px] uppercase font-bold tracking-widest text-void-400">
               {challenge.status}
             </span>
@@ -290,9 +319,9 @@ function ChallengeCard({ challenge, showDetails = false }: { challenge: ClubChal
           <span className="text-spectral-pink font-bold">+{challenge.reward_xp} XP</span>
         </div>
       </div>
-      
+
       <p className="text-sm text-void-400 mb-6">{challenge.description}</p>
-      
+
       <div className="space-y-3">
         <div className="flex justify-between text-xs">
           <span className="text-void-300 font-medium">Club Progress</span>
@@ -301,7 +330,7 @@ function ChallengeCard({ challenge, showDetails = false }: { challenge: ClubChal
           </span>
         </div>
         <div className="w-full h-2 bg-void-950 rounded-full overflow-hidden p-0.5">
-          <motion.div 
+          <motion.div
             className="h-full bg-gradient-to-r from-spectral-cyan to-spectral-violet rounded-full"
             initial={{ width: 0 }}
             animate={{ width: `${Math.min(100, progress)}%` }}
@@ -309,13 +338,16 @@ function ChallengeCard({ challenge, showDetails = false }: { challenge: ClubChal
           />
         </div>
       </div>
-      
+
       {showDetails && (
         <div className="mt-6 pt-6 border-t border-void-800 flex items-center justify-between text-xs">
           <div className="flex items-center gap-4">
             <div className="flex -space-x-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="w-6 h-6 rounded-full border border-void-950 bg-void-800 flex items-center justify-center text-[8px]">
+                <div
+                  key={i}
+                  className="w-6 h-6 rounded-full border border-void-950 bg-void-800 flex items-center justify-center text-[8px]"
+                >
                   {i}
                 </div>
               ))}

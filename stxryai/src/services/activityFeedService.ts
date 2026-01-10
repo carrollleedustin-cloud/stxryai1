@@ -9,7 +9,7 @@ import { getSupabaseClient } from '@/lib/supabase/client';
 // TYPES
 // ========================================
 
-export type ActivityType = 
+export type ActivityType =
   | 'story_started'
   | 'story_completed'
   | 'chapter_read'
@@ -81,7 +81,10 @@ export interface ActivityFeedFilters {
 // ACTIVITY TEMPLATES
 // ========================================
 
-const ACTIVITY_TEMPLATES: Record<ActivityType, (data: Record<string, unknown>) => { title: string; description: string }> = {
+const ACTIVITY_TEMPLATES: Record<
+  ActivityType,
+  (data: Record<string, unknown>) => { title: string; description: string }
+> = {
   story_started: (data) => ({
     title: 'Started a new adventure',
     description: `Started reading "${data.storyTitle}"`,
@@ -159,10 +162,12 @@ class ActivityFeedService {
     // Build query
     let query = supabase
       .from('activity_feed')
-      .select(`
+      .select(
+        `
         *,
         users:user_id (username, avatar_url)
-      `)
+      `
+      )
       .eq('is_public', true)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -176,9 +181,9 @@ class ActivityFeedService {
         .eq('user_id', userId)
         .eq('status', 'accepted');
 
-      const friendIds = friendships?.map(f => f.friend_id) || [];
+      const friendIds = friendships?.map((f) => f.friend_id) || [];
       friendIds.push(userId); // Include own activities
-      
+
       query = query.in('user_id', friendIds);
     }
 
@@ -210,10 +215,12 @@ class ActivityFeedService {
 
     const { data, error } = await supabase
       .from('activity_feed')
-      .select(`
+      .select(
+        `
         *,
         users:user_id (username, avatar_url)
-      `)
+      `
+      )
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -256,10 +263,12 @@ class ActivityFeedService {
         metadata,
         is_public: isPublic,
       })
-      .select(`
+      .select(
+        `
         *,
         users:user_id (username, avatar_url)
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -273,14 +282,24 @@ class ActivityFeedService {
   /**
    * Record story started activity
    */
-  async recordStoryStarted(userId: string, storyId: string, storyTitle: string, storyCover?: string): Promise<void> {
+  async recordStoryStarted(
+    userId: string,
+    storyId: string,
+    storyTitle: string,
+    storyCover?: string
+  ): Promise<void> {
     await this.recordActivity(userId, 'story_started', { storyId, storyTitle, storyCover });
   }
 
   /**
    * Record story completed activity
    */
-  async recordStoryCompleted(userId: string, storyId: string, storyTitle: string, rating?: number): Promise<void> {
+  async recordStoryCompleted(
+    userId: string,
+    storyId: string,
+    storyTitle: string,
+    rating?: number
+  ): Promise<void> {
     await this.recordActivity(userId, 'story_completed', { storyId, storyTitle, rating });
   }
 
@@ -288,15 +307,15 @@ class ActivityFeedService {
    * Record achievement earned activity
    */
   async recordAchievementEarned(
-    userId: string, 
-    achievementId: string, 
-    achievementName: string, 
+    userId: string,
+    achievementId: string,
+    achievementName: string,
     achievementIcon?: string,
     xpEarned?: number
   ): Promise<void> {
-    await this.recordActivity(userId, 'achievement_earned', { 
-      achievementId, 
-      achievementName, 
+    await this.recordActivity(userId, 'achievement_earned', {
+      achievementId,
+      achievementName,
       achievementIcon,
       xpEarned,
     });
@@ -323,8 +342,17 @@ class ActivityFeedService {
   /**
    * Record challenge completed activity
    */
-  async recordChallengeCompleted(userId: string, challengeId: string, challengeTitle: string, xpEarned?: number): Promise<void> {
-    await this.recordActivity(userId, 'challenge_completed', { challengeId, challengeTitle, xpEarned });
+  async recordChallengeCompleted(
+    userId: string,
+    challengeId: string,
+    challengeTitle: string,
+    xpEarned?: number
+  ): Promise<void> {
+    await this.recordActivity(userId, 'challenge_completed', {
+      challengeId,
+      challengeTitle,
+      xpEarned,
+    });
   }
 
   /**
@@ -367,22 +395,20 @@ class ActivityFeedService {
 
     return {
       totalActivities: activities.length,
-      storiesStarted: activities.filter(a => a.activity_type === 'story_started').length,
-      storiesCompleted: activities.filter(a => a.activity_type === 'story_completed').length,
-      achievementsEarned: activities.filter(a => a.activity_type === 'achievement_earned').length,
-      challengesCompleted: activities.filter(a => a.activity_type === 'challenge_completed').length,
-      thisWeek: activities.filter(a => new Date(a.created_at) >= weekAgo).length,
-      thisMonth: activities.filter(a => new Date(a.created_at) >= monthAgo).length,
+      storiesStarted: activities.filter((a) => a.activity_type === 'story_started').length,
+      storiesCompleted: activities.filter((a) => a.activity_type === 'story_completed').length,
+      achievementsEarned: activities.filter((a) => a.activity_type === 'achievement_earned').length,
+      challengesCompleted: activities.filter((a) => a.activity_type === 'challenge_completed')
+        .length,
+      thisWeek: activities.filter((a) => new Date(a.created_at) >= weekAgo).length,
+      thisMonth: activities.filter((a) => new Date(a.created_at) >= monthAgo).length,
     };
   }
 
   /**
    * Subscribe to real-time activity updates
    */
-  subscribeToFeed(
-    userId: string,
-    onActivity: (activity: ActivityFeedItem) => void
-  ): () => void {
+  subscribeToFeed(userId: string, onActivity: (activity: ActivityFeedItem) => void): () => void {
     const supabase = this.getSupabase();
 
     const channel = supabase
@@ -408,10 +434,12 @@ class ActivityFeedService {
             // Fetch full activity with user data
             const { data } = await supabase
               .from('activity_feed')
-              .select(`
+              .select(
+                `
                 *,
                 users:user_id (username, avatar_url)
-              `)
+              `
+              )
               .eq('id', payload.new.id)
               .single();
 
@@ -447,7 +475,11 @@ class ActivityFeedService {
   /**
    * Update activity visibility
    */
-  async setActivityVisibility(userId: string, activityId: string, isPublic: boolean): Promise<boolean> {
+  async setActivityVisibility(
+    userId: string,
+    activityId: string,
+    isPublic: boolean
+  ): Promise<boolean> {
     const supabase = this.getSupabase();
 
     const { error } = await supabase
@@ -471,7 +503,8 @@ class ActivityFeedService {
         .insert({ user_id: userId, activity_id: activityId });
 
       if (error) {
-        if (error.code === '23505') { // Unique violation
+        if (error.code === '23505') {
+          // Unique violation
           await supabase
             .from('activity_likes')
             .delete()
@@ -495,14 +528,16 @@ class ActivityFeedService {
       const { data, error } = await supabase
         .from('activity_comments')
         .insert({ user_id: userId, activity_id: activityId, content })
-        .select(`
+        .select(
+          `
           id,
           activity_id,
           user_id,
           content,
           created_at,
           profiles:user_id (username, avatar_url)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -514,7 +549,7 @@ class ActivityFeedService {
         username: data.profiles?.username || 'Unknown',
         userAvatar: data.profiles?.avatar_url,
         content: data.content,
-        createdAt: data.created_at
+        createdAt: data.created_at,
       } as ActivityComment;
     } catch (error) {
       console.error('Error adding comment:', error);
@@ -524,7 +559,7 @@ class ActivityFeedService {
         userId,
         username: 'You',
         content,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       } as ActivityComment;
     }
   }
@@ -534,14 +569,16 @@ class ActivityFeedService {
     try {
       const { data, error } = await supabase
         .from('activity_comments')
-        .select(`
+        .select(
+          `
           id,
           activity_id,
           user_id,
           content,
           created_at,
           profiles:user_id (username, avatar_url)
-        `)
+        `
+        )
         .eq('activity_id', activityId)
         .order('created_at', { ascending: true });
 
@@ -554,7 +591,7 @@ class ActivityFeedService {
         username: c.profiles?.username || 'Unknown',
         userAvatar: c.profiles?.avatar_url,
         content: c.content,
-        createdAt: c.created_at
+        createdAt: c.created_at,
       })) as ActivityComment[];
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -581,4 +618,3 @@ class ActivityFeedService {
 }
 
 export const activityFeedService = new ActivityFeedService();
-
