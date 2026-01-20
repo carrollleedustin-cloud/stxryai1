@@ -93,6 +93,7 @@
     "next": "^14.2.21",
     "openai": "^6.15.0",
     "postcss": "^8.4.47",
+    "postgres": "^3.4.8",
     "posthog-js": "^1.311.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
