@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { announcementService, Announcement } from '@/services/announcementService';
+import CommandPalette from '@/components/ui/CommandPalette';
 
 /**
  * ETHEREAL NAV
@@ -114,9 +115,11 @@ export default function EtherealNav() {
   };
 
   const navLinks = [
-    { href: '/story-library', label: 'Library' },
-    { href: '/community-hub', label: 'Community' },
-    { href: '/pricing', label: 'Premium' },
+    { href: '/story-library', label: 'Library', icon: '📚' },
+    { href: '/kids-zone', label: 'Kids Zone', icon: '🎨', highlight: true },
+    { href: '/family', label: 'Family', icon: '👨‍👩‍👧‍👦', highlight: true },
+    { href: '/community-hub', label: 'Community', icon: '🌟' },
+    { href: '/pricing', label: 'Premium', icon: '💎' },
   ];
 
   return (
@@ -179,17 +182,23 @@ export default function EtherealNav() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={`
                     relative font-ui text-xs font-medium tracking-widest uppercase
-                    py-2 transition-colors duration-300
-                    ${pathname === link.href ? 'text-spectral-cyan' : 'text-text-tertiary hover:text-text-primary'}
+                    py-2 px-3 rounded-lg transition-all duration-300 flex items-center gap-2
+                    ${pathname === link.href
+                      ? 'text-spectral-cyan bg-spectral-cyan/10'
+                      : link.highlight
+                        ? 'text-text-primary hover:text-spectral-cyan hover:bg-spectral-cyan/5 border border-spectral-cyan/20'
+                        : 'text-text-tertiary hover:text-text-primary hover:bg-void-mist'
+                    }
                   `}
                 >
+                  {link.icon && <span className="text-base">{link.icon}</span>}
                   {link.label}
 
                   {/* Active indicator */}
@@ -207,6 +216,9 @@ export default function EtherealNav() {
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
+              {/* Command Palette */}
+              <CommandPalette />
+              
               {user ? (
                 <>
                   {/* Messages Link */}
@@ -358,10 +370,10 @@ export default function EtherealNav() {
                   </div>
 
                   <Link
-                    href="/user-dashboard"
+                    href="/dashboard"
                     className="hidden md:block font-ui text-xs font-medium tracking-widest uppercase text-text-tertiary hover:text-spectral-cyan transition-colors"
                   >
-                    Dashboard
+                    Create
                   </Link>
 
                   {/* User Menu */}
@@ -505,10 +517,16 @@ export default function EtherealNav() {
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className={`
-                        block py-4 font-display text-2xl tracking-wider
-                        ${pathname === link.href ? 'text-spectral-cyan' : 'text-text-secondary'}
+                        flex items-center gap-3 py-4 px-4 rounded-lg font-display text-xl tracking-wider transition-colors
+                        ${pathname === link.href
+                          ? 'text-spectral-cyan bg-spectral-cyan/10'
+                          : link.highlight
+                            ? 'text-text-primary border border-spectral-cyan/20'
+                            : 'text-text-secondary'
+                        }
                       `}
                     >
+                      {link.icon && <span className="text-2xl">{link.icon}</span>}
                       {link.label}
                     </Link>
                   </motion.div>
@@ -526,11 +544,18 @@ export default function EtherealNav() {
                       <span>💬</span> Messages
                     </Link>
                     <Link
+                      href="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block py-2 text-lg text-text-secondary"
+                    >
+                      Create
+                    </Link>
+                    <Link
                       href="/user-dashboard"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block py-2 text-lg text-text-secondary"
                     >
-                      Dashboard
+                      My Dashboard
                     </Link>
                     <Link
                       href="/achievements"

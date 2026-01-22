@@ -1,56 +1,99 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { NebulaCard } from '@/components/nebula/NebulaCard';
 import { NebulaButton } from '@/components/nebula/NebulaButton';
 import { NebulaTitle, GlowText, AnimatedCounter } from '@/components/nebula/NebulaText';
-import { Plus, Users, Clock, BookOpen, Shield, TrendingUp } from 'lucide-react';
+import { Plus, Users, Clock, BookOpen, Shield, TrendingUp, Loader2 } from 'lucide-react';
+import {
+  getFamilyProfiles,
+  getFamilyOverview,
+  formatTimeAgo,
+  type FamilyMember,
+} from '@/services/familyService';
 
 /**
  * FAMILY MANAGEMENT DASHBOARD
  * The command center for parents to manage their family's StxryAI experience.
  */
 
-interface KidProfile {
-  id: string;
-  name: string;
-  avatar: string;
-  age: number;
-  storiesRead: number;
-  timeThisWeek: number;
-  lastActive: string;
-  restrictions: string[];
-}
-
-const mockKids: KidProfile[] = [
-  {
-    id: '1',
-    name: 'Emma',
-    avatar: '👧',
-    age: 7,
-    storiesRead: 23,
-    timeThisWeek: 180,
-    lastActive: '2 hours ago',
-    restrictions: ['fantasy', 'adventure'],
-  },
-  {
-    id: '2',
-    name: 'Liam',
-    avatar: '👦',
-    age: 10,
-    storiesRead: 45,
-    timeThisWeek: 240,
-    lastActive: '1 day ago',
-    restrictions: ['fantasy', 'adventure', 'mystery'],
-  },
-];
-
 export default function FamilyDashboardPage() {
-  const [kids] = useState<KidProfile[]>(mockKids);
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [kids, setKids] = useState<FamilyMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [overview, setOverview] = useState({
+    total_members: 0,
+    total_stories_read: 0,
+    total_time_this_week: 0,
+    weekly_growth: 0,
+  });
 
-  const totalStoriesRead = kids.reduce((sum, k) => sum + k.storiesRead, 0);
-  const totalTimeThisWeek = kids.reduce((sum, k) => sum + k.timeThisWeek, 0);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/authentication');
+    } else if (user) {
+      loadFamilyData();
+    }
+  }, [user, authLoading, router]);
+
+  const loadFamilyData = async () => {
+    if (!user?.id) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Load family profiles
+      const profilesResult = await getFamilyProfiles(user.id);
+      if (profilesResult.success && profilesResult.profiles) {
+        setKids(profilesResult.profiles);
+      } else {
+        setError(profilesResult.error || 'Failed to load family profiles');
+      }
+
+      // Load overview stats
+      const overviewResult = await getFamilyOverview(user.id);
+      if (overviewResult.success && overviewResult.overview) {
+        setOverview(overviewResult.overview);
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const totalStoriesRead = overview.total_stories_read;
+  const totalTimeThisWeek = overview.total_time_this_week;
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-void-absolute flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-spectral-cyan animate-spin mx-auto mb-4" />
+          <p className="text-white/60">Loading family dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-void-absolute flex items-center justify-center">
+        <NebulaCard glowColor="pink" className="max-w-md p-8 text-center">
+          <div className="text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-white mb-2">Error Loading Family Data</h2>
+          <p className="text-white/60 mb-4">{error}</p>
+          <NebulaButton onClick={loadFamilyData}>Try Again</NebulaButton>
+        </NebulaCard>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -117,7 +160,7 @@ export default function FamilyDashboardPage() {
             </div>
             <div>
               <p className="text-sm text-white/60">Weekly Growth</p>
-              <p className="text-2xl font-bold text-green-400">+24%</p>
+              <p className="text-2xl font-bold text-green-400">+{overview.weekly_growth}%</p>
             </div>
           </div>
         </NebulaCard>
@@ -165,14 +208,14 @@ export default function FamilyDashboardPage() {
 
                     <div className="flex flex-wrap gap-2 mb-3">
                       <span className="px-2 py-0.5 rounded-full text-xs bg-cyan-500/20 text-cyan-400">
-                        {kid.storiesRead} stories
+                        {kid.stats.stories_read} stories
                       </span>
                       <span className="px-2 py-0.5 rounded-full text-xs bg-violet-500/20 text-violet-400">
-                        {Math.floor(kid.timeThisWeek / 60)}h this week
+                        {Math.floor(kid.stats.time_this_week / 60)}h this week
                       </span>
                     </div>
 
-                    <p className="text-xs text-white/40">Last active: {kid.lastActive}</p>
+                    <p className="text-xs text-white/40">Last active: {formatTimeAgo(kid.stats.last_active)}</p>
                   </div>
                 </div>
 
