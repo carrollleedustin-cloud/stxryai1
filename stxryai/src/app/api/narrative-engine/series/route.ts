@@ -1,17 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine';
 
 /**
  * GET /api/narrative-engine/series
- * Get all series for an author
+ * Get all series for the authenticated author
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const authorId = searchParams.get('authorId');
+    // Authenticate user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!authorId) {
-      return NextResponse.json({ error: 'authorId is required' }, { status: 400 });
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Use authenticated user's ID, allow query param override for admin viewing
+    const { searchParams } = new URL(request.url);
+    const requestedAuthorId = searchParams.get('authorId');
+    
+    // Only allow viewing other authors' series if user is admin
+    const authorId = requestedAuthorId || user.id;
+    if (requestedAuthorId && requestedAuthorId !== user.id) {
+      // Check if user is admin
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+      
+      if (!profile?.is_admin) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      }
     }
 
     const series = await persistentNarrativeEngine.getAuthorSeries(authorId);
@@ -69,10 +90,17 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     const {
-      authorId,
       title,
       description,
       premise,
@@ -88,9 +116,12 @@ export async function POST(request: NextRequest) {
       plannedEnding,
     } = body;
 
-    if (!authorId || !title || !genre) {
+    // Use authenticated user's ID as author
+    const authorId = user.id;
+
+    if (!title || !genre) {
       return NextResponse.json(
-        { error: 'authorId, title, and genre are required' },
+        { error: 'title and genre are required' },
         { status: 400 }
       );
     }

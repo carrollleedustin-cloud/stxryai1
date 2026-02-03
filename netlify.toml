@@ -1,8 +1,137 @@
+# StxryAI Netlify Configuration
+# Production-ready deployment settings
+
 [build]
   base = "stxryai"
-  command = "npm run build"
-  publish = "out"
+  command = "npm run build:netlify"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_ADSENSE_ID"
+  NPM_FLAGS = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED = "1"
+  # Exclude public Supabase keys from secret scanning
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_ADSENSE_ID,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,NEXT_PUBLIC_POSTHOG_KEY"
+
+# Enable Next.js plugin
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Caching plugin for faster builds
+[[plugins]]
+  package = "netlify-plugin-cache"
+  [plugins.inputs]
+    paths = [
+      "node_modules/.cache",
+      ".next/cache"
+    ]
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Cache static assets
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# API routes - no caching
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"
+
+# Redirects for SEO and user experience
+[[redirects]]
+  from = "/login"
+  to = "/authentication"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/signup"
+  to = "/authentication"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/register"
+  to = "/authentication"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/signin"
+  to = "/authentication"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/user-dashboard"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/stories"
+  to = "/story-library"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/create"
+  to = "/story-creation-studio"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/write"
+  to = "/writers-desk"
+  status = 301
+  force = true
+
+# Handle Next.js client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+  conditions = {Role = ["admin", "user"]}
+
+# Function configuration
+[functions]
+  directory = ".netlify/functions-internal"
+  node_bundler = "esbuild"
+
+# Environment-specific settings
+[context.production]
+  environment = { NEXT_PUBLIC_ENV = "production" }
+
+[context.deploy-preview]
+  environment = { NEXT_PUBLIC_ENV = "preview" }
+
+[context.branch-deploy]
+  environment = { NEXT_PUBLIC_ENV = "staging" }
+
+# Dev server settings
+[dev]
+  command = "npm run dev"
+  port = 4028
+  targetPort = 4028
+  autoLaunch = false

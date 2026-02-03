@@ -1,23 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { aiStoryAssistantService } from '@/services/aiStoryAssistantService';
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, content, storyId, chapterId, suggestionTypes } = await req.json();
+    // Authenticate user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!userId || !content) {
-      return NextResponse.json({ error: 'Missing userId or content' }, { status: 400 });
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const suggestions = await aiStoryAssistantService.generateSuggestions(userId, content, {
+    const { content, storyId, chapterId, suggestionTypes } = await req.json();
+
+    if (!content) {
+      return NextResponse.json({ error: 'Missing content' }, { status: 400 });
+    }
+
+    const suggestions = await aiStoryAssistantService.generateSuggestions(user.id, content, {
       storyId,
       chapterId,
       suggestionTypes,
     });
 
     return NextResponse.json({ suggestions });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Error in suggestions route:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal Server Error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

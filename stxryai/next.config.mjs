@@ -37,9 +37,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // TypeScript - ignore build errors in production (type checking done in CI/locally)
+  // TypeScript - enforce type checking for production safety
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
   // Logging configuration
@@ -72,11 +72,15 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'YOUR_PROJECT_URL.supabase.co',
+        hostname: '*.supabase.co',
       },
       {
         protocol: 'https',
-        hostname: 'your-site-name.netlify.app',
+        hostname: '*.netlify.app',
+      },
+      {
+        protocol: 'https',
+        hostname: 'stxryai.com',
       },
     ],
   },

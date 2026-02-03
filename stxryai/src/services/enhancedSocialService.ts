@@ -1,545 +1,542 @@
 /**
- * Enhanced Social Features Service
- * Includes: Clubs, Stories, Social Interactions, Messaging, Events
+ * Enhanced Social Service
+ * Author follows, activity feed, reading buddies
  */
 
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 
-export interface Club {
+export interface AuthorProfile {
   id: string;
-  name: string;
-  description: string;
-  category: string;
-  is_private: boolean;
-  cover_image_url?: string;
-  tags: string[];
-  created_by: string;
-  member_count: number;
-  created_at: string;
-  updated_at: string;
+  displayName: string;
+  username: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  storyCount: number;
+  followerCount: number;
+  isFollowing: boolean;
 }
 
-export interface Story {
+export interface ActivityItem {
   id: string;
-  author_id: string;
-  title: string;
-  description: string;
-  genre: string;
-  difficulty: string;
-  cover_image_url?: string;
-  is_premium: boolean;
-  is_published: boolean;
-  estimated_duration: number;
-  view_count: number;
-  play_count: number;
-  like_count: number;
-  created_at: string;
-  updated_at: string;
+  actorId: string | null;
+  actorName: string | null;
+  actorAvatarUrl: string | null;
+  activityType: string;
+  targetType: string | null;
+  targetId: string | null;
+  targetTitle: string | null;
+  metadata: Record<string, any>;
+  isRead: boolean;
+  createdAt: string;
 }
 
-export interface SocialEvent {
+export interface ReadingBuddy {
   id: string;
-  title: string;
-  description: string;
-  event_type: 'author_qa' | 'writing_workshop' | 'reading_marathon' | 'book_club';
-  scheduled_start: string;
-  scheduled_end: string;
-  host_id: string;
-  max_participants: number;
-  participant_count: number;
-  status: 'scheduled' | 'live' | 'ended' | 'cancelled';
-  created_at: string;
-}
-
-export interface DirectMessage {
-  id: string;
-  sender_id: string;
-  recipient_id: string;
-  content: string;
-  message_type: 'text' | 'image' | 'file';
-  is_read: boolean;
-  created_at: string;
+  buddyId: string;
+  displayName: string;
+  username: string;
+  avatarUrl: string | null;
+  status: 'pending' | 'accepted' | 'declined' | 'blocked';
+  currentlyReading: string | null;
+  lastActive: string;
 }
 
 class EnhancedSocialService {
-  // ============================================================================
-  // CLUBS
-  // ============================================================================
+  private supabase = createClient();
 
-  async createClub(clubData: Omit<Club, 'id' | 'created_at' | 'updated_at' | 'member_count'>) {
+  /**
+   * Follow an author
+   */
+  async followAuthor(userId: string, authorId: string, enableNotifications: boolean = true): Promise<boolean> {
     try {
-      const response = await fetch('/api/clubs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(clubData),
+      if (userId === authorId) {
+        return false; // Can't follow yourself
+      }
+
+      const { error } = await this.supabase.from('author_follows').insert({
+        follower_id: userId,
+        author_id: authorId,
+        notifications_enabled: enableNotifications,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create club');
+      if (error) {
+        console.error('Error following author:', error);
+        return false;
       }
 
-      return await response.json();
+      // Create activity for author
+      await this.createActivityItem(authorId, userId, 'followed_you');
+
+      return true;
     } catch (error) {
-      console.error('Error creating club:', error);
-      throw error;
+      console.error('Error in followAuthor:', error);
+      return false;
     }
   }
 
-  async getClubs(filters?: {
-    category?: string;
-    search?: string;
-    limit?: number;
-    offset?: number;
-  }) {
+  /**
+   * Unfollow an author
+   */
+  async unfollowAuthor(userId: string, authorId: string): Promise<boolean> {
     try {
-      const params = new URLSearchParams();
-      if (filters?.category) params.append('category', filters.category);
-      if (filters?.search) params.append('search', filters.search);
-      if (filters?.limit) params.append('limit', filters.limit.toString());
-      if (filters?.offset) params.append('offset', filters.offset.toString());
-
-      const response = await fetch(`/api/clubs?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch clubs');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching clubs:', error);
-      throw error;
-    }
-  }
-
-  async joinClub(clubId: string) {
-    try {
-      const response = await fetch(`/api/clubs/${clubId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to join club');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error joining club:', error);
-      throw error;
-    }
-  }
-
-  async leaveClub(clubId: string) {
-    try {
-      const response = await fetch(`/api/clubs/${clubId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clubId }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to leave club');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error leaving club:', error);
-      throw error;
-    }
-  }
-
-  async getUserClubs(userId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('club_members')
-        .select('club:reading_clubs(*)')
-        .eq('user_id', userId);
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching user clubs:', error);
-      throw error;
-    }
-  }
-
-  // ============================================================================
-  // STORIES
-  // ============================================================================
-
-  async createStory(
-    storyData: Omit<
-      Story,
-      'id' | 'created_at' | 'updated_at' | 'view_count' | 'play_count' | 'like_count'
-    >
-  ) {
-    try {
-      const response = await fetch('/api/stories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(storyData),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to create story');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating story:', error);
-      throw error;
-    }
-  }
-
-  async getUserStories(
-    userId: string,
-    filters?: { published?: boolean; limit?: number; offset?: number }
-  ) {
-    try {
-      const params = new URLSearchParams();
-      if (filters?.published !== undefined)
-        params.append('published', filters.published.toString());
-      if (filters?.limit) params.append('limit', filters.limit.toString());
-      if (filters?.offset) params.append('offset', filters.offset.toString());
-
-      const response = await fetch(`/api/stories?${params.toString()}`);
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch stories');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching stories:', error);
-      throw error;
-    }
-  }
-
-  async publishStory(storyId: string) {
-    try {
-      const { data, error } = await supabase
-        .from('stories')
-        .update({ is_published: true })
-        .eq('id', storyId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error publishing story:', error);
-      throw error;
-    }
-  }
-
-  async likeStory(storyId: string) {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { error: likeError } = await supabase
-        .from('story_likes')
-        .insert({ user_id: user.id, story_id: storyId });
-
-      if (likeError && !likeError.message.includes('duplicate')) throw likeError;
-
-      // Increment like count
-      const { data: story } = await supabase
-        .from('stories')
-        .select('like_count')
-        .eq('id', storyId)
-        .single();
-
-      if (story) {
-        await supabase
-          .from('stories')
-          .update({ like_count: (story.like_count || 0) + 1 })
-          .eq('id', storyId);
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error liking story:', error);
-      throw error;
-    }
-  }
-
-  async bookmarkStory(storyId: string, folder: string = 'default') {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('story_bookmarks')
-        .insert({
-          user_id: user.id,
-          story_id: storyId,
-          folder,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error bookmarking story:', error);
-      throw error;
-    }
-  }
-
-  // ============================================================================
-  // SOCIAL INTERACTIONS
-  // ============================================================================
-
-  async followUser(userId: string) {
-    try {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('Not authenticated');
-
-      const { data, error } = await supabase
-        .from('user_follows')
-        .insert({
-          follower_id: currentUser.id,
-          following_id: userId,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Log activity
-      await supabase.from('user_activity').insert({
-        user_id: currentUser.id,
-        activity_type: 'follower_new',
-        metadata: { followed_user_id: userId },
-      });
-
-      return data;
-    } catch (error) {
-      console.error('Error following user:', error);
-      throw error;
-    }
-  }
-
-  async unfollowUser(userId: string) {
-    try {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('Not authenticated');
-
-      const { error } = await supabase
-        .from('user_follows')
+      const { error } = await this.supabase
+        .from('author_follows')
         .delete()
-        .eq('follower_id', currentUser.id)
-        .eq('following_id', userId);
+        .eq('follower_id', userId)
+        .eq('author_id', authorId);
 
-      if (error) throw error;
-      return { success: true };
+      return !error;
     } catch (error) {
-      console.error('Error unfollowing user:', error);
-      throw error;
+      console.error('Error in unfollowAuthor:', error);
+      return false;
     }
   }
 
-  async getUserFollowers(userId: string) {
+  /**
+   * Check if following an author
+   */
+  async isFollowing(userId: string, authorId: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
-        .from('user_follows')
-        .select('follower:user_profiles!follower_id(*)')
-        .eq('following_id', userId);
+      const { data } = await this.supabase
+        .from('author_follows')
+        .select('id')
+        .eq('follower_id', userId)
+        .eq('author_id', authorId)
+        .single();
 
-      if (error) throw error;
-      return data;
+      return !!data;
     } catch (error) {
-      console.error('Error fetching followers:', error);
-      throw error;
+      return false;
     }
   }
 
-  async getUserFollowing(userId: string) {
+  /**
+   * Get authors the user follows
+   */
+  async getFollowedAuthors(userId: string): Promise<AuthorProfile[]> {
     try {
-      const { data, error } = await supabase
-        .from('user_follows')
-        .select('following:user_profiles!following_id(*)')
+      const { data, error } = await this.supabase
+        .from('author_follows')
+        .select(`
+          author_id,
+          user_profiles!author_follows_author_id_fkey (
+            id, display_name, username, avatar_url, bio
+          )
+        `)
         .eq('follower_id', userId);
 
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error fetching following:', error);
-      throw error;
-    }
-  }
+      if (error) {
+        console.error('Error fetching followed authors:', error);
+        return [];
+      }
 
-  // ============================================================================
-  // DIRECT MESSAGING
-  // ============================================================================
+      return await Promise.all(
+        (data || []).map(async (follow) => {
+          const profile = follow.user_profiles as any;
+          
+          // Get story count
+          const { count } = await this.supabase
+            .from('stories')
+            .select('*', { count: 'exact', head: true })
+            .eq('author_id', profile.id)
+            .eq('is_published', true);
 
-  async sendDirectMessage(
-    recipientId: string,
-    content: string,
-    messageType: 'text' | 'image' | 'file' = 'text'
-  ) {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+          // Get follower count
+          const { count: followerCount } = await this.supabase
+            .from('author_follows')
+            .select('*', { count: 'exact', head: true })
+            .eq('author_id', profile.id);
 
-      const { data, error } = await supabase
-        .from('messages')
-        .insert({
-          sender_id: user.id,
-          recipient_id: recipientId,
-          content,
-          message_type: messageType,
+          return {
+            id: profile.id,
+            displayName: profile.display_name || 'Unknown',
+            username: profile.username || '',
+            avatarUrl: profile.avatar_url,
+            bio: profile.bio,
+            storyCount: count || 0,
+            followerCount: followerCount || 0,
+            isFollowing: true,
+          };
         })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+      );
     } catch (error) {
-      console.error('Error sending message:', error);
-      throw error;
+      console.error('Error in getFollowedAuthors:', error);
+      return [];
     }
   }
 
-  async getDirectMessages(userId: string, limit: number = 50) {
+  /**
+   * Get author's followers
+   */
+  async getAuthorFollowers(authorId: string, userId?: string): Promise<AuthorProfile[]> {
     try {
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-      if (!currentUser) throw new Error('Not authenticated');
+      const { data, error } = await this.supabase
+        .from('author_follows')
+        .select(`
+          follower_id,
+          user_profiles!author_follows_follower_id_fkey (
+            id, display_name, username, avatar_url, bio
+          )
+        `)
+        .eq('author_id', authorId)
+        .limit(50);
 
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
-        .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`)
+      if (error) {
+        console.error('Error fetching author followers:', error);
+        return [];
+      }
+
+      const followers = await Promise.all(
+        (data || []).map(async (follow) => {
+          const profile = follow.user_profiles as any;
+          
+          let isFollowing = false;
+          if (userId) {
+            isFollowing = await this.isFollowing(userId, profile.id);
+          }
+
+          return {
+            id: profile.id,
+            displayName: profile.display_name || 'Unknown',
+            username: profile.username || '',
+            avatarUrl: profile.avatar_url,
+            bio: profile.bio,
+            storyCount: 0,
+            followerCount: 0,
+            isFollowing,
+          };
+        })
+      );
+
+      return followers;
+    } catch (error) {
+      console.error('Error in getAuthorFollowers:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get activity feed
+   */
+  async getActivityFeed(userId: string, limit: number = 50): Promise<ActivityItem[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('activity_feed')
+        .select(`
+          *,
+          user_profiles!activity_feed_actor_id_fkey (display_name, avatar_url)
+        `)
+        .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(limit);
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error fetching activity feed:', error);
+        return [];
+      }
+
+      return (data || []).map((item) => ({
+        id: item.id,
+        actorId: item.actor_id,
+        actorName: (item.user_profiles as any)?.display_name,
+        actorAvatarUrl: (item.user_profiles as any)?.avatar_url,
+        activityType: item.activity_type,
+        targetType: item.target_type,
+        targetId: item.target_id,
+        targetTitle: item.metadata?.title,
+        metadata: item.metadata || {},
+        isRead: item.is_read,
+        createdAt: item.created_at,
+      }));
     } catch (error) {
-      console.error('Error fetching messages:', error);
-      throw error;
+      console.error('Error in getActivityFeed:', error);
+      return [];
     }
   }
 
-  // ============================================================================
-  // SOCIAL EVENTS
-  // ============================================================================
-
-  async createEvent(eventData: Omit<SocialEvent, 'id' | 'created_at' | 'participant_count'>) {
+  /**
+   * Create activity item
+   */
+  async createActivityItem(
+    userId: string,
+    actorId: string | null,
+    activityType: string,
+    targetType?: string,
+    targetId?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      await this.supabase.from('activity_feed').insert({
+        user_id: userId,
+        actor_id: actorId,
+        activity_type: activityType,
+        target_type: targetType,
+        target_id: targetId,
+        metadata: metadata || {},
+      });
+    } catch (error) {
+      console.error('Error creating activity item:', error);
+    }
+  }
 
-      const { data, error } = await supabase
-        .from('live_events')
-        .insert({
-          ...eventData,
-          host_id: user.id,
+  /**
+   * Mark activities as read
+   */
+  async markActivitiesAsRead(userId: string, activityIds?: string[]): Promise<void> {
+    try {
+      let query = this.supabase
+        .from('activity_feed')
+        .update({ is_read: true })
+        .eq('user_id', userId);
+
+      if (activityIds && activityIds.length > 0) {
+        query = query.in('id', activityIds);
+      }
+
+      await query;
+    } catch (error) {
+      console.error('Error marking activities as read:', error);
+    }
+  }
+
+  /**
+   * Get unread activity count
+   */
+  async getUnreadActivityCount(userId: string): Promise<number> {
+    try {
+      const { count, error } = await this.supabase
+        .from('activity_feed')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false);
+
+      return count || 0;
+    } catch (error) {
+      console.error('Error getting unread count:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Send reading buddy request
+   */
+  async sendBuddyRequest(userId: string, buddyId: string): Promise<boolean> {
+    try {
+      if (userId === buddyId) {
+        return false;
+      }
+
+      const { error } = await this.supabase.from('reading_buddies').insert({
+        user_id: userId,
+        buddy_id: buddyId,
+        status: 'pending',
+      });
+
+      if (error) {
+        console.error('Error sending buddy request:', error);
+        return false;
+      }
+
+      // Create activity for buddy
+      await this.createActivityItem(buddyId, userId, 'buddy_request');
+
+      return true;
+    } catch (error) {
+      console.error('Error in sendBuddyRequest:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Accept buddy request
+   */
+  async acceptBuddyRequest(userId: string, requesterId: string): Promise<boolean> {
+    try {
+      const { error } = await this.supabase
+        .from('reading_buddies')
+        .update({
+          status: 'accepted',
+          accepted_at: new Date().toISOString(),
         })
-        .select()
-        .single();
+        .eq('user_id', requesterId)
+        .eq('buddy_id', userId)
+        .eq('status', 'pending');
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Error accepting buddy request:', error);
+        return false;
+      }
+
+      // Create reciprocal relationship
+      await this.supabase.from('reading_buddies').insert({
+        user_id: userId,
+        buddy_id: requesterId,
+        status: 'accepted',
+        accepted_at: new Date().toISOString(),
+      });
+
+      // Create activity
+      await this.createActivityItem(requesterId, userId, 'buddy_accepted');
+
+      return true;
     } catch (error) {
-      console.error('Error creating event:', error);
-      throw error;
+      console.error('Error in acceptBuddyRequest:', error);
+      return false;
     }
   }
 
-  async getUpcomingEvents(limit: number = 10) {
+  /**
+   * Decline buddy request
+   */
+  async declineBuddyRequest(userId: string, requesterId: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
-        .from('live_events')
-        .select('*')
-        .in('status', ['scheduled', 'live'])
-        .order('scheduled_start', { ascending: true })
-        .limit(limit);
+      const { error } = await this.supabase
+        .from('reading_buddies')
+        .update({ status: 'declined' })
+        .eq('user_id', requesterId)
+        .eq('buddy_id', userId)
+        .eq('status', 'pending');
 
-      if (error) throw error;
-      return data;
+      return !error;
     } catch (error) {
-      console.error('Error fetching events:', error);
-      throw error;
+      console.error('Error in declineBuddyRequest:', error);
+      return false;
     }
   }
 
-  async registerForEvent(eventId: string) {
+  /**
+   * Get reading buddies
+   */
+  async getReadingBuddies(userId: string): Promise<ReadingBuddy[]> {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data, error } = await this.supabase
+        .from('reading_buddies')
+        .select(`
+          *,
+          user_profiles!reading_buddies_buddy_id_fkey (
+            id, display_name, username, avatar_url
+          )
+        `)
+        .eq('user_id', userId)
+        .eq('status', 'accepted');
 
-      const { data, error } = await supabase
-        .from('event_registrations')
-        .insert({
-          event_id: eventId,
-          user_id: user.id,
-        })
-        .select()
-        .single();
+      if (error) {
+        console.error('Error fetching reading buddies:', error);
+        return [];
+      }
 
-      if (error) throw error;
-      return data;
+      return (data || []).map((buddy) => {
+        const profile = buddy.user_profiles as any;
+        return {
+          id: buddy.id,
+          buddyId: buddy.buddy_id,
+          displayName: profile?.display_name || 'Unknown',
+          username: profile?.username || '',
+          avatarUrl: profile?.avatar_url,
+          status: buddy.status,
+          currentlyReading: null, // Would need to join with continue_reading
+          lastActive: buddy.accepted_at,
+        };
+      });
     } catch (error) {
-      console.error('Error registering for event:', error);
-      throw error;
+      console.error('Error in getReadingBuddies:', error);
+      return [];
     }
   }
 
-  // ============================================================================
-  // SOCIAL FEED
-  // ============================================================================
-
-  async getSocialFeed(limit: number = 20, offset: number = 0) {
+  /**
+   * Get pending buddy requests
+   */
+  async getPendingBuddyRequests(userId: string): Promise<ReadingBuddy[]> {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data, error } = await this.supabase
+        .from('reading_buddies')
+        .select(`
+          *,
+          user_profiles!reading_buddies_user_id_fkey (
+            id, display_name, username, avatar_url
+          )
+        `)
+        .eq('buddy_id', userId)
+        .eq('status', 'pending');
 
-      // Get activities from followed users
-      const { data: followingIds } = await supabase
-        .from('user_follows')
-        .select('following_id')
-        .eq('follower_id', user.id);
+      if (error) {
+        console.error('Error fetching pending requests:', error);
+        return [];
+      }
 
-      const followedUserIds = followingIds?.map((f) => f.following_id) || [];
-
-      const { data, error } = await supabase
-        .from('user_activity')
-        .select('*, users(username, display_name, avatar_url)')
-        .in('user_id', [...followedUserIds, user.id])
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (error) throw error;
-      return data;
+      return (data || []).map((request) => {
+        const profile = request.user_profiles as any;
+        return {
+          id: request.id,
+          buddyId: request.user_id,
+          displayName: profile?.display_name || 'Unknown',
+          username: profile?.username || '',
+          avatarUrl: profile?.avatar_url,
+          status: request.status,
+          currentlyReading: null,
+          lastActive: request.requested_at,
+        };
+      });
     } catch (error) {
-      console.error('Error fetching social feed:', error);
-      throw error;
+      console.error('Error in getPendingBuddyRequests:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Broadcast activity to followers
+   */
+  async broadcastToFollowers(
+    authorId: string,
+    activityType: string,
+    targetType?: string,
+    targetId?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    try {
+      // Get all followers with notifications enabled
+      const { data: followers } = await this.supabase
+        .from('author_follows')
+        .select('follower_id')
+        .eq('author_id', authorId)
+        .eq('notifications_enabled', true);
+
+      if (!followers || followers.length === 0) {
+        return;
+      }
+
+      // Create activity items for all followers
+      const activities = followers.map((f) => ({
+        user_id: f.follower_id,
+        actor_id: authorId,
+        activity_type: activityType,
+        target_type: targetType,
+        target_id: targetId,
+        metadata: metadata || {},
+      }));
+
+      await this.supabase.from('activity_feed').insert(activities);
+    } catch (error) {
+      console.error('Error broadcasting to followers:', error);
+    }
+  }
+
+  /**
+   * Toggle follow notifications
+   */
+  async toggleFollowNotifications(userId: string, authorId: string, enabled: boolean): Promise<boolean> {
+    try {
+      const { error } = await this.supabase
+        .from('author_follows')
+        .update({ notifications_enabled: enabled })
+        .eq('follower_id', userId)
+        .eq('author_id', authorId);
+
+      return !error;
+    } catch (error) {
+      console.error('Error toggling notifications:', error);
+      return false;
     }
   }
 }

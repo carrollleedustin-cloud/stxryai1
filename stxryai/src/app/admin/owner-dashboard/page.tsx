@@ -1,626 +1,781 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import VoidBackground from '@/components/void/VoidBackground';
-import {
-  EtherealNav,
-  TemporalHeading,
-  StaggerContainer,
-  StaggerItem,
-  AnimatedCounter,
-} from '@/components/void';
-import {
-  HolographicCard,
-  RevealOnScroll,
-  GradientBorder,
-  NeonText,
-} from '@/components/void/AdvancedEffects';
-import SpectralButton from '@/components/void/SpectralButton';
-import Icon from '@/components/ui/AppIcon';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  canAccessOwnerDashboard,
-  getRoleDisplayName,
-  getRoleBadgeColor,
-} from '@/lib/auth/accessControl';
-import { createClient } from '@/lib/supabase/client';
+  Crown, Shield, Zap, Users, Settings, Activity, AlertTriangle,
+  Database, Server, Globe, Lock, Unlock, Bell, Eye, Edit,
+  Gift, Award, Package, Palette, Image, FileText, Trash2,
+  Plus, Search, RefreshCw, Download, Upload, Terminal,
+  ToggleLeft, ToggleRight, ChevronDown, ChevronRight,
+  Sparkles, Flame, Heart, Star, Coins, Gem
+} from 'lucide-react';
+import { rbacService, StaffMember } from '@/services/rbacService';
+import { godModeService, FeatureFlag, PlatformStats, SystemConfig } from '@/services/godModeService';
 
-type OwnerTab =
-  | 'overview'
-  | 'platform'
-  | 'users'
-  | 'financial'
-  | 'system'
-  | 'settings'
-  | 'analytics'
-  | 'security';
-
-interface PlatformMetrics {
-  totalUsers: number;
-  activeUsers: number;
-  premiumUsers: number;
-  totalStories: number;
-  totalRevenue: number;
-  monthlyRevenue: number;
-  systemHealth: 'healthy' | 'warning' | 'critical';
-}
-
-const OwnerDashboardPage: React.FC = () => {
+export default function OwnerDashboard() {
   const { user, profile } = useAuth();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<OwnerTab>('overview');
-  const [metrics, setMetrics] = useState<PlatformMetrics>({
-    totalUsers: 0,
-    activeUsers: 0,
-    premiumUsers: 0,
-    totalStories: 0,
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    systemHealth: 'healthy',
-  });
-  const [systemLogs, setSystemLogs] = useState<any[]>([]);
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  
+  const [isOwner, setIsOwner] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState<'overview' | 'users' | 'features' | 'content' | 'system' | 'emergency'>('overview');
+  
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null);
+  const [featureFlags, setFeatureFlags] = useState<FeatureFlag[]>([]);
+  const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
+  const [systemConfig, setSystemConfig] = useState<SystemConfig[]>([]);
 
   useEffect(() => {
-    if (!user || !profile) {
-      router.push('/authentication');
-      return;
-    }
+    async function loadData() {
+      if (!user) return;
 
-    const accessCheck = canAccessOwnerDashboard(profile);
-    if (!accessCheck.allowed) {
-      router.push('/user-dashboard');
-      return;
+      try {
+        const ownerCheck = await rbacService.isOwner(user.id);
+        setIsOwner(ownerCheck);
+
+        if (!ownerCheck) {
+          router.push('/admin');
+          return;
+        }
+
+        const [stats, flags, staff, config] = await Promise.all([
+          godModeService.getPlatformStats(user.id),
+          godModeService.getFeatureFlags(user.id),
+          rbacService.getStaffMembers(),
+          godModeService.getSystemConfig(user.id),
+        ]);
+
+        setPlatformStats(stats);
+        setFeatureFlags(flags);
+        setStaffMembers(staff);
+        setSystemConfig(config);
+      } catch (error) {
+        console.error('Error loading owner data:', error);
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadData();
-  }, [user, profile, router]);
+  }, [user, router]);
 
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const supabase = createClient();
-
-      // Load platform metrics
-      const [usersResult, storiesResult, subscriptionsResult] = await Promise.all([
-        supabase.from('users').select('id, tier, created_at, last_seen_at').limit(1000),
-        supabase.from('stories').select('id, status').limit(1000),
-        supabase
-          .from('subscriptions')
-          .select('id, status, amount, created_at')
-          .eq('status', 'active'),
-      ]);
-
-      const users = usersResult.data || [];
-      const stories = storiesResult.data || [];
-      const subscriptions = subscriptionsResult.data || [];
-
-      const activeUsers = users.filter((u) => {
-        if (!u.last_seen_at) return false;
-        const lastSeen = new Date(u.last_seen_at);
-        const daysSince = (Date.now() - lastSeen.getTime()) / (1000 * 60 * 60 * 24);
-        return daysSince <= 30;
-      }).length;
-
-      const premiumUsers = users.filter((u) =>
-        ['premium', 'creator_pro', 'enterprise'].includes(u.tier)
-      ).length;
-
-      const totalRevenue = subscriptions.reduce((sum, s) => sum + (s.amount || 0), 0);
-      const monthlyRevenue = subscriptions
-        .filter((s) => {
-          const created = new Date(s.created_at);
-          const monthAgo = new Date();
-          monthAgo.setMonth(monthAgo.getMonth() - 1);
-          return created >= monthAgo;
-        })
-        .reduce((sum, s) => sum + (s.amount || 0), 0);
-
-      setMetrics({
-        totalUsers: users.length,
-        activeUsers,
-        premiumUsers,
-        totalStories: stories.length,
-        totalRevenue,
-        monthlyRevenue,
-        systemHealth: 'healthy',
-      });
-
-      // Load system logs (if table exists)
-      const { data: logsData } = await supabase
-        .from('system_logs')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      setSystemLogs(logsData || []);
-
-      // Load recent transactions
-      const { data: transactionsData } = await supabase
-        .from('transactions')
-        .select('*, users!user_id(username, display_name)')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      setRecentTransactions(transactionsData || []);
-    } catch (error) {
-      console.error('Error loading owner dashboard data:', error);
-    } finally {
-      setIsLoading(false);
+  const handleToggleFeature = async (flagKey: string, enabled: boolean) => {
+    if (!user) return;
+    const success = await godModeService.toggleFeatureFlag(user.id, flagKey, enabled);
+    if (success) {
+      setFeatureFlags(flags => 
+        flags.map(f => f.flagKey === flagKey ? { ...f, isEnabled: enabled } : f)
+      );
     }
   };
 
-  const handleSystemAction = async (action: string, targetId?: string) => {
-    // Owner-only system actions
-    console.log('System action:', action, targetId);
+  const handleMaintenanceMode = async (enable: boolean) => {
+    if (!user) return;
+    if (enable) {
+      await godModeService.activateMaintenanceMode(user.id, 'Manual activation');
+    } else {
+      await godModeService.deactivateMaintenanceMode(user.id);
+    }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="w-16 h-16 border-4 border-t-4 border-amber-400 border-t-transparent rounded-full"
-        />
+      <div className="min-h-screen bg-gradient-to-br from-void-950 via-purple-950/20 to-void-950 flex items-center justify-center">
+        <div className="text-center">
+          <motion.div
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.1, 1],
+            }}
+            transition={{ 
+              rotate: { duration: 2, repeat: Infinity, ease: 'linear' },
+              scale: { duration: 1, repeat: Infinity }
+            }}
+            className="w-20 h-20 mx-auto mb-6"
+          >
+            <Crown className="w-full h-full text-purple-400" />
+          </motion.div>
+          <p className="text-void-400">Loading God Mode...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user || !profile) return null;
-
-  const tabs = [
-    { id: 'overview' as const, label: 'Overview', icon: 'ChartBarIcon' },
-    { id: 'platform' as const, label: 'Platform', icon: 'GlobeAltIcon' },
-    { id: 'users' as const, label: 'Users', icon: 'UsersIcon' },
-    { id: 'financial' as const, label: 'Financial', icon: 'CurrencyDollarIcon' },
-    { id: 'system' as const, label: 'System', icon: 'CogIcon' },
-    { id: 'analytics' as const, label: 'Analytics', icon: 'ChartPieIcon' },
-    { id: 'security' as const, label: 'Security', icon: 'ShieldCheckIcon' },
-    { id: 'settings' as const, label: 'Settings', icon: 'AdjustmentsHorizontalIcon' },
-  ];
+  if (!isOwner) {
+    return null;
+  }
 
   return (
-    <VoidBackground variant="dense">
-      <EtherealNav />
-
-      <main className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 min-h-screen">
-        <div className="max-w-8xl mx-auto">
-          {/* Header */}
-          <RevealOnScroll>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <TemporalHeading level={2} accent>
-                    Owner Dashboard
-                  </TemporalHeading>
-                  <span
-                    className={`px-4 py-2 rounded-full text-sm font-bold border ${getRoleBadgeColor('owner')}`}
-                  >
-                    👑 {getRoleDisplayName('owner')}
-                  </span>
-                </div>
-                <p className="text-void-400">Complete platform control and management</p>
-              </div>
-              <div className="flex items-center gap-4 mt-4 md:mt-0">
-                <div
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
-                    metrics.systemHealth === 'healthy'
-                      ? 'bg-green-500/10 border-green-500/30'
-                      : metrics.systemHealth === 'warning'
-                        ? 'bg-yellow-500/10 border-yellow-500/30'
-                        : 'bg-red-500/10 border-red-500/30'
-                  }`}
-                >
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      metrics.systemHealth === 'healthy'
-                        ? 'bg-green-500 animate-pulse'
-                        : metrics.systemHealth === 'warning'
-                          ? 'bg-yellow-500'
-                          : 'bg-red-500'
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      metrics.systemHealth === 'healthy'
-                        ? 'text-green-400'
-                        : metrics.systemHealth === 'warning'
-                          ? 'text-yellow-400'
-                          : 'text-red-400'
-                    }`}
-                  >
-                    System{' '}
-                    {metrics.systemHealth === 'healthy'
-                      ? 'Healthy'
-                      : metrics.systemHealth === 'warning'
-                        ? 'Warning'
-                        : 'Critical'}
-                  </span>
-                </div>
-                <SpectralButton variant="primary" onClick={loadData}>
-                  <Icon name="ArrowPathIcon" size={16} className="mr-2" />
-                  Refresh
-                </SpectralButton>
-              </div>
-            </div>
-          </RevealOnScroll>
-
-          {/* Key Metrics */}
-          <RevealOnScroll delay={0.1}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <HolographicCard className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                    <Icon name="UsersIcon" size={24} className="text-white" />
-                  </div>
-                  <span className="text-xs text-green-400 flex items-center gap-1">
-                    <Icon name="ArrowUpIcon" size={12} />
-                    +12.5%
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-void-100 mb-1">
-                  <AnimatedCounter end={metrics.totalUsers} />
-                </div>
-                <p className="text-sm text-void-500">Total Users</p>
-                <p className="text-xs text-void-600 mt-1">{metrics.activeUsers} active (30d)</p>
-              </HolographicCard>
-
-              <HolographicCard className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    <Icon name="SparklesIcon" size={24} className="text-white" />
-                  </div>
-                  <span className="text-xs text-green-400 flex items-center gap-1">
-                    <Icon name="ArrowUpIcon" size={12} />
-                    +8.3%
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-void-100 mb-1">
-                  <AnimatedCounter end={metrics.premiumUsers} />
-                </div>
-                <p className="text-sm text-void-500">Premium Users</p>
-                <p className="text-xs text-void-600 mt-1">
-                  {metrics.totalUsers > 0
-                    ? Math.round((metrics.premiumUsers / metrics.totalUsers) * 100)
-                    : 0}
-                  % conversion
-                </p>
-              </HolographicCard>
-
-              <HolographicCard className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                    <Icon name="CurrencyDollarIcon" size={24} className="text-white" />
-                  </div>
-                  <span className="text-xs text-green-400 flex items-center gap-1">
-                    <Icon name="ArrowUpIcon" size={12} />
-                    +18.7%
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-void-100 mb-1">
-                  $
-                  {(metrics.monthlyRevenue / 100).toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </div>
-                <p className="text-sm text-void-500">Monthly Revenue</p>
-                <p className="text-xs text-void-600 mt-1">
-                  ${(metrics.totalRevenue / 100).toLocaleString()} total
-                </p>
-              </HolographicCard>
-
-              <HolographicCard className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                    <Icon name="BookOpenIcon" size={24} className="text-white" />
-                  </div>
-                  <span className="text-xs text-green-400 flex items-center gap-1">
-                    <Icon name="ArrowUpIcon" size={12} />
-                    +5.2%
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-void-100 mb-1">
-                  <AnimatedCounter end={metrics.totalStories} />
-                </div>
-                <p className="text-sm text-void-500">Total Stories</p>
-                <p className="text-xs text-void-600 mt-1">Published content</p>
-              </HolographicCard>
-            </div>
-          </RevealOnScroll>
-
-          {/* Tab Navigation */}
-          <RevealOnScroll delay={0.2}>
-            <div className="flex flex-wrap gap-2 mb-8 p-2 bg-void-900/50 rounded-xl border border-void-800/50">
-              {tabs.map((tab) => (
-                <motion.button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300
-                    ${
-                      activeTab === tab.id
-                        ? 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-void-100 border border-amber-500/50'
-                        : 'text-void-400 hover:text-void-200 hover:bg-void-800/50'
-                    }
-                  `}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Icon name={tab.icon} size={18} />
-                  {tab.label}
-                </motion.button>
-              ))}
-            </div>
-          </RevealOnScroll>
-
-          {/* Tab Content */}
-          <AnimatePresence mode="wait">
-            {activeTab === 'overview' && (
-              <motion.div
-                key="overview"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="grid grid-cols-1 lg:grid-cols-3 gap-8"
-              >
-                {/* Recent Transactions */}
-                <GradientBorder className="lg:col-span-2">
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6 flex items-center gap-2">
-                      <Icon name="CurrencyDollarIcon" size={20} className="text-amber-400" />
-                      Recent Transactions
-                    </h3>
-                    <div className="space-y-4">
-                      {recentTransactions.length === 0 ? (
-                        <p className="text-void-400 text-center py-8">No recent transactions</p>
-                      ) : (
-                        recentTransactions.map((tx) => (
-                          <div
-                            key={tx.id}
-                            className="flex items-center justify-between p-4 rounded-lg bg-void-900/30 border border-void-800/30"
-                          >
-                            <div>
-                              <p className="font-medium text-void-200">
-                                {tx.users?.username || 'Unknown'}
-                              </p>
-                              <p className="text-sm text-void-500">
-                                {tx.type} • {new Date(tx.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="font-bold text-green-400">
-                                ${(tx.amount / 100).toFixed(2)}
-                              </p>
-                              <p className="text-xs text-void-500">{tx.status}</p>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                </GradientBorder>
-
-                {/* System Status */}
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6 flex items-center gap-2">
-                      <Icon name="CogIcon" size={20} className="text-spectral-cyan" />
-                      System Status
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-void-300">Database</span>
-                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        </div>
-                        <p className="text-xs text-void-500">Operational</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-void-300">API Services</span>
-                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        </div>
-                        <p className="text-xs text-void-500">All systems normal</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-void-300">Storage</span>
-                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        </div>
-                        <p className="text-xs text-void-500">78% available</p>
-                      </div>
-                    </div>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-
-            {activeTab === 'financial' && (
-              <motion.div
-                key="financial"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6">Financial Overview</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <HolographicCard className="p-6">
-                        <h4 className="text-lg font-semibold text-void-200 mb-4">
-                          Revenue Breakdown
-                        </h4>
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-void-400">Monthly Recurring</span>
-                            <span className="font-bold text-void-100">
-                              ${(metrics.monthlyRevenue / 100).toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-void-400">Total Revenue</span>
-                            <span className="font-bold text-void-100">
-                              ${(metrics.totalRevenue / 100).toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-void-400">Premium Subscriptions</span>
-                            <span className="font-bold text-void-100">{metrics.premiumUsers}</span>
-                          </div>
-                        </div>
-                      </HolographicCard>
-                      <HolographicCard className="p-6">
-                        <h4 className="text-lg font-semibold text-void-200 mb-4">Quick Actions</h4>
-                        <div className="space-y-3">
-                          <SpectralButton variant="primary" className="w-full">
-                            <Icon name="DocumentArrowDownIcon" size={16} className="mr-2" />
-                            Export Financial Report
-                          </SpectralButton>
-                          <SpectralButton variant="ghost" className="w-full">
-                            <Icon name="ChartBarIcon" size={16} className="mr-2" />
-                            View Analytics
-                          </SpectralButton>
-                        </div>
-                      </HolographicCard>
-                    </div>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-
-            {activeTab === 'system' && (
-              <motion.div
-                key="system"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6">System Management</h3>
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-lg bg-void-900/30 border border-void-800/30">
-                        <h4 className="font-semibold text-void-200 mb-3">System Logs</h4>
-                        <div className="space-y-2 max-h-96 overflow-y-auto">
-                          {systemLogs.length === 0 ? (
-                            <p className="text-void-400 text-sm">No system logs available</p>
-                          ) : (
-                            systemLogs.map((log, idx) => (
-                              <div
-                                key={idx}
-                                className="text-xs text-void-400 font-mono p-2 bg-void-800/30 rounded"
-                              >
-                                [{new Date(log.created_at).toLocaleTimeString()}]{' '}
-                                {log.message || log.type}
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <SpectralButton
-                          variant="primary"
-                          onClick={() => handleSystemAction('backup')}
-                        >
-                          <Icon name="ArrowDownTrayIcon" size={16} className="mr-2" />
-                          Backup Database
-                        </SpectralButton>
-                        <SpectralButton
-                          variant="ghost"
-                          onClick={() => handleSystemAction('clear_cache')}
-                        >
-                          <Icon name="TrashIcon" size={16} className="mr-2" />
-                          Clear Cache
-                        </SpectralButton>
-                      </div>
-                    </div>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-
-            {activeTab === 'users' && (
-              <motion.div
-                key="users"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6">User Management</h3>
-                    <p className="text-void-400">Full user management capabilities (coming soon)</p>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-
-            {activeTab === 'security' && (
-              <motion.div
-                key="security"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6">Security Settings</h3>
-                    <div className="space-y-4">
-                      <div className="p-4 rounded-lg bg-void-900/30 border border-void-800/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-void-200">Two-Factor Authentication</span>
-                          <div className="w-12 h-6 bg-green-500/30 rounded-full p-1 cursor-pointer">
-                            <div className="w-4 h-4 bg-green-500 rounded-full ml-auto" />
-                          </div>
-                        </div>
-                        <p className="text-sm text-void-500">Required for all admin accounts</p>
-                      </div>
-                      <div className="p-4 rounded-lg bg-void-900/30 border border-void-800/30">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-void-200">Audit Logging</span>
-                          <div className="w-12 h-6 bg-green-500/30 rounded-full p-1 cursor-pointer">
-                            <div className="w-4 h-4 bg-green-500 rounded-full ml-auto" />
-                          </div>
-                        </div>
-                        <p className="text-sm text-void-500">All actions are logged</p>
-                      </div>
-                    </div>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-
-            {['platform', 'analytics', 'settings'].includes(activeTab) && (
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-              >
-                <GradientBorder>
-                  <div className="bg-void-950/80 backdrop-blur-xl rounded-xl p-6">
-                    <h3 className="text-xl font-semibold text-void-100 mb-6 capitalize">
-                      {activeTab === 'platform'
-                        ? 'Platform Management'
-                        : activeTab === 'analytics'
-                          ? 'Analytics Dashboard'
-                          : 'Platform Settings'}
-                    </h3>
-                    <p className="text-void-400">Advanced {activeTab} features coming soon...</p>
-                  </div>
-                </GradientBorder>
-              </motion.div>
-            )}
-          </AnimatePresence>
+    <div className="min-h-screen bg-gradient-to-br from-void-950 via-purple-950/10 to-void-950">
+      {/* Epic Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full">
+          {[...Array(50)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-purple-500/30 rounded-full"
+              initial={{
+                x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000),
+                y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 1000),
+              }}
+              animate={{
+                y: [null, -20, 20],
+                opacity: [0.3, 0.8, 0.3],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
         </div>
-      </main>
-    </VoidBackground>
-  );
-};
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-radial from-purple-500/10 to-transparent" />
+        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-radial from-pink-500/10 to-transparent" />
+      </div>
 
-export default OwnerDashboardPage;
+      {/* Header */}
+      <header className="relative border-b border-purple-500/20 bg-void-900/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <motion.div
+                initial={{ rotate: -180, scale: 0 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ type: 'spring', bounce: 0.5 }}
+                className="relative"
+              >
+                <div className="p-4 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-2xl">
+                  <Crown className="w-8 h-8 text-purple-400" />
+                </div>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
+                  className="absolute inset-0 rounded-2xl border-2 border-purple-500/30 border-dashed"
+                />
+              </motion.div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+                  GOD MODE
+                </h1>
+                <p className="text-void-400 text-sm">Full system control • Owner access only</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              {/* Emergency Status */}
+              <div className="flex items-center gap-2 px-4 py-2 bg-green-500/10 rounded-xl border border-green-500/30">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-sm text-green-400">Systems Normal</span>
+              </div>
+              
+              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30">
+                <Crown className="w-5 h-5 text-purple-400" />
+                <div>
+                  <p className="text-sm font-medium text-white">{profile?.display_name}</p>
+                  <p className="text-xs text-purple-400">Owner</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="relative max-w-7xl mx-auto px-6 py-8">
+        {/* Navigation Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {[
+            { id: 'overview', label: 'Overview', icon: Activity },
+            { id: 'users', label: 'Users & Roles', icon: Users },
+            { id: 'features', label: 'Feature Flags', icon: ToggleLeft },
+            { id: 'content', label: 'Content Tools', icon: Package },
+            { id: 'system', label: 'System Config', icon: Settings },
+            { id: 'emergency', label: 'Emergency', icon: AlertTriangle },
+          ].map((tab) => (
+            <motion.button
+              key={tab.id}
+              onClick={() => setActiveSection(tab.id as any)}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-all ${
+                activeSection === tab.id
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/25'
+                  : 'bg-white/5 text-void-300 hover:bg-white/10'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </motion.button>
+          ))}
+        </div>
+
+        <AnimatePresence mode="wait">
+          {/* Overview Section */}
+          {activeSection === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              {/* Platform Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <GodModeStat icon={Users} value={platformStats?.totalUsers || 0} label="Total Users" color="purple" />
+                <GodModeStat icon={Activity} value={platformStats?.activeUsersToday || 0} label="Active Today" color="green" />
+                <GodModeStat icon={FileText} value={platformStats?.totalStories || 0} label="Stories" color="blue" />
+                <GodModeStat icon={Eye} value={platformStats?.totalReads || 0} label="Total Reads" color="cyan" />
+                <GodModeStat icon={Gem} value={platformStats?.premiumUsers || 0} label="Premium" color="amber" />
+                <GodModeStat icon={Database} value={`${platformStats?.storageUsedGB || 0}GB`} label="Storage" color="pink" />
+              </div>
+
+              {/* Quick Controls */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Staff Overview */}
+                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-purple-400" />
+                    Staff Team ({staffMembers.length})
+                  </h3>
+                  <div className="space-y-3">
+                    {staffMembers.slice(0, 5).map((staff) => (
+                      <StaffMemberRow key={staff.userId} member={staff} />
+                    ))}
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveSection('users')}
+                    className="w-full mt-4 py-2 text-sm text-purple-400 hover:text-white transition-colors"
+                  >
+                    Manage Staff →
+                  </motion.button>
+                </div>
+
+                {/* Feature Flags Preview */}
+                <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <ToggleLeft className="w-5 h-5 text-purple-400" />
+                    Feature Flags
+                  </h3>
+                  <div className="space-y-3">
+                    {featureFlags.slice(0, 5).map((flag) => (
+                      <FeatureFlagToggle
+                        key={flag.id}
+                        flag={flag}
+                        onToggle={(enabled) => handleToggleFeature(flag.flagKey, enabled)}
+                      />
+                    ))}
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => setActiveSection('features')}
+                    className="w-full mt-4 py-2 text-sm text-purple-400 hover:text-white transition-colors"
+                  >
+                    All Flags →
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* God Mode Actions */}
+              <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-500/20">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                  God Mode Actions
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  <GodModeAction icon={Gift} label="Grant Items" color="green" />
+                  <GodModeAction icon={Award} label="Award Badge" color="amber" />
+                  <GodModeAction icon={Coins} label="Add Coins" color="yellow" />
+                  <GodModeAction icon={Heart} label="Grant Pet" color="pink" />
+                  <GodModeAction icon={Star} label="Set VIP" color="purple" />
+                  <GodModeAction icon={Eye} label="Audit Mode" color="cyan" />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Users & Roles Section */}
+          {activeSection === 'users' && (
+            <motion.div
+              key="users"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              {/* User Search */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4">User Lookup</h3>
+                <div className="flex gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-void-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by username, email, or ID..."
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-void-400 focus:outline-none focus:border-purple-500/50"
+                    />
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-6 py-3 bg-purple-500 text-white rounded-xl font-medium"
+                  >
+                    Search
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Staff Management */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-purple-400" />
+                    Staff Members
+                  </h3>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Staff
+                  </motion.button>
+                </div>
+                <div className="space-y-3">
+                  {staffMembers.map((staff) => (
+                    <StaffMemberCard key={staff.userId} member={staff} />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Feature Flags Section */}
+          {activeSection === 'features' && (
+            <motion.div
+              key="features"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-white">Feature Flags</h3>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded-lg"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Flag
+                </motion.button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {featureFlags.map((flag) => (
+                  <FeatureFlagCard
+                    key={flag.id}
+                    flag={flag}
+                    onToggle={(enabled) => handleToggleFeature(flag.flagKey, enabled)}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Content Tools Section */}
+          {activeSection === 'content' && (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            >
+              <ContentToolCard
+                title="Badge Manager"
+                description="Create, edit, and manage platform badges"
+                icon={Award}
+                actions={['Create Badge', 'View All', 'Grant to User']}
+              />
+              <ContentToolCard
+                title="Icon Manager"
+                description="Manage profile icons and avatars"
+                icon={Image}
+                actions={['Upload Icon', 'View All', 'Grant to User']}
+              />
+              <ContentToolCard
+                title="Banner Manager"
+                description="Manage profile banners"
+                icon={Palette}
+                actions={['Upload Banner', 'View All', 'Grant to User']}
+              />
+              <ContentToolCard
+                title="Pet Manager"
+                description="Manage pet species, skins, and accessories"
+                icon={Heart}
+                actions={['Create Species', 'Create Skin', 'Grant Pet']}
+              />
+              <ContentToolCard
+                title="Event Manager"
+                description="Create and manage platform events"
+                icon={Flame}
+                actions={['Create Event', 'View Active', 'End Event']}
+              />
+              <ContentToolCard
+                title="Season Pass"
+                description="Configure battle pass rewards"
+                icon={Star}
+                actions={['New Season', 'Edit Rewards', 'Preview']}
+              />
+            </motion.div>
+          )}
+
+          {/* System Config Section */}
+          {activeSection === 'system' && (
+            <motion.div
+              key="system"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Settings className="w-5 h-5 text-purple-400" />
+                  System Configuration
+                </h3>
+                <div className="space-y-4">
+                  {systemConfig.map((config) => (
+                    <SystemConfigRow key={config.key} config={config} />
+                  ))}
+                  {systemConfig.length === 0 && (
+                    <p className="text-void-400 text-center py-8">No system configurations found</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Audit Log Preview */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Terminal className="w-5 h-5 text-purple-400" />
+                  Recent Audit Log
+                </h3>
+                <div className="font-mono text-sm space-y-2 bg-black/30 rounded-xl p-4 max-h-64 overflow-y-auto">
+                  <p className="text-green-400">[2024-02-03 10:15:32] SYSTEM: Feature flag toggled: ai_companions = true</p>
+                  <p className="text-blue-400">[2024-02-03 10:12:18] ADMIN: User role updated: @writer_pro → moderator</p>
+                  <p className="text-yellow-400">[2024-02-03 10:10:45] MOD: Report resolved: #12345</p>
+                  <p className="text-purple-400">[2024-02-03 10:05:22] OWNER: Badge created: "Winter Champion"</p>
+                  <p className="text-cyan-400">[2024-02-03 10:00:00] SYSTEM: Daily backup completed</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Emergency Section */}
+          {activeSection === 'emergency' && (
+            <motion.div
+              key="emergency"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-2xl p-6 border border-red-500/30">
+                <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                  <AlertTriangle className="w-6 h-6 text-red-400" />
+                  Emergency Controls
+                </h3>
+                <p className="text-void-400 mb-6">Use these controls only in emergencies. All actions are logged.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <EmergencyButton
+                    icon={Lock}
+                    label="Maintenance Mode"
+                    description="Disable site access for maintenance"
+                    color="yellow"
+                    onClick={() => handleMaintenanceMode(true)}
+                  />
+                  <EmergencyButton
+                    icon={Shield}
+                    label="Lockdown"
+                    description="Emergency lockdown - disable registrations & posting"
+                    color="orange"
+                    onClick={() => {}}
+                  />
+                  <EmergencyButton
+                    icon={Trash2}
+                    label="Purge Cache"
+                    description="Clear all system caches"
+                    color="red"
+                    onClick={() => {}}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+                <h3 className="text-lg font-semibold text-white mb-4">Emergency Action History</h3>
+                <div className="space-y-3">
+                  <p className="text-void-400 text-center py-8">No emergency actions recorded</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+// Sub-components
+function GodModeStat({ icon: Icon, value, label, color }: {
+  icon: React.ElementType;
+  value: number | string;
+  label: string;
+  color: string;
+}) {
+  const colorClasses: Record<string, string> = {
+    purple: 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/30',
+    green: 'from-emerald-500/20 to-green-500/20 text-emerald-400 border-emerald-500/30',
+    blue: 'from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/30',
+    cyan: 'from-cyan-500/20 to-blue-500/20 text-cyan-400 border-cyan-500/30',
+    amber: 'from-amber-500/20 to-orange-500/20 text-amber-400 border-amber-500/30',
+    pink: 'from-pink-500/20 to-rose-500/20 text-pink-400 border-pink-500/30',
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.05, y: -4 }}
+      className={`p-4 rounded-xl bg-gradient-to-br ${colorClasses[color]} border`}
+    >
+      <Icon className="w-5 h-5 mb-2" />
+      <p className="text-2xl font-bold text-white">{typeof value === 'number' ? value.toLocaleString() : value}</p>
+      <p className="text-xs opacity-75">{label}</p>
+    </motion.div>
+  );
+}
+
+function GodModeAction({ icon: Icon, label, color }: {
+  icon: React.ElementType;
+  label: string;
+  color: string;
+}) {
+  const colorClasses: Record<string, string> = {
+    green: 'hover:bg-emerald-500/20 text-emerald-400',
+    amber: 'hover:bg-amber-500/20 text-amber-400',
+    yellow: 'hover:bg-yellow-500/20 text-yellow-400',
+    pink: 'hover:bg-pink-500/20 text-pink-400',
+    purple: 'hover:bg-purple-500/20 text-purple-400',
+    cyan: 'hover:bg-cyan-500/20 text-cyan-400',
+  };
+
+  return (
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`flex flex-col items-center gap-2 p-4 rounded-xl bg-white/5 ${colorClasses[color]} transition-colors`}
+    >
+      <Icon className="w-6 h-6" />
+      <span className="text-xs text-white text-center">{label}</span>
+    </motion.button>
+  );
+}
+
+function StaffMemberRow({ member }: { member: StaffMember }) {
+  const roleColors: Record<string, string> = {
+    owner: 'text-purple-400',
+    admin: 'text-blue-400',
+    moderator: 'text-emerald-400',
+  };
+
+  return (
+    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+        <span className="text-white text-sm font-bold">{member.displayName[0]}</span>
+      </div>
+      <div className="flex-1">
+        <p className="text-sm text-white">{member.displayName}</p>
+        <p className={`text-xs ${roleColors[member.role]}`}>{member.role}</p>
+      </div>
+    </div>
+  );
+}
+
+function StaffMemberCard({ member }: { member: StaffMember }) {
+  const roleColors: Record<string, string> = {
+    owner: 'from-purple-500/20 to-pink-500/20 border-purple-500/30',
+    admin: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30',
+    moderator: 'from-emerald-500/20 to-green-500/20 border-emerald-500/30',
+  };
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      className={`p-4 rounded-xl bg-gradient-to-br ${roleColors[member.role]} border`}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="text-white font-bold">{member.displayName[0]}</span>
+          </div>
+          <div>
+            <p className="font-medium text-white">{member.displayName}</p>
+            <p className="text-sm text-void-400">@{member.username}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="px-3 py-1 rounded-full bg-white/10 text-sm text-white capitalize">{member.role}</span>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="p-2 rounded-lg bg-white/10 text-void-300 hover:text-white"
+          >
+            <Edit className="w-4 h-4" />
+          </motion.button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function FeatureFlagToggle({ flag, onToggle }: { flag: FeatureFlag; onToggle: (enabled: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+      <div className="flex-1">
+        <p className="text-sm text-white">{flag.displayName}</p>
+        <p className="text-xs text-void-400">{flag.flagKey}</p>
+      </div>
+      <motion.button
+        onClick={() => onToggle(!flag.isEnabled)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        className={`p-1 rounded-lg ${flag.isEnabled ? 'text-green-400' : 'text-void-400'}`}
+      >
+        {flag.isEnabled ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
+      </motion.button>
+    </div>
+  );
+}
+
+function FeatureFlagCard({ flag, onToggle }: { flag: FeatureFlag; onToggle: (enabled: boolean) => void }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.01 }}
+      className={`p-4 rounded-xl border ${
+        flag.isEnabled 
+          ? 'bg-green-500/10 border-green-500/30' 
+          : 'bg-white/5 border-white/10'
+      }`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="font-medium text-white">{flag.displayName}</h4>
+        <motion.button
+          onClick={() => onToggle(!flag.isEnabled)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className={flag.isEnabled ? 'text-green-400' : 'text-void-400'}
+        >
+          {flag.isEnabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
+        </motion.button>
+      </div>
+      <p className="text-sm text-void-400 mb-2">{flag.description || 'No description'}</p>
+      <div className="flex items-center gap-2 text-xs text-void-500">
+        <code className="px-2 py-1 bg-black/30 rounded">{flag.flagKey}</code>
+        <span>Rollout: {flag.rolloutPercentage}%</span>
+      </div>
+    </motion.div>
+  );
+}
+
+function ContentToolCard({ title, description, icon: Icon, actions }: {
+  title: string;
+  description: string;
+  icon: React.ElementType;
+  actions: string[];
+}) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className="p-6 rounded-xl bg-white/5 border border-white/10"
+    >
+      <div className="flex items-start gap-4 mb-4">
+        <div className="p-3 rounded-xl bg-purple-500/20">
+          <Icon className="w-6 h-6 text-purple-400" />
+        </div>
+        <div>
+          <h4 className="font-semibold text-white">{title}</h4>
+          <p className="text-sm text-void-400">{description}</p>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {actions.map((action) => (
+          <motion.button
+            key={action}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg text-sm hover:bg-purple-500/30 transition-colors"
+          >
+            {action}
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function SystemConfigRow({ config }: { config: SystemConfig }) {
+  return (
+    <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+      <div>
+        <p className="font-medium text-white">{config.key}</p>
+        <p className="text-sm text-void-400">{config.description}</p>
+      </div>
+      <div className="flex items-center gap-3">
+        <code className="px-3 py-1 bg-black/30 rounded text-sm text-void-300">
+          {config.isSensitive ? '••••••••' : JSON.stringify(config.value)}
+        </code>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="p-2 rounded-lg bg-white/10 text-void-300 hover:text-white"
+        >
+          <Edit className="w-4 h-4" />
+        </motion.button>
+      </div>
+    </div>
+  );
+}
+
+function EmergencyButton({ icon: Icon, label, description, color, onClick }: {
+  icon: React.ElementType;
+  label: string;
+  description: string;
+  color: 'yellow' | 'orange' | 'red';
+  onClick: () => void;
+}) {
+  const colorClasses = {
+    yellow: 'bg-yellow-500/20 border-yellow-500/50 hover:bg-yellow-500/30 text-yellow-400',
+    orange: 'bg-orange-500/20 border-orange-500/50 hover:bg-orange-500/30 text-orange-400',
+    red: 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30 text-red-400',
+  };
+
+  return (
+    <motion.button
+      onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className={`p-4 rounded-xl border ${colorClasses[color]} transition-all text-left`}
+    >
+      <Icon className="w-6 h-6 mb-2" />
+      <p className="font-semibold text-white">{label}</p>
+      <p className="text-xs text-void-400 mt-1">{description}</p>
+    </motion.button>
+  );
+}

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 import { generateCompletion } from '@/lib/ai/client';
 
 /**
  * API Route: Generate Character Sheet using OpenAI
  * Creates an accurate astrological character sheet based on birth data
+ * Requires authentication
  */
 
 interface BirthData {
@@ -114,6 +116,14 @@ GUIDELINES:
 
 export async function POST(request: NextRequest) {
   try {
+    // Authenticate user
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const birthData: BirthData = await request.json();
 
     // Validate required fields

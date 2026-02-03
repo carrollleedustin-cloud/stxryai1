@@ -1,609 +1,614 @@
 /**
  * Marketplace Service
- * Manages premium story purchases, creator monetization, and payments
+ * Story sales, bundles, tips, and creator monetization
  */
 
 import { createClient } from '@/lib/supabase/client';
 
-export interface PremiumStoryPricing {
+export interface MarketplaceListing {
   id: string;
   storyId: string;
-  pricingModel: 'one_time' | 'chapter_based' | 'subscription' | 'free_with_ads';
-  priceAmount: number;
-  currency: string;
-  chapterPrice?: number;
-  freeChapters: number;
-  subscriptionDurationDays?: number;
+  storyTitle: string;
+  storyDescription: string;
+  coverImageUrl: string;
+  sellerId: string;
+  sellerName: string;
+  listingType: 'single_purchase' | 'subscription' | 'bundle' | 'rental';
+  priceUsd: number;
+  priceCoins: number | null;
   discountPercentage: number;
-  discountExpiresAt?: string;
-  creatorSharePercentage: number;
-  platformSharePercentage: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  discountEndsAt: string | null;
+  rentalDurationDays: number | null;
+  salesCount: number;
+  isOwned?: boolean;
 }
 
-export interface StoryPurchase {
+export interface StoryBundle {
   id: string;
-  userId: string;
-  storyId: string;
-  purchaseType: 'full_story' | 'chapter' | 'subscription';
-  pricingId?: string;
-  paymentIntentId?: string;
-  paymentStatus: 'pending' | 'processing' | 'succeeded' | 'failed' | 'refunded';
-  amountPaid: number;
-  currency: string;
-  chapterId?: string;
-  chapterNumber?: number;
-  accessGrantedAt?: string;
-  accessExpiresAt?: string;
-  metadata: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
+  sellerId: string;
+  sellerName: string;
+  name: string;
+  description: string | null;
+  priceUsd: number;
+  savingsPercentage: number | null;
+  stories: Array<{
+    id: string;
+    title: string;
+    coverImageUrl: string;
+  }>;
 }
 
-export interface CreatorEarnings {
-  id: string;
-  creatorId: string;
-  storyId: string;
-  purchaseId: string;
-  purchaseAmount: number;
-  creatorSharePercentage: number;
-  creatorEarnings: number;
-  platformFee: number;
-  payoutId?: string;
-  isPaidOut: boolean;
-  paidOutAt?: string;
-  createdAt: string;
+export interface AuthorTipJar {
+  authorId: string;
+  authorName: string;
+  avatarUrl: string | null;
+  isEnabled: boolean;
+  minimumTipUsd: number;
+  suggestedAmounts: number[];
+  thankYouMessage: string | null;
+  totalReceivedUsd: number;
 }
 
-export interface CreatorPayout {
-  id: string;
-  creatorId: string;
-  payoutPeriodStart: string;
-  payoutPeriodEnd: string;
-  totalEarnings: number;
-  platformFee: number;
-  netEarnings: number;
-  payoutStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
-  payoutMethod?: 'stripe' | 'paypal' | 'bank_transfer' | 'crypto';
-  payoutReference?: string;
-  paidAt?: string;
-  payoutNotes?: string;
-  earningsBreakdown: Record<string, any>;
-  createdAt: string;
-  updatedAt: string;
+export interface AuthorRevenue {
+  period: string;
+  grossRevenueUsd: number;
+  platformFeesUsd: number;
+  netRevenueUsd: number;
+  tipsReceivedUsd: number;
+  salesCount: number;
 }
 
-export interface StorySubscription {
-  id: string;
-  userId: string;
-  storyId: string;
-  pricingId: string;
-  subscriptionStatus: 'active' | 'cancelled' | 'expired' | 'paused';
-  currentPeriodStart: string;
-  currentPeriodEnd: string;
-  stripeSubscriptionId?: string;
-  paymentIntentId?: string;
-  autoRenew: boolean;
-  cancelledAt?: string;
-  cancellationReason?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreatorTip {
-  id: string;
-  tipperId: string;
-  creatorId: string;
-  storyId?: string;
-  tipAmount: number;
-  currency: string;
-  message?: string;
-  paymentIntentId?: string;
-  paymentStatus: 'pending' | 'processing' | 'succeeded' | 'failed' | 'refunded';
-  platformFeePercentage: number;
-  platformFee: number;
-  creatorReceives: number;
-  payoutId?: string;
-  isPaidOut: boolean;
-  createdAt: string;
-}
-
-export class MarketplaceService {
+class MarketplaceService {
   private supabase = createClient();
-
-  // ========================================
-  // PREMIUM STORY PRICING
-  // ========================================
+  private platformFeePercentage = 0.30; // 30% platform fee
 
   /**
-   * Get pricing for a story
+   * Get marketplace listings
    */
-  async getStoryPricing(storyId: string): Promise<PremiumStoryPricing | null> {
-    const { data, error } = await this.supabase
-      .from('premium_story_pricing')
-      .select('*')
-      .eq('story_id', storyId)
-      .eq('is_active', true)
-      .single();
+  async getListings(options?: {
+    genre?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: 'newest' | 'popular' | 'price_low' | 'price_high';
+    limit?: number;
+  }): Promise<MarketplaceListing[]> {
+    try {
+      let query = this.supabase
+        .from('marketplace_listings')
+        .select(`
+          *,
+          stories!marketplace_listings_story_id_fkey (
+            id, title, description, cover_image_url, genre
+          ),
+          user_profiles!marketplace_listings_seller_id_fkey (
+            display_name
+          )
+        `)
+        .eq('is_active', true);
 
-    if (error && error.code !== 'PGRST116') throw error;
-    if (!data) return null;
+      if (options?.minPrice) {
+        query = query.gte('price_usd', options.minPrice);
+      }
+      if (options?.maxPrice) {
+        query = query.lte('price_usd', options.maxPrice);
+      }
 
-    return this.mapPricing(data);
+      // Sort
+      switch (options?.sortBy) {
+        case 'popular':
+          query = query.order('sales_count', { ascending: false });
+          break;
+        case 'price_low':
+          query = query.order('price_usd', { ascending: true });
+          break;
+        case 'price_high':
+          query = query.order('price_usd', { ascending: false });
+          break;
+        case 'newest':
+        default:
+          query = query.order('created_at', { ascending: false });
+      }
+
+      query = query.limit(options?.limit || 50);
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching listings:', error);
+        return [];
+      }
+
+      return (data || []).map((listing) => {
+        const story = listing.stories as any;
+        const seller = listing.user_profiles as any;
+        return {
+          id: listing.id,
+          storyId: listing.story_id,
+          storyTitle: story?.title || '',
+          storyDescription: story?.description || '',
+          coverImageUrl: story?.cover_image_url || '',
+          sellerId: listing.seller_id,
+          sellerName: seller?.display_name || 'Unknown',
+          listingType: listing.listing_type,
+          priceUsd: listing.price_usd,
+          priceCoins: listing.price_coins,
+          discountPercentage: listing.discount_percentage,
+          discountEndsAt: listing.discount_ends_at,
+          rentalDurationDays: listing.rental_duration_days,
+          salesCount: listing.sales_count,
+        };
+      });
+    } catch (error) {
+      console.error('Error in getListings:', error);
+      return [];
+    }
   }
 
   /**
-   * Set pricing for a story (creator only)
+   * Get listing by story ID
    */
-  async setStoryPricing(
-    storyId: string,
-    pricing: Partial<PremiumStoryPricing>
-  ): Promise<PremiumStoryPricing> {
-    const { data, error } = await this.supabase
-      .from('premium_story_pricing')
-      .upsert(
-        {
-          story_id: storyId,
-          pricing_model: pricing.pricingModel,
-          price_amount: pricing.priceAmount,
-          currency: pricing.currency || 'USD',
-          chapter_price: pricing.chapterPrice,
-          free_chapters: pricing.freeChapters || 0,
-          subscription_duration_days: pricing.subscriptionDurationDays,
-          discount_percentage: pricing.discountPercentage || 0,
-          discount_expires_at: pricing.discountExpiresAt,
-          creator_share_percentage: pricing.creatorSharePercentage || 70.0,
-          platform_share_percentage: pricing.platformSharePercentage || 30.0,
-          is_active: pricing.isActive !== undefined ? pricing.isActive : true,
-        },
-        {
-          onConflict: 'story_id',
-        }
-      )
-      .select()
-      .single();
+  async getListingByStory(storyId: string, userId?: string): Promise<MarketplaceListing | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('marketplace_listings')
+        .select(`
+          *,
+          stories!marketplace_listings_story_id_fkey (
+            id, title, description, cover_image_url
+          ),
+          user_profiles!marketplace_listings_seller_id_fkey (
+            display_name
+          )
+        `)
+        .eq('story_id', storyId)
+        .eq('is_active', true)
+        .single();
 
-    if (error) throw error;
-    return this.mapPricing(data);
+      if (error) {
+        return null;
+      }
+
+      const story = data.stories as any;
+      const seller = data.user_profiles as any;
+
+      const listing: MarketplaceListing = {
+        id: data.id,
+        storyId: data.story_id,
+        storyTitle: story?.title || '',
+        storyDescription: story?.description || '',
+        coverImageUrl: story?.cover_image_url || '',
+        sellerId: data.seller_id,
+        sellerName: seller?.display_name || 'Unknown',
+        listingType: data.listing_type,
+        priceUsd: data.price_usd,
+        priceCoins: data.price_coins,
+        discountPercentage: data.discount_percentage,
+        discountEndsAt: data.discount_ends_at,
+        rentalDurationDays: data.rental_duration_days,
+        salesCount: data.sales_count,
+      };
+
+      // Check if user owns this
+      if (userId) {
+        const { data: purchase } = await this.supabase
+          .from('content_purchases')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('story_id', storyId)
+          .single();
+
+        listing.isOwned = !!purchase;
+      }
+
+      return listing;
+    } catch (error) {
+      console.error('Error in getListingByStory:', error);
+      return null;
+    }
   }
 
-  // ========================================
-  // STORY ACCESS
-  // ========================================
-
   /**
-   * Check if user has access to a story/chapter
+   * Purchase a story
    */
-  async checkStoryAccess(userId: string, storyId: string, chapterId?: string): Promise<boolean> {
-    const { data, error } = await this.supabase.rpc('check_story_access', {
-      p_user_id: userId,
-      p_story_id: storyId,
-      p_chapter_id: chapterId || null,
-    });
-
-    if (error) throw error;
-    return data === true;
-  }
-
-  /**
-   * Get user's purchases for a story
-   */
-  async getUserStoryPurchases(userId: string, storyId: string): Promise<StoryPurchase[]> {
-    const { data, error } = await this.supabase
-      .from('story_purchases')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('story_id', storyId)
-      .eq('payment_status', 'succeeded')
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return this.mapPurchases(data || []);
-  }
-
-  // ========================================
-  // PURCHASES
-  // ========================================
-
-  /**
-   * Create a purchase record (before payment)
-   */
-  async createPurchase(
+  async purchaseStory(
     userId: string,
-    storyId: string,
-    purchaseType: 'full_story' | 'chapter' | 'subscription',
-    pricingId: string,
-    amount: number,
-    chapterId?: string
-  ): Promise<StoryPurchase> {
-    const { data, error } = await this.supabase
-      .from('story_purchases')
-      .insert({
+    listingId: string,
+    paymentMethod: 'coins' | 'stripe'
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Get listing
+      const { data: listing } = await this.supabase
+        .from('marketplace_listings')
+        .select('*')
+        .eq('id', listingId)
+        .eq('is_active', true)
+        .single();
+
+      if (!listing) {
+        return { success: false, error: 'Listing not found' };
+      }
+
+      // Check if already purchased
+      const { data: existing } = await this.supabase
+        .from('content_purchases')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('story_id', listing.story_id)
+        .single();
+
+      if (existing) {
+        return { success: false, error: 'You already own this story' };
+      }
+
+      // Calculate price with discount
+      let finalPrice = listing.price_usd;
+      if (listing.discount_percentage > 0) {
+        if (!listing.discount_ends_at || new Date(listing.discount_ends_at) > new Date()) {
+          finalPrice = finalPrice * (1 - listing.discount_percentage / 100);
+        }
+      }
+
+      if (paymentMethod === 'coins') {
+        // Check if listing accepts coins
+        if (!listing.price_coins) {
+          return { success: false, error: 'This listing does not accept coins' };
+        }
+
+        // Check user coin balance
+        const { data: wallet } = await this.supabase
+          .from('user_wallets')
+          .select('balance')
+          .eq('user_id', userId)
+          .single();
+
+        if (!wallet || wallet.balance < listing.price_coins) {
+          return { success: false, error: 'Insufficient coins' };
+        }
+
+        // Deduct coins
+        await this.supabase.rpc('deduct_coins', {
+          p_user_id: userId,
+          p_amount: listing.price_coins,
+          p_reason: `Purchase: ${listing.story_id}`,
+        });
+      }
+
+      // Record purchase
+      const platformFee = finalPrice * this.platformFeePercentage;
+      const sellerRevenue = finalPrice - platformFee;
+
+      await this.supabase.from('marketplace_purchases').insert({
+        buyer_id: userId,
+        listing_id: listingId,
+        amount_paid_usd: finalPrice,
+        platform_fee_usd: platformFee,
+        seller_revenue_usd: sellerRevenue,
+      });
+
+      // Grant access
+      await this.supabase.from('content_purchases').insert({
         user_id: userId,
-        story_id: storyId,
-        purchase_type: purchaseType,
-        pricing_id: pricingId,
-        payment_status: 'pending',
-        amount_paid: amount,
-        currency: 'USD',
-        chapter_id: chapterId,
-        metadata: {},
-      })
-      .select()
-      .single();
+        story_id: listing.story_id,
+        purchase_type: 'full_access',
+        payment_method: paymentMethod,
+        amount_paid: finalPrice,
+        coins_spent: paymentMethod === 'coins' ? listing.price_coins : null,
+      });
 
-    if (error) throw error;
-    return this.mapPurchase(data);
-  }
+      // Update sales count
+      await this.supabase
+        .from('marketplace_listings')
+        .update({
+          sales_count: listing.sales_count + 1,
+          revenue_total: (listing.revenue_total || 0) + sellerRevenue,
+        })
+        .eq('id', listingId);
 
-  /**
-   * Update purchase payment status
-   */
-  async updatePurchaseStatus(
-    purchaseId: string,
-    paymentIntentId: string,
-    status: 'succeeded' | 'failed' | 'processing'
-  ): Promise<StoryPurchase> {
-    const updateData: any = {
-      payment_intent_id: paymentIntentId,
-      payment_status: status,
-      updated_at: new Date().toISOString(),
-    };
-
-    if (status === 'succeeded') {
-      updateData.access_granted_at = new Date().toISOString();
+      return { success: true };
+    } catch (error) {
+      console.error('Error in purchaseStory:', error);
+      return { success: false, error: 'An error occurred' };
     }
-
-    const { data, error } = await this.supabase
-      .from('story_purchases')
-      .update(updateData)
-      .eq('id', purchaseId)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapPurchase(data);
   }
 
-  // ========================================
-  // SUBSCRIPTIONS
-  // ========================================
-
   /**
-   * Create or update story subscription
+   * Get bundles
    */
-  async createSubscription(
-    userId: string,
-    storyId: string,
-    pricingId: string,
-    stripeSubscriptionId?: string
-  ): Promise<StorySubscription> {
-    const pricing = await this.getStoryPricing(storyId);
-    if (!pricing || !pricing.subscriptionDurationDays) {
-      throw new Error('Subscription pricing not available for this story');
+  async getBundles(sellerId?: string): Promise<StoryBundle[]> {
+    try {
+      let query = this.supabase
+        .from('story_bundles')
+        .select(`
+          *,
+          user_profiles!story_bundles_seller_id_fkey (display_name),
+          bundle_stories!bundle_stories_bundle_id_fkey (
+            stories!bundle_stories_story_id_fkey (
+              id, title, cover_image_url
+            )
+          )
+        `)
+        .eq('is_active', true);
+
+      if (sellerId) {
+        query = query.eq('seller_id', sellerId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching bundles:', error);
+        return [];
+      }
+
+      return (data || []).map((bundle) => ({
+        id: bundle.id,
+        sellerId: bundle.seller_id,
+        sellerName: (bundle.user_profiles as any)?.display_name || 'Unknown',
+        name: bundle.name,
+        description: bundle.description,
+        priceUsd: bundle.price_usd,
+        savingsPercentage: bundle.savings_percentage,
+        stories: (bundle.bundle_stories || []).map((bs: any) => ({
+          id: bs.stories?.id,
+          title: bs.stories?.title,
+          coverImageUrl: bs.stories?.cover_image_url,
+        })),
+      }));
+    } catch (error) {
+      console.error('Error in getBundles:', error);
+      return [];
     }
-
-    const periodStart = new Date();
-    const periodEnd = new Date();
-    periodEnd.setDate(periodEnd.getDate() + pricing.subscriptionDurationDays);
-
-    const { data, error } = await this.supabase
-      .from('story_subscriptions')
-      .upsert(
-        {
-          user_id: userId,
-          story_id: storyId,
-          pricing_id: pricingId,
-          subscription_status: 'active',
-          current_period_start: periodStart.toISOString(),
-          current_period_end: periodEnd.toISOString(),
-          stripe_subscription_id: stripeSubscriptionId,
-          auto_renew: true,
-        },
-        {
-          onConflict: 'user_id,story_id',
-        }
-      )
-      .select()
-      .single();
-
-    if (error) throw error;
-    return this.mapSubscription(data);
   }
 
   /**
-   * Cancel subscription
+   * Get author's tip jar
    */
-  async cancelSubscription(subscriptionId: string, reason?: string): Promise<StorySubscription> {
-    const { data, error } = await this.supabase
-      .from('story_subscriptions')
-      .update({
-        subscription_status: 'cancelled',
-        auto_renew: false,
-        cancelled_at: new Date().toISOString(),
-        cancellation_reason: reason,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', subscriptionId)
-      .select()
-      .single();
+  async getAuthorTipJar(authorId: string): Promise<AuthorTipJar | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('author_tip_jars')
+        .select(`
+          *,
+          user_profiles!author_tip_jars_author_id_fkey (
+            display_name, avatar_url
+          )
+        `)
+        .eq('author_id', authorId)
+        .eq('is_enabled', true)
+        .single();
 
-    if (error) throw error;
-    return this.mapSubscription(data);
+      if (error) {
+        return null;
+      }
+
+      const profile = data.user_profiles as any;
+      return {
+        authorId: data.author_id,
+        authorName: profile?.display_name || 'Unknown',
+        avatarUrl: profile?.avatar_url,
+        isEnabled: data.is_enabled,
+        minimumTipUsd: data.minimum_tip_usd,
+        suggestedAmounts: data.suggested_amounts || [1, 3, 5, 10],
+        thankYouMessage: data.thank_you_message,
+        totalReceivedUsd: data.total_received_usd,
+      };
+    } catch (error) {
+      console.error('Error in getAuthorTipJar:', error);
+      return null;
+    }
   }
 
   /**
-   * Get user's active subscriptions
+   * Send tip to author
    */
-  async getUserSubscriptions(userId: string): Promise<StorySubscription[]> {
-    const { data, error } = await this.supabase
-      .from('story_subscriptions')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('subscription_status', 'active')
-      .gt('current_period_end', new Date().toISOString())
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return this.mapSubscriptions(data || []);
-  }
-
-  // ========================================
-  // CREATOR EARNINGS
-  // ========================================
-
-  /**
-   * Get creator's total earnings
-   */
-  async getCreatorEarnings(creatorId: string): Promise<{
-    totalEarnings: number;
-    paidOut: number;
-    pending: number;
-    earnings: CreatorEarnings[];
-  }> {
-    const { data, error } = await this.supabase
-      .from('creator_earnings')
-      .select('*')
-      .eq('creator_id', creatorId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    const earnings = this.mapEarnings(data || []);
-    const totalEarnings = earnings.reduce((sum, e) => sum + e.creatorEarnings, 0);
-    const paidOut = earnings
-      .filter((e) => e.isPaidOut)
-      .reduce((sum, e) => sum + e.creatorEarnings, 0);
-    const pending = totalEarnings - paidOut;
-
-    return {
-      totalEarnings,
-      paidOut,
-      pending,
-      earnings,
-    };
-  }
-
-  /**
-   * Get creator's payout history
-   */
-  async getCreatorPayouts(creatorId: string): Promise<CreatorPayout[]> {
-    const { data, error } = await this.supabase
-      .from('creator_payouts')
-      .select('*')
-      .eq('creator_id', creatorId)
-      .order('payout_period_start', { ascending: false });
-
-    if (error) throw error;
-    return this.mapPayouts(data || []);
-  }
-
-  // ========================================
-  // TIPPING
-  // ========================================
-
-  /**
-   * Create a tip
-   */
-  async createTip(
+  async sendTip(
     tipperId: string,
-    creatorId: string,
-    tipAmount: number,
+    authorId: string,
+    amountUsd: number,
+    message?: string,
     storyId?: string,
-    message?: string
-  ): Promise<CreatorTip> {
-    const { data, error } = await this.supabase
-      .from('creator_tips')
-      .insert({
-        tipper_id: tipperId,
-        creator_id: creatorId,
+    isAnonymous: boolean = false
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Get tip jar
+      const tipJar = await this.getAuthorTipJar(authorId);
+      
+      if (!tipJar || !tipJar.isEnabled) {
+        return { success: false, error: 'Author is not accepting tips' };
+      }
+
+      if (amountUsd < tipJar.minimumTipUsd) {
+        return { success: false, error: `Minimum tip is $${tipJar.minimumTipUsd}` };
+      }
+
+      // Record tip
+      await this.supabase.from('author_tips').insert({
+        author_id: authorId,
+        tipper_id: isAnonymous ? null : tipperId,
         story_id: storyId,
-        tip_amount: tipAmount,
-        currency: 'USD',
+        amount_usd: amountUsd,
         message,
-        payment_status: 'pending',
-        platform_fee_percentage: 5.0, // Lower fee for tips
-        platform_fee: 0, // Will be calculated by trigger
-        creator_receives: 0, // Will be calculated by trigger
-        is_paid_out: false,
-      })
-      .select()
-      .single();
+        is_anonymous: isAnonymous,
+      });
 
-    if (error) throw error;
-    return this.mapTip(data);
+      // Update tip jar total
+      await this.supabase
+        .from('author_tip_jars')
+        .update({
+          total_received_usd: tipJar.totalReceivedUsd + amountUsd,
+        })
+        .eq('author_id', authorId);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in sendTip:', error);
+      return { success: false, error: 'An error occurred' };
+    }
   }
 
   /**
-   * Update tip payment status
+   * Gift a story
    */
-  async updateTipStatus(
-    tipId: string,
-    paymentIntentId: string,
-    status: 'succeeded' | 'failed' | 'processing'
-  ): Promise<CreatorTip> {
-    const { data, error } = await this.supabase
-      .from('creator_tips')
-      .update({
-        payment_intent_id: paymentIntentId,
-        payment_status: status,
-      })
-      .eq('id', tipId)
-      .select()
-      .single();
+  async giftStory(
+    senderId: string,
+    recipientId: string,
+    storyId: string,
+    message?: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Check if recipient already owns it
+      const { data: existing } = await this.supabase
+        .from('content_purchases')
+        .select('id')
+        .eq('user_id', recipientId)
+        .eq('story_id', storyId)
+        .single();
 
-    if (error) throw error;
-    return this.mapTip(data);
+      if (existing) {
+        return { success: false, error: 'Recipient already owns this story' };
+      }
+
+      // Get listing price
+      const listing = await this.getListingByStory(storyId);
+      
+      if (!listing) {
+        return { success: false, error: 'Story is not for sale' };
+      }
+
+      // Record gift
+      await this.supabase.from('story_gifts').insert({
+        sender_id: senderId,
+        recipient_id: recipientId,
+        story_id: storyId,
+        gift_message: message,
+        amount_paid_usd: listing.priceUsd,
+      });
+
+      // Grant access to recipient
+      await this.supabase.from('content_purchases').insert({
+        user_id: recipientId,
+        story_id: storyId,
+        purchase_type: 'full_access',
+        payment_method: 'gift',
+        amount_paid: 0,
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in giftStory:', error);
+      return { success: false, error: 'An error occurred' };
+    }
   }
 
   /**
-   * Get tips received by creator
+   * Get author revenue
    */
-  async getCreatorTips(creatorId: string): Promise<CreatorTip[]> {
-    const { data, error } = await this.supabase
-      .from('creator_tips')
-      .select('*')
-      .eq('creator_id', creatorId)
-      .eq('payment_status', 'succeeded')
-      .order('created_at', { ascending: false });
+  async getAuthorRevenue(authorId: string): Promise<AuthorRevenue[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('author_revenue')
+        .select('*')
+        .eq('author_id', authorId)
+        .order('period_start', { ascending: false })
+        .limit(12);
 
-    if (error) throw error;
-    return this.mapTips(data || []);
+      if (error) {
+        console.error('Error fetching revenue:', error);
+        return [];
+      }
+
+      return (data || []).map((r) => ({
+        period: `${r.period_start} - ${r.period_end}`,
+        grossRevenueUsd: r.gross_revenue_usd,
+        platformFeesUsd: r.platform_fees_usd,
+        netRevenueUsd: r.net_revenue_usd,
+        tipsReceivedUsd: r.tips_received_usd,
+        salesCount: r.sales_count,
+      }));
+    } catch (error) {
+      console.error('Error in getAuthorRevenue:', error);
+      return [];
+    }
   }
 
-  // ========================================
-  // MAPPING FUNCTIONS
-  // ========================================
+  /**
+   * Create marketplace listing
+   */
+  async createListing(
+    sellerId: string,
+    storyId: string,
+    data: {
+      listingType: 'single_purchase' | 'subscription' | 'rental';
+      priceUsd: number;
+      priceCoins?: number;
+      rentalDurationDays?: number;
+    }
+  ): Promise<{ success: boolean; listingId?: string; error?: string }> {
+    try {
+      // Verify seller owns the story
+      const { data: story } = await this.supabase
+        .from('stories')
+        .select('author_id')
+        .eq('id', storyId)
+        .single();
 
-  private mapPricing(data: any): PremiumStoryPricing {
-    return {
-      id: data.id,
-      storyId: data.story_id,
-      pricingModel: data.pricing_model,
-      priceAmount: parseFloat(data.price_amount),
-      currency: data.currency,
-      chapterPrice: data.chapter_price ? parseFloat(data.chapter_price) : undefined,
-      freeChapters: data.free_chapters,
-      subscriptionDurationDays: data.subscription_duration_days,
-      discountPercentage: parseFloat(data.discount_percentage),
-      discountExpiresAt: data.discount_expires_at,
-      creatorSharePercentage: parseFloat(data.creator_share_percentage),
-      platformSharePercentage: parseFloat(data.platform_share_percentage),
-      isActive: data.is_active,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
+      if (!story || story.author_id !== sellerId) {
+        return { success: false, error: 'You do not own this story' };
+      }
+
+      // Check for existing listing
+      const { data: existing } = await this.supabase
+        .from('marketplace_listings')
+        .select('id')
+        .eq('story_id', storyId)
+        .eq('is_active', true)
+        .single();
+
+      if (existing) {
+        return { success: false, error: 'Story already has an active listing' };
+      }
+
+      const { data: listing, error } = await this.supabase
+        .from('marketplace_listings')
+        .insert({
+          story_id: storyId,
+          seller_id: sellerId,
+          listing_type: data.listingType,
+          price_usd: data.priceUsd,
+          price_coins: data.priceCoins,
+          rental_duration_days: data.rentalDurationDays,
+        })
+        .select('id')
+        .single();
+
+      if (error) {
+        console.error('Error creating listing:', error);
+        return { success: false, error: 'Failed to create listing' };
+      }
+
+      return { success: true, listingId: listing.id };
+    } catch (error) {
+      console.error('Error in createListing:', error);
+      return { success: false, error: 'An error occurred' };
+    }
   }
 
-  private mapPurchase(data: any): StoryPurchase {
-    return {
-      id: data.id,
-      userId: data.user_id,
-      storyId: data.story_id,
-      purchaseType: data.purchase_type,
-      pricingId: data.pricing_id,
-      paymentIntentId: data.payment_intent_id,
-      paymentStatus: data.payment_status,
-      amountPaid: parseFloat(data.amount_paid),
-      currency: data.currency,
-      chapterId: data.chapter_id,
-      chapterNumber: data.chapter_number,
-      accessGrantedAt: data.access_granted_at,
-      accessExpiresAt: data.access_expires_at,
-      metadata: data.metadata || {},
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
-  }
+  /**
+   * Check if user owns story
+   */
+  async checkOwnership(userId: string, storyId: string): Promise<boolean> {
+    try {
+      const { data } = await this.supabase
+        .from('content_purchases')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('story_id', storyId)
+        .single();
 
-  private mapPurchases(data: any[]): StoryPurchase[] {
-    return data.map((item) => this.mapPurchase(item));
-  }
-
-  private mapEarnings(data: any[]): CreatorEarnings[] {
-    return data.map((item) => ({
-      id: item.id,
-      creatorId: item.creator_id,
-      storyId: item.story_id,
-      purchaseId: item.purchase_id,
-      purchaseAmount: parseFloat(item.purchase_amount),
-      creatorSharePercentage: parseFloat(item.creator_share_percentage),
-      creatorEarnings: parseFloat(item.creator_earnings),
-      platformFee: parseFloat(item.platform_fee),
-      payoutId: item.payout_id,
-      isPaidOut: item.is_paid_out,
-      paidOutAt: item.paid_out_at,
-      createdAt: item.created_at,
-    }));
-  }
-
-  private mapPayouts(data: any[]): CreatorPayout[] {
-    return data.map((item) => ({
-      id: item.id,
-      creatorId: item.creator_id,
-      payoutPeriodStart: item.payout_period_start,
-      payoutPeriodEnd: item.payout_period_end,
-      totalEarnings: parseFloat(item.total_earnings),
-      platformFee: parseFloat(item.platform_fee),
-      netEarnings: parseFloat(item.net_earnings),
-      payoutStatus: item.payout_status,
-      payoutMethod: item.payout_method,
-      payoutReference: item.payout_reference,
-      paidAt: item.paid_at,
-      payoutNotes: item.payout_notes,
-      earningsBreakdown: item.earnings_breakdown || {},
-      createdAt: item.created_at,
-      updatedAt: item.updated_at,
-    }));
-  }
-
-  private mapSubscription(data: any): StorySubscription {
-    return {
-      id: data.id,
-      userId: data.user_id,
-      storyId: data.story_id,
-      pricingId: data.pricing_id,
-      subscriptionStatus: data.subscription_status,
-      currentPeriodStart: data.current_period_start,
-      currentPeriodEnd: data.current_period_end,
-      stripeSubscriptionId: data.stripe_subscription_id,
-      paymentIntentId: data.payment_intent_id,
-      autoRenew: data.auto_renew,
-      cancelledAt: data.cancelled_at,
-      cancellationReason: data.cancellation_reason,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    };
-  }
-
-  private mapSubscriptions(data: any[]): StorySubscription[] {
-    return data.map((item) => this.mapSubscription(item));
-  }
-
-  private mapTip(data: any): CreatorTip {
-    return {
-      id: data.id,
-      tipperId: data.tipper_id,
-      creatorId: data.creator_id,
-      storyId: data.story_id,
-      tipAmount: parseFloat(data.tip_amount),
-      currency: data.currency,
-      message: data.message,
-      paymentIntentId: data.payment_intent_id,
-      paymentStatus: data.payment_status,
-      platformFeePercentage: parseFloat(data.platform_fee_percentage),
-      platformFee: parseFloat(data.platform_fee),
-      creatorReceives: parseFloat(data.creator_receives),
-      payoutId: data.payout_id,
-      isPaidOut: data.is_paid_out,
-      createdAt: data.created_at,
-    };
-  }
-
-  private mapTips(data: any[]): CreatorTip[] {
-    return data.map((item) => this.mapTip(item));
+      return !!data;
+    } catch (error) {
+      return false;
+    }
   }
 }
 
