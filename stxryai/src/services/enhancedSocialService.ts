@@ -539,6 +539,137 @@ class EnhancedSocialService {
       return false;
     }
   }
+
+  /**
+   * Get clubs/book clubs
+   */
+  async getClubs(options?: {
+    category?: string;
+    search?: string;
+    limit?: number;
+  }): Promise<{ clubs: any[]; total: number }> {
+    try {
+      let query = this.supabase
+        .from('book_clubs')
+        .select('*, owner:user_profiles!book_clubs_owner_id_fkey(id, display_name, avatar_url)', { count: 'exact' })
+        .eq('is_public', true);
+
+      if (options?.search) {
+        query = query.or(`name.ilike.%${options.search}%,description.ilike.%${options.search}%`);
+      }
+
+      if (options?.limit) {
+        query = query.limit(options.limit);
+      }
+
+      query = query.order('member_count', { ascending: false });
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        console.error('Error fetching clubs:', error);
+        return { clubs: [], total: 0 };
+      }
+
+      return {
+        clubs: data || [],
+        total: count || 0,
+      };
+    } catch (error) {
+      console.error('Error in getClubs:', error);
+      return { clubs: [], total: 0 };
+    }
+  }
+
+  /**
+   * Create a new club
+   */
+  async createClub(userId: string, clubData: {
+    name: string;
+    description?: string;
+    coverImageUrl?: string;
+    isPublic?: boolean;
+    maxMembers?: number;
+  }): Promise<{ success: boolean; clubId?: string; error?: string }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('book_clubs')
+        .insert({
+          name: clubData.name,
+          description: clubData.description,
+          cover_image_url: clubData.coverImageUrl,
+          owner_id: userId,
+          is_public: clubData.isPublic ?? true,
+          max_members: clubData.maxMembers ?? 100,
+          member_count: 1,
+        })
+        .select('id')
+        .single();
+
+      if (error) {
+        console.error('Error creating club:', error);
+        return { success: false, error: error.message };
+      }
+
+      // Add owner as first member
+      await this.supabase.from('book_club_members').insert({
+        club_id: data.id,
+        user_id: userId,
+        role: 'owner',
+      });
+
+      return { success: true, clubId: data.id };
+    } catch (error) {
+      console.error('Error in createClub:', error);
+      return { success: false, error: 'Failed to create club' };
+    }
+  }
+
+  /**
+   * Join a club
+   */
+  async joinClub(userId: string, clubId: string): Promise<boolean> {
+    try {
+      const { error } = await this.supabase.from('book_club_members').insert({
+        club_id: clubId,
+        user_id: userId,
+        role: 'member',
+      });
+
+      if (!error) {
+        // Increment member count
+        await this.supabase.rpc('increment_club_members', { club_id: clubId });
+      }
+
+      return !error;
+    } catch (error) {
+      console.error('Error joining club:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Leave a club
+   */
+  async leaveClub(userId: string, clubId: string): Promise<boolean> {
+    try {
+      const { error } = await this.supabase
+        .from('book_club_members')
+        .delete()
+        .eq('club_id', clubId)
+        .eq('user_id', userId);
+
+      if (!error) {
+        // Decrement member count
+        await this.supabase.rpc('decrement_club_members', { club_id: clubId });
+      }
+
+      return !error;
+    } catch (error) {
+      console.error('Error leaving club:', error);
+      return false;
+    }
+  }
 }
 
 export const enhancedSocialService = new EnhancedSocialService();
