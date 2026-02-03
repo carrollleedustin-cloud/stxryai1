@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -26,7 +26,8 @@ import { Sparkles, BookOpen, GitBranch, Eye, ArrowLeft } from 'lucide-react';
 
 type EditorMode = 'metadata' | 'chapters' | 'choices' | 'preview' | 'ai-tools';
 
-export default function CreateStoryPage() {
+// Wrapper component to handle useSearchParams with Suspense
+function CreateStoryContent() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -503,5 +504,26 @@ export default function CreateStoryPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function CreateStoryLoading() {
+  return (
+    <div className="min-h-screen bg-void-absolute flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-spectral-cyan mx-auto mb-4"></div>
+        <p className="text-white/60">Loading story creator...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function CreateStoryPage() {
+  return (
+    <Suspense fallback={<CreateStoryLoading />}>
+      <CreateStoryContent />
+    </Suspense>
   );
 }
