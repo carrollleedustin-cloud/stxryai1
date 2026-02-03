@@ -65,10 +65,13 @@ export async function POST(request: NextRequest) {
       })
       .eq('id', user.id);
 
+    // Access subscription properties (cast to any to handle Stripe type variations)
+    const sub = subscription as unknown as { cancel_at: number | null; current_period_end: number };
+    
     return NextResponse.json({
       success: true,
-      cancelAt: subscription.cancel_at,
-      currentPeriodEnd: subscription.current_period_end,
+      cancelAt: sub.cancel_at,
+      currentPeriodEnd: sub.current_period_end,
     });
   } catch (error) {
     console.error('Cancel subscription error:', error);
