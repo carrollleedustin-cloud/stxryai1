@@ -215,6 +215,33 @@ class ModerationService {
   }
 
   /**
+   * Update report status (simple status change)
+   */
+  async updateReportStatus(reportId: string, status: ReportStatus): Promise<boolean> {
+    try {
+      const updateData: Record<string, unknown> = {
+        status,
+        updated_at: new Date().toISOString(),
+      };
+
+      // If resolving or dismissing, set resolved timestamp
+      if (status === 'resolved' || status === 'dismissed') {
+        updateData.resolved_at = new Date().toISOString();
+      }
+
+      const { error } = await this.supabase
+        .from('user_reports')
+        .update(updateData)
+        .eq('id', reportId);
+
+      return !error;
+    } catch (error) {
+      console.error('Error updating report status:', error);
+      return false;
+    }
+  }
+
+  /**
    * Assign report to self
    */
   async assignReport(moderatorId: string, reportId: string): Promise<boolean> {
