@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
         .single();
       
       // If no profile found or user is not admin, deny access
-      if (!profile || !profile.is_admin) {
+      const isAdmin = profile && (profile as { is_admin: boolean }).is_admin;
+      if (!isAdmin) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
     }
