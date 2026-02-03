@@ -45,12 +45,15 @@ export async function POST(req: NextRequest) {
         const priceId = subscription.items.data[0].price.id;
         const tier = getTierFromPriceId(priceId) || 'premium';
 
+        // Cast to access Stripe subscription properties
+        const sub = subscription as unknown as { id: string; status: string; current_period_end: number };
+
         // Update user subscription
         const updateData = {
           tier,
-          stripe_subscription_id: subscription.id,
-          subscription_status: String(subscription.status),
-          subscription_end_date: new Date(subscription.current_period_end * 1000).toISOString(),
+          stripe_subscription_id: sub.id,
+          subscription_status: String(sub.status),
+          subscription_end_date: new Date(sub.current_period_end * 1000).toISOString(),
         };
 
         await updateUserById(user.id, updateData);
