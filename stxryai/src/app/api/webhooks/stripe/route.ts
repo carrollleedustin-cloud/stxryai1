@@ -5,6 +5,18 @@ import { createServiceRoleClient } from '@/lib/supabase/server';
 import { updateUserById, insertNotification } from '@/lib/supabase/typed';
 import type { Stripe } from 'stripe';
 
+// Force Node.js runtime for Supabase compatibility
+export const runtime = 'nodejs';
+
+// Map any tier to allowed values
+type AllowedTier = 'free' | 'premium' | 'creator_pro';
+const mapTier = (tier: string | null | undefined): AllowedTier => {
+  if (tier === 'premium') return 'premium';
+  if (tier === 'creator_pro') return 'creator_pro';
+  if (tier === 'enterprise') return 'creator_pro'; // Map enterprise to creator_pro
+  return 'free';
+};
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = headers().get('stripe-signature');
@@ -43,7 +55,8 @@ export async function POST(req: NextRequest) {
 
         // Determine tier from subscription
         const priceId = subscription.items.data[0].price.id;
-        const tier = getTierFromPriceId(priceId) || 'premium';
+        const rawTier = getTierFromPriceId(priceId);
+        const tier = mapTier(rawTier);
 
         // Cast to access Stripe subscription properties
         const sub = subscription as unknown as { id: string; status: string; current_period_end: number };
@@ -56,7 +69,7 @@ export async function POST(req: NextRequest) {
           subscription_end_date: new Date(sub.current_period_end * 1000).toISOString(),
         };
 
-        await updateUserById(user.id, updateData);
+        await updateUserById(user.id, updateData as any);
 
         break;
       }
