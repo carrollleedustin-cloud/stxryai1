@@ -56,20 +56,18 @@ export async function POST(req: NextRequest) {
         // Determine tier from subscription
         const priceId = subscription.items.data[0].price.id;
         const rawTier = getTierFromPriceId(priceId);
-        const tier = mapTier(rawTier);
+        const mappedTier: 'free' | 'premium' | 'creator_pro' = mapTier(rawTier);
 
         // Cast to access Stripe subscription properties
         const sub = subscription as unknown as { id: string; status: string; current_period_end: number };
 
-        // Update user subscription
-        const updateData = {
-          tier,
+        // Update user subscription - explicitly typed to match updateUserById
+        await updateUserById(user.id, {
+          tier: mappedTier,
           stripe_subscription_id: sub.id,
           subscription_status: String(sub.status),
           subscription_end_date: new Date(sub.current_period_end * 1000).toISOString(),
-        };
-
-        await updateUserById(user.id, updateData as any);
+        } as Parameters<typeof updateUserById>[1]);
 
         break;
       }
