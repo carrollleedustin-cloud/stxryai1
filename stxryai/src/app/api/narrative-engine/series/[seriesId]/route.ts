@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine';
+import { createClient } from '@/lib/supabase/server';
 
 /**
  * GET /api/narrative-engine/series/[seriesId]
@@ -7,6 +8,14 @@ import { persistentNarrativeEngine } from '@/services/persistentNarrativeEngine'
  */
 export async function GET(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
+    // Verify authentication
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { seriesId } = params;
 
     const overview = await persistentNarrativeEngine.getSeriesOverview(seriesId);
@@ -37,6 +46,14 @@ export async function GET(request: NextRequest, { params }: { params: { seriesId
  */
 export async function PATCH(request: NextRequest, { params }: { params: { seriesId: string } }) {
   try {
+    // Verify authentication
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const { seriesId } = params;
     const body = await request.json();
 

@@ -65,41 +65,100 @@ export default function CreatorDashboardPage() {
   }, [user, authLoading, router]);
 
   const loadDashboardData = async () => {
-    // TODO: Replace with real Supabase queries
-    // Placeholder data for now
-    setStats({
-      totalStories: 12,
-      totalReads: 1547,
-      totalLikes: 234,
-      activeDrafts: 3,
-      weeklyGrowth: 24,
-    });
+    try {
+      const { createClient } = await import('@/lib/supabase/client');
+      const supabase = createClient();
 
-    setRecentStories([
-      {
-        id: '1',
-        title: 'The Dragon\'s Secret',
-        status: 'published',
-        reads: 456,
-        lastEdited: '2 hours ago',
-      },
-      {
-        id: '2',
-        title: 'Mystery of the Lost Kingdom',
-        status: 'draft',
-        reads: 0,
-        lastEdited: '1 day ago',
-      },
-      {
-        id: '3',
-        title: 'Space Adventure Chronicles',
-        status: 'published',
-        reads: 789,
-        lastEdited: '3 days ago',
-      },
-    ]);
+      // Fetch user's stories with stats
+      const { data: stories, error: storiesError } = await supabase
+        .from('stories')
+        .select('id, title, status, play_count, like_count, created_at, updated_at, cover_image_url')
+        .eq('author_id', user?.id)
+        .order('updated_at', { ascending: false })
+        .limit(10);
 
-    setLoading(false);
+      if (storiesError) {
+        console.error('Error fetching stories:', storiesError);
+      }
+
+      const userStories = stories || [];
+
+      // Calculate stats from real data
+      const publishedStories = userStories.filter(s => s.status === 'published');
+      const draftStories = userStories.filter(s => s.status === 'draft');
+      const totalReads = userStories.reduce((sum, s) => sum + (s.play_count || 0), 0);
+      const totalLikes = userStories.reduce((sum, s) => sum + (s.like_count || 0), 0);
+
+      // Calculate weekly growth (compare this week vs last week)
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+      // Fetch weekly reads for growth calculation
+      const { data: weeklyStats } = await supabase
+        .from('story_reading_sessions')
+        .select('story_id, created_at')
+        .in('story_id', userStories.map(s => s.id))
+        .gte('created_at', twoWeeksAgo.toISOString());
+
+      const thisWeekReads = (weeklyStats || []).filter(
+        s => new Date(s.created_at) >= oneWeekAgo
+      ).length;
+      const lastWeekReads = (weeklyStats || []).filter(
+        s => new Date(s.created_at) < oneWeekAgo
+      ).length;
+      const weeklyGrowth = lastWeekReads > 0 
+        ? Math.round(((thisWeekReads - lastWeekReads) / lastWeekReads) * 100)
+        : thisWeekReads > 0 ? 100 : 0;
+
+      setStats({
+        totalStories: userStories.length,
+        totalReads,
+        totalLikes,
+        activeDrafts: draftStories.length,
+        weeklyGrowth: Math.max(0, weeklyGrowth),
+      });
+
+      // Format recent stories
+      const formattedStories: RecentStory[] = userStories.slice(0, 5).map(story => ({
+        id: story.id,
+        title: story.title,
+        status: story.status === 'published' ? 'published' : 'draft',
+        reads: story.play_count || 0,
+        lastEdited: formatTimeAgo(new Date(story.updated_at)),
+        coverImage: story.cover_image_url,
+      }));
+
+      setRecentStories(formattedStories);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      // Set empty state on error
+      setStats({
+        totalStories: 0,
+        totalReads: 0,
+        totalLikes: 0,
+        activeDrafts: 0,
+        weeklyGrowth: 0,
+      });
+      setRecentStories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to format time ago
+  const formatTimeAgo = (date: Date): string => {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    return date.toLocaleDateString();
   };
 
   const quickActions = [
