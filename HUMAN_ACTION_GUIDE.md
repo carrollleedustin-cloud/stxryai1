@@ -60,7 +60,7 @@ This guide provides step-by-step instructions for tasks that require human inter
 
 ### 1.3 Run Database Migrations
 
-You need to run **TWO** migration files in order:
+You need to run **THREE** migration files in order:
 
 **Migration 1: Complete Schema (Original tables)**
 1. **Go to**: Project Dashboard → SQL Editor
@@ -76,6 +76,21 @@ You need to run **TWO** migration files in order:
 3. **Copy** entire contents → **Paste** into SQL Editor
 4. **Click**: "Run"
 5. **Verify**: Check for "Success" message
+
+**Migration 3: Product Evolution Features (Companion reactions, Reader Identity, etc.)**
+1. **Click**: "New query"
+2. **Open file**: `stxryai/supabase/migrations/20260204_product_evolution_features.sql`
+3. **Copy** entire contents → **Paste** into SQL Editor
+4. **Click**: "Run"
+5. **Verify**: Check for "Success" message
+
+This migration adds:
+- Companion memories and opinions tables
+- Reading memories and collections
+- Choice statistics and story echoes (social proof)
+- Reader identity archetypes
+- Emotional fingerprint personalization
+- Active reading sessions for ghost readers
 
 ### 1.4 Configure Storage Buckets
 
@@ -623,10 +638,32 @@ NODE_ENV=production
 
 ## What's Been Implemented
 
-### New Services Created (15 total)
+### Product Evolution Features (Latest)
+
+| Feature | Description |
+|---------|-------------|
+| **Companion Reactions** | Real-time pet reactions to story events, personality-based responses, "remember when" prompts |
+| **Reading Memories** | Capture memorable moments, quote collections, anniversary reminders, shareable memory cards |
+| **Story Echoes** | Social proof showing what others chose, ghost readers, live activity feed, choice statistics |
+| **Reader Identity** | Archetypes formed through choices (The Hero, The Survivor, etc.), evolution timeline, character sheet |
+| **Emotional Fingerprint** | Invisible learning of emotional preferences, personalized recommendations, pacing adjustments |
+
+### New Pages Added
+
+| Page | Route | Description |
+|------|-------|-------------|
+| My Identity | `/my-identity` | Full reader archetype dashboard with patterns and evolution |
+| Memories | `/memories` | Reading memories collection, timeline view, anniversary reminders |
+
+### New Services Created (20 total)
 
 | Service | Features |
 |---------|----------|
+| `companionReactionsService.ts` | Pet reactions, personality-based responses, story memories |
+| `readingMemoriesService.ts` | Memory capture, collections, anniversaries, sharing |
+| `storyEchoesService.ts` | Choice statistics, ghost readers, live activity, momentum |
+| `readerIdentityService.ts` | Archetypes, choice patterns, evolution, compatibility |
+| `emotionalFingerprintService.ts` | Emotional learning, journey preferences, personalization |
 | `enhancedStreakService.ts` | Streaks, freeze tokens, milestones, daily bonuses |
 | `recommendationEngineService.ts` | Personalized recommendations, daily picks, mood-based |
 | `readingListService.ts` | Collections, reading lists, editorial picks |
