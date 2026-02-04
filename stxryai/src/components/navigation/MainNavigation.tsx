@@ -52,6 +52,8 @@ const mainNavItems: NavItem[] = [
 const userNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/user-dashboard', icon: Home },
   { label: 'My Profile', href: '/user-profile', icon: User },
+  { label: 'My Identity', href: '/my-identity', icon: Compass },
+  { label: 'Memories', href: '/memories', icon: BookOpen },
   { label: 'Pets', href: '/pets', icon: Heart },
   { label: 'Season Pass', href: '/season-pass', icon: Trophy },
   { label: 'Achievements', href: '/achievements', icon: Award },
