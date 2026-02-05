@@ -869,7 +869,7 @@ CREATE TABLE IF NOT EXISTS author_tips (
 -- Super comments
 CREATE TABLE IF NOT EXISTS super_comments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    comment_id UUID NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    comment_id UUID NOT NULL REFERENCES story_comments(id) ON DELETE CASCADE,
     highlight_color VARCHAR(20) DEFAULT 'gold',
     amount_paid_coins INTEGER NOT NULL,
     expires_at TIMESTAMPTZ,
